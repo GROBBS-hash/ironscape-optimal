@@ -652,8 +652,10 @@ public class BruhsailerPlugin extends Plugin
 		for (int guard = 0; guard < 100; guard++)
 		{
 			boolean completedSomething = false;
-			for (Current current : findWindow(AUTO_COMPLETE_WINDOW))
+			List<Current> window = findWindow(AUTO_COMPLETE_WINDOW);
+			for (int i = 0; i < window.size(); i++)
 			{
+				Current current = window.get(i);
 				// A reviewed skill requirement completes a WHOLE step.
 				StepRequirement requirement = stepSkillRequirements.get(current.step.getId());
 				if (requirement != null
@@ -664,7 +666,7 @@ public class BruhsailerPlugin extends Plugin
 					break; // window shifted; rebuild it
 				}
 
-				if (currentSubSatisfied(current.step, current.sub))
+				if (currentSubSatisfied(current.step, current.sub, i == 0))
 				{
 					completeSubGoal(current.step, current.sub);
 					if (travelGoalSubs.contains(current.sub.getId()))
@@ -739,8 +741,15 @@ public class BruhsailerPlugin extends Plugin
 		}
 	}
 
-	/** Is the current sub-step's goal met? Items beat quests beat arrival. */
-	private boolean currentSubSatisfied(GuideStep step, SubStep sub)
+	/**
+	 * Is this sub-step's goal met? Items beat quests beat arrival.
+	 *
+	 * @param frontier true if this is the FIRST incomplete sub-step.
+	 *                 Pure arrival — the weakest signal — only counts at
+	 *                 the frontier, so standing next to Hetty can't tick
+	 *                 "return to Hetty" three steps early.
+	 */
+	private boolean currentSubSatisfied(GuideStep step, SubStep sub, boolean frontier)
 	{
 		List<GoalDetector.ItemGoal> itemGoals = itemGoalsBySub.get(sub.getId());
 		if (itemGoals != null)
@@ -792,7 +801,12 @@ public class BruhsailerPlugin extends Plugin
 		}
 
 		// No item/quest goal: a movement step. Arriving at its target
-		// (⌖ capture or recognised place name) completes it.
+		// (⌖ capture or recognised place name) completes it — but only at
+		// the frontier.
+		if (!frontier)
+		{
+			return false;
+		}
 		WorldPoint target = targetFor(step, sub);
 		Player player = client.getLocalPlayer();
 		if (target == null || player == null)

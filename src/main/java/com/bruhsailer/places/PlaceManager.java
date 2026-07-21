@@ -114,7 +114,7 @@ public class PlaceManager
 		{
 			return null;
 		}
-		String lower = text.toLowerCase(Locale.ROOT);
+		String lower = text.toLowerCase(Locale.ROOT).replace('’', '\'');
 		Matcher matcher = namePattern.matcher(text);
 		while (matcher.find())
 		{
