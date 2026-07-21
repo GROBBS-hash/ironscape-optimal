@@ -249,7 +249,9 @@ public final class GoalDetector
 
 	private static void detectItemGoal(GuideStep step, SubStep sub, List<ItemGoal> out, boolean inItemList)
 	{
-		String text = sub.getPlainText().trim();
+		// Parentheticals are commentary, not shopping — "(so there are 3
+		// planks left in your bank)" must not become a "planks left" goal.
+		String text = sub.getPlainText().trim().replaceAll("\\([^)]*\\)", " ");
 		int before = out.size();
 		java.util.Set<String> seen = new java.util.HashSet<>();
 

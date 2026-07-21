@@ -47,10 +47,12 @@ class StepRow extends JPanel
 {
 	/**
 	 * Width the text of a level-0 sub-step is laid out at. Panel is 225px;
-	 * subtract panel padding, checkbox column, button column, scrollbar.
+	 * subtract panel padding, checkbox column, button column (⌖ AND Go),
+	 * and scrollbar — being too generous here makes the widest row widen
+	 * the whole column and push buttons off-screen.
 	 * JEditorPane does NOT wrap to its container on its own — see setHtml().
 	 */
-	private static final int TEXT_WIDTH = 143;
+	private static final int TEXT_WIDTH = 128;
 	private static final int INDENT_PER_LEVEL = 10;
 
 	private static final Color CAPTURED_COLOR = new Color(0x4c, 0xaf, 0x50);
@@ -142,6 +144,9 @@ class StepRow extends JPanel
 		badge.setFont(new Font(Font.DIALOG, Font.PLAIN, 11));
 		badge.setBorder(BorderFactory.createEmptyBorder(0, indentPx, 2, 0));
 		badge.setAlignmentX(LEFT_ALIGNMENT);
+		// indent + wrap width must stay inside the panel column, or this
+		// badge widens EVERY row and pushes the buttons off-screen
+		int wrapWidth = Math.max(80, 170 - indentPx);
 		StringBuilder tip = new StringBuilder("<html>Counts inventory + worn + bank "
 			+ "(bank as of your last visit).<br>Matching item names:");
 		for (StepAnnotation.ItemNeed need : needs)
@@ -150,17 +155,17 @@ class StepRow extends JPanel
 		}
 		badge.setToolTipText(tip.append("</html>").toString());
 		List<StepAnnotation.ItemNeed> badgeNeeds = needs;
-		Runnable refresh = () -> badge.setText(badgeHtml(badgeNeeds));
+		Runnable refresh = () -> badge.setText(badgeHtml(badgeNeeds, wrapWidth));
 		refresh.run();
 		badgeRefreshers.add(refresh);
 		add(badge);
 	}
 
-	private String badgeHtml(List<StepAnnotation.ItemNeed> needs)
+	private String badgeHtml(List<StepAnnotation.ItemNeed> needs, int wrapWidth)
 	{
 		// The width style makes long badges WRAP instead of widening the
 		// whole panel column (which would break text wrapping everywhere).
-		StringBuilder sb = new StringBuilder("<html><body style='width:150px'>");
+		StringBuilder sb = new StringBuilder("<html><body style='width:" + wrapWidth + "px'>");
 		for (int i = 0; i < needs.size(); i++)
 		{
 			StepAnnotation.ItemNeed need = needs.get(i);

@@ -113,6 +113,12 @@ public class ItemTracker
 	public static String[] aliases(String name)
 	{
 		String key = name.toLowerCase(Locale.ROOT).trim();
+		// noted items canonicalize to the real item when counting, so
+		// "noted planks" is just "planks"
+		if (key.startsWith("noted "))
+		{
+			key = key.substring("noted ".length());
+		}
 		// the guide says gp/gold/cash; the item is "Coins"
 		if (key.equals("gp") || key.equals("gold") || key.equals("cash") || key.equals("money"))
 		{
