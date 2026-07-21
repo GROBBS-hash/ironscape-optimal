@@ -153,6 +153,13 @@ public class AnnotationManager
 		for (Map.Entry<String, StepAnnotation> entry : local.entrySet())
 		{
 			String newKey = com.bruhsailer.guide.GuideManifest.remapId(entry.getKey(), remap);
+			if (newKey == null)
+			{
+				// The clause this annotation pointed at was edited away.
+				// Unlike a progress tick, a captured target is real work —
+				// keep it under the old key rather than deleting it.
+				newKey = entry.getKey();
+			}
 			if (!newKey.equals(entry.getKey()))
 			{
 				moved++;

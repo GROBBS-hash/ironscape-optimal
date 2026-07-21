@@ -207,17 +207,21 @@ All six build-order steps are DONE, plus substantial extras. Current state:
   accepts recommendation, 'b' bulk-approves confirmed), seed-places (NPC
   scan, --quests incl. miniquests, --locations), tag-quest-places.
 - **Guide-refresh safety:** GuideManifest persists each load's step
-  ids+positions (~/.runelite/bruhsailer/guide_manifest.json). On load,
-  steps EDITED IN PLACE upstream (same section, same index, both ids
-  changed) get their old ids remapped onto the new ones — progress
-  (incl. sub ids + counted keys, re-applied per profile on switch) and
-  local annotations survive text edits. Insertions/reorders are left
-  alone (conservative).
+  ids+positions+sub-clause fingerprints (v2,
+  ~/.runelite/bruhsailer/guide_manifest.json). On load, steps EDITED IN
+  PLACE upstream (same section, same index, both ids changed) get their
+  old ids remapped onto the new ones — progress (incl. sub ids + counted
+  keys, re-applied per profile on switch) and local annotations survive
+  text edits. Sub ticks of an edited step follow their clause TEXT to
+  its new index; only the actually-reworded clause is orphaned (progress
+  drops the tick, remapId returns null; annotations keep the old key —
+  captured targets are never deleted). v1 manifests without fingerprints
+  fall back to positional sub carry. Insertions/reorders of whole steps
+  are left alone (conservative).
 - **Known limits:** interaction/arrival detection is heuristic (proxy
   signals, not quest varbits — deliberate; QH-style per-quest authoring
-  rejected); sub ids reset when their parent step's text changes upstream.
-  (Counted-xp progress now persists via ProgressManager, `counted_MAIN`
-  config key; unticking a step/sub resets its counter.)
+  rejected). (Counted-xp progress now persists via ProgressManager,
+  `counted_MAIN` config key; unticking a step/sub resets its counter.)
 
 Owner's testing profile: RuneLite profile "ironman test" (keep "IRONMAN"
 untouched). Jagex-account dev login via `--insecure-write-credentials`

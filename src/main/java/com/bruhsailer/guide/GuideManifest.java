@@ -37,7 +37,15 @@ import net.runelite.client.RuneLite;
 @Singleton
 public class GuideManifest
 {
-	private static final int FILE_VERSION = 1;
+	// Version 2 added per-step sub-clause fingerprints ("subs"). Version 1
+	// files simply lack that field and fall back to positional sub carry.
+	private static final int FILE_VERSION = 2;
+
+	/**
+	 * Remap value meaning "this sub clause was edited away — its saved
+	 * tick has nothing to attach to". remapId translates it to null.
+	 */
+	private static final String ORPHANED = "";
 
 	private final Gson gson;
 	private final File file;
@@ -85,6 +93,7 @@ public class GuideManifest
 			entry.chapter = step.getChapterIndex();
 			entry.section = step.getSectionIndex();
 			entry.step = step.getStepIndex();
+			entry.subs = subFingerprints(step);
 			variant.steps.add(entry);
 		}
 		contents.version = FILE_VERSION;
@@ -159,6 +168,7 @@ public class GuideManifest
 					if (!currentIds.contains(oldId) && !previousIds.contains(newId))
 					{
 						remap.put(oldId, newId);
+						addSubRemap(remap, old.get(i), current.get(i));
 					}
 					else
 					{
@@ -175,11 +185,63 @@ public class GuideManifest
 	}
 
 	/**
+	 * An edited step's clauses may have shifted, so a sub tick carried by
+	 * INDEX can land on the wrong action. When the old manifest recorded
+	 * this step's sub fingerprints, match old clauses to new ones by TEXT
+	 * instead: every old index gets an explicit entry — either the id of
+	 * the identically-worded new clause (first unused, in order, so
+	 * duplicate clauses pair up sensibly) or ORPHANED for the clause that
+	 * was actually edited. Manifests from before fingerprints existed add
+	 * nothing here, leaving remapId's positional fallback in charge.
+	 */
+	private static void addSubRemap(Map<String, String> remap, ManifestStep old, GuideStep current)
+	{
+		if (old.subs == null)
+		{
+			return;
+		}
+		List<String> currentPrints = subFingerprints(current);
+		boolean[] used = new boolean[currentPrints.size()];
+		for (int i = 0; i < old.subs.size(); i++)
+		{
+			String match = ORPHANED;
+			for (int j = 0; j < currentPrints.size(); j++)
+			{
+				if (!used[j] && old.subs.get(i).equals(currentPrints.get(j)))
+				{
+					used[j] = true;
+					match = current.getSubSteps().get(j).getId();
+					break;
+				}
+			}
+			remap.put(old.id + ":" + i, match);
+		}
+	}
+
+	/** Same short content hash as step ids, one per sub clause. */
+	private static List<String> subFingerprints(GuideStep step)
+	{
+		List<String> prints = new ArrayList<>(step.getSubSteps().size());
+		for (SubStep sub : step.getSubSteps())
+		{
+			prints.add(GuideLoader.stepId(sub.getPlainText()));
+		}
+		return prints;
+	}
+
+	/**
 	 * Applies a step-id remap to any saved id — including sub-step ids,
 	 * which are "stepId:index". Ids the map doesn't know pass through.
+	 * Returns null for a sub id whose clause was edited away (see
+	 * addSubRemap) — the caller should discard that saved tick.
 	 */
 	public static String remapId(String id, Map<String, String> remap)
 	{
+		String exact = remap.get(id);
+		if (exact != null)
+		{
+			return exact.isEmpty() ? null : exact;
+		}
 		int colon = id.indexOf(':');
 		String base = colon < 0 ? id : id.substring(0, colon);
 		String mapped = remap.get(base);
@@ -235,5 +297,11 @@ public class GuideManifest
 		int chapter;
 		int section;
 		int step;
+		/**
+		 * Content hash of each sub clause, in order — lets an edited
+		 * step's sub ticks follow their TEXT to its new position instead
+		 * of trusting the index. Null in files written before version 2.
+		 */
+		List<String> subs;
 	}
 }
