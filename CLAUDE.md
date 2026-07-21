@@ -145,10 +145,32 @@ All six build-order steps are DONE, plus substantial extras. Current state:
   clickable links (PlaceManager, 562 seeded entries, punctuation-tolerant
   matching).
 - **Auto-completion** (`GoalDetector` + evaluator in plugin): item goals
-  (carried counts only), quest state, xp-drop actions, counted xp drops
-  ("train construction (6 chairs...)" — session-memory only), teleport
+  (carried counts only), quest state, skill-level goals ("burn them to
+  level 50 firemaking" -> live "firemaking 43/50" badge + auto-tick at
+  50; suppresses xp-drop/counted goals on that sub), xp-drop actions,
+  counted xp drops ("train construction (6 chairs...)"), teleport
   position-jumps, arrival, and consumption-gated interactions (give/fix).
-  Everything gated to an in-order window of 8 (owner wants order).
+  Everything gated to an in-order window of 8 (owner wants order);
+  ambient signals (carried items, xp drops, teleports, consumption)
+  additionally only tick subs of the FRONTIER STEP — later window steps
+  need strong evidence (quest state, skill levels, reviewed skill
+  requirement). Arrival stays frontier-sub-only.
+- **Teleport hints:** MinigameTeleportOverlay highlights the click path
+  while the current sub is "Minigame teleport to X" OR for ~1 min after
+  the user clicks that minigame's place link (clickedMinigameTarget;
+  cleared when a teleport lands): center-screen Minigames picker entry if
+  open, else Grouping UI (dropdown entry -> Teleport), else the
+  spellbook's Minigame Teleport button, else side tab -> Grouping
+  sub-tab. Config toggle showTeleportHints.
+- **Step overlay:** StepOverlay (OverlayPanel, toggle showStepOverlay) —
+  QH-style box: frontier step's remaining actions (3 lines max) + live
+  item/level/counted requirement counts; model rebuilt per game tick.
+- Panel opens at the first unfinished step whenever it becomes showing
+  (HierarchyListener — RuneLite never calls Activatable.onActivate for
+  plain PluginPanels, only via MultiplexingPluginPanel).
+- **World links:** "world 444" in step text is clickable -> hops there
+  (WorldService lookup; changeWorld on login screen, openWorldHopper +
+  hopToWorld dance in game, see onGameTick).
 - **Items:** ItemTracker counts inventory+worn live + bank (live container
   when cached, else persisted snapshot per account); badges show have/need
   with green/orange "(in bank)"/red; alias chain handles plurals,
@@ -157,14 +179,17 @@ All six build-order steps are DONE, plus substantial extras. Current state:
   target after any progress; nearest-bank routing when frontier items are
   banked; route cleared when nothing targetable ahead.
 - **Bank filter:** button inside the bank UI (Quest Helper-style widget +
-  getSearchingTagTab callback) or type "bruh" in bank search.
+  getSearchingTagTab callback) or type "bruh" in bank search. Shows items
+  still needed by the CURRENT SECTION (incomplete steps/subs only), not a
+  fixed sub-step lookahead.
 - **Tooling** (`tools/*.mjs`, Node): extract/review annotations (skills +
   items — owner has NOT run the review yet), seed-places (NPC scan,
   --quests incl. miniquests, --locations), tag-quest-places.
 - **Known limits:** interaction/arrival detection is heuristic (proxy
   signals, not quest varbits — deliberate; QH-style per-quest authoring
-  rejected); counted-xp progress not persisted; sub ids reset when their
-  parent step's text changes upstream.
+  rejected); sub ids reset when their parent step's text changes upstream.
+  (Counted-xp progress now persists via ProgressManager, `counted_MAIN`
+  config key; unticking a step/sub resets its counter.)
 
 Owner's testing profile: RuneLite profile "ironman test" (keep "IRONMAN"
 untouched). Jagex-account dev login via `--insecure-write-credentials`

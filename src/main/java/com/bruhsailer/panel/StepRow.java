@@ -161,7 +161,7 @@ class StepRow extends JPanel
 		}
 		else
 		{
-			badge.setToolTipText("Counts XP drops this session — restarting the client resets it");
+			badge.setToolTipText("Live progress toward this goal (your skill level, or xp drops counted so far)");
 		}
 		List<StepAnnotation.ItemNeed> badgeNeeds = needs;
 		String actionSubId = goalSubId;
@@ -455,6 +455,15 @@ class StepRow extends JPanel
 					{
 						ctx.getPlaceNavigateHandler().accept(
 							decode(description.substring(PlaceManager.LINK_PREFIX.length())));
+					}
+				}
+				else if (description != null && description.startsWith(RichText.WORLD_LINK_PREFIX))
+				{
+					if (ctx.getWorldHopHandler() != null)
+					{
+						// the regex only puts digits after the prefix
+						ctx.getWorldHopHandler().accept(Integer.parseInt(
+							description.substring(RichText.WORLD_LINK_PREFIX.length())));
 					}
 				}
 				else if (e.getURL() != null)

@@ -3,6 +3,8 @@ package com.bruhsailer.panel;
 import com.bruhsailer.guide.TextRun;
 import java.util.List;
 import java.util.function.UnaryOperator;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Converts guide text runs into the small subset of HTML that Swing
@@ -12,6 +14,13 @@ final class RichText
 {
 	/** Pixel width the HTML body wraps at — forces Swing to compute a sane height. */
 	private static final int BODY_WIDTH_PX = 165;
+
+	/** Link prefix for "world 444" hop links; StepRow recognises it on click. */
+	static final String WORLD_LINK_PREFIX = "bruh:world:";
+
+	/** "world 444" / "World 330" — always a hoppable world number in this guide. */
+	private static final Pattern WORLD_MENTION = Pattern.compile(
+		"\\bworld\\s+(\\d{3})\\b", Pattern.CASE_INSENSITIVE);
 
 	private RichText()
 	{
@@ -63,6 +72,13 @@ final class RichText
 			{
 				text = linkifier.apply(text);
 			}
+			// "world 444" becomes a click-to-hop link. After the place
+			// linkifier: place names never contain "world <digits>", so
+			// the two can't nest.
+			if (run.getUrl() == null)
+			{
+				text = linkifyWorlds(text);
+			}
 
 			if (run.isBold())
 			{
@@ -91,6 +107,20 @@ final class RichText
 			}
 			sb.append(text);
 		}
+	}
+
+	/** Wraps "world NNN" mentions in bruh:world: links (escaped HTML in/out). */
+	static String linkifyWorlds(String escapedHtml)
+	{
+		Matcher matcher = WORLD_MENTION.matcher(escapedHtml);
+		StringBuffer sb = new StringBuffer();
+		while (matcher.find())
+		{
+			matcher.appendReplacement(sb, Matcher.quoteReplacement(
+				"<a href='" + WORLD_LINK_PREFIX + matcher.group(1) + "'>" + matcher.group() + "</a>"));
+		}
+		matcher.appendTail(sb);
+		return sb.toString();
 	}
 
 	/**

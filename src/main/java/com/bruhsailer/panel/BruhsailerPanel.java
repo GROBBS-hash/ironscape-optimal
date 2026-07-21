@@ -74,6 +74,9 @@ public class BruhsailerPanel extends PluginPanel
 	/** Set by the plugin; routes to a named place via Shortest Path. */
 	private Consumer<String> placeNavigateHandler;
 
+	/** Set by the plugin; hops to a world number ("world 444" links). */
+	private Consumer<Integer> worldHopHandler;
+
 	/** Set by the plugin; captures the current location under a place name. */
 	private CaptureHandler addPlaceHandler;
 
@@ -139,6 +142,21 @@ public class BruhsailerPanel extends PluginPanel
 		scrollPane.setBorder(null);
 		scrollPane.getVerticalScrollBar().setUnitIncrement(16);
 		add(scrollPane, BorderLayout.CENTER);
+
+		// Opening the sidebar panel should land on "what do I do next", not
+		// wherever was last browsed. RuneLite only calls Activatable's
+		// onActivate() for MultiplexingPluginPanel, never for a plain
+		// PluginPanel like this one — so watch our own Swing visibility:
+		// this fires every time the panel becomes showing.
+		addHierarchyListener(e -> {
+			if ((e.getChangeFlags() & java.awt.event.HierarchyEvent.SHOWING_CHANGED) != 0
+				&& isShowing())
+			{
+				// invokeLater: never mutate the tree mid-hierarchy-event.
+				// Scroll only; the Resume button is what redraws the route.
+				SwingUtilities.invokeLater(() -> jumpToCurrent(false));
+			}
+		});
 	}
 
 	private JPanel buildToolbar()
@@ -232,6 +250,11 @@ public class BruhsailerPanel extends PluginPanel
 	public void setPlaceNavigateHandler(Consumer<String> placeNavigateHandler)
 	{
 		this.placeNavigateHandler = placeNavigateHandler;
+	}
+
+	public void setWorldHopHandler(Consumer<Integer> worldHopHandler)
+	{
+		this.worldHopHandler = worldHopHandler;
 	}
 
 	public void setAddPlaceHandler(CaptureHandler addPlaceHandler)
@@ -483,16 +506,30 @@ public class BruhsailerPanel extends PluginPanel
 
 		if (scrollTarget != null)
 		{
-			StepRow target = scrollTarget;
-			// After layout has happened, scroll the row into view.
-			SwingUtilities.invokeLater(() ->
-				content.scrollRectToVisible(target.getBounds()));
+			scrollRowIntoView(scrollTarget, 5);
 		}
 		else
 		{
 			SwingUtilities.invokeLater(() ->
 				scrollPane.getVerticalScrollBar().setValue(0));
 		}
+	}
+
+	/**
+	 * Scroll a row into view once layout has happened. Right after the
+	 * panel is (re)shown the rows can still have zero bounds for an EDT
+	 * cycle or two, so retry a few times instead of scrolling to nothing.
+	 */
+	private void scrollRowIntoView(StepRow target, int attemptsLeft)
+	{
+		SwingUtilities.invokeLater(() -> {
+			if (target.getBounds().height == 0 && attemptsLeft > 0)
+			{
+				scrollRowIntoView(target, attemptsLeft - 1);
+				return;
+			}
+			content.scrollRectToVisible(target.getBounds());
+		});
 	}
 
 	private boolean hasSection(int ci, int si)
@@ -605,7 +642,8 @@ public class BruhsailerPanel extends PluginPanel
 			this::onManualProgressChange,
 			config.showCaptureButtons() ? captureHandler : null,
 			navigateHandler,
-			placeNavigateHandler);
+			placeNavigateHandler,
+			worldHopHandler);
 	}
 
 	/**
@@ -680,13 +718,22 @@ public class BruhsailerPanel extends PluginPanel
 
 	private void resume()
 	{
+		jumpToCurrent(true);
+	}
+
+	private void jumpToCurrent(boolean navigate)
+	{
+		if (guide == null)
+		{
+			return;
+		}
 		for (GuideStep step : guide.getAllSteps())
 		{
 			if (!progressManager.isCompleted(guide.getVariant(), step.getId()))
 			{
 				openSection(step.getChapterIndex(), step.getSectionIndex(), step.getId());
 				// Resume also points the map at what's next.
-				if (progressChangedListener != null)
+				if (navigate && progressChangedListener != null)
 				{
 					progressChangedListener.run();
 				}

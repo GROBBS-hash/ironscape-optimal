@@ -25,6 +25,7 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.function.Consumer;
 import javax.inject.Inject;
@@ -139,6 +140,23 @@ public class BruhsailerPlugin extends Plugin
 	@Inject
 	private ClientToolbar clientToolbar;
 
+	/** Registry of on-screen overlays; ours highlights teleport UI widgets. */
+	@Inject
+	private net.runelite.client.ui.overlay.OverlayManager overlayManager;
+
+	/** RuneLite's downloaded world list, for "world 444" hop links. */
+	@Inject
+	private net.runelite.client.game.WorldService worldService;
+
+	@Inject
+	private com.bruhsailer.overlay.MinigameTeleportOverlay minigameTeleportOverlay;
+
+	@Inject
+	private com.bruhsailer.overlay.StepOverlay stepOverlay;
+
+	/** Snapshot the step overlay draws; rebuilt once per game tick. */
+	private volatile com.bruhsailer.overlay.StepOverlay.Model stepOverlayModel;
+
 	/**
 	 * A Provider delays construction until we call get() in startUp() —
 	 * building Swing components at injection time (before the client UI
@@ -169,9 +187,39 @@ public class BruhsailerPlugin extends Plugin
 	private final Map<String, GoalDetector.CountedSkillGoal> countedGoalBySub =
 		new java.util.concurrent.ConcurrentHashMap<>();
 
-	/** XP drops seen per counted goal THIS SESSION (not persisted). */
-	private final Map<String, Integer> countedProgress =
-		new java.util.concurrent.ConcurrentHashMap<>();
+	/** Sub-step id -> minigame name for "Minigame teleport to X" subs. */
+	private final Map<String, String> minigameBySub = new HashMap<>();
+
+	/** Level goals by sub id ("burn them to level 50 firemaking"). */
+	private final Map<String, List<GoalDetector.SkillLevelGoal>> levelGoalsBySub = new HashMap<>();
+
+	/**
+	 * Latest REAL (unboosted) level per skill. Written on the client
+	 * thread from StatChanged, read from Swing by the level badges —
+	 * hence a concurrent map rather than an EnumMap.
+	 */
+	private final Map<Skill, Integer> realLevelBySkill = new java.util.concurrent.ConcurrentHashMap<>();
+
+	/** World the user asked to hop to (clicked "world 444"); consumed on game ticks. */
+	private net.runelite.api.World pendingHopWorld;
+
+	/** Ticks spent waiting for the world switcher to open before giving up. */
+	private int hopAttempts;
+
+	/**
+	 * The minigame the CURRENT sub-step wants to teleport to, or null.
+	 * Written on the game thread each tick, read by the overlay at render
+	 * time — hence volatile.
+	 */
+	private volatile String activeMinigameTarget;
+
+	/**
+	 * Minigame hint requested by CLICKING its name in the panel (e.g. the
+	 * "Soul Wars" link) — shown even when that sub isn't the current one.
+	 * Cleared by the teleport happening, or after the tick countdown.
+	 */
+	private volatile String clickedMinigameTarget;
+	private int clickedMinigameTicks;
 
 	/** Ticks remaining in which a recent item consumption can complete an interaction sub. */
 	private int recentConsumeTicks;
@@ -187,9 +235,6 @@ public class BruhsailerPlugin extends Plugin
 
 	/** Type this in the bank search box to filter to upcoming guide items. */
 	private static final String BANK_FILTER_KEYWORD = "bruh";
-
-	/** How many upcoming sub-steps the bank filter collects items from. */
-	private static final int BANK_FILTER_WINDOW = 15;
 
 	/** Cached accepted item names for the bank filter (rebuilt each tick). */
 	private java.util.Set<String> bankFilterNames;
@@ -280,31 +325,68 @@ public class BruhsailerPlugin extends Plugin
 			interactionGoalSubs.add(goal.getSub().getId());
 		}
 		countedGoalBySub.clear();
-		countedProgress.clear();
 		for (GoalDetector.CountedSkillGoal goal : goals.getCountedSkillGoals())
 		{
 			countedGoalBySub.put(goal.getSub().getId(), goal);
 		}
+		minigameBySub.clear();
+		for (GoalDetector.MinigameTeleportGoal goal : goals.getMinigameTeleportGoals())
+		{
+			minigameBySub.put(goal.getSub().getId(), goal.getMinigame());
+		}
+		levelGoalsBySub.clear();
+		for (GoalDetector.SkillLevelGoal goal : goals.getSkillLevelGoals())
+		{
+			levelGoalsBySub.computeIfAbsent(goal.getSub().getId(), id -> new ArrayList<>()).add(goal);
+		}
 		log.info("Detected {} item goals and {} quest goals in the guide text",
 			goals.getItemGoals().size(), goals.getQuestGoals().size());
+
+		minigameTeleportOverlay.setTargetSupplier(() -> activeMinigameTarget);
+		overlayManager.add(minigameTeleportOverlay);
+		stepOverlay.setModelSupplier(() -> stepOverlayModel);
+		overlayManager.add(stepOverlay);
 
 		panel = panelProvider.get();
 		panel.setItemGoals(itemGoalsBySub);
 		panel.setActionBadgeSupplier(subId -> {
+			// Level goals first: "firemaking 43/50", same color rules as
+			// item badges (orange = in progress, green = met).
+			List<GoalDetector.SkillLevelGoal> levels = levelGoalsBySub.get(subId);
+			if (levels != null)
+			{
+				StringBuilder sb = new StringBuilder();
+				for (GoalDetector.SkillLevelGoal goal : levels)
+				{
+					int have = realLevelBySkill.getOrDefault(goal.getSkill(), 1);
+					String levelColor = have >= goal.getLevel() ? "#4caf50" : "#ffa000";
+					if (sb.length() > 0)
+					{
+						sb.append(" <font color='#606060'>·</font> ");
+					}
+					sb.append("<font color='").append(levelColor).append("'>")
+						.append(goal.getSkill().getName().toLowerCase())
+						.append(' ').append(have).append('/').append(goal.getLevel())
+						.append("</font>");
+				}
+				return sb.toString();
+			}
 			GoalDetector.CountedSkillGoal counted = countedGoalBySub.get(subId);
 			if (counted == null)
 			{
 				return null;
 			}
-			int seen = Math.min(countedProgress.getOrDefault(subId, 0), counted.getCount());
+			int seen = Math.min(progressManager.countedProgress(GuideVariant.MAIN, subId),
+				counted.getCount());
 			String color = seen >= counted.getCount() ? "#4caf50" : "#ffa000";
 			return "<font color='" + color + "'>" + counted.getSkill().getName().toLowerCase()
-				+ " " + seen + "/" + counted.getCount() + " done (this session)</font>";
+				+ " " + seen + "/" + counted.getCount() + " done</font>";
 		});
 		panel.setProgressChangedListener(this::maybeNavigateToNext);
 		panel.setCaptureHandler(this::captureLocation);
 		panel.setNavigateHandler(this::navigateToStep);
 		panel.setPlaceNavigateHandler(this::navigateToPlace);
+		panel.setWorldHopHandler(this::hopToWorld);
 		panel.setAddPlaceHandler(this::addPlace);
 		panel.setClearPathHandler(this::clearPath);
 		panel.setGuide(guideFor(GuideVariant.MAIN));
@@ -335,6 +417,16 @@ public class BruhsailerPlugin extends Plugin
 	@Override
 	protected void shutDown() throws Exception
 	{
+		overlayManager.remove(minigameTeleportOverlay);
+		overlayManager.remove(stepOverlay);
+		stepOverlayModel = null;
+		minigameBySub.clear();
+		activeMinigameTarget = null;
+		clickedMinigameTarget = null;
+		clickedMinigameTicks = 0;
+		levelGoalsBySub.clear();
+		realLevelBySkill.clear();
+		pendingHopWorld = null;
 		clientToolbar.removeNavigation(navButton);
 		navButton = null;
 		panel = null;
@@ -346,7 +438,6 @@ public class BruhsailerPlugin extends Plugin
 		travelGoalSubs.clear();
 		interactionGoalSubs.clear();
 		countedGoalBySub.clear();
-		countedProgress.clear();
 		lastXpBySkill.clear();
 		lastTickPosition = null;
 		goals = null;
@@ -400,10 +491,26 @@ public class BruhsailerPlugin extends Plugin
 		Integer previousXp = lastXpBySkill.put(event.getSkill(), event.getXp());
 		boolean gainedXp = previousXp != null && event.getXp() > previousXp;
 
+		// Keep the Swing-readable level cache current; on a level change
+		// the "firemaking 43/50" badges need re-rendering.
+		Integer previousLevel = realLevelBySkill.put(event.getSkill(), event.getLevel());
+		if ((previousLevel == null || event.getLevel() != previousLevel) && panel != null)
+		{
+			SwingUtilities.invokeLater(panel::refreshItemCounts);
+		}
+
 		if (gainedXp && config.autoCompleteSteps())
 		{
-			for (Current current : findWindow(AUTO_COMPLETE_WINDOW))
+			List<Current> window = findWindow(AUTO_COMPLETE_WINDOW);
+			GuideStep frontierStep = window.isEmpty() ? null : window.get(0).step;
+			for (Current current : window)
 			{
+				if (current.step != frontierStep)
+				{
+					// An xp drop is ambient evidence: chopping for THIS
+					// step must not tick a later step's "chop..." sub.
+					break;
+				}
 				String subId = current.sub.getId();
 				if (itemGoalsBySub.containsKey(subId))
 				{
@@ -419,7 +526,7 @@ public class BruhsailerPlugin extends Plugin
 				if (counted != null && counted.getSkill() == event.getSkill())
 				{
 					// one build = one xp drop; N of them completes the sub
-					int seen = countedProgress.merge(subId, 1, Integer::sum);
+					int seen = progressManager.incrementCounted(GuideVariant.MAIN, subId);
 					if (seen >= counted.getCount())
 					{
 						completeSubGoal(current.step, current.sub);
@@ -542,6 +649,9 @@ public class BruhsailerPlugin extends Plugin
 					|| lastTickPosition.distanceTo2D(here) > 20))
 			{
 				recentTeleportTicks = 8;
+				// A click-requested minigame hint is done once ANY teleport
+				// lands — the guided click path served its purpose.
+				clickedMinigameTicks = 0;
 			}
 			lastTickPosition = here;
 		}
@@ -552,6 +662,142 @@ public class BruhsailerPlugin extends Plugin
 		{
 			evaluateAutoCompletion();
 		}
+
+		// A "world 444" link was clicked: in game, hopToWorld only works
+		// while the world switcher panel is open (same dance as RuneLite's
+		// own world hopper) — open it, then hop once its list exists.
+		if (pendingHopWorld != null)
+		{
+			if (client.getWidget(net.runelite.api.gameval.InterfaceID.Worldswitcher.LIST) == null)
+			{
+				client.openWorldHopper();
+				if (++hopAttempts > 10)
+				{
+					pendingHopWorld = null; // switcher never opened; give up quietly
+				}
+			}
+			else
+			{
+				client.hopToWorld(pendingHopWorld);
+				pendingHopWorld = null;
+			}
+		}
+
+		// Feed the teleport-hint overlay: a clicked minigame link wins
+		// while its countdown runs; otherwise ask whether the current
+		// sub-step is a "Minigame teleport to X". (Overlay renders every
+		// frame, so the lookup happens here, once per tick, not per frame.)
+		if (clickedMinigameTicks > 0)
+		{
+			clickedMinigameTicks--;
+		}
+		if (!config.showTeleportHints())
+		{
+			activeMinigameTarget = null;
+		}
+		else if (clickedMinigameTicks > 0)
+		{
+			activeMinigameTarget = clickedMinigameTarget;
+		}
+		else
+		{
+			Current current = findCurrent();
+			activeMinigameTarget = current == null ? null : minigameBySub.get(current.sub.getId());
+		}
+
+		updateStepOverlay();
+	}
+
+	/** How many remaining action lines the on-screen step box shows. */
+	private static final int OVERLAY_MAX_LINES = 3;
+
+	/**
+	 * Rebuild the on-screen step box's snapshot: the frontier step's
+	 * remaining actions plus live counts for every requirement the step's
+	 * open subs still have. Runs on the client thread once per tick.
+	 */
+	private void updateStepOverlay()
+	{
+		if (!config.showStepOverlay())
+		{
+			stepOverlayModel = null;
+			return;
+		}
+		Current frontier = findCurrent();
+		if (frontier == null)
+		{
+			stepOverlayModel = null;
+			return;
+		}
+
+		GuideStep step = frontier.step;
+		List<String> lines = new ArrayList<>();
+		List<com.bruhsailer.overlay.StepOverlay.Requirement> reqs = new ArrayList<>();
+		int openSubs = 0;
+		for (SubStep sub : step.getSubSteps())
+		{
+			if (progressManager.isSubCompleted(GuideVariant.MAIN, step, sub))
+			{
+				continue;
+			}
+			openSubs++;
+			if (lines.size() < OVERLAY_MAX_LINES)
+			{
+				lines.add(truncate(sub.getPlainText().trim(), 90));
+			}
+
+			List<GoalDetector.ItemGoal> itemGoals = itemGoalsBySub.get(sub.getId());
+			if (itemGoals != null)
+			{
+				for (GoalDetector.ItemGoal goal : itemGoals)
+				{
+					int carried = itemTracker.carriedCountOf(goal.getItemName());
+					int have = itemTracker.countOf(goal.getItemName());
+					java.awt.Color color = carried >= goal.getQuantity() ? OVERLAY_GREEN
+						: have >= goal.getQuantity() ? OVERLAY_ORANGE : OVERLAY_RED;
+					reqs.add(new com.bruhsailer.overlay.StepOverlay.Requirement(
+						goal.getItemName(), have + "/" + goal.getQuantity(), color));
+				}
+			}
+			List<GoalDetector.SkillLevelGoal> levels = levelGoalsBySub.get(sub.getId());
+			if (levels != null)
+			{
+				for (GoalDetector.SkillLevelGoal goal : levels)
+				{
+					int have = realLevelBySkill.getOrDefault(goal.getSkill(), 1);
+					reqs.add(new com.bruhsailer.overlay.StepOverlay.Requirement(
+						goal.getSkill().getName().toLowerCase(Locale.ROOT),
+						have + "/" + goal.getLevel(),
+						have >= goal.getLevel() ? OVERLAY_GREEN : OVERLAY_ORANGE));
+				}
+			}
+			GoalDetector.CountedSkillGoal counted = countedGoalBySub.get(sub.getId());
+			if (counted != null)
+			{
+				int seen = Math.min(progressManager.countedProgress(GuideVariant.MAIN, sub.getId()),
+					counted.getCount());
+				reqs.add(new com.bruhsailer.overlay.StepOverlay.Requirement(
+					counted.getSkill().getName().toLowerCase(Locale.ROOT) + " actions",
+					seen + "/" + counted.getCount(),
+					seen >= counted.getCount() ? OVERLAY_GREEN : OVERLAY_ORANGE));
+			}
+		}
+		if (openSubs > OVERLAY_MAX_LINES)
+		{
+			lines.add("… and " + (openSubs - OVERLAY_MAX_LINES) + " more");
+		}
+
+		stepOverlayModel = new com.bruhsailer.overlay.StepOverlay.Model(
+			"Step " + (step.getStepIndex() + 1), lines, reqs);
+	}
+
+	private static final java.awt.Color OVERLAY_GREEN = new java.awt.Color(0x4c, 0xaf, 0x50);
+	private static final java.awt.Color OVERLAY_ORANGE = new java.awt.Color(0xff, 0xa0, 0x00);
+	private static final java.awt.Color OVERLAY_RED = new java.awt.Color(0xe5, 0x73, 0x73);
+
+	private static String truncate(String text, int maxLength)
+	{
+		return text.length() <= maxLength ? text : text.substring(0, maxLength - 1) + "…";
 	}
 
 	/**
@@ -599,7 +845,13 @@ public class BruhsailerPlugin extends Plugin
 		}
 	}
 
-	/** Item names needed by the next BANK_FILTER_WINDOW sub-steps (alias-expanded). */
+	/**
+	 * Item names the CURRENT SECTION still needs (alias-expanded): every
+	 * not-yet-ticked step from the section the frontier step is in.
+	 * Deliberately section-scoped — collecting from a fixed lookahead of
+	 * sub-steps pulled in items from steps far past what the player is
+	 * doing, which made the bank filter useless as a filter.
+	 */
 	private java.util.Set<String> upcomingItemNames()
 	{
 		if (bankFilterCacheTick == tickCounter && bankFilterNames != null)
@@ -607,23 +859,43 @@ public class BruhsailerPlugin extends Plugin
 			return bankFilterNames;
 		}
 		java.util.Set<String> names = new java.util.HashSet<>();
-		for (Current current : findWindow(BANK_FILTER_WINDOW))
+		Current frontier = findCurrent();
+		if (frontier != null)
 		{
-			List<GoalDetector.ItemGoal> itemGoals = itemGoalsBySub.get(current.sub.getId());
-			if (itemGoals != null)
+			Guide guide = guideFor(GuideVariant.MAIN);
+			List<GuideStep> sectionSteps = guide.getChapters()
+				.get(frontier.step.getChapterIndex())
+				.getSections().get(frontier.step.getSectionIndex())
+				.getSteps();
+			for (GuideStep step : sectionSteps)
 			{
-				for (GoalDetector.ItemGoal goal : itemGoals)
+				if (progressManager.isCompleted(GuideVariant.MAIN, step.getId()))
 				{
-					java.util.Collections.addAll(names, ItemTracker.aliases(goal.getItemName()));
+					continue;
 				}
-			}
-			for (StepAnnotation.ItemNeed need : annotationManager.getItems(current.sub.getId()))
-			{
-				java.util.Collections.addAll(names, ItemTracker.aliases(need.name));
-			}
-			for (StepAnnotation.ItemNeed need : annotationManager.getItems(current.step.getId()))
-			{
-				java.util.Collections.addAll(names, ItemTracker.aliases(need.name));
+				for (StepAnnotation.ItemNeed need : annotationManager.getItems(step.getId()))
+				{
+					java.util.Collections.addAll(names, ItemTracker.aliases(need.name));
+				}
+				for (SubStep sub : step.getSubSteps())
+				{
+					if (progressManager.isSubCompleted(GuideVariant.MAIN, step, sub))
+					{
+						continue;
+					}
+					List<GoalDetector.ItemGoal> itemGoals = itemGoalsBySub.get(sub.getId());
+					if (itemGoals != null)
+					{
+						for (GoalDetector.ItemGoal goal : itemGoals)
+						{
+							java.util.Collections.addAll(names, ItemTracker.aliases(goal.getItemName()));
+						}
+					}
+					for (StepAnnotation.ItemNeed need : annotationManager.getItems(sub.getId()))
+					{
+						java.util.Collections.addAll(names, ItemTracker.aliases(need.name));
+					}
+				}
 			}
 		}
 		bankFilterNames = names;
@@ -653,6 +925,7 @@ public class BruhsailerPlugin extends Plugin
 		{
 			boolean completedSomething = false;
 			List<Current> window = findWindow(AUTO_COMPLETE_WINDOW);
+			GuideStep frontierStep = window.isEmpty() ? null : window.get(0).step;
 			for (int i = 0; i < window.size(); i++)
 			{
 				Current current = window.get(i);
@@ -666,7 +939,8 @@ public class BruhsailerPlugin extends Plugin
 					break; // window shifted; rebuild it
 				}
 
-				if (currentSubSatisfied(current.step, current.sub, i == 0))
+				if (currentSubSatisfied(current.step, current.sub, i == 0,
+					current.step == frontierStep))
 				{
 					completeSubGoal(current.step, current.sub);
 					if (travelGoalSubs.contains(current.sub.getId()))
@@ -748,12 +1022,24 @@ public class BruhsailerPlugin extends Plugin
 	 *                 Pure arrival — the weakest signal — only counts at
 	 *                 the frontier, so standing next to Hetty can't tick
 	 *                 "return to Hetty" three steps early.
+	 * @param inFrontierStep true if this sub belongs to the first
+	 *                 incomplete STEP. Ambient signals (items you happen
+	 *                 to carry, a teleport, a consumption) may tick subs
+	 *                 out of order WITHIN the current step — that's what
+	 *                 the window is for — but never a later step: carrying
+	 *                 1 gp must not tick next step's "grab your gp" and
+	 *                 drag navigation ahead of where the player really is.
 	 */
-	private boolean currentSubSatisfied(GuideStep step, SubStep sub, boolean frontier)
+	private boolean currentSubSatisfied(GuideStep step, SubStep sub, boolean frontier,
+		boolean inFrontierStep)
 	{
 		List<GoalDetector.ItemGoal> itemGoals = itemGoalsBySub.get(sub.getId());
 		if (itemGoals != null)
 		{
+			if (!inFrontierStep)
+			{
+				return false;
+			}
 			for (GoalDetector.ItemGoal goal : itemGoals)
 			{
 				// Carried only: items sitting in the bank show an orange
@@ -775,11 +1061,27 @@ public class BruhsailerPlugin extends Plugin
 				: state != QuestState.NOT_STARTED;
 		}
 
+		// "burn them to level 50 firemaking" — levels only go up, so like
+		// quest state this is strong evidence and may complete ahead of
+		// the frontier. ALL of the sub's level targets must be met.
+		List<GoalDetector.SkillLevelGoal> levelGoals = levelGoalsBySub.get(sub.getId());
+		if (levelGoals != null)
+		{
+			for (GoalDetector.SkillLevelGoal goal : levelGoals)
+			{
+				if (client.getRealSkillLevel(goal.getSkill()) < goal.getLevel())
+				{
+					return false;
+				}
+			}
+			return true;
+		}
+
 		// "Give the letter to Romeo" / "Fix his house" — something must have
 		// LEFT the inventory (and if the step has a target, near it too).
 		if (interactionGoalSubs.contains(sub.getId()))
 		{
-			if (recentConsumeTicks <= 0)
+			if (!inFrontierStep || recentConsumeTicks <= 0)
 			{
 				return false;
 			}
@@ -797,7 +1099,7 @@ public class BruhsailerPlugin extends Plugin
 		// "Teleport using the chronicle" — a recent position jump proves it.
 		if (travelGoalSubs.contains(sub.getId()))
 		{
-			return recentTeleportTicks > 0;
+			return inFrontierStep && recentTeleportTicks > 0;
 		}
 
 		// No item/quest goal: a movement step. Arriving at its target
@@ -1057,6 +1359,19 @@ public class BruhsailerPlugin extends Plugin
 	/** A place-name link was clicked in the step text. */
 	private void navigateToPlace(String placeName)
 	{
+		// Clicking a minigame's name ("Soul Wars") means "how do I get
+		// there?" — and the answer is the minigame teleport, so light up
+		// its click path and do NOT hand the place to Shortest Path: a
+		// walking route to a teleport-only island is just misleading.
+		String minigame = minigameByName(placeName);
+		if (minigame != null && config.showTeleportHints())
+		{
+			clickedMinigameTarget = minigame;
+			clickedMinigameTicks = 100; // ~1 minute, or until a teleport lands
+			activeMinigameTarget = minigame; // show now, not next tick
+			return;
+		}
+
 		WorldPoint point = placeManager.get(placeName);
 		if (point == null)
 		{
@@ -1136,6 +1451,65 @@ public class BruhsailerPlugin extends Plugin
 	{
 		clientThread.invokeLater(() ->
 			eventBus.post(new PluginMessage("shortestpath", "clear")));
+	}
+
+	/** The guide's minigame-teleport name matching this place name, or null. */
+	private String minigameByName(String placeName)
+	{
+		for (String minigame : minigameBySub.values())
+		{
+			if (minigame.equalsIgnoreCase(placeName))
+			{
+				return minigame;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * A "world 444" link in the guide text was clicked. Look the world up
+	 * in RuneLite's world list and switch to it — directly on the login
+	 * screen, via the world switcher when logged in (see onGameTick).
+	 */
+	private void hopToWorld(int worldNumber)
+	{
+		clientThread.invoke(() -> {
+			net.runelite.http.api.worlds.WorldResult worldResult = worldService.getWorlds();
+			net.runelite.http.api.worlds.World world =
+				worldResult == null ? null : worldResult.findWorld(worldNumber);
+			if (world == null)
+			{
+				log.warn("World {} not found in the world list", worldNumber);
+				if (client.getGameState() == GameState.LOGGED_IN)
+				{
+					client.addChatMessage(ChatMessageType.CONSOLE, "",
+						"IRONSCAPE: world " + worldNumber + " isn't in the world list.", null);
+				}
+				return;
+			}
+			if (client.getWorld() == worldNumber)
+			{
+				return; // already there
+			}
+
+			// The api World is a client-side struct we fill from the
+			// downloaded world list entry.
+			net.runelite.api.World rsWorld = client.createWorld();
+			rsWorld.setActivity(world.getActivity());
+			rsWorld.setAddress(world.getAddress());
+			rsWorld.setId(world.getId());
+			rsWorld.setPlayerCount(world.getPlayers());
+			rsWorld.setLocation(world.getLocation());
+			rsWorld.setTypes(net.runelite.client.util.WorldUtil.toWorldTypes(world.getTypes()));
+
+			if (client.getGameState() == GameState.LOGIN_SCREEN)
+			{
+				client.changeWorld(rsWorld);
+				return;
+			}
+			pendingHopWorld = rsWorld;
+			hopAttempts = 0;
+		});
 	}
 
 	private Guide guideFor(GuideVariant variant)

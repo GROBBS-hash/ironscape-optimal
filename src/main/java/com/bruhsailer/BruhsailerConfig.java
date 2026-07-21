@@ -47,6 +47,26 @@ public interface BruhsailerConfig extends Config
 	}
 
 	@ConfigItem(
+		keyName = "showStepOverlay",
+		name = "Show step overlay",
+		description = "On-screen box with your current step's remaining actions and live item/level counts (alt-drag to move)"
+	)
+	default boolean showStepOverlay()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = "showTeleportHints",
+		name = "Highlight teleport UI",
+		description = "When the current step is a minigame teleport, highlight the tab, dropdown entry, and Teleport button to click, Quest Helper-style"
+	)
+	default boolean showTeleportHints()
+	{
+		return true;
+	}
+
+	@ConfigItem(
 		keyName = "autoNavigate",
 		name = "Auto-navigate to next step",
 		description = "After a step is ticked off, point Shortest Path at the next open step's target (a captured ⌖ location, or a recognised NPC/quest/place name in its text)"

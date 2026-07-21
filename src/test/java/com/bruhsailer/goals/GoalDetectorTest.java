@@ -122,6 +122,50 @@ public class GoalDetectorTest
 	}
 
 	@Test
+	public void detectsSkillLevelGoalsAndSuppressesActionGoals()
+	{
+		Guide guide = guideWithSubTexts(
+			// the step 16 shape: action verb AND a level target — the level
+			// must own the sub, or the first chop's xp drop would tick it
+			"Chop teak logs on a forestry world and burn them to level 50 firemaking (note: 2t would be faster)",
+			"get 40 attack and 30 strength",
+			"until 70 range");
+
+		GoalDetector.Goals goals = GoalDetector.detect(guide);
+
+		assertEquals(4, goals.getSkillLevelGoals().size());
+		assertEquals(net.runelite.api.Skill.FIREMAKING, goals.getSkillLevelGoals().get(0).getSkill());
+		assertEquals(50, goals.getSkillLevelGoals().get(0).getLevel());
+		assertEquals(net.runelite.api.Skill.ATTACK, goals.getSkillLevelGoals().get(1).getSkill());
+		assertEquals(40, goals.getSkillLevelGoals().get(1).getLevel());
+		assertEquals(net.runelite.api.Skill.STRENGTH, goals.getSkillLevelGoals().get(2).getSkill());
+		assertEquals(net.runelite.api.Skill.RANGED, goals.getSkillLevelGoals().get(3).getSkill());
+		assertEquals(70, goals.getSkillLevelGoals().get(3).getLevel());
+
+		// no "chop -> woodcutting xp ticks it" goal on the level sub
+		assertTrue(goals.getSkillActionGoals().isEmpty());
+		// and levels never masquerade as items
+		assertTrue(goals.getItemGoals().isEmpty());
+	}
+
+	@Test
+	public void detectsMinigameTeleportNames()
+	{
+		Guide guide = guideWithSubTexts(
+			"Minigame teleport to Soul Wars.",
+			"Minigame teleport to Fishing Trawler",
+			"Teleport to Varrock."); // a spell, not a minigame teleport
+
+		GoalDetector.Goals goals = GoalDetector.detect(guide);
+
+		assertEquals(2, goals.getMinigameTeleportGoals().size());
+		assertEquals("Soul Wars", goals.getMinigameTeleportGoals().get(0).getMinigame());
+		assertEquals("Fishing Trawler", goals.getMinigameTeleportGoals().get(1).getMinigame());
+		// they stay travel goals too — the position jump still ticks them
+		assertEquals(3, goals.getTravelGoals().size());
+	}
+
+	@Test
 	public void detectsSkillActionAndProductGoals()
 	{
 		Guide guide = guideWithSubTexts(
