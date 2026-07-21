@@ -15,6 +15,14 @@ public class StepAnnotation
 	/** Condition for automatic completion detection. Null = manual checkbox only. */
 	public Requirement requires;
 
+	/**
+	 * Multi-condition variant: the step completes only when EVERY entry is
+	 * met ("get 93 crafting AND 91 thieving"). When present, this wins over
+	 * the single `requires`. Supports the pseudo-skill "COMBAT" for combat
+	 * level ("train slayer to 100cb").
+	 */
+	public List<Requirement> requiresAll;
+
 	/** Where this step happens, for Shortest Path navigation. */
 	public Target target;
 

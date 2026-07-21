@@ -154,8 +154,35 @@ function parseItemsNeeded(raw) {
   return items;
 }
 
+// Re-running after a guide refresh must not lose review work: carry the
+// `rejected` flag and the verifier's verdict over from the previous draft
+// file for any step whose id (= text hash) is unchanged. Same id means the
+// same text, and extraction is deterministic, so the old decision still
+// applies. New/edited steps arrive without either field — exactly the
+// ones that still need verification and review.
+if (fs.existsSync(DRAFT_FILE)) {
+  const previous = JSON.parse(fs.readFileSync(DRAFT_FILE, 'utf8'));
+  const carryOver = (fresh, old) => {
+    const byId = new Map((old || []).map((d) => [d.stepId, d]));
+    let kept = 0;
+    for (const d of fresh) {
+      const prior = byId.get(d.stepId);
+      if (!prior) continue;
+      if (prior.rejected) d.rejected = true;
+      if (prior.verifier) d.verifier = prior.verifier;
+      if (prior.rejected || prior.verifier) kept++;
+    }
+    return kept;
+  };
+  const keptSkills = carryOver(drafts, previous.drafts);
+  const keptItems = carryOver(itemDrafts, previous.itemDrafts);
+  if (keptSkills + keptItems > 0) {
+    console.log(`Carried over ${keptSkills + keptItems} earlier verdict/rejection decision(s) for unchanged steps.`);
+  }
+}
+
 fs.writeFileSync(DRAFT_FILE, JSON.stringify(
-  { generatedOn: new Date().toISOString().slice(0, 10), drafts, itemDrafts }, null, 2));
+  { generatedOn: new Date().toISOString().slice(0, 10), drafts, itemDrafts }, null, 2) + '\n');
 
 const high = drafts.filter((d) => d.candidates.some((c) => c.confidence === 'high'));
 console.log(`Scanned ${totalSteps} steps.`);

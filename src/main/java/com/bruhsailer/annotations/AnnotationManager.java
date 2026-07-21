@@ -101,23 +101,72 @@ public class AnnotationManager
 		return b == null || b.items == null ? Collections.emptyList() : b.items;
 	}
 
-	/** Every step id that has a requirement, local file winning over bundled. */
-	public synchronized Map<String, StepAnnotation.Requirement> allRequirements()
+	/**
+	 * Every step id with completion requirements — ALL entries of a step's
+	 * list must be met. A step's `requiresAll` wins over its single
+	 * `requires`; the local file wins over bundled per step.
+	 */
+	public synchronized Map<String, List<StepAnnotation.Requirement>> allRequirements()
 	{
-		Map<String, StepAnnotation.Requirement> out = new HashMap<>();
+		Map<String, List<StepAnnotation.Requirement>> out = new HashMap<>();
 		bundled.forEach((id, a) -> {
-			if (a.requires != null)
+			List<StepAnnotation.Requirement> requirements = effectiveRequirements(a);
+			if (requirements != null)
 			{
-				out.put(id, a.requires);
+				out.put(id, requirements);
 			}
 		});
 		local.forEach((id, a) -> {
-			if (a.requires != null)
+			List<StepAnnotation.Requirement> requirements = effectiveRequirements(a);
+			if (requirements != null)
 			{
-				out.put(id, a.requires);
+				out.put(id, requirements);
 			}
 		});
 		return out;
+	}
+
+	private static List<StepAnnotation.Requirement> effectiveRequirements(StepAnnotation annotation)
+	{
+		if (annotation.requiresAll != null && !annotation.requiresAll.isEmpty())
+		{
+			return annotation.requiresAll;
+		}
+		return annotation.requires == null ? null : Collections.singletonList(annotation.requires);
+	}
+
+	/**
+	 * A guide refresh gave some edited steps new ids (see GuideManifest):
+	 * re-key the LOCAL annotations so captured targets survive the edit.
+	 * Bundled annotations are read-only and stay put — an orphaned
+	 * bundled key is harmless and gets fixed at the next bundle
+	 * regeneration. Returns how many annotations moved.
+	 */
+	public synchronized int remapIds(Map<String, String> remap)
+	{
+		if (remap.isEmpty() || local.isEmpty())
+		{
+			return 0;
+		}
+		Map<String, StepAnnotation> remapped = new HashMap<>();
+		int moved = 0;
+		for (Map.Entry<String, StepAnnotation> entry : local.entrySet())
+		{
+			String newKey = com.bruhsailer.guide.GuideManifest.remapId(entry.getKey(), remap);
+			if (!newKey.equals(entry.getKey()))
+			{
+				moved++;
+			}
+			// merge() would need field-level rules; last-in wins is fine
+			// because a collision means the target key already had data.
+			remapped.putIfAbsent(newKey, entry.getValue());
+		}
+		if (moved > 0)
+		{
+			local = remapped;
+			saveLocal();
+		}
+		return moved;
 	}
 
 	/** Called by the capture button: remember where this step happens. */

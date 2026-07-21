@@ -1,4 +1,7843 @@
 {
   "version": 1,
-  "annotations": {}
+  "annotations": {
+    "0b04db5277": {
+      "requires": {
+        "skill": "FIREMAKING",
+        "level": 15
+      }
+    },
+    "9673b488c2": {
+      "requires": {
+        "skill": "WOODCUTTING",
+        "level": 35
+      },
+      "items": [
+        {
+          "name": "jug of water",
+          "quantity": 1
+        },
+        {
+          "name": "logs",
+          "quantity": 1
+        },
+        {
+          "name": "steel axe",
+          "quantity": 1
+        },
+        {
+          "name": "tinderbox",
+          "quantity": 1
+        }
+      ]
+    },
+    "1b45329d6f": {
+      "requires": {
+        "skill": "ATTACK",
+        "level": 5
+      },
+      "items": [
+        {
+          "name": "coins",
+          "quantity": 1204
+        },
+        {
+          "name": "key",
+          "quantity": 1
+        },
+        {
+          "name": "package",
+          "quantity": 1
+        },
+        {
+          "name": "hammer",
+          "quantity": 1
+        },
+        {
+          "name": "saw",
+          "quantity": 1
+        },
+        {
+          "name": "air rune",
+          "quantity": 30
+        },
+        {
+          "name": "mind rune",
+          "quantity": 30
+        }
+      ]
+    },
+    "bf7f22ae01": {
+      "requires": {
+        "skill": "FIREMAKING",
+        "level": 50
+      },
+      "items": [
+        {
+          "name": "steel axe"
+        },
+        {
+          "name": "tinderbox"
+        },
+        {
+          "name": "forestry kit"
+        }
+      ]
+    },
+    "6c4d14324c": {
+      "requires": {
+        "skill": "FLETCHING",
+        "level": 46
+      },
+      "items": [
+        {
+          "name": "coins",
+          "quantity": 95672
+        },
+        {
+          "name": "pot of flour",
+          "quantity": 3
+        },
+        {
+          "name": "bucket",
+          "quantity": 1
+        },
+        {
+          "name": "pie dish",
+          "quantity": 1
+        },
+        {
+          "name": "redberries",
+          "quantity": 3
+        }
+      ]
+    },
+    "3f51a026ab": {
+      "requires": {
+        "skill": "THIEVING",
+        "level": 36
+      },
+      "items": [
+        {
+          "name": "coins",
+          "quantity": 8812
+        },
+        {
+          "name": "stew",
+          "quantity": 1
+        },
+        {
+          "name": "air rune",
+          "quantity": null
+        },
+        {
+          "name": "mind rune",
+          "quantity": null
+        },
+        {
+          "name": "hammer",
+          "quantity": 1
+        },
+        {
+          "name": "spade",
+          "quantity": 1
+        }
+      ]
+    },
+    "61775cb86d": {
+      "requires": {
+        "skill": "THIEVING",
+        "level": 49
+      },
+      "items": [
+        {
+          "name": "coins",
+          "quantity": 12200
+        },
+        {
+          "name": "shears",
+          "quantity": 1
+        },
+        {
+          "name": "oak logs",
+          "quantity": 3
+        },
+        {
+          "name": "steel nails",
+          "quantity": 10
+        },
+        {
+          "name": "hammer",
+          "quantity": 1
+        },
+        {
+          "name": "chisel",
+          "quantity": 1
+        },
+        {
+          "name": "bucket",
+          "quantity": 1
+        },
+        {
+          "name": "leather gloves",
+          "quantity": 1
+        },
+        {
+          "name": "feather",
+          "quantity": 50
+        },
+        {
+          "name": "shantay pass",
+          "quantity": 1
+        },
+        {
+          "name": "waterskin",
+          "quantity": 3
+        },
+        {
+          "name": "bronze pickaxe",
+          "quantity": 1
+        },
+        {
+          "name": "knife",
+          "quantity": 1
+        },
+        {
+          "name": "chaos rune",
+          "quantity": null
+        }
+      ]
+    },
+    "86c81bd367": {
+      "requires": {
+        "skill": "AGILITY",
+        "level": 50
+      },
+      "items": [
+        {
+          "name": "rope",
+          "quantity": 1
+        },
+        {
+          "name": "glarial's pebble",
+          "quantity": 1
+        },
+        {
+          "name": "trout",
+          "quantity": 1
+        },
+        {
+          "name": "feather",
+          "quantity": null
+        },
+        {
+          "name": "air rune",
+          "quantity": 6
+        },
+        {
+          "name": "earth rune",
+          "quantity": 6
+        },
+        {
+          "name": "water rune",
+          "quantity": 6
+        },
+        {
+          "name": "knife",
+          "quantity": 1
+        },
+        {
+          "name": "teak logs",
+          "quantity": 1
+        }
+      ]
+    },
+    "a9936e891d": {
+      "requires": {
+        "skill": "COOKING",
+        "level": 43
+      },
+      "items": [
+        {
+          "name": "coins",
+          "quantity": 2546
+        },
+        {
+          "name": "willow blackjack"
+        },
+        {
+          "name": "poh tab"
+        }
+      ]
+    },
+    "567f568640": {
+      "requires": {
+        "skill": "MINING",
+        "level": 43
+      },
+      "items": [
+        {
+          "name": "coins",
+          "quantity": 80000
+        },
+        {
+          "name": "air rune",
+          "quantity": 1
+        },
+        {
+          "name": "earth rune",
+          "quantity": 1
+        },
+        {
+          "name": "law rune",
+          "quantity": 1
+        },
+        {
+          "name": "knife",
+          "quantity": 1
+        },
+        {
+          "name": "teak logs",
+          "quantity": 1
+        },
+        {
+          "name": "rune pickaxe",
+          "quantity": 1
+        },
+        {
+          "name": "desert shirt",
+          "quantity": 1
+        },
+        {
+          "name": "desert robe",
+          "quantity": 1
+        },
+        {
+          "name": "desert boots",
+          "quantity": 1
+        }
+      ]
+    },
+    "12abb9ffc7": {
+      "requires": {
+        "skill": "HUNTER",
+        "level": 49
+      },
+      "items": [
+        {
+          "name": "saw",
+          "quantity": 1
+        },
+        {
+          "name": "hammer",
+          "quantity": 1
+        },
+        {
+          "name": "oak plank",
+          "quantity": 2
+        },
+        {
+          "name": "steel nails",
+          "quantity": 5
+        },
+        {
+          "name": "iron bar",
+          "quantity": 1
+        },
+        {
+          "name": "rune pickaxe",
+          "quantity": 1
+        },
+        {
+          "name": "steel axe",
+          "quantity": 1
+        },
+        {
+          "name": "clockwork",
+          "quantity": 4
+        },
+        {
+          "name": "logs",
+          "quantity": 4
+        },
+        {
+          "name": "hammer",
+          "quantity": 1
+        },
+        {
+          "name": "chisel",
+          "quantity": 1
+        },
+        {
+          "name": "barley seed",
+          "quantity": 40
+        },
+        {
+          "name": "plank",
+          "quantity": 5
+        },
+        {
+          "name": "oak plank",
+          "quantity": 8
+        },
+        {
+          "name": "steel nails",
+          "quantity": 20
+        },
+        {
+          "name": "soft clay",
+          "quantity": 3
+        },
+        {
+          "name": "bucket",
+          "quantity": 1
+        },
+        {
+          "name": "tinderbox",
+          "quantity": 1
+        },
+        {
+          "name": "rope",
+          "quantity": 1
+        },
+        {
+          "name": "iron bar",
+          "quantity": 1
+        },
+        {
+          "name": "logs",
+          "quantity": 2
+        }
+      ]
+    },
+    "6d7f197a68": {
+      "requires": {
+        "skill": "HUNTER",
+        "level": 11
+      },
+      "items": [
+        {
+          "name": "coins",
+          "quantity": 7500
+        },
+        {
+          "name": "air rune",
+          "quantity": null
+        },
+        {
+          "name": "earth staff",
+          "quantity": 1
+        },
+        {
+          "name": "law rune",
+          "quantity": null
+        },
+        {
+          "name": "dramen staff",
+          "quantity": 1
+        },
+        {
+          "name": "pink skirt",
+          "quantity": 1
+        },
+        {
+          "name": "paste",
+          "quantity": 1
+        },
+        {
+          "name": "wig",
+          "quantity": 1
+        },
+        {
+          "name": "beer",
+          "quantity": 3
+        },
+        {
+          "name": "jute seed",
+          "quantity": 3
+        },
+        {
+          "name": "seed dibber",
+          "quantity": 1
+        },
+        {
+          "name": "rake",
+          "quantity": 1
+        },
+        {
+          "name": "ultracompost",
+          "quantity": 1
+        },
+        {
+          "name": "magic secateurs",
+          "quantity": 1
+        },
+        {
+          "name": "trout",
+          "quantity": 1
+        },
+        {
+          "name": "rope",
+          "quantity": 2
+        },
+        {
+          "name": "knife",
+          "quantity": 1
+        },
+        {
+          "name": "rune sword",
+          "quantity": 1
+        },
+        {
+          "name": "steel axe",
+          "quantity": 1
+        },
+        {
+          "name": "bronze key",
+          "quantity": 1
+        },
+        {
+          "name": "magic whistle",
+          "quantity": 1
+        },
+        {
+          "name": "bark sample",
+          "quantity": 1
+        },
+        {
+          "name": "bird snare",
+          "quantity": 1
+        }
+      ]
+    },
+    "084fc8cea0": {
+      "requires": {
+        "skill": "COOKING",
+        "level": 70
+      },
+      "items": [
+        {
+          "name": "coins",
+          "quantity": 202224
+        },
+        {
+          "name": "rune pickaxe",
+          "quantity": 1
+        },
+        {
+          "name": "rope",
+          "quantity": 1
+        },
+        {
+          "name": "tinderbox",
+          "quantity": 1
+        },
+        {
+          "name": "law rune",
+          "quantity": null
+        },
+        {
+          "name": "earth rune",
+          "quantity": null
+        },
+        {
+          "name": "fire rune",
+          "quantity": null
+        },
+        {
+          "name": "games necklace",
+          "quantity": 1
+        },
+        {
+          "name": "dramen staff",
+          "quantity": 1
+        },
+        {
+          "name": "facemask",
+          "quantity": 1
+        },
+        {
+          "name": "plank",
+          "quantity": 3
+        },
+        {
+          "name": "steel nails",
+          "quantity": 100
+        }
+      ]
+    },
+    "314a17551c": {
+      "requires": {
+        "skill": "WOODCUTTING",
+        "level": 70
+      },
+      "items": [
+        {
+          "name": "rune axe",
+          "quantity": 1
+        },
+        {
+          "name": "forestry basket",
+          "quantity": 1
+        }
+      ]
+    },
+    "2ff7647e31": {
+      "requires": {
+        "skill": "SMITHING",
+        "level": 40
+      },
+      "items": [
+        {
+          "name": "coins",
+          "quantity": 22150
+        },
+        {
+          "name": "iron ore",
+          "quantity": 27
+        },
+        {
+          "name": "coal",
+          "quantity": 27
+        },
+        {
+          "name": "silver ore",
+          "quantity": 50
+        },
+        {
+          "name": "gold ore",
+          "quantity": 108
+        },
+        {
+          "name": "ring of charos(a)",
+          "quantity": 1
+        }
+      ]
+    },
+    "214ee8d6c7": {
+      "requires": {
+        "skill": "PRAYER",
+        "level": 43
+      },
+      "items": [
+        {
+          "name": "rune pickaxe",
+          "quantity": 1
+        },
+        {
+          "name": "ring of dueling",
+          "quantity": null
+        },
+        {
+          "name": "pure essence",
+          "quantity": 1
+        },
+        {
+          "name": "air rune",
+          "quantity": null
+        },
+        {
+          "name": "earth staff",
+          "quantity": 1
+        },
+        {
+          "name": "water staff",
+          "quantity": 1
+        },
+        {
+          "name": "chaos rune",
+          "quantity": null
+        },
+        {
+          "name": "mind rune",
+          "quantity": null
+        },
+        {
+          "name": "amulet of magic",
+          "quantity": 1
+        },
+        {
+          "name": "fire staff",
+          "quantity": 1
+        },
+        {
+          "name": "law rune",
+          "quantity": null
+        },
+        {
+          "name": "anti-dragon shield",
+          "quantity": 1
+        },
+        {
+          "name": "salmon",
+          "quantity": null
+        }
+      ]
+    },
+    "b3f8ee25f1": {
+      "requires": {
+        "skill": "FARMING",
+        "level": 62
+      },
+      "items": [
+        {
+          "name": "seed dibber",
+          "quantity": 1
+        },
+        {
+          "name": "spade",
+          "quantity": 1
+        },
+        {
+          "name": "watering can",
+          "quantity": 15
+        },
+        {
+          "name": "dramen staff",
+          "quantity": 1
+        },
+        {
+          "name": "glassblowing pipe",
+          "quantity": 1
+        },
+        {
+          "name": "molten glass",
+          "quantity": 1
+        },
+        {
+          "name": "rune axe",
+          "quantity": 1
+        },
+        {
+          "name": "ultracompost",
+          "quantity": 1
+        }
+      ]
+    },
+    "b28cbda9dd": {
+      "requires": {
+        "skill": "HUNTER",
+        "level": 42
+      },
+      "items": [
+        {
+          "name": "coins",
+          "quantity": 650
+        },
+        {
+          "name": "dramen staff",
+          "quantity": 1
+        },
+        {
+          "name": "butterfly net",
+          "quantity": 1
+        },
+        {
+          "name": "impling jar",
+          "quantity": null
+        },
+        {
+          "name": "rune pickaxe",
+          "quantity": 1
+        },
+        {
+          "name": "swordfish",
+          "quantity": null
+        },
+        {
+          "name": "cooked karambwan",
+          "quantity": null
+        },
+        {
+          "name": "knife",
+          "quantity": 1
+        },
+        {
+          "name": "limpwurt root",
+          "quantity": 20
+        },
+        {
+          "name": "candle",
+          "quantity": 1
+        },
+        {
+          "name": "lockpick",
+          "quantity": null
+        },
+        {
+          "name": "air rune",
+          "quantity": null
+        },
+        {
+          "name": "law rune",
+          "quantity": null
+        },
+        {
+          "name": "fire rune",
+          "quantity": null
+        },
+        {
+          "name": "boots of lightness",
+          "quantity": 1
+        },
+        {
+          "name": "shantay pass",
+          "quantity": null
+        },
+        {
+          "name": "magic logs",
+          "quantity": 12
+        },
+        {
+          "name": "steel bar",
+          "quantity": 6
+        },
+        {
+          "name": "molten glass",
+          "quantity": 6
+        },
+        {
+          "name": "ashes",
+          "quantity": 1
+        },
+        {
+          "name": "charcoal",
+          "quantity": 1
+        },
+        {
+          "name": "blood rune",
+          "quantity": 1
+        },
+        {
+          "name": "bones",
+          "quantity": 1
+        },
+        {
+          "name": "silver bar",
+          "quantity": 1
+        },
+        {
+          "name": "garlic",
+          "quantity": 1
+        },
+        {
+          "name": "pestle and mortar",
+          "quantity": 1
+        },
+        {
+          "name": "spice",
+          "quantity": 1
+        },
+        {
+          "name": "small fishing net",
+          "quantity": 1
+        },
+        {
+          "name": "rope",
+          "quantity": 1
+        },
+        {
+          "name": "sled",
+          "quantity": 1
+        },
+        {
+          "name": "chocolate cake",
+          "quantity": 1
+        },
+        {
+          "name": "spiked boots",
+          "quantity": 1
+        },
+        {
+          "name": "facemask",
+          "quantity": 1
+        },
+        {
+          "name": "tinderbox",
+          "quantity": 1
+        },
+        {
+          "name": "prayer potion",
+          "quantity": null
+        },
+        {
+          "name": "fire staff",
+          "quantity": 1
+        },
+        {
+          "name": "death rune",
+          "quantity": null
+        }
+      ]
+    },
+    "c9a1b387ae": {
+      "requires": {
+        "skill": "CONSTRUCTION",
+        "level": 50
+      },
+      "items": [
+        {
+          "name": "coins"
+        },
+        {
+          "name": "knife",
+          "quantity": 1
+        },
+        {
+          "name": "teak log"
+        },
+        {
+          "name": "rune axe",
+          "quantity": 1
+        },
+        {
+          "name": "saw",
+          "quantity": 1
+        },
+        {
+          "name": "hammer",
+          "quantity": 1
+        },
+        {
+          "name": "forestry kit",
+          "quantity": 1
+        }
+      ]
+    },
+    "74310cee37": {
+      "requires": {
+        "skill": "THIEVING",
+        "level": 78
+      },
+      "items": [
+        {
+          "name": "ham hood",
+          "quantity": 2
+        },
+        {
+          "name": "ham shirt",
+          "quantity": 2
+        },
+        {
+          "name": "ham robe",
+          "quantity": 2
+        },
+        {
+          "name": "ham cloak",
+          "quantity": 2
+        },
+        {
+          "name": "ham logo",
+          "quantity": 2
+        },
+        {
+          "name": "ham gloves",
+          "quantity": 2
+        },
+        {
+          "name": "ham boots",
+          "quantity": 2
+        },
+        {
+          "name": "games necklace(8)",
+          "quantity": 1
+        },
+        {
+          "name": "lockpick",
+          "quantity": 1
+        },
+        {
+          "name": "bullseye lantern",
+          "quantity": 1
+        },
+        {
+          "name": "rune sword",
+          "quantity": 1
+        },
+        {
+          "name": "swordfish",
+          "quantity": 1
+        },
+        {
+          "name": "tinderbox",
+          "quantity": 1
+        },
+        {
+          "name": "mining helmet",
+          "quantity": 1
+        }
+      ]
+    },
+    "058fcecc8e": {
+      "requires": {
+        "skill": "MINING",
+        "level": 60
+      },
+      "items": [
+        {
+          "name": "coins"
+        },
+        {
+          "name": "gold bar",
+          "quantity": 1
+        },
+        {
+          "name": "ammo mould",
+          "quantity": 1
+        },
+        {
+          "name": "rune sword",
+          "quantity": 1
+        },
+        {
+          "name": "swordfish"
+        },
+        {
+          "name": "waterskin(4)"
+        },
+        {
+          "name": "rune pickaxe",
+          "quantity": 1
+        },
+        {
+          "name": "chisel",
+          "quantity": 1
+        },
+        {
+          "name": "cake",
+          "quantity": 1
+        },
+        {
+          "name": "tinderbox",
+          "quantity": 1
+        },
+        {
+          "name": "candle",
+          "quantity": 1
+        },
+        {
+          "name": "logs",
+          "quantity": 1
+        },
+        {
+          "name": "oak logs",
+          "quantity": 1
+        },
+        {
+          "name": "willow logs",
+          "quantity": 1
+        },
+        {
+          "name": "maple logs",
+          "quantity": 1
+        },
+        {
+          "name": "soft clay"
+        },
+        {
+          "name": "coal"
+        },
+        {
+          "name": "earth rune"
+        },
+        {
+          "name": "staff of air",
+          "quantity": 1
+        },
+        {
+          "name": "fire rune"
+        },
+        {
+          "name": "chaos rune"
+        },
+        {
+          "name": "energy potion(4)"
+        },
+        {
+          "name": "bucket of water",
+          "quantity": 1
+        },
+        {
+          "name": "celestial ring",
+          "quantity": 1
+        },
+        {
+          "name": "varrock armour 2",
+          "quantity": 1
+        }
+      ]
+    },
+    "694fd138bf": {
+      "requires": {
+        "skill": "DEFENCE",
+        "level": 50
+      },
+      "items": [
+        {
+          "name": "coins",
+          "quantity": null
+        },
+        {
+          "name": "dramen staff",
+          "quantity": 1
+        },
+        {
+          "name": "rune sword",
+          "quantity": 1
+        },
+        {
+          "name": "amulet of strength",
+          "quantity": 1
+        },
+        {
+          "name": "berserker helm",
+          "quantity": 1
+        }
+      ]
+    },
+    "76f3cc0ff1": {
+      "requires": {
+        "skill": "ATTACK",
+        "level": 60
+      },
+      "items": [
+        {
+          "name": "commorb",
+          "quantity": 1
+        },
+        {
+          "name": "swamp paste",
+          "quantity": 1
+        },
+        {
+          "name": "pure essence",
+          "quantity": 20
+        },
+        {
+          "name": "chisel",
+          "quantity": 1
+        },
+        {
+          "name": "necklace of passage",
+          "quantity": 1
+        },
+        {
+          "name": "law rune",
+          "quantity": 1
+        },
+        {
+          "name": "water rune",
+          "quantity": 1
+        },
+        {
+          "name": "air rune",
+          "quantity": 1
+        },
+        {
+          "name": "ardougne cloak 1",
+          "quantity": 1
+        },
+        {
+          "name": "bird snare",
+          "quantity": 1
+        },
+        {
+          "name": "rune pickaxe",
+          "quantity": 1
+        }
+      ]
+    },
+    "62ab4d7e31": {
+      "requires": {
+        "skill": "AGILITY",
+        "level": 65
+      }
+    },
+    "061122fd1b": {
+      "requires": {
+        "skill": "HUNTER",
+        "level": 55
+      },
+      "items": [
+        {
+          "name": "coins",
+          "quantity": null
+        },
+        {
+          "name": "bullseye lantern",
+          "quantity": 1
+        },
+        {
+          "name": "lantern lens",
+          "quantity": 1
+        },
+        {
+          "name": "tinderbox",
+          "quantity": 1
+        },
+        {
+          "name": "oak plank",
+          "quantity": 10
+        },
+        {
+          "name": "steel nail",
+          "quantity": 10
+        },
+        {
+          "name": "hammer",
+          "quantity": 1
+        },
+        {
+          "name": "spade",
+          "quantity": 1
+        },
+        {
+          "name": "dramen staff",
+          "quantity": 1
+        },
+        {
+          "name": "butterfly net",
+          "quantity": 1
+        },
+        {
+          "name": "butterfly jar",
+          "quantity": 1
+        },
+        {
+          "name": "teasing stick",
+          "quantity": 1
+        },
+        {
+          "name": "knife",
+          "quantity": 1
+        },
+        {
+          "name": "logs",
+          "quantity": 1
+        },
+        {
+          "name": "water staff",
+          "quantity": 1
+        },
+        {
+          "name": "law rune",
+          "quantity": null
+        },
+        {
+          "name": "cat",
+          "quantity": 1
+        },
+        {
+          "name": "ardougne cloak 1",
+          "quantity": 1
+        }
+      ]
+    },
+    "048041ef1c": {
+      "requires": {
+        "skill": "MINING",
+        "level": 72
+      }
+    },
+    "c5f10f34ee": {
+      "requires": {
+        "skill": "DEFENCE",
+        "level": 60
+      }
+    },
+    "fb1957d3a4": {
+      "requires": {
+        "skill": "DEFENCE",
+        "level": 70
+      }
+    },
+    "f5a2ef3bd4": {
+      "requires": {
+        "skill": "RANGED",
+        "level": 62
+      }
+    },
+    "335ec3107a": {
+      "requires": {
+        "skill": "AGILITY",
+        "level": 82
+      }
+    },
+    "357f33db1e": {
+      "requires": {
+        "skill": "SMITHING",
+        "level": 74
+      }
+    },
+    "72bf406a25": {
+      "requires": {
+        "skill": "AGILITY",
+        "level": 98
+      },
+      "items": [
+        {
+          "name": "crossbow",
+          "quantity": 1
+        },
+        {
+          "name": "teak plank"
+        },
+        {
+          "name": "adamant nail"
+        },
+        {
+          "name": "hammer",
+          "quantity": 1
+        },
+        {
+          "name": "staff of fire",
+          "quantity": 1
+        },
+        {
+          "name": "nature rune"
+        }
+      ]
+    },
+    "e42941b865": {
+      "requires": {
+        "skill": "CONSTRUCTION",
+        "level": 75
+      }
+    },
+    "027d2d4044": {
+      "requires": {
+        "skill": "CRAFTING",
+        "level": 70
+      },
+      "items": [
+        {
+          "name": "superantipoison",
+          "quantity": null
+        }
+      ]
+    },
+    "edeb8b7a42": {
+      "requires": {
+        "skill": "RANGED",
+        "level": 92
+      },
+      "items": [
+        {
+          "name": "ranging potion"
+        },
+        {
+          "name": "amulet of glory",
+          "quantity": 1
+        },
+        {
+          "name": "shayzien boots (5)",
+          "quantity": 1
+        },
+        {
+          "name": "red d'hide shield",
+          "quantity": 1
+        }
+      ]
+    },
+    "4c59d28edf": {
+      "requires": {
+        "skill": "MINING",
+        "level": 97
+      }
+    },
+    "832305f635": {
+      "requires": {
+        "skill": "MINING",
+        "level": 75
+      }
+    },
+    "e461b8fce1": {
+      "requires": {
+        "skill": "RANGED",
+        "level": 93
+      }
+    },
+    "2afa61221e": {
+      "requires": {
+        "skill": "SMITHING",
+        "level": 86
+      }
+    },
+    "a70a0da210": {
+      "requires": {
+        "skill": "WOODCUTTING",
+        "level": 80
+      }
+    },
+    "10bb94c0dc": {
+      "requires": {
+        "skill": "CONSTRUCTION",
+        "level": 83
+      }
+    },
+    "26640d2faa": {
+      "items": [
+        {
+          "name": "coins",
+          "quantity": 232
+        },
+        {
+          "name": "knife",
+          "quantity": 1
+        },
+        {
+          "name": "logs",
+          "quantity": 24
+        }
+      ]
+    },
+    "4649fdfd5d": {
+      "items": [
+        {
+          "name": "knife",
+          "quantity": 1
+        },
+        {
+          "name": "logs",
+          "quantity": 1
+        }
+      ]
+    },
+    "ef7036cc87": {
+      "items": [
+        {
+          "name": "knife",
+          "quantity": 1
+        },
+        {
+          "name": "logs",
+          "quantity": 18
+        },
+        {
+          "name": "jug of water",
+          "quantity": 1
+        },
+        {
+          "name": "bronze axe",
+          "quantity": 1
+        },
+        {
+          "name": "steel axe",
+          "quantity": 1
+        },
+        {
+          "name": "tinderbox",
+          "quantity": 1
+        },
+        {
+          "name": "leather gloves",
+          "quantity": 1
+        }
+      ]
+    },
+    "3818cac08c": {
+      "items": [
+        {
+          "name": "knife",
+          "quantity": 1
+        },
+        {
+          "name": "logs",
+          "quantity": null
+        }
+      ]
+    },
+    "e4b51bc5b5": {
+      "items": [
+        {
+          "name": "coins",
+          "quantity": 781
+        }
+      ]
+    },
+    "b3bab06575": {
+      "items": [
+        {
+          "name": "coins",
+          "quantity": 100
+        },
+        {
+          "name": "knife",
+          "quantity": 1
+        },
+        {
+          "name": "logs",
+          "quantity": 1
+        },
+        {
+          "name": "spade",
+          "quantity": 1
+        }
+      ]
+    },
+    "eb30049c64": {
+      "items": [
+        {
+          "name": "coins",
+          "quantity": 290
+        },
+        {
+          "name": "knife",
+          "quantity": 1
+        },
+        {
+          "name": "logs",
+          "quantity": 5
+        },
+        {
+          "name": "small fishing net",
+          "quantity": 1
+        }
+      ]
+    },
+    "4b6dd92939": {
+      "items": [
+        {
+          "name": "coins",
+          "quantity": 780
+        },
+        {
+          "name": "ghostspeak amulet"
+        },
+        {
+          "name": "spade"
+        },
+        {
+          "name": "balls of wool",
+          "quantity": 20
+        }
+      ]
+    },
+    "fa78426099": {
+      "items": [
+        {
+          "name": "coins",
+          "quantity": 3445
+        },
+        {
+          "name": "small fishing net",
+          "quantity": 1
+        },
+        {
+          "name": "bucket",
+          "quantity": 1
+        }
+      ]
+    },
+    "8de663136e": {
+      "items": [
+        {
+          "name": "coins",
+          "quantity": 101
+        },
+        {
+          "name": "chronicle",
+          "quantity": 1
+        },
+        {
+          "name": "bucket",
+          "quantity": 1
+        }
+      ]
+    },
+    "3ce2a00139": {
+      "items": [
+        {
+          "name": "coins",
+          "quantity": 3650
+        },
+        {
+          "name": "chronicle",
+          "quantity": 1
+        },
+        {
+          "name": "bucket of milk",
+          "quantity": 1
+        },
+        {
+          "name": "raw sardine",
+          "quantity": 1
+        },
+        {
+          "name": "doogle leaves",
+          "quantity": 1
+        },
+        {
+          "name": "steel axe",
+          "quantity": 1
+        },
+        {
+          "name": "waxwood logs",
+          "quantity": null
+        }
+      ]
+    },
+    "16630a6862": {
+      "items": [
+        {
+          "name": "saw",
+          "quantity": 1
+        },
+        {
+          "name": "hammer",
+          "quantity": 1
+        },
+        {
+          "name": "steel nails",
+          "quantity": 86
+        },
+        {
+          "name": "teleport to house",
+          "quantity": 1
+        },
+        {
+          "name": "burnt meat",
+          "quantity": 1
+        },
+        {
+          "name": "eye of newt",
+          "quantity": 1
+        },
+        {
+          "name": "onion",
+          "quantity": 1
+        },
+        {
+          "name": "bolt of cloth",
+          "quantity": 5
+        },
+        {
+          "name": "plank",
+          "quantity": 18
+        },
+        {
+          "name": "coins",
+          "quantity": 50
+        }
+      ]
+    },
+    "af7ae8942e": {
+      "items": [
+        {
+          "name": "saw",
+          "quantity": 1
+        },
+        {
+          "name": "hammer",
+          "quantity": 1
+        },
+        {
+          "name": "arrow shafts",
+          "quantity": 1500
+        },
+        {
+          "name": "feather",
+          "quantity": 1501
+        },
+        {
+          "name": "teleport to house",
+          "quantity": 1
+        },
+        {
+          "name": "beer",
+          "quantity": 1
+        },
+        {
+          "name": "leather gloves",
+          "quantity": 1
+        },
+        {
+          "name": "spade",
+          "quantity": 1
+        }
+      ]
+    },
+    "24e3086386": {
+      "items": [
+        {
+          "name": "clue hunter garb",
+          "quantity": 1
+        },
+        {
+          "name": "clue hunter gloves",
+          "quantity": 1
+        },
+        {
+          "name": "clue hunter boots",
+          "quantity": 1
+        },
+        {
+          "name": "rainbow scarf",
+          "quantity": 1
+        },
+        {
+          "name": "steel axe",
+          "quantity": 1
+        },
+        {
+          "name": "tinderbox",
+          "quantity": 1
+        },
+        {
+          "name": "cake",
+          "quantity": null
+        }
+      ],
+      "requires": {
+        "skill": "FIREMAKING",
+        "level": 99
+      }
+    },
+    "8e5fae163c": {
+      "items": [
+        {
+          "name": "coins",
+          "quantity": 1545
+        },
+        {
+          "name": "bronze pickaxe",
+          "quantity": 1
+        },
+        {
+          "name": "poh tab",
+          "quantity": 1
+        },
+        {
+          "name": "pot of flour",
+          "quantity": 3
+        },
+        {
+          "name": "redberry",
+          "quantity": 3
+        },
+        {
+          "name": "onion",
+          "quantity": 6
+        },
+        {
+          "name": "woad leaf",
+          "quantity": 2
+        },
+        {
+          "name": "pie dish",
+          "quantity": 1
+        },
+        {
+          "name": "bucket",
+          "quantity": 1
+        }
+      ]
+    },
+    "5f4e7ca941": {
+      "items": [
+        {
+          "name": "coins",
+          "quantity": 5856
+        },
+        {
+          "name": "soda ash",
+          "quantity": 7
+        },
+        {
+          "name": "bucket of sand",
+          "quantity": 7
+        },
+        {
+          "name": "spade",
+          "quantity": 1
+        },
+        {
+          "name": "falador teleport",
+          "quantity": 1
+        },
+        {
+          "name": "teleport to house",
+          "quantity": 1
+        },
+        {
+          "name": "staff of air",
+          "quantity": 1
+        },
+        {
+          "name": "mind rune",
+          "quantity": 1200
+        },
+        {
+          "name": "raw bear meat",
+          "quantity": 1
+        },
+        {
+          "name": "raw beef",
+          "quantity": 1
+        },
+        {
+          "name": "raw chicken",
+          "quantity": 1
+        },
+        {
+          "name": "rat meat",
+          "quantity": 1
+        },
+        {
+          "name": "red dye",
+          "quantity": 1
+        },
+        {
+          "name": "yellow dye",
+          "quantity": 1
+        },
+        {
+          "name": "blue dye",
+          "quantity": 1
+        },
+        {
+          "name": "bronze pickaxe",
+          "quantity": 1
+        },
+        {
+          "name": "iron ore",
+          "quantity": 2
+        },
+        {
+          "name": "copper ore",
+          "quantity": 4
+        },
+        {
+          "name": "clay",
+          "quantity": 6
+        },
+        {
+          "name": "cheese",
+          "quantity": 2
+        },
+        {
+          "name": "iron bar",
+          "quantity": 2
+        },
+        {
+          "name": "leather gloves",
+          "quantity": 1
+        },
+        {
+          "name": "cake",
+          "quantity": 3
+        }
+      ]
+    },
+    "79683b6a68": {
+      "items": [
+        {
+          "name": "coins",
+          "quantity": 7500
+        },
+        {
+          "name": "bronze pickaxe",
+          "quantity": 1
+        },
+        {
+          "name": "poh tab",
+          "quantity": 1
+        },
+        {
+          "name": "iron bar",
+          "quantity": 2
+        }
+      ]
+    },
+    "45da49f33a": {
+      "items": [
+        {
+          "name": "plank",
+          "quantity": 3
+        },
+        {
+          "name": "bronze bar",
+          "quantity": 1
+        },
+        {
+          "name": "molten glass",
+          "quantity": 1
+        }
+      ]
+    },
+    "08764ee7dd": {
+      "items": [
+        {
+          "name": "coins",
+          "quantity": 15600
+        },
+        {
+          "name": "bucket",
+          "quantity": 2
+        },
+        {
+          "name": "knife",
+          "quantity": 1
+        },
+        {
+          "name": "tinderbox",
+          "quantity": 1
+        },
+        {
+          "name": "fishing rod",
+          "quantity": 1
+        },
+        {
+          "name": "fly fishing rod",
+          "quantity": 1
+        },
+        {
+          "name": "feather",
+          "quantity": null
+        },
+        {
+          "name": "empty pot",
+          "quantity": 1
+        },
+        {
+          "name": "garlic",
+          "quantity": 1
+        },
+        {
+          "name": "spade",
+          "quantity": 1
+        }
+      ],
+      "requires": {
+        "skill": "FISHING",
+        "level": 56
+      }
+    },
+    "81d7e59ce9": {
+      "items": [
+        {
+          "name": "coins",
+          "quantity": 10000
+        },
+        {
+          "name": "steel axe",
+          "quantity": 1
+        },
+        {
+          "name": "hammer",
+          "quantity": 1
+        },
+        {
+          "name": "chisel",
+          "quantity": 1
+        },
+        {
+          "name": "necklace mould",
+          "quantity": 1
+        },
+        {
+          "name": "sickle mould",
+          "quantity": 1
+        },
+        {
+          "name": "knife",
+          "quantity": 1
+        },
+        {
+          "name": "sapphire",
+          "quantity": 8
+        },
+        {
+          "name": "gold bar",
+          "quantity": 1
+        }
+      ]
+    },
+    "dcb6713d7a": {
+      "items": [
+        {
+          "name": "coins",
+          "quantity": 9
+        },
+        {
+          "name": "rope",
+          "quantity": 1
+        },
+        {
+          "name": "logs",
+          "quantity": 6
+        },
+        {
+          "name": "wind strike",
+          "quantity": 1
+        },
+        {
+          "name": "barcrawl card",
+          "quantity": 1
+        }
+      ]
+    },
+    "355bd58bca": {
+      "items": [
+        {
+          "name": "coins",
+          "quantity": 5
+        },
+        {
+          "name": "logs",
+          "quantity": 6
+        },
+        {
+          "name": "barcrawl card",
+          "quantity": 1
+        }
+      ]
+    },
+    "593162f4a1": {
+      "items": [
+        {
+          "name": "coins",
+          "quantity": 562
+        },
+        {
+          "name": "barcrawl card"
+        }
+      ]
+    },
+    "2cdc6c7704": {
+      "items": [
+        {
+          "name": "teleport to house",
+          "quantity": 1
+        },
+        {
+          "name": "willow blackjack",
+          "quantity": 1
+        },
+        {
+          "name": "jug of wine",
+          "quantity": null
+        }
+      ],
+      "requires": {
+        "skill": "THIEVING",
+        "level": 77
+      }
+    },
+    "18be7a5ef6": {
+      "items": [
+        {
+          "name": "coins",
+          "quantity": 784932
+        },
+        {
+          "name": "knife"
+        }
+      ]
+    },
+    "46bea0e2bf": {
+      "items": [
+        {
+          "name": "coins",
+          "quantity": 10
+        },
+        {
+          "name": "nature runes",
+          "quantity": 1650
+        },
+        {
+          "name": "law runes",
+          "quantity": 600
+        },
+        {
+          "name": "cosmic runes",
+          "quantity": 400
+        },
+        {
+          "name": "water runes",
+          "quantity": 492
+        },
+        {
+          "name": "staff of air",
+          "quantity": 1
+        },
+        {
+          "name": "staff of earth",
+          "quantity": 1
+        },
+        {
+          "name": "staff of fire",
+          "quantity": 1
+        },
+        {
+          "name": "fly fishing rod",
+          "quantity": 1
+        },
+        {
+          "name": "feathers",
+          "quantity": 10
+        }
+      ]
+    },
+    "1b088caf5b": {
+      "items": [
+        {
+          "name": "coins",
+          "quantity": 4840
+        },
+        {
+          "name": "earth runes",
+          "quantity": null
+        },
+        {
+          "name": "law runes",
+          "quantity": null
+        },
+        {
+          "name": "mind runes",
+          "quantity": null
+        },
+        {
+          "name": "soft clay",
+          "quantity": 4
+        },
+        {
+          "name": "barcrawl card",
+          "quantity": 1
+        },
+        {
+          "name": "trout",
+          "quantity": null
+        },
+        {
+          "name": "steel axe",
+          "quantity": 1
+        },
+        {
+          "name": "small fishing net",
+          "quantity": 1
+        },
+        {
+          "name": "staff of air",
+          "quantity": 1
+        },
+        {
+          "name": "spade",
+          "quantity": 1
+        },
+        {
+          "name": "cake",
+          "quantity": 5
+        }
+      ]
+    },
+    "8ef3959b2a": {
+      "items": [
+        {
+          "name": "air rune",
+          "quantity": null
+        },
+        {
+          "name": "earth rune",
+          "quantity": null
+        },
+        {
+          "name": "law rune",
+          "quantity": null
+        },
+        {
+          "name": "soft clay",
+          "quantity": 4
+        },
+        {
+          "name": "steel axe",
+          "quantity": 1
+        }
+      ]
+    },
+    "11c59dc98e": {
+      "items": [
+        {
+          "name": "coins",
+          "quantity": 26
+        },
+        {
+          "name": "air rune",
+          "quantity": 1
+        },
+        {
+          "name": "chaos rune",
+          "quantity": 1
+        },
+        {
+          "name": "law rune",
+          "quantity": 1
+        },
+        {
+          "name": "fire staff",
+          "quantity": 1
+        },
+        {
+          "name": "bucket of wax",
+          "quantity": 1
+        },
+        {
+          "name": "barcrawl card",
+          "quantity": 1
+        }
+      ]
+    },
+    "14f3bff29f": {
+      "items": [
+        {
+          "name": "coins",
+          "quantity": 35021
+        },
+        {
+          "name": "chronicle",
+          "quantity": 1
+        },
+        {
+          "name": "barcrawl card",
+          "quantity": 1
+        },
+        {
+          "name": "air rune",
+          "quantity": null
+        },
+        {
+          "name": "law rune",
+          "quantity": null
+        },
+        {
+          "name": "rune sword",
+          "quantity": 1
+        },
+        {
+          "name": "rope",
+          "quantity": 3
+        },
+        {
+          "name": "leather gloves",
+          "quantity": 1
+        },
+        {
+          "name": "leather boots",
+          "quantity": 1
+        },
+        {
+          "name": "pestle and mortar",
+          "quantity": 1
+        },
+        {
+          "name": "vial",
+          "quantity": 1
+        },
+        {
+          "name": "charcoal",
+          "quantity": 1
+        },
+        {
+          "name": "tinderbox",
+          "quantity": 1
+        },
+        {
+          "name": "cup of tea",
+          "quantity": 1
+        }
+      ]
+    },
+    "d1c428aea1": {
+      "items": [
+        {
+          "name": "air rune",
+          "quantity": 1
+        },
+        {
+          "name": "law rune",
+          "quantity": 1
+        },
+        {
+          "name": "rune sword",
+          "quantity": 1
+        },
+        {
+          "name": "knife",
+          "quantity": 1
+        },
+        {
+          "name": "bronze pickaxe",
+          "quantity": 1
+        },
+        {
+          "name": "needle",
+          "quantity": 1
+        },
+        {
+          "name": "thread",
+          "quantity": 1
+        },
+        {
+          "name": "hammer",
+          "quantity": 1
+        },
+        {
+          "name": "coal",
+          "quantity": 12
+        }
+      ]
+    },
+    "ba0fde16b0": {
+      "items": [
+        {
+          "name": "coins",
+          "quantity": 10000
+        },
+        {
+          "name": "fire staff",
+          "quantity": 1
+        },
+        {
+          "name": "air rune",
+          "quantity": null
+        },
+        {
+          "name": "earth rune",
+          "quantity": null
+        },
+        {
+          "name": "law rune",
+          "quantity": null
+        },
+        {
+          "name": "chisel",
+          "quantity": 1
+        }
+      ]
+    },
+    "a888de6168": {
+      "items": [
+        {
+          "name": "coins",
+          "quantity": 815
+        },
+        {
+          "name": "air rune",
+          "quantity": 1
+        },
+        {
+          "name": "earth rune",
+          "quantity": 1
+        },
+        {
+          "name": "law rune",
+          "quantity": 1
+        },
+        {
+          "name": "silver bar",
+          "quantity": 1
+        },
+        {
+          "name": "gold bar",
+          "quantity": 2
+        },
+        {
+          "name": "ring mould",
+          "quantity": 1
+        },
+        {
+          "name": "necklace mould",
+          "quantity": 1
+        },
+        {
+          "name": "eye of newt",
+          "quantity": 1
+        },
+        {
+          "name": "greenman's ale",
+          "quantity": 1
+        },
+        {
+          "name": "rotten tomato",
+          "quantity": 1
+        },
+        {
+          "name": "fruit blast",
+          "quantity": 1
+        },
+        {
+          "name": "ashes",
+          "quantity": 1
+        },
+        {
+          "name": "rune shortsword",
+          "quantity": 1
+        }
+      ]
+    },
+    "9a97882f3a": {
+      "items": [
+        {
+          "name": "coins",
+          "quantity": 51012
+        },
+        {
+          "name": "air rune",
+          "quantity": null
+        },
+        {
+          "name": "earth staff",
+          "quantity": 1
+        },
+        {
+          "name": "law rune",
+          "quantity": null
+        },
+        {
+          "name": "coal",
+          "quantity": 1
+        },
+        {
+          "name": "logs",
+          "quantity": 1
+        },
+        {
+          "name": "tinderbox",
+          "quantity": 1
+        },
+        {
+          "name": "steel axe",
+          "quantity": 1
+        },
+        {
+          "name": "sapphire",
+          "quantity": 3
+        },
+        {
+          "name": "rope",
+          "quantity": 1
+        },
+        {
+          "name": "plank",
+          "quantity": 1
+        },
+        {
+          "name": "bronze pickaxe",
+          "quantity": 1
+        },
+        {
+          "name": "bucket",
+          "quantity": 1
+        },
+        {
+          "name": "beer",
+          "quantity": 1
+        },
+        {
+          "name": "knife",
+          "quantity": 1
+        },
+        {
+          "name": "rune sword",
+          "quantity": 1
+        },
+        {
+          "name": "leather gloves",
+          "quantity": 1
+        },
+        {
+          "name": "staff of fire",
+          "quantity": 1
+        },
+        {
+          "name": "mind rune",
+          "quantity": null
+        }
+      ]
+    },
+    "a039ae0621": {
+      "items": [
+        {
+          "name": "coins",
+          "quantity": 5334
+        },
+        {
+          "name": "asgarnian ale",
+          "quantity": 4
+        },
+        {
+          "name": "water staff",
+          "quantity": 1
+        },
+        {
+          "name": "air rune",
+          "quantity": null
+        },
+        {
+          "name": "law rune",
+          "quantity": null
+        },
+        {
+          "name": "barcrawl card",
+          "quantity": 1
+        }
+      ]
+    },
+    "c13f5b4750": {
+      "items": [
+        {
+          "name": "air rune",
+          "quantity": null
+        },
+        {
+          "name": "earth staff",
+          "quantity": 1
+        },
+        {
+          "name": "law rune",
+          "quantity": null
+        },
+        {
+          "name": "egg",
+          "quantity": 2
+        },
+        {
+          "name": "pot of flour",
+          "quantity": 2
+        },
+        {
+          "name": "bucket of milk",
+          "quantity": 2
+        },
+        {
+          "name": "bowl of water",
+          "quantity": 2
+        },
+        {
+          "name": "steel axe",
+          "quantity": 1
+        },
+        {
+          "name": "tinderbox",
+          "quantity": 1
+        },
+        {
+          "name": "hammer",
+          "quantity": 1
+        },
+        {
+          "name": "bread",
+          "quantity": 1
+        },
+        {
+          "name": "orange",
+          "quantity": 1
+        },
+        {
+          "name": "knife",
+          "quantity": 1
+        },
+        {
+          "name": "purple dye",
+          "quantity": 1
+        },
+        {
+          "name": "spice",
+          "quantity": 1
+        },
+        {
+          "name": "bucket of water",
+          "quantity": 1
+        },
+        {
+          "name": "charcoal",
+          "quantity": 1
+        },
+        {
+          "name": "fishing bait",
+          "quantity": 1
+        },
+        {
+          "name": "blurite bar",
+          "quantity": 1
+        },
+        {
+          "name": "asgoldian ale",
+          "quantity": 4
+        },
+        {
+          "name": "coins",
+          "quantity": 200
+        }
+      ]
+    },
+    "13746d7291": {
+      "items": [
+        {
+          "name": "coins",
+          "quantity": 25103
+        },
+        {
+          "name": "dwarven battleaxe",
+          "quantity": 1
+        },
+        {
+          "name": "exquisite clothes",
+          "quantity": 1
+        },
+        {
+          "name": "exquisite boots",
+          "quantity": 1
+        },
+        {
+          "name": "bread",
+          "quantity": 1
+        },
+        {
+          "name": "redberry pie",
+          "quantity": 1
+        },
+        {
+          "name": "iron bar",
+          "quantity": 1
+        },
+        {
+          "name": "beer",
+          "quantity": 2
+        },
+        {
+          "name": "dwarven stout",
+          "quantity": 1
+        }
+      ]
+    },
+    "752901ff2a": {
+      "items": [
+        {
+          "name": "coins",
+          "quantity": 17010
+        },
+        {
+          "name": "scrying orb",
+          "quantity": 1
+        },
+        {
+          "name": "bronze bar",
+          "quantity": 7
+        },
+        {
+          "name": "hammer",
+          "quantity": 1
+        }
+      ]
+    },
+    "3e1ddc77bc": {
+      "items": [
+        {
+          "name": "coins",
+          "quantity": 200
+        },
+        {
+          "name": "adamant pickaxe",
+          "quantity": 1
+        },
+        {
+          "name": "bronze bar",
+          "quantity": 1
+        },
+        {
+          "name": "small fishing net",
+          "quantity": 1
+        },
+        {
+          "name": "silverlight",
+          "quantity": 1
+        },
+        {
+          "name": "black mushroom",
+          "quantity": 1
+        },
+        {
+          "name": "empty vial",
+          "quantity": 1
+        },
+        {
+          "name": "pestle and mortar",
+          "quantity": 1
+        },
+        {
+          "name": "black wizard hat",
+          "quantity": 1
+        },
+        {
+          "name": "black robe top",
+          "quantity": 1
+        },
+        {
+          "name": "black robe bottom",
+          "quantity": 1
+        },
+        {
+          "name": "necklace of passage",
+          "quantity": 1
+        },
+        {
+          "name": "key print",
+          "quantity": 1
+        }
+      ]
+    },
+    "30d6a2dc21": {
+      "items": [
+        {
+          "name": "soda ash",
+          "quantity": 1600
+        },
+        {
+          "name": "bucket of sand",
+          "quantity": 1600
+        },
+        {
+          "name": "chisel",
+          "quantity": 1
+        },
+        {
+          "name": "uncut sapphire",
+          "quantity": null
+        },
+        {
+          "name": "uncut emerald",
+          "quantity": null
+        },
+        {
+          "name": "uncut ruby",
+          "quantity": null
+        },
+        {
+          "name": "gold bar",
+          "quantity": null
+        },
+        {
+          "name": "glassblowing pipe",
+          "quantity": 1
+        }
+      ]
+    },
+    "af3b9a41ca": {
+      "items": [
+        {
+          "name": "digsite pendant",
+          "quantity": 1
+        },
+        {
+          "name": "staff of air",
+          "quantity": 1
+        },
+        {
+          "name": "bucket",
+          "quantity": 1
+        },
+        {
+          "name": "chaos rune",
+          "quantity": null
+        },
+        {
+          "name": "pure essence",
+          "quantity": 50
+        },
+        {
+          "name": "ghostspeak amulet",
+          "quantity": 1
+        },
+        {
+          "name": "spade",
+          "quantity": 1
+        },
+        {
+          "name": "law rune",
+          "quantity": null
+        }
+      ]
+    },
+    "fba433272a": {
+      "items": [
+        {
+          "name": "coins",
+          "quantity": 5241
+        },
+        {
+          "name": "ghostspeak amulet",
+          "quantity": 1
+        },
+        {
+          "name": "spade",
+          "quantity": 1
+        },
+        {
+          "name": "law rune",
+          "quantity": 1
+        },
+        {
+          "name": "needle",
+          "quantity": 1
+        },
+        {
+          "name": "thread",
+          "quantity": 5
+        },
+        {
+          "name": "silver bar",
+          "quantity": 1
+        },
+        {
+          "name": "hammer",
+          "quantity": 1
+        },
+        {
+          "name": "rune sword",
+          "quantity": 1
+        },
+        {
+          "name": "druid pouch",
+          "quantity": 1
+        },
+        {
+          "name": "vial of water",
+          "quantity": 2
+        },
+        {
+          "name": "steel axe",
+          "quantity": 1
+        },
+        {
+          "name": "tinderbox",
+          "quantity": 1
+        },
+        {
+          "name": "ashes",
+          "quantity": 2
+        },
+        {
+          "name": "bronze wire",
+          "quantity": 3
+        },
+        {
+          "name": "salmon",
+          "quantity": 1
+        }
+      ]
+    },
+    "8f8d8eca51": {
+      "items": [
+        {
+          "name": "coins",
+          "quantity": 8968
+        },
+        {
+          "name": "black candle",
+          "quantity": 1
+        },
+        {
+          "name": "bat bones",
+          "quantity": 1
+        },
+        {
+          "name": "excalibur",
+          "quantity": 1
+        },
+        {
+          "name": "golden fleece",
+          "quantity": 1
+        },
+        {
+          "name": "rune pickaxe",
+          "quantity": 1
+        },
+        {
+          "name": "hammer",
+          "quantity": 1
+        },
+        {
+          "name": "coal",
+          "quantity": 8
+        },
+        {
+          "name": "battered key",
+          "quantity": 1
+        },
+        {
+          "name": "slashed book",
+          "quantity": 1
+        },
+        {
+          "name": "elemental bars",
+          "quantity": 2
+        },
+        {
+          "name": "barcrawl card",
+          "quantity": 1
+        }
+      ]
+    },
+    "edae01ffe7": {
+      "items": [
+        {
+          "name": "coins",
+          "quantity": 30000
+        },
+        {
+          "name": "air rune",
+          "quantity": 1
+        },
+        {
+          "name": "staff of earth",
+          "quantity": 1
+        },
+        {
+          "name": "law rune",
+          "quantity": 1
+        },
+        {
+          "name": "digsite pendant (5)",
+          "quantity": 1
+        },
+        {
+          "name": "sawmill agreement",
+          "quantity": 1
+        },
+        {
+          "name": "mahogany logs",
+          "quantity": 20
+        }
+      ]
+    },
+    "60a005f1d4": {
+      "items": [
+        {
+          "name": "coins",
+          "quantity": 1615
+        },
+        {
+          "name": "barcrawl card",
+          "quantity": 1
+        },
+        {
+          "name": "raw cod",
+          "quantity": 2
+        },
+        {
+          "name": "pestle and mortar",
+          "quantity": 1
+        },
+        {
+          "name": "bread",
+          "quantity": 1
+        },
+        {
+          "name": "knife",
+          "quantity": 1
+        },
+        {
+          "name": "empty fishbowl",
+          "quantity": 1
+        },
+        {
+          "name": "bronze wire",
+          "quantity": 3
+        },
+        {
+          "name": "needle",
+          "quantity": 1
+        },
+        {
+          "name": "chaos rune",
+          "quantity": null
+        },
+        {
+          "name": "earth rune",
+          "quantity": null
+        },
+        {
+          "name": "air rune",
+          "quantity": null
+        },
+        {
+          "name": "trout/salmon",
+          "quantity": 1
+        }
+      ]
+    },
+    "5f89a1bbb7": {
+      "items": [
+        {
+          "name": "coins",
+          "quantity": 20000
+        },
+        {
+          "name": "rune pickaxe",
+          "quantity": 1
+        },
+        {
+          "name": "air rune",
+          "quantity": null
+        },
+        {
+          "name": "earth staff",
+          "quantity": 1
+        },
+        {
+          "name": "law rune",
+          "quantity": null
+        },
+        {
+          "name": "saw",
+          "quantity": 1
+        },
+        {
+          "name": "hammer",
+          "quantity": 1
+        },
+        {
+          "name": "oak plank",
+          "quantity": 4
+        },
+        {
+          "name": "molten glass",
+          "quantity": 1
+        },
+        {
+          "name": "steel bar",
+          "quantity": 5
+        },
+        {
+          "name": "raw shark",
+          "quantity": 1
+        },
+        {
+          "name": "salmon",
+          "quantity": 1
+        },
+        {
+          "name": "tiara mould",
+          "quantity": 1
+        },
+        {
+          "name": "dramen branch",
+          "quantity": 1
+        },
+        {
+          "name": "knife",
+          "quantity": 1
+        },
+        {
+          "name": "premade gnome food",
+          "quantity": 1
+        },
+        {
+          "name": "sapphire ring",
+          "quantity": 2
+        },
+        {
+          "name": "lyre",
+          "quantity": 1
+        },
+        {
+          "name": "tankard",
+          "quantity": 1
+        },
+        {
+          "name": "talisman",
+          "quantity": 1
+        }
+      ]
+    },
+    "b1593d3efa": {
+      "items": [
+        {
+          "name": "coins",
+          "quantity": 176
+        },
+        {
+          "name": "air rune",
+          "quantity": null
+        },
+        {
+          "name": "earth staff",
+          "quantity": 1
+        },
+        {
+          "name": "law rune",
+          "quantity": null
+        },
+        {
+          "name": "steel axe",
+          "quantity": 1
+        },
+        {
+          "name": "tinderbox",
+          "quantity": 1
+        },
+        {
+          "name": "dwarven rock cake",
+          "quantity": 1
+        },
+        {
+          "name": "slop of compromise",
+          "quantity": 1
+        },
+        {
+          "name": "fishcake",
+          "quantity": 1
+        },
+        {
+          "name": "dramen staff",
+          "quantity": 1
+        },
+        {
+          "name": "rope",
+          "quantity": 1
+        },
+        {
+          "name": "candle",
+          "quantity": 1
+        },
+        {
+          "name": "rune pickaxe",
+          "quantity": 1
+        },
+        {
+          "name": "lockpick",
+          "quantity": 1
+        }
+      ]
+    },
+    "24d0a817a4": {
+      "items": [
+        {
+          "name": "coins",
+          "quantity": 6297
+        },
+        {
+          "name": "rune sword",
+          "quantity": 1
+        },
+        {
+          "name": "rope",
+          "quantity": 1
+        },
+        {
+          "name": "candle",
+          "quantity": 1
+        },
+        {
+          "name": "bruma torch",
+          "quantity": 1
+        },
+        {
+          "name": "firemaking cape",
+          "quantity": 1
+        },
+        {
+          "name": "fishing rod",
+          "quantity": 1
+        },
+        {
+          "name": "fishing bait",
+          "quantity": 1
+        },
+        {
+          "name": "trout",
+          "quantity": 1
+        },
+        {
+          "name": "salmon",
+          "quantity": 1
+        },
+        {
+          "name": "steel axe",
+          "quantity": 1
+        },
+        {
+          "name": "garlic",
+          "quantity": 1
+        },
+        {
+          "name": "stake",
+          "quantity": 1
+        },
+        {
+          "name": "hammer",
+          "quantity": 1
+        },
+        {
+          "name": "spade",
+          "quantity": 1
+        },
+        {
+          "name": "holy table napkin",
+          "quantity": 1
+        }
+      ]
+    },
+    "0bfa2f07e6": {
+      "items": [
+        {
+          "name": "coins",
+          "quantity": 6293
+        },
+        {
+          "name": "rune pickaxe",
+          "quantity": 1
+        },
+        {
+          "name": "rune shortsword",
+          "quantity": 1
+        },
+        {
+          "name": "excalibur",
+          "quantity": 1
+        },
+        {
+          "name": "magic whistle",
+          "quantity": 1
+        }
+      ]
+    },
+    "0b7ae41b45": {
+      "items": [
+        {
+          "name": "staff of air",
+          "quantity": 1
+        },
+        {
+          "name": "law rune",
+          "quantity": 1
+        }
+      ]
+    },
+    "e4878ad946": {
+      "items": [
+        {
+          "name": "coins",
+          "quantity": 10500
+        },
+        {
+          "name": "chronicle",
+          "quantity": 1
+        },
+        {
+          "name": "barley seed",
+          "quantity": 1
+        },
+        {
+          "name": "compost",
+          "quantity": 4
+        },
+        {
+          "name": "rake",
+          "quantity": 1
+        },
+        {
+          "name": "seed dibber",
+          "quantity": 1
+        },
+        {
+          "name": "rune pickaxe",
+          "quantity": 1
+        },
+        {
+          "name": "brooch",
+          "quantity": 1
+        },
+        {
+          "name": "diary",
+          "quantity": 1
+        },
+        {
+          "name": "digsite pendant",
+          "quantity": 1
+        },
+        {
+          "name": "axe",
+          "quantity": 1
+        },
+        {
+          "name": "tinderbox",
+          "quantity": 1
+        },
+        {
+          "name": "oak logs",
+          "quantity": 4
+        },
+        {
+          "name": "hammer",
+          "quantity": 1
+        },
+        {
+          "name": "iron bar",
+          "quantity": 1
+        },
+        {
+          "name": "rag and bone man i bones",
+          "quantity": 1
+        },
+        {
+          "name": "jug of vinegar",
+          "quantity": 1
+        },
+        {
+          "name": "marrentill potion (unf)",
+          "quantity": 1
+        },
+        {
+          "name": "vodka",
+          "quantity": 2
+        },
+        {
+          "name": "cadava berries",
+          "quantity": 2
+        }
+      ]
+    },
+    "7eca2e8588": {
+      "items": [
+        {
+          "name": "coins",
+          "quantity": 120
+        },
+        {
+          "name": "bread",
+          "quantity": 10
+        },
+        {
+          "name": "trout",
+          "quantity": 10
+        },
+        {
+          "name": "iron bar",
+          "quantity": 1
+        },
+        {
+          "name": "asgarnian ale",
+          "quantity": 1
+        },
+        {
+          "name": "premade blurb' sp.",
+          "quantity": 1
+        }
+      ]
+    },
+    "32f02a4a89": {
+      "items": [
+        {
+          "name": "water rune",
+          "quantity": null
+        },
+        {
+          "name": "staff of air",
+          "quantity": 1
+        },
+        {
+          "name": "law rune",
+          "quantity": null
+        },
+        {
+          "name": "chaos rune",
+          "quantity": null
+        },
+        {
+          "name": "magic whistle",
+          "quantity": 2
+        },
+        {
+          "name": "magic gold feather",
+          "quantity": 1
+        }
+      ]
+    },
+    "33f929de6d": {
+      "items": [
+        {
+          "name": "necklace of passage",
+          "quantity": 1
+        },
+        {
+          "name": "dramen staff",
+          "quantity": 1
+        },
+        {
+          "name": "air rune",
+          "quantity": null
+        },
+        {
+          "name": "earth staff",
+          "quantity": 1
+        },
+        {
+          "name": "law rune",
+          "quantity": null
+        },
+        {
+          "name": "brooch",
+          "quantity": 1
+        }
+      ]
+    },
+    "a2c58548d1": {
+      "items": [
+        {
+          "name": "coins",
+          "quantity": 5
+        },
+        {
+          "name": "water rune",
+          "quantity": null
+        },
+        {
+          "name": "staff of air",
+          "quantity": 1
+        },
+        {
+          "name": "law rune",
+          "quantity": null
+        },
+        {
+          "name": "rune pickaxe",
+          "quantity": 1
+        },
+        {
+          "name": "brown apron",
+          "quantity": 1
+        },
+        {
+          "name": "maze key",
+          "quantity": 1
+        },
+        {
+          "name": "mind rune",
+          "quantity": null
+        },
+        {
+          "name": "air rune",
+          "quantity": null
+        },
+        {
+          "name": "salmon",
+          "quantity": 1
+        },
+        {
+          "name": "secateurs",
+          "quantity": 1
+        },
+        {
+          "name": "symptoms list",
+          "quantity": 1
+        },
+        {
+          "name": "skull (skavid)",
+          "quantity": null
+        },
+        {
+          "name": "amulet of ghostspeak",
+          "quantity": 1
+        },
+        {
+          "name": "cowhide",
+          "quantity": 3
+        }
+      ]
+    },
+    "1edc803cc7": {
+      "items": [
+        {
+          "name": "rune sword",
+          "quantity": 1
+        },
+        {
+          "name": "silverlight",
+          "quantity": 1
+        },
+        {
+          "name": "air rune",
+          "quantity": null
+        },
+        {
+          "name": "earth staff",
+          "quantity": 1
+        },
+        {
+          "name": "law rune",
+          "quantity": null
+        },
+        {
+          "name": "trout",
+          "quantity": null
+        },
+        {
+          "name": "demonic sigil",
+          "quantity": 1
+        },
+        {
+          "name": "demonic tome",
+          "quantity": 1
+        }
+      ]
+    },
+    "c7476b7f2d": {
+      "items": [
+        {
+          "name": "kelda seed",
+          "quantity": 4
+        },
+        {
+          "name": "rake",
+          "quantity": 1
+        },
+        {
+          "name": "seed dibber",
+          "quantity": 1
+        },
+        {
+          "name": "spade",
+          "quantity": 1
+        },
+        {
+          "name": "white pearl seed",
+          "quantity": 1
+        },
+        {
+          "name": "cake tin",
+          "quantity": 1
+        },
+        {
+          "name": "iron bar",
+          "quantity": 1
+        },
+        {
+          "name": "swamp tar",
+          "quantity": 1
+        },
+        {
+          "name": "bucket of wax",
+          "quantity": 1
+        },
+        {
+          "name": "rope",
+          "quantity": 1
+        },
+        {
+          "name": "maple logs",
+          "quantity": 1
+        },
+        {
+          "name": "plank",
+          "quantity": 1
+        },
+        {
+          "name": "climbing boots",
+          "quantity": 1
+        },
+        {
+          "name": "games necklace(8)",
+          "quantity": 1
+        },
+        {
+          "name": "steel axe",
+          "quantity": 1
+        },
+        {
+          "name": "leather",
+          "quantity": 1
+        },
+        {
+          "name": "needle",
+          "quantity": 1
+        },
+        {
+          "name": "thread",
+          "quantity": 1
+        },
+        {
+          "name": "air rune",
+          "quantity": null
+        },
+        {
+          "name": "staff of fire",
+          "quantity": 1
+        },
+        {
+          "name": "law rune",
+          "quantity": null
+        },
+        {
+          "name": "chronicle",
+          "quantity": 1
+        },
+        {
+          "name": "coins",
+          "quantity": 6693
+        },
+        {
+          "name": "earth rune",
+          "quantity": null
+        },
+        {
+          "name": "mind rune",
+          "quantity": null
+        }
+      ]
+    },
+    "9dc0359549": {
+      "items": [
+        {
+          "name": "coins",
+          "quantity": 6693
+        },
+        {
+          "name": "chronicle",
+          "quantity": 1
+        },
+        {
+          "name": "spade",
+          "quantity": 1
+        },
+        {
+          "name": "leather",
+          "quantity": 1
+        },
+        {
+          "name": "needle",
+          "quantity": 1
+        },
+        {
+          "name": "thread",
+          "quantity": 1
+        },
+        {
+          "name": "air rune",
+          "quantity": null
+        },
+        {
+          "name": "earth rune",
+          "quantity": null
+        },
+        {
+          "name": "staff of fire",
+          "quantity": 1
+        },
+        {
+          "name": "law rune",
+          "quantity": null
+        }
+      ]
+    },
+    "a74a32e8a8": {
+      "items": [
+        {
+          "name": "coins",
+          "quantity": 225
+        },
+        {
+          "name": "barley malt",
+          "quantity": 2
+        },
+        {
+          "name": "bucket of water",
+          "quantity": 2
+        },
+        {
+          "name": "holy grail",
+          "quantity": 1
+        },
+        {
+          "name": "air rune",
+          "quantity": null
+        },
+        {
+          "name": "law rune",
+          "quantity": null
+        }
+      ]
+    },
+    "c27977e68c": {
+      "items": [
+        {
+          "name": "staff of water",
+          "quantity": 1
+        },
+        {
+          "name": "air rune",
+          "quantity": null
+        },
+        {
+          "name": "mind rune",
+          "quantity": null
+        },
+        {
+          "name": "rune sword",
+          "quantity": 1
+        },
+        {
+          "name": "scrying orb",
+          "quantity": 1
+        },
+        {
+          "name": "kharedst's memoirs",
+          "quantity": 1
+        },
+        {
+          "name": "rune pickaxe",
+          "quantity": 1
+        },
+        {
+          "name": "chisel",
+          "quantity": 1
+        },
+        {
+          "name": "rune axe",
+          "quantity": 1
+        }
+      ]
+    },
+    "7ce8df53c1": {
+      "items": [
+        {
+          "name": "coins",
+          "quantity": 3
+        },
+        {
+          "name": "chronicle",
+          "quantity": 1
+        },
+        {
+          "name": "beer glass",
+          "quantity": 1
+        },
+        {
+          "name": "kebab",
+          "quantity": 1
+        },
+        {
+          "name": "beer",
+          "quantity": 1
+        },
+        {
+          "name": "cadava potion",
+          "quantity": 1
+        },
+        {
+          "name": "scrying orb",
+          "quantity": 1
+        }
+      ]
+    },
+    "81363b2473": {
+      "items": [
+        {
+          "name": "coins",
+          "quantity": 11716
+        },
+        {
+          "name": "earth runes",
+          "quantity": null
+        },
+        {
+          "name": "staff of water",
+          "quantity": 1
+        },
+        {
+          "name": "law runes",
+          "quantity": null
+        },
+        {
+          "name": "soul runes",
+          "quantity": null
+        },
+        {
+          "name": "ring of charos",
+          "quantity": 1
+        },
+        {
+          "name": "seaweed",
+          "quantity": 1
+        },
+        {
+          "name": "fishbowl (with water)",
+          "quantity": 1
+        },
+        {
+          "name": "marigold seed",
+          "quantity": 1
+        },
+        {
+          "name": "harralander seed",
+          "quantity": 3
+        },
+        {
+          "name": "seed dibber",
+          "quantity": 1
+        },
+        {
+          "name": "rake",
+          "quantity": 1
+        },
+        {
+          "name": "fly fishing rod",
+          "quantity": 1
+        },
+        {
+          "name": "feather",
+          "quantity": 20
+        },
+        {
+          "name": "soft clay",
+          "quantity": 2
+        },
+        {
+          "name": "cabbage",
+          "quantity": 1
+        },
+        {
+          "name": "rune axe",
+          "quantity": 1
+        },
+        {
+          "name": "magic secateurs",
+          "quantity": 1
+        },
+        {
+          "name": "gardening trowel",
+          "quantity": 1
+        },
+        {
+          "name": "plant pot",
+          "quantity": 1
+        },
+        {
+          "name": "cabbage seed",
+          "quantity": 6
+        },
+        {
+          "name": "onion seed",
+          "quantity": 6
+        },
+        {
+          "name": "compost",
+          "quantity": 1
+        },
+        {
+          "name": "spade",
+          "quantity": 1
+        },
+        {
+          "name": "iron chainbody",
+          "quantity": 1
+        },
+        {
+          "name": "watering can",
+          "quantity": 1
+        },
+        {
+          "name": "raw swordfish",
+          "quantity": 1
+        },
+        {
+          "name": "raw chicken",
+          "quantity": 1
+        }
+      ]
+    },
+    "b1915d2bab": {
+      "items": [
+        {
+          "name": "coins",
+          "quantity": 1454
+        },
+        {
+          "name": "fly fishing rod",
+          "quantity": 1
+        },
+        {
+          "name": "feather",
+          "quantity": null
+        },
+        {
+          "name": "bronze bar",
+          "quantity": 1
+        },
+        {
+          "name": "hammer",
+          "quantity": 1
+        },
+        {
+          "name": "iron chainbody",
+          "quantity": 1
+        },
+        {
+          "name": "cabbage",
+          "quantity": 1
+        },
+        {
+          "name": "salmon",
+          "quantity": 1
+        },
+        {
+          "name": "magic secateurs",
+          "quantity": 1
+        },
+        {
+          "name": "plant pot",
+          "quantity": 1
+        },
+        {
+          "name": "watering can",
+          "quantity": 1
+        },
+        {
+          "name": "rune sword",
+          "quantity": 1
+        },
+        {
+          "name": "earth rune",
+          "quantity": null
+        },
+        {
+          "name": "water staff",
+          "quantity": 1
+        },
+        {
+          "name": "law rune",
+          "quantity": null
+        },
+        {
+          "name": "soft clay",
+          "quantity": 2
+        },
+        {
+          "name": "lobster pot",
+          "quantity": 1
+        },
+        {
+          "name": "silk",
+          "quantity": 1
+        },
+        {
+          "name": "wizard's mind bomb",
+          "quantity": 1
+        }
+      ]
+    },
+    "d0b84131c2": {
+      "items": [
+        {
+          "name": "ring of charos (a)",
+          "quantity": 1
+        },
+        {
+          "name": "fishing rod",
+          "quantity": 1
+        },
+        {
+          "name": "games necklace",
+          "quantity": 1
+        },
+        {
+          "name": "pure essence",
+          "quantity": 28
+        },
+        {
+          "name": "pestle and mortar",
+          "quantity": 1
+        },
+        {
+          "name": "plant cure",
+          "quantity": 2
+        },
+        {
+          "name": "hammer",
+          "quantity": 1
+        }
+      ]
+    },
+    "51d31322d2": {
+      "items": [
+        {
+          "name": "coins",
+          "quantity": 40000
+        },
+        {
+          "name": "rune axe",
+          "quantity": 1
+        },
+        {
+          "name": "tinderbox",
+          "quantity": 1
+        },
+        {
+          "name": "spade",
+          "quantity": 1
+        },
+        {
+          "name": "drunk parrot",
+          "quantity": 1
+        },
+        {
+          "name": "earth staff",
+          "quantity": 1
+        },
+        {
+          "name": "law rune",
+          "quantity": null
+        },
+        {
+          "name": "soul rune",
+          "quantity": null
+        },
+        {
+          "name": "rune sword",
+          "quantity": 1
+        },
+        {
+          "name": "salmon",
+          "quantity": 1
+        },
+        {
+          "name": "dramen staff",
+          "quantity": 1
+        },
+        {
+          "name": "climbing boots",
+          "quantity": 1
+        },
+        {
+          "name": "pickaxe",
+          "quantity": 1
+        },
+        {
+          "name": "secateurs",
+          "quantity": 1
+        },
+        {
+          "name": "water rune",
+          "quantity": null
+        }
+      ]
+    },
+    "1f7528e6fa": {
+      "items": [
+        {
+          "name": "coins",
+          "quantity": 5203
+        },
+        {
+          "name": "earth staff",
+          "quantity": 1
+        },
+        {
+          "name": "law rune",
+          "quantity": null
+        },
+        {
+          "name": "soul rune",
+          "quantity": null
+        },
+        {
+          "name": "axe",
+          "quantity": 1
+        },
+        {
+          "name": "tinderbox",
+          "quantity": 1
+        },
+        {
+          "name": "knife",
+          "quantity": 1
+        },
+        {
+          "name": "pickaxe",
+          "quantity": 1
+        },
+        {
+          "name": "gnome amulet",
+          "quantity": 1
+        },
+        {
+          "name": "seed dibber",
+          "quantity": 1
+        },
+        {
+          "name": "spade",
+          "quantity": 1
+        },
+        {
+          "name": "compost",
+          "quantity": 5
+        },
+        {
+          "name": "harralander seed",
+          "quantity": 3
+        },
+        {
+          "name": "watering can",
+          "quantity": 1
+        },
+        {
+          "name": "fire staff",
+          "quantity": 1
+        },
+        {
+          "name": "air rune",
+          "quantity": null
+        },
+        {
+          "name": "water rune",
+          "quantity": null
+        },
+        {
+          "name": "rake",
+          "quantity": 1
+        },
+        {
+          "name": "plague sample",
+          "quantity": 1
+        },
+        {
+          "name": "touch paper",
+          "quantity": 1
+        }
+      ]
+    },
+    "38db30d82b": {
+      "items": [
+        {
+          "name": "emerald",
+          "quantity": 41
+        },
+        {
+          "name": "ruby",
+          "quantity": 51
+        },
+        {
+          "name": "sapphire",
+          "quantity": 16
+        },
+        {
+          "name": "air rune",
+          "quantity": null
+        },
+        {
+          "name": "earth rune",
+          "quantity": null
+        },
+        {
+          "name": "water staff",
+          "quantity": 1
+        },
+        {
+          "name": "fire staff",
+          "quantity": 1
+        },
+        {
+          "name": "cosmic rune",
+          "quantity": 108
+        },
+        {
+          "name": "law rune",
+          "quantity": null
+        },
+        {
+          "name": "half a mushroom pie",
+          "quantity": 1
+        }
+      ]
+    },
+    "10652c04cb": {
+      "items": [
+        {
+          "name": "coins",
+          "quantity": 100
+        },
+        {
+          "name": "ring of charos(a)",
+          "quantity": 1
+        },
+        {
+          "name": "staff of fire",
+          "quantity": 1
+        },
+        {
+          "name": "air rune",
+          "quantity": 1
+        },
+        {
+          "name": "law rune",
+          "quantity": 1
+        },
+        {
+          "name": "bucket of sap",
+          "quantity": 1
+        },
+        {
+          "name": "mud rune",
+          "quantity": 1
+        },
+        {
+          "name": "maple logs",
+          "quantity": 1
+        },
+        {
+          "name": "oak logs",
+          "quantity": 1
+        },
+        {
+          "name": "hammer",
+          "quantity": 1
+        },
+        {
+          "name": "saw",
+          "quantity": 1
+        },
+        {
+          "name": "pestle and mortar",
+          "quantity": 1
+        }
+      ]
+    },
+    "bb4be13465": {
+      "items": [
+        {
+          "name": "coins",
+          "quantity": 6834
+        },
+        {
+          "name": "willow seed",
+          "quantity": 3
+        },
+        {
+          "name": "plant pot",
+          "quantity": 3
+        },
+        {
+          "name": "watering can",
+          "quantity": 1
+        },
+        {
+          "name": "compost",
+          "quantity": 3
+        },
+        {
+          "name": "air rune",
+          "quantity": null
+        },
+        {
+          "name": "earth staff",
+          "quantity": 1
+        },
+        {
+          "name": "water staff",
+          "quantity": 1
+        },
+        {
+          "name": "fire staff",
+          "quantity": 1
+        },
+        {
+          "name": "law rune",
+          "quantity": null
+        },
+        {
+          "name": "spade",
+          "quantity": 1
+        },
+        {
+          "name": "seed dibber",
+          "quantity": 1
+        }
+      ]
+    },
+    "a49a229743": {
+      "items": [
+        {
+          "name": "perfect necklace",
+          "quantity": 1
+        },
+        {
+          "name": "perfect ring",
+          "quantity": 1
+        },
+        {
+          "name": "coins",
+          "quantity": 50
+        },
+        {
+          "name": "bronze axe",
+          "quantity": 1
+        },
+        {
+          "name": "bronze pickaxe",
+          "quantity": 1
+        },
+        {
+          "name": "ring of dueling",
+          "quantity": 1
+        },
+        {
+          "name": "pure essence",
+          "quantity": 25
+        },
+        {
+          "name": "rune sword",
+          "quantity": 1
+        },
+        {
+          "name": "salmon",
+          "quantity": 1
+        }
+      ]
+    },
+    "358c687e13": {
+      "items": [
+        {
+          "name": "bronze knife",
+          "quantity": null
+        },
+        {
+          "name": "iron knife",
+          "quantity": null
+        },
+        {
+          "name": "steel knife",
+          "quantity": null
+        },
+        {
+          "name": "lizardkickers",
+          "quantity": 1
+        },
+        {
+          "name": "dramen staff",
+          "quantity": 1
+        }
+      ]
+    },
+    "10ebfe5e81": {
+      "items": [
+        {
+          "name": "magic secateurs",
+          "quantity": 1
+        },
+        {
+          "name": "papyrus",
+          "quantity": 3
+        },
+        {
+          "name": "ball of wool",
+          "quantity": 1
+        },
+        {
+          "name": "potato",
+          "quantity": 10
+        },
+        {
+          "name": "empty sack",
+          "quantity": 8
+        },
+        {
+          "name": "black candle",
+          "quantity": 1
+        },
+        {
+          "name": "tinderbox",
+          "quantity": 1
+        },
+        {
+          "name": "silk",
+          "quantity": 10
+        },
+        {
+          "name": "logs",
+          "quantity": 10
+        },
+        {
+          "name": "willow branches",
+          "quantity": 12
+        }
+      ]
+    },
+    "863b4c3c3d": {
+      "items": [
+        {
+          "name": "kharedst's memoirs",
+          "quantity": 1
+        },
+        {
+          "name": "lockpick",
+          "quantity": 1
+        }
+      ]
+    },
+    "5af6719aed": {
+      "items": [
+        {
+          "name": "coins",
+          "quantity": 143
+        },
+        {
+          "name": "dramen staff",
+          "quantity": 1
+        },
+        {
+          "name": "soul rune",
+          "quantity": null
+        },
+        {
+          "name": "law rune",
+          "quantity": null
+        },
+        {
+          "name": "games necklace",
+          "quantity": 1
+        },
+        {
+          "name": "amulet of accuracy",
+          "quantity": 1
+        },
+        {
+          "name": "staff of fire",
+          "quantity": 1
+        },
+        {
+          "name": "rune sword",
+          "quantity": 1
+        },
+        {
+          "name": "staff of air",
+          "quantity": 1
+        },
+        {
+          "name": "chaos rune",
+          "quantity": null
+        },
+        {
+          "name": "climbing boots",
+          "quantity": 1
+        },
+        {
+          "name": "gold bar",
+          "quantity": 1
+        },
+        {
+          "name": "dragon bones",
+          "quantity": 1
+        },
+        {
+          "name": "pickaxe",
+          "quantity": 1
+        },
+        {
+          "name": "rope",
+          "quantity": 2
+        },
+        {
+          "name": "guam leaf",
+          "quantity": 1
+        },
+        {
+          "name": "vial of water",
+          "quantity": 1
+        },
+        {
+          "name": "light source",
+          "quantity": 1
+        },
+        {
+          "name": "tinderbox",
+          "quantity": 1
+        },
+        {
+          "name": "pestle and mortar",
+          "quantity": 1
+        },
+        {
+          "name": "supercompost",
+          "quantity": 8
+        },
+        {
+          "name": "spade",
+          "quantity": 1
+        },
+        {
+          "name": "rake",
+          "quantity": 1
+        },
+        {
+          "name": "seed dibber",
+          "quantity": 1
+        },
+        {
+          "name": "plant cure",
+          "quantity": 1
+        },
+        {
+          "name": "ugthanki dung",
+          "quantity": 3
+        },
+        {
+          "name": "bucket",
+          "quantity": 1
+        },
+        {
+          "name": "jangerberry",
+          "quantity": 1
+        }
+      ]
+    },
+    "401a537867": {
+      "items": [
+        {
+          "name": "coins",
+          "quantity": 2000
+        },
+        {
+          "name": "hammer",
+          "quantity": 1
+        },
+        {
+          "name": "steel nails",
+          "quantity": 90
+        },
+        {
+          "name": "plank",
+          "quantity": 3
+        },
+        {
+          "name": "logs",
+          "quantity": 2
+        },
+        {
+          "name": "yew logs",
+          "quantity": 11
+        },
+        {
+          "name": "willow logs",
+          "quantity": 10
+        },
+        {
+          "name": "staff of air",
+          "quantity": 1
+        },
+        {
+          "name": "mind rune",
+          "quantity": null
+        },
+        {
+          "name": "law rune",
+          "quantity": null
+        }
+      ]
+    },
+    "fe97a2844c": {
+      "items": [
+        {
+          "name": "soft clay",
+          "quantity": 108
+        },
+        {
+          "name": "air rune",
+          "quantity": 108
+        },
+        {
+          "name": "law rune",
+          "quantity": 216
+        },
+        {
+          "name": "staff of fire",
+          "quantity": 1
+        }
+      ]
+    },
+    "1505cd6152": {
+      "items": [
+        {
+          "name": "mind rune",
+          "quantity": null
+        },
+        {
+          "name": "rune sword",
+          "quantity": 1
+        },
+        {
+          "name": "coins",
+          "quantity": 247500
+        },
+        {
+          "name": "knife",
+          "quantity": 1
+        },
+        {
+          "name": "unpowered orb",
+          "quantity": 1590
+        },
+        {
+          "name": "wizard mind bomb",
+          "quantity": null
+        },
+        {
+          "name": "paddewwa teleport",
+          "quantity": 33
+        },
+        {
+          "name": "games necklace(8)",
+          "quantity": 7
+        },
+        {
+          "name": "ring of dueling(8)",
+          "quantity": 5
+        },
+        {
+          "name": "earth staff",
+          "quantity": 1
+        },
+        {
+          "name": "cosmic rune",
+          "quantity": 4770
+        }
+      ]
+    },
+    "1736f3cd3e": {
+      "items": [
+        {
+          "name": "coins",
+          "quantity": 150
+        },
+        {
+          "name": "vial",
+          "quantity": 2
+        },
+        {
+          "name": "redberries",
+          "quantity": 1
+        },
+        {
+          "name": "white berries",
+          "quantity": 1
+        },
+        {
+          "name": "lantern lens",
+          "quantity": 1
+        },
+        {
+          "name": "earth rune",
+          "quantity": 5
+        },
+        {
+          "name": "bucket",
+          "quantity": 1
+        }
+      ]
+    },
+    "5d4bee0f7d": {
+      "items": [
+        {
+          "name": "earth orb",
+          "quantity": 24
+        }
+      ]
+    },
+    "8cbc726069": {
+      "items": [
+        {
+          "name": "kharedst's memoirs",
+          "quantity": 1
+        },
+        {
+          "name": "ring of dueling",
+          "quantity": 1
+        },
+        {
+          "name": "earth orb",
+          "quantity": 1
+        },
+        {
+          "name": "rope",
+          "quantity": 1
+        },
+        {
+          "name": "antipoison",
+          "quantity": 1
+        },
+        {
+          "name": "barcrawl card",
+          "quantity": 1
+        },
+        {
+          "name": "oak logs",
+          "quantity": 15
+        },
+        {
+          "name": "digsite pendant",
+          "quantity": 1
+        },
+        {
+          "name": "games necklace",
+          "quantity": 1
+        }
+      ]
+    },
+    "a283fd0c71": {
+      "items": [
+        {
+          "name": "coins",
+          "quantity": null
+        },
+        {
+          "name": "knife",
+          "quantity": 1
+        },
+        {
+          "name": "teak logs",
+          "quantity": null
+        },
+        {
+          "name": "rune axe",
+          "quantity": 1
+        },
+        {
+          "name": "saw",
+          "quantity": 1
+        },
+        {
+          "name": "hammer",
+          "quantity": 1
+        }
+      ]
+    },
+    "e55c809a57": {
+      "items": [
+        {
+          "name": "coins",
+          "quantity": null
+        },
+        {
+          "name": "crandor map",
+          "quantity": 1
+        },
+        {
+          "name": "rune sword",
+          "quantity": 1
+        },
+        {
+          "name": "anti-dragon shield",
+          "quantity": 1
+        },
+        {
+          "name": "swordfish",
+          "quantity": null
+        },
+        {
+          "name": "prayer potion(4)",
+          "quantity": null
+        },
+        {
+          "name": "ring of recoil",
+          "quantity": 1
+        },
+        {
+          "name": "teak logs",
+          "quantity": null
+        },
+        {
+          "name": "knife",
+          "quantity": 1
+        }
+      ]
+    },
+    "f4ca68e93e": {
+      "items": [
+        {
+          "name": "coins",
+          "quantity": 200000
+        },
+        {
+          "name": "rope",
+          "quantity": 2
+        },
+        {
+          "name": "yew longbow",
+          "quantity": 1
+        },
+        {
+          "name": "steel arrow",
+          "quantity": 10
+        },
+        {
+          "name": "spade",
+          "quantity": 1
+        },
+        {
+          "name": "rune sword",
+          "quantity": 1
+        },
+        {
+          "name": "prayer potion",
+          "quantity": 1
+        }
+      ]
+    },
+    "6b0e2b6911": {
+      "items": [
+        {
+          "name": "law rune",
+          "quantity": 1
+        },
+        {
+          "name": "earth rune",
+          "quantity": 1
+        },
+        {
+          "name": "air rune",
+          "quantity": 1
+        },
+        {
+          "name": "coins",
+          "quantity": 150000
+        }
+      ]
+    },
+    "8ea2d4e4dc": {
+      "items": [
+        {
+          "name": "pickaxe",
+          "quantity": 1
+        },
+        {
+          "name": "chronicle",
+          "quantity": 1
+        },
+        {
+          "name": "ring of dueling",
+          "quantity": 1
+        },
+        {
+          "name": "bracelet of clay",
+          "quantity": null
+        },
+        {
+          "name": "law rune",
+          "quantity": null
+        },
+        {
+          "name": "earth rune",
+          "quantity": null
+        },
+        {
+          "name": "air rune",
+          "quantity": null
+        },
+        {
+          "name": "crystal saw",
+          "quantity": 1
+        },
+        {
+          "name": "mahogany plank",
+          "quantity": 3
+        },
+        {
+          "name": "gold leaf",
+          "quantity": 1
+        },
+        {
+          "name": "coins",
+          "quantity": null
+        }
+      ]
+    },
+    "472e8822ff": {
+      "items": [
+        {
+          "name": "coins",
+          "quantity": null
+        },
+        {
+          "name": "chaos rune",
+          "quantity": null
+        },
+        {
+          "name": "staff of earth",
+          "quantity": 1
+        },
+        {
+          "name": "air rune",
+          "quantity": null
+        },
+        {
+          "name": "law rune",
+          "quantity": null
+        },
+        {
+          "name": "trollweiss",
+          "quantity": 1
+        },
+        {
+          "name": "rune sword",
+          "quantity": 1
+        },
+        {
+          "name": "rune pickaxe",
+          "quantity": 1
+        },
+        {
+          "name": "paddewwa teleport",
+          "quantity": 1
+        },
+        {
+          "name": "water rune",
+          "quantity": null
+        },
+        {
+          "name": "swordfish",
+          "quantity": null
+        },
+        {
+          "name": "prayer potion",
+          "quantity": null
+        }
+      ]
+    },
+    "ce3249f13b": {
+      "items": [
+        {
+          "name": "chaos rune",
+          "quantity": null
+        },
+        {
+          "name": "air rune",
+          "quantity": null
+        },
+        {
+          "name": "staff of water",
+          "quantity": 1
+        },
+        {
+          "name": "law rune",
+          "quantity": null
+        },
+        {
+          "name": "swordfish",
+          "quantity": null
+        },
+        {
+          "name": "prayer potion(4)",
+          "quantity": null
+        },
+        {
+          "name": "games necklace(8)",
+          "quantity": 1
+        }
+      ]
+    },
+    "50e9f4ab30": {
+      "items": [
+        {
+          "name": "air rune",
+          "quantity": null
+        },
+        {
+          "name": "staff of water",
+          "quantity": 1
+        },
+        {
+          "name": "law rune",
+          "quantity": null
+        },
+        {
+          "name": "stardust",
+          "quantity": 2000
+        },
+        {
+          "name": "initiate sallet",
+          "quantity": 1
+        },
+        {
+          "name": "initiate hauberk",
+          "quantity": 1
+        },
+        {
+          "name": "initiate cuisse",
+          "quantity": 1
+        },
+        {
+          "name": "molten glass",
+          "quantity": 1
+        },
+        {
+          "name": "enchanted gem",
+          "quantity": 1
+        }
+      ]
+    },
+    "a21b9730a2": {
+      "items": [
+        {
+          "name": "spade",
+          "quantity": 1
+        },
+        {
+          "name": "lit candle",
+          "quantity": 1
+        },
+        {
+          "name": "rope",
+          "quantity": 1
+        },
+        {
+          "name": "bronze wire",
+          "quantity": 1
+        },
+        {
+          "name": "chisel",
+          "quantity": 1
+        },
+        {
+          "name": "rune sword",
+          "quantity": 1
+        },
+        {
+          "name": "swordfish",
+          "quantity": 1
+        },
+        {
+          "name": "prayer potion",
+          "quantity": 1
+        },
+        {
+          "name": "energy potion",
+          "quantity": 1
+        },
+        {
+          "name": "dramen staff",
+          "quantity": 1
+        },
+        {
+          "name": "rogue kit",
+          "quantity": 4
+        },
+        {
+          "name": "rune pickaxe",
+          "quantity": 1
+        },
+        {
+          "name": "gout tuber",
+          "quantity": 1
+        }
+      ]
+    },
+    "a185f300f9": {
+      "items": [
+        {
+          "name": "coins",
+          "quantity": 1330
+        },
+        {
+          "name": "ice gloves"
+        },
+        {
+          "name": "blunt axe"
+        }
+      ]
+    },
+    "69fd3eb864": {
+      "items": [
+        {
+          "name": "blamish snail slime",
+          "quantity": 1
+        },
+        {
+          "name": "harralander",
+          "quantity": 1
+        },
+        {
+          "name": "vial of water",
+          "quantity": 1
+        },
+        {
+          "name": "fishing rod",
+          "quantity": 1
+        },
+        {
+          "name": "lockpick",
+          "quantity": 1
+        },
+        {
+          "name": "jade",
+          "quantity": 1
+        },
+        {
+          "name": "necklace mould",
+          "quantity": 1
+        },
+        {
+          "name": "silver bar",
+          "quantity": 1
+        },
+        {
+          "name": "air rune",
+          "quantity": 5
+        },
+        {
+          "name": "cosmic rune",
+          "quantity": 1
+        },
+        {
+          "name": "pure essence",
+          "quantity": 1
+        },
+        {
+          "name": "empty sack",
+          "quantity": 1
+        }
+      ]
+    },
+    "fea6129ecb": {
+      "items": [
+        {
+          "name": "coins",
+          "quantity": null
+        },
+        {
+          "name": "bullseye lantern",
+          "quantity": 1
+        },
+        {
+          "name": "lantern lens",
+          "quantity": 1
+        },
+        {
+          "name": "sapphire",
+          "quantity": 1
+        },
+        {
+          "name": "chisel",
+          "quantity": 1
+        },
+        {
+          "name": "tinderbox",
+          "quantity": 1
+        },
+        {
+          "name": "rune pickaxe",
+          "quantity": 1
+        },
+        {
+          "name": "staff of air",
+          "quantity": 1
+        },
+        {
+          "name": "chaos rune",
+          "quantity": null
+        },
+        {
+          "name": "molten glass",
+          "quantity": 1
+        },
+        {
+          "name": "law rune",
+          "quantity": 2
+        },
+        {
+          "name": "gold bar",
+          "quantity": 1
+        },
+        {
+          "name": "swordfish",
+          "quantity": null
+        },
+        {
+          "name": "energy potion",
+          "quantity": null
+        },
+        {
+          "name": "prayer potion",
+          "quantity": null
+        },
+        {
+          "name": "ring of dueling",
+          "quantity": 1
+        }
+      ]
+    },
+    "0f019ab18b": {
+      "items": [
+        {
+          "name": "coins",
+          "quantity": null
+        },
+        {
+          "name": "rune sword",
+          "quantity": 1
+        },
+        {
+          "name": "swordfish",
+          "quantity": 1
+        },
+        {
+          "name": "waterskin(4)",
+          "quantity": 1
+        },
+        {
+          "name": "yew logs",
+          "quantity": 1
+        },
+        {
+          "name": "grimy harralander",
+          "quantity": 1
+        },
+        {
+          "name": "vial of water",
+          "quantity": 1
+        },
+        {
+          "name": "pestle and mortar",
+          "quantity": 1
+        },
+        {
+          "name": "necklace of passage",
+          "quantity": 1
+        },
+        {
+          "name": "small fishing net",
+          "quantity": 1
+        },
+        {
+          "name": "rope",
+          "quantity": 1
+        },
+        {
+          "name": "law rune",
+          "quantity": null
+        },
+        {
+          "name": "staff of air",
+          "quantity": 1
+        },
+        {
+          "name": "knife",
+          "quantity": 1
+        },
+        {
+          "name": "rune pickaxe",
+          "quantity": 1
+        },
+        {
+          "name": "yew longbow",
+          "quantity": 1
+        },
+        {
+          "name": "steel arrow",
+          "quantity": null
+        },
+        {
+          "name": "needle",
+          "quantity": 1
+        },
+        {
+          "name": "thread",
+          "quantity": 2
+        },
+        {
+          "name": "prayer potion(4)",
+          "quantity": null
+        }
+      ]
+    },
+    "08e7a716e0": {
+      "items": [
+        {
+          "name": "kitten",
+          "quantity": 1
+        },
+        {
+          "name": "candle",
+          "quantity": 1
+        },
+        {
+          "name": "tinderbox",
+          "quantity": 1
+        },
+        {
+          "name": "bag of salt",
+          "quantity": 1
+        },
+        {
+          "name": "willow logs",
+          "quantity": 1
+        },
+        {
+          "name": "bucket of sap",
+          "quantity": 1
+        },
+        {
+          "name": "waterskin(4)",
+          "quantity": 1
+        },
+        {
+          "name": "energy potion(4)",
+          "quantity": 1
+        },
+        {
+          "name": "prayer potion(4)",
+          "quantity": 1
+        },
+        {
+          "name": "rune sword",
+          "quantity": 1
+        },
+        {
+          "name": "swordfish",
+          "quantity": 1
+        },
+        {
+          "name": "games necklace(8)",
+          "quantity": 1
+        },
+        {
+          "name": "antipoison(4)",
+          "quantity": 1
+        },
+        {
+          "name": "digsite pendant (5)",
+          "quantity": 1
+        },
+        {
+          "name": "oak logs",
+          "quantity": 10
+        },
+        {
+          "name": "coins",
+          "quantity": 3500
+        }
+      ]
+    },
+    "73ae2fc9c5": {
+      "items": [
+        {
+          "name": "kitten",
+          "quantity": 1
+        },
+        {
+          "name": "full initiate",
+          "quantity": 1
+        },
+        {
+          "name": "catspeak amulet",
+          "quantity": 1
+        },
+        {
+          "name": "death rune",
+          "quantity": 5
+        },
+        {
+          "name": "oily fishing rod",
+          "quantity": 1
+        },
+        {
+          "name": "fishing bait",
+          "quantity": 1
+        },
+        {
+          "name": "ice gloves",
+          "quantity": 1
+        },
+        {
+          "name": "scorpion cage",
+          "quantity": 1
+        },
+        {
+          "name": "rune sword",
+          "quantity": 1
+        },
+        {
+          "name": "anti-dragon shield",
+          "quantity": 1
+        },
+        {
+          "name": "swordfish",
+          "quantity": 1
+        },
+        {
+          "name": "energy potion",
+          "quantity": 1
+        },
+        {
+          "name": "prayer potion",
+          "quantity": 1
+        },
+        {
+          "name": "commorb v2",
+          "quantity": 1
+        },
+        {
+          "name": "kharedst's memoirs",
+          "quantity": 1
+        },
+        {
+          "name": "dramen staff",
+          "quantity": 1
+        },
+        {
+          "name": "necklace of passage",
+          "quantity": 1
+        },
+        {
+          "name": "damaged soulbearer",
+          "quantity": 1
+        }
+      ]
+    },
+    "4cffc5b72f": {
+      "items": [
+        {
+          "name": "cat"
+        },
+        {
+          "name": "catspeak amulet"
+        },
+        {
+          "name": "rune axe"
+        },
+        {
+          "name": "tinderbox"
+        },
+        {
+          "name": "rune sword"
+        }
+      ]
+    },
+    "7c043f0dcb": {
+      "items": [
+        {
+          "name": "steel bar",
+          "quantity": 16
+        },
+        {
+          "name": "hammer",
+          "quantity": 1
+        },
+        {
+          "name": "commorb",
+          "quantity": 1
+        },
+        {
+          "name": "pure essence",
+          "quantity": 20
+        },
+        {
+          "name": "catspeak amulet",
+          "quantity": 1
+        },
+        {
+          "name": "cat",
+          "quantity": 1
+        }
+      ]
+    },
+    "96c80475b1": {
+      "items": [
+        {
+          "name": "coins",
+          "quantity": null
+        },
+        {
+          "name": "law rune",
+          "quantity": null
+        },
+        {
+          "name": "soul rune",
+          "quantity": null
+        },
+        {
+          "name": "earth rune",
+          "quantity": null
+        },
+        {
+          "name": "water rune",
+          "quantity": null
+        },
+        {
+          "name": "chronicle",
+          "quantity": 1
+        },
+        {
+          "name": "commorb",
+          "quantity": 1
+        },
+        {
+          "name": "dorgesh-kaan sphere",
+          "quantity": null
+        },
+        {
+          "name": "green dragonhide",
+          "quantity": null
+        },
+        {
+          "name": "rune sword",
+          "quantity": 1
+        },
+        {
+          "name": "earmuffs",
+          "quantity": 1
+        },
+        {
+          "name": "bullseye lantern",
+          "quantity": 1
+        }
+      ]
+    },
+    "c5db69a8b0": {
+      "items": [
+        {
+          "name": "law rune",
+          "quantity": 1
+        },
+        {
+          "name": "soul rune",
+          "quantity": 1
+        },
+        {
+          "name": "earth staff",
+          "quantity": 1
+        },
+        {
+          "name": "ghostspeak amulet",
+          "quantity": 1
+        },
+        {
+          "name": "empty pot",
+          "quantity": 8
+        },
+        {
+          "name": "bucket of slime",
+          "quantity": 8
+        },
+        {
+          "name": "bones",
+          "quantity": 8
+        },
+        {
+          "name": "silver bar",
+          "quantity": 1
+        },
+        {
+          "name": "ice cooler",
+          "quantity": 1
+        },
+        {
+          "name": "dramen staff",
+          "quantity": 1
+        },
+        {
+          "name": "plank sack",
+          "quantity": 1
+        }
+      ]
+    },
+    "ad092d98b2": {
+      "items": [
+        {
+          "name": "coins",
+          "quantity": null
+        },
+        {
+          "name": "steel nails",
+          "quantity": 263
+        },
+        {
+          "name": "druid pouch",
+          "quantity": 1
+        },
+        {
+          "name": "hammer",
+          "quantity": 1
+        },
+        {
+          "name": "plank",
+          "quantity": 17
+        },
+        {
+          "name": "ring of charos(a)",
+          "quantity": 1
+        },
+        {
+          "name": "blessed silver sickle",
+          "quantity": 1
+        },
+        {
+          "name": "rune sword",
+          "quantity": 1
+        },
+        {
+          "name": "wolfsbane",
+          "quantity": 1
+        },
+        {
+          "name": "swordfish",
+          "quantity": 1
+        },
+        {
+          "name": "prayer potion",
+          "quantity": null
+        },
+        {
+          "name": "law rune",
+          "quantity": null
+        },
+        {
+          "name": "soul rune",
+          "quantity": null
+        },
+        {
+          "name": "bucket",
+          "quantity": 1
+        },
+        {
+          "name": "spade",
+          "quantity": 1
+        },
+        {
+          "name": "rune pickaxe",
+          "quantity": 1
+        },
+        {
+          "name": "swamp paste",
+          "quantity": null
+        },
+        {
+          "name": "bronze axe",
+          "quantity": 10
+        },
+        {
+          "name": "tinderbox",
+          "quantity": 4
+        },
+        {
+          "name": "steel bar",
+          "quantity": 2
+        },
+        {
+          "name": "coal",
+          "quantity": null
+        },
+        {
+          "name": "salmon",
+          "quantity": 15
+        },
+        {
+          "name": "dramen staff",
+          "quantity": 1
+        },
+        {
+          "name": "garlic",
+          "quantity": 1
+        },
+        {
+          "name": "silver dust",
+          "quantity": 1
+        },
+        {
+          "name": "harralander",
+          "quantity": 1
+        },
+        {
+          "name": "red spiders' eggs",
+          "quantity": 1
+        },
+        {
+          "name": "vial of water",
+          "quantity": 1
+        },
+        {
+          "name": "small fishing net",
+          "quantity": 1
+        },
+        {
+          "name": "rope",
+          "quantity": 1
+        }
+      ]
+    },
+    "f7915f129d": {
+      "items": [
+        {
+          "name": "coins",
+          "quantity": null
+        },
+        {
+          "name": "law rune",
+          "quantity": null
+        },
+        {
+          "name": "soul rune",
+          "quantity": null
+        },
+        {
+          "name": "earth staff",
+          "quantity": 1
+        },
+        {
+          "name": "red dye",
+          "quantity": 3
+        },
+        {
+          "name": "blue dye",
+          "quantity": 3
+        },
+        {
+          "name": "yellow dye",
+          "quantity": 3
+        },
+        {
+          "name": "ghostspeak amulet",
+          "quantity": 1
+        },
+        {
+          "name": "ecto-token",
+          "quantity": null
+        },
+        {
+          "name": "nettle tea",
+          "quantity": 1
+        },
+        {
+          "name": "bucket of milk",
+          "quantity": 1
+        },
+        {
+          "name": "silk",
+          "quantity": 1
+        },
+        {
+          "name": "needle",
+          "quantity": 1
+        },
+        {
+          "name": "thread",
+          "quantity": 1
+        },
+        {
+          "name": "knife",
+          "quantity": 1
+        },
+        {
+          "name": "spade",
+          "quantity": 1
+        },
+        {
+          "name": "swordfish",
+          "quantity": 1
+        },
+        {
+          "name": "rune sword",
+          "quantity": 1
+        }
+      ]
+    },
+    "5e00ef9c9c": {
+      "items": [
+        {
+          "name": "coins",
+          "quantity": null
+        },
+        {
+          "name": "oak longbow",
+          "quantity": 1
+        },
+        {
+          "name": "ghostspeak amulet",
+          "quantity": 1
+        },
+        {
+          "name": "bucket of slime",
+          "quantity": 1
+        },
+        {
+          "name": "thin snail",
+          "quantity": 1
+        },
+        {
+          "name": "law rune",
+          "quantity": null
+        },
+        {
+          "name": "earth staff",
+          "quantity": 1
+        },
+        {
+          "name": "water rune",
+          "quantity": null
+        },
+        {
+          "name": "iron bar",
+          "quantity": 5
+        },
+        {
+          "name": "hammer",
+          "quantity": 1
+        },
+        {
+          "name": "undead chicken",
+          "quantity": 2
+        },
+        {
+          "name": "mithril axe",
+          "quantity": 1
+        },
+        {
+          "name": "holy symbol",
+          "quantity": 1
+        },
+        {
+          "name": "hard leather",
+          "quantity": 1
+        },
+        {
+          "name": "polished buttons",
+          "quantity": 1
+        },
+        {
+          "name": "games necklace",
+          "quantity": 1
+        }
+      ]
+    },
+    "ff85369fe6": {
+      "items": [
+        {
+          "name": "law rune",
+          "quantity": 1
+        },
+        {
+          "name": "fire rune",
+          "quantity": 1
+        },
+        {
+          "name": "staff of air",
+          "quantity": 1
+        },
+        {
+          "name": "death rune",
+          "quantity": 1
+        },
+        {
+          "name": "earth rune",
+          "quantity": 1
+        },
+        {
+          "name": "water rune",
+          "quantity": 1
+        },
+        {
+          "name": "crest pieces",
+          "quantity": 2
+        },
+        {
+          "name": "swordfish",
+          "quantity": 1
+        },
+        {
+          "name": "antipoison",
+          "quantity": 1
+        },
+        {
+          "name": "lava eel",
+          "quantity": 1
+        },
+        {
+          "name": "dramen staff",
+          "quantity": 1
+        },
+        {
+          "name": "scorpion cage",
+          "quantity": 1
+        }
+      ]
+    },
+    "a6e78cb8dc": {
+      "items": [
+        {
+          "name": "swordfish",
+          "quantity": 1
+        },
+        {
+          "name": "prayer potion(4)",
+          "quantity": null
+        },
+        {
+          "name": "energy potion(4)",
+          "quantity": null
+        },
+        {
+          "name": "antipoison(4)",
+          "quantity": null
+        },
+        {
+          "name": "gold bar",
+          "quantity": 1
+        },
+        {
+          "name": "ball of wool",
+          "quantity": 1
+        },
+        {
+          "name": "lockpick",
+          "quantity": 1
+        },
+        {
+          "name": "staff of air",
+          "quantity": 1
+        },
+        {
+          "name": "chaos rune",
+          "quantity": null
+        },
+        {
+          "name": "law rune",
+          "quantity": null
+        },
+        {
+          "name": "water rune",
+          "quantity": null
+        },
+        {
+          "name": "rune axe",
+          "quantity": 1
+        },
+        {
+          "name": "tinderbox",
+          "quantity": 1
+        },
+        {
+          "name": "knife",
+          "quantity": 1
+        },
+        {
+          "name": "oak logs",
+          "quantity": 1
+        },
+        {
+          "name": "big fishing net",
+          "quantity": 1
+        },
+        {
+          "name": "bow string",
+          "quantity": 1
+        }
+      ]
+    },
+    "71b4dd73f7": {
+      "items": [
+        {
+          "name": "iban staff",
+          "quantity": 1
+        },
+        {
+          "name": "death rune",
+          "quantity": null
+        },
+        {
+          "name": "fire rune",
+          "quantity": null
+        },
+        {
+          "name": "ball of wool",
+          "quantity": 1
+        },
+        {
+          "name": "chisel",
+          "quantity": 1
+        },
+        {
+          "name": "energy potion(4)",
+          "quantity": null
+        },
+        {
+          "name": "prayer potion(4)",
+          "quantity": null
+        },
+        {
+          "name": "swordfish",
+          "quantity": null
+        },
+        {
+          "name": "premade choc bombs",
+          "quantity": null
+        }
+      ]
+    },
+    "bef1997b73": {
+      "items": [
+        {
+          "name": "coins",
+          "quantity": null
+        },
+        {
+          "name": "iban's staff",
+          "quantity": 1
+        },
+        {
+          "name": "death rune",
+          "quantity": null
+        },
+        {
+          "name": "fire rune",
+          "quantity": null
+        },
+        {
+          "name": "games necklace",
+          "quantity": 1
+        },
+        {
+          "name": "fire feather",
+          "quantity": 1
+        },
+        {
+          "name": "cooked lava eel",
+          "quantity": 1
+        },
+        {
+          "name": "black platebody",
+          "quantity": 1
+        },
+        {
+          "name": "black full helm",
+          "quantity": 1
+        },
+        {
+          "name": "black platelegs",
+          "quantity": 1
+        },
+        {
+          "name": "chronicle",
+          "quantity": 1
+        }
+      ]
+    },
+    "a38610470a": {
+      "items": [
+        {
+          "name": "coins",
+          "quantity": 780000
+        },
+        {
+          "name": "gauntlets of goldsmithing",
+          "quantity": 1
+        },
+        {
+          "name": "ring of charos(a)",
+          "quantity": 1
+        }
+      ]
+    },
+    "a04ddaa25c": {
+      "items": [
+        {
+          "name": "rune sword",
+          "quantity": 1
+        },
+        {
+          "name": "amulet of strength",
+          "quantity": 1
+        },
+        {
+          "name": "berserker helm",
+          "quantity": 1
+        }
+      ]
+    },
+    "3fb8e388a3": {
+      "items": [
+        {
+          "name": "gold bar",
+          "quantity": 1100
+        },
+        {
+          "name": "nature rune",
+          "quantity": null
+        },
+        {
+          "name": "granite body",
+          "quantity": 1
+        },
+        {
+          "name": "rune platelegs",
+          "quantity": 1
+        },
+        {
+          "name": "iban's staff",
+          "quantity": 1
+        },
+        {
+          "name": "death rune",
+          "quantity": null
+        },
+        {
+          "name": "fire rune",
+          "quantity": null
+        },
+        {
+          "name": "berserker helm",
+          "quantity": 1
+        },
+        {
+          "name": "amulet of magic",
+          "quantity": 1
+        },
+        {
+          "name": "antipoison",
+          "quantity": null
+        },
+        {
+          "name": "chocolate bomb",
+          "quantity": null
+        },
+        {
+          "name": "air staff",
+          "quantity": 1
+        },
+        {
+          "name": "earth rune",
+          "quantity": null
+        },
+        {
+          "name": "water rune",
+          "quantity": null
+        },
+        {
+          "name": "chaos rune",
+          "quantity": null
+        },
+        {
+          "name": "bronze sword",
+          "quantity": 1
+        },
+        {
+          "name": "steel arrow",
+          "quantity": null
+        },
+        {
+          "name": "molten glass",
+          "quantity": null
+        },
+        {
+          "name": "tinderbox",
+          "quantity": 1
+        },
+        {
+          "name": "hammer",
+          "quantity": 1
+        },
+        {
+          "name": "steel nails",
+          "quantity": 60
+        },
+        {
+          "name": "swamp tar",
+          "quantity": 1
+        },
+        {
+          "name": "scorpion cage",
+          "quantity": 1
+        }
+      ]
+    },
+    "17c49af3af": {
+      "items": [
+        {
+          "name": "coins",
+          "quantity": null
+        },
+        {
+          "name": "swordfish",
+          "quantity": null
+        },
+        {
+          "name": "prayer potion(4)",
+          "quantity": null
+        },
+        {
+          "name": "energy potion(4)",
+          "quantity": null
+        },
+        {
+          "name": "rune pickaxe",
+          "quantity": 1
+        },
+        {
+          "name": "mine key",
+          "quantity": 1
+        }
+      ]
+    },
+    "e5892b0d60": {
+      "items": [
+        {
+          "name": "cash stack",
+          "quantity": null
+        },
+        {
+          "name": "fremennik boots 1",
+          "quantity": 1
+        },
+        {
+          "name": "coal",
+          "quantity": 7
+        },
+        {
+          "name": "rope",
+          "quantity": 9
+        },
+        {
+          "name": "knife",
+          "quantity": 1
+        },
+        {
+          "name": "rune axe",
+          "quantity": 1
+        },
+        {
+          "name": "hammer",
+          "quantity": 1
+        },
+        {
+          "name": "bronze nail",
+          "quantity": 1
+        },
+        {
+          "name": "needle",
+          "quantity": 1
+        },
+        {
+          "name": "thread",
+          "quantity": 2
+        },
+        {
+          "name": "melee gear",
+          "quantity": null
+        },
+        {
+          "name": "swordfish",
+          "quantity": null
+        },
+        {
+          "name": "prayer potion",
+          "quantity": null
+        },
+        {
+          "name": "cut sapphire",
+          "quantity": 1
+        },
+        {
+          "name": "mithril bar",
+          "quantity": 5
+        },
+        {
+          "name": "silver bar",
+          "quantity": 1
+        },
+        {
+          "name": "rod mould",
+          "quantity": 1
+        },
+        {
+          "name": "cosmic rune",
+          "quantity": 1
+        },
+        {
+          "name": "water rune",
+          "quantity": null
+        }
+      ]
+    },
+    "1fe966dfd1": {
+      "items": [
+        {
+          "name": "tinderbox",
+          "quantity": 1
+        },
+        {
+          "name": "bullseye lantern",
+          "quantity": 1
+        },
+        {
+          "name": "swordfish",
+          "quantity": null
+        },
+        {
+          "name": "energy potion",
+          "quantity": null
+        },
+        {
+          "name": "prayer potion",
+          "quantity": null
+        },
+        {
+          "name": "clean guam",
+          "quantity": null
+        },
+        {
+          "name": "clean marrentill",
+          "quantity": null
+        },
+        {
+          "name": "pestle and mortar",
+          "quantity": 1
+        },
+        {
+          "name": "dramen staff",
+          "quantity": 1
+        }
+      ]
+    },
+    "5888e91ef7": {
+      "items": [
+        {
+          "name": "law rune",
+          "quantity": 1
+        },
+        {
+          "name": "air rune",
+          "quantity": 1
+        },
+        {
+          "name": "earth rune",
+          "quantity": 1
+        },
+        {
+          "name": "water rune",
+          "quantity": 1
+        },
+        {
+          "name": "seal of passage",
+          "quantity": 1
+        },
+        {
+          "name": "coins",
+          "quantity": null
+        },
+        {
+          "name": "bowl of water",
+          "quantity": 1
+        },
+        {
+          "name": "rune pickaxe",
+          "quantity": 1
+        },
+        {
+          "name": "hammer",
+          "quantity": 1
+        },
+        {
+          "name": "needle",
+          "quantity": 1
+        },
+        {
+          "name": "thread",
+          "quantity": 2
+        },
+        {
+          "name": "suqah hide",
+          "quantity": 4
+        },
+        {
+          "name": "tinderbox",
+          "quantity": 1
+        },
+        {
+          "name": "spade",
+          "quantity": 1
+        },
+        {
+          "name": "energy potion(4)",
+          "quantity": 1
+        },
+        {
+          "name": "prayer potion(4)",
+          "quantity": 1
+        },
+        {
+          "name": "swordfish",
+          "quantity": 1
+        },
+        {
+          "name": "small pouch",
+          "quantity": 1
+        },
+        {
+          "name": "medium pouch",
+          "quantity": 1
+        },
+        {
+          "name": "large pouch",
+          "quantity": 1
+        },
+        {
+          "name": "cosmic rune",
+          "quantity": 1
+        },
+        {
+          "name": "astral rune",
+          "quantity": 1
+        },
+        {
+          "name": "staff of air",
+          "quantity": 1
+        },
+        {
+          "name": "chisel",
+          "quantity": 1
+        },
+        {
+          "name": "abyssal book",
+          "quantity": 1
+        }
+      ]
+    },
+    "17cbffcac7": {
+      "items": [
+        {
+          "name": "bowl of hot water",
+          "quantity": 1
+        },
+        {
+          "name": "harralander",
+          "quantity": 1
+        },
+        {
+          "name": "guam leaf",
+          "quantity": 2
+        },
+        {
+          "name": "marrentill",
+          "quantity": 2
+        },
+        {
+          "name": "energy potion",
+          "quantity": 1
+        },
+        {
+          "name": "prayer potion",
+          "quantity": 1
+        },
+        {
+          "name": "air staff",
+          "quantity": 1
+        },
+        {
+          "name": "law rune",
+          "quantity": 1
+        },
+        {
+          "name": "water rune",
+          "quantity": 1
+        },
+        {
+          "name": "scorpion cage",
+          "quantity": 1
+        }
+      ]
+    },
+    "e2613de71a": {
+      "items": [
+        {
+          "name": "coins",
+          "quantity": null
+        },
+        {
+          "name": "rune axe",
+          "quantity": 1
+        },
+        {
+          "name": "earth rune",
+          "quantity": null
+        },
+        {
+          "name": "air rune",
+          "quantity": null
+        },
+        {
+          "name": "death rune",
+          "quantity": null
+        },
+        {
+          "name": "raw karambwanji",
+          "quantity": 23
+        },
+        {
+          "name": "anti-dragon shield",
+          "quantity": 1
+        },
+        {
+          "name": "swordfish",
+          "quantity": null
+        },
+        {
+          "name": "energy potion",
+          "quantity": null
+        },
+        {
+          "name": "prayer potion",
+          "quantity": null
+        },
+        {
+          "name": "antipoison",
+          "quantity": null
+        },
+        {
+          "name": "steel spear",
+          "quantity": 1
+        },
+        {
+          "name": "small fishing net",
+          "quantity": 1
+        },
+        {
+          "name": "agility potion(4)",
+          "quantity": 1
+        },
+        {
+          "name": "tinderbox",
+          "quantity": 1
+        },
+        {
+          "name": "necklace of passage",
+          "quantity": 1
+        }
+      ]
+    },
+    "c865e80345": {
+      "items": [
+        {
+          "name": "coins",
+          "quantity": null
+        },
+        {
+          "name": "karambwan vessel",
+          "quantity": 1
+        },
+        {
+          "name": "iban's staff",
+          "quantity": 1
+        },
+        {
+          "name": "death rune",
+          "quantity": null
+        },
+        {
+          "name": "fire rune",
+          "quantity": null
+        },
+        {
+          "name": "logs",
+          "quantity": 2
+        },
+        {
+          "name": "tinderbox",
+          "quantity": 1
+        },
+        {
+          "name": "karamja rum",
+          "quantity": 1
+        },
+        {
+          "name": "seaweed",
+          "quantity": 1
+        },
+        {
+          "name": "monkey skin",
+          "quantity": 1
+        },
+        {
+          "name": "jogre bones",
+          "quantity": 1
+        },
+        {
+          "name": "raw karambwanji",
+          "quantity": 1
+        },
+        {
+          "name": "pestle and mortar",
+          "quantity": 1
+        },
+        {
+          "name": "teasing stick",
+          "quantity": 1
+        },
+        {
+          "name": "knife",
+          "quantity": 1
+        },
+        {
+          "name": "necklace of passage",
+          "quantity": 1
+        }
+      ]
+    },
+    "a61d7db6ad": {
+      "items": [
+        {
+          "name": "necklace of passage"
+        }
+      ]
+    },
+    "d46d786a70": {
+      "items": [
+        {
+          "name": "ring of dueling(8)",
+          "quantity": 1
+        }
+      ]
+    },
+    "74f7a830aa": {
+      "items": [
+        {
+          "name": "coins",
+          "quantity": null
+        },
+        {
+          "name": "waterskin",
+          "quantity": null
+        },
+        {
+          "name": "ring of dueling",
+          "quantity": null
+        },
+        {
+          "name": "camulet",
+          "quantity": 1
+        },
+        {
+          "name": "stone scarab",
+          "quantity": 1
+        },
+        {
+          "name": "air rune",
+          "quantity": null
+        },
+        {
+          "name": "death rune",
+          "quantity": null
+        },
+        {
+          "name": "fire rune",
+          "quantity": null
+        },
+        {
+          "name": "swordfish",
+          "quantity": null
+        },
+        {
+          "name": "prayer potion",
+          "quantity": null
+        },
+        {
+          "name": "antipoison",
+          "quantity": null
+        },
+        {
+          "name": "catspeak amulet",
+          "quantity": 1
+        }
+      ]
+    },
+    "e81f1a456b": {
+      "items": [
+        {
+          "name": "stodgy mattress",
+          "quantity": 1
+        },
+        {
+          "name": "games necklace",
+          "quantity": 1
+        },
+        {
+          "name": "catspeak amulet",
+          "quantity": 1
+        },
+        {
+          "name": "cheese",
+          "quantity": 4
+        },
+        {
+          "name": "empty vial",
+          "quantity": 1
+        },
+        {
+          "name": "red spiders' eggs",
+          "quantity": 2
+        },
+        {
+          "name": "kwuarm",
+          "quantity": 1
+        },
+        {
+          "name": "marrentill",
+          "quantity": 1
+        },
+        {
+          "name": "unicorn horn dust",
+          "quantity": 1
+        },
+        {
+          "name": "bucket of milk",
+          "quantity": 1
+        },
+        {
+          "name": "limpwurt root",
+          "quantity": 1
+        },
+        {
+          "name": "law rune",
+          "quantity": 1
+        },
+        {
+          "name": "air rune",
+          "quantity": 1
+        },
+        {
+          "name": "fire rune",
+          "quantity": 1
+        }
+      ]
+    },
+    "c189462a27": {
+      "items": [
+        {
+          "name": "law runes",
+          "quantity": 1
+        },
+        {
+          "name": "earth runes",
+          "quantity": 1
+        },
+        {
+          "name": "air runes",
+          "quantity": 1
+        },
+        {
+          "name": "molten glass",
+          "quantity": 2
+        },
+        {
+          "name": "plank",
+          "quantity": 1
+        },
+        {
+          "name": "silk",
+          "quantity": 1
+        },
+        {
+          "name": "steel bar",
+          "quantity": 1
+        },
+        {
+          "name": "catspeak amulet",
+          "quantity": 1
+        },
+        {
+          "name": "pot",
+          "quantity": 1
+        },
+        {
+          "name": "weeds",
+          "quantity": 1
+        },
+        {
+          "name": "tinderbox",
+          "quantity": 1
+        },
+        {
+          "name": "gold cannonball",
+          "quantity": 1
+        },
+        {
+          "name": "dwarven lore",
+          "quantity": 1
+        }
+      ]
+    },
+    "90c63deac2": {
+      "items": [
+        {
+          "name": "doctor's hat",
+          "quantity": 1
+        },
+        {
+          "name": "vial of water",
+          "quantity": 1
+        },
+        {
+          "name": "law rune",
+          "quantity": null
+        },
+        {
+          "name": "water staff",
+          "quantity": 1
+        },
+        {
+          "name": "rune pickaxe",
+          "quantity": 1
+        },
+        {
+          "name": "prayer potion(4)",
+          "quantity": null
+        },
+        {
+          "name": "hammer",
+          "quantity": 1
+        },
+        {
+          "name": "ring of charos(a)",
+          "quantity": 1
+        },
+        {
+          "name": "ardougne cloak 1",
+          "quantity": 1
+        }
+      ]
+    },
+    "cfb23eba24": {
+      "items": [
+        {
+          "name": "catspeak amulet",
+          "quantity": 1
+        },
+        {
+          "name": "law rune",
+          "quantity": null
+        },
+        {
+          "name": "staff of air",
+          "quantity": 1
+        },
+        {
+          "name": "earth rune",
+          "quantity": null
+        }
+      ]
+    },
+    "aed61fb3fc": {
+      "items": [
+        {
+          "name": "penguin suit",
+          "quantity": 1
+        },
+        {
+          "name": "evil stew",
+          "quantity": 1
+        },
+        {
+          "name": "air rune",
+          "quantity": 1
+        },
+        {
+          "name": "water rune",
+          "quantity": 1
+        },
+        {
+          "name": "law rune",
+          "quantity": 1
+        }
+      ]
+    },
+    "27ee7c40be": {
+      "items": [
+        {
+          "name": "coins",
+          "quantity": null
+        },
+        {
+          "name": "chicken cage",
+          "quantity": 1
+        },
+        {
+          "name": "blunt axe",
+          "quantity": 1
+        },
+        {
+          "name": "catspeak amulet",
+          "quantity": 1
+        },
+        {
+          "name": "snake charm",
+          "quantity": 1
+        },
+        {
+          "name": "charos(a)",
+          "quantity": 1
+        },
+        {
+          "name": "bucket of milk",
+          "quantity": 1
+        },
+        {
+          "name": "egg",
+          "quantity": 1
+        },
+        {
+          "name": "pot of flour",
+          "quantity": 1
+        },
+        {
+          "name": "cake tin",
+          "quantity": 1
+        }
+      ]
+    },
+    "28b4b04dd1": {
+      "items": [
+        {
+          "name": "cash stack",
+          "quantity": 1
+        },
+        {
+          "name": "ring of charos(a)",
+          "quantity": 1
+        },
+        {
+          "name": "sharpened axe",
+          "quantity": 1
+        },
+        {
+          "name": "penguin suit",
+          "quantity": 1
+        },
+        {
+          "name": "swamp tar",
+          "quantity": 1
+        },
+        {
+          "name": "feather",
+          "quantity": 5
+        },
+        {
+          "name": "mission report",
+          "quantity": 1
+        },
+        {
+          "name": "mahogany plank",
+          "quantity": 1
+        },
+        {
+          "name": "soft leather",
+          "quantity": 1
+        },
+        {
+          "name": "cowbell",
+          "quantity": 1
+        },
+        {
+          "name": "swordfish",
+          "quantity": 1
+        },
+        {
+          "name": "spade",
+          "quantity": 1
+        },
+        {
+          "name": "ectophial",
+          "quantity": 1
+        },
+        {
+          "name": "ghostspeak amulet",
+          "quantity": 1
+        },
+        {
+          "name": "sapphire amulet",
+          "quantity": 1
+        },
+        {
+          "name": "fremennik boots 1",
+          "quantity": 1
+        },
+        {
+          "name": "necklace of passage",
+          "quantity": 1
+        },
+        {
+          "name": "law rune",
+          "quantity": null
+        },
+        {
+          "name": "staff of water",
+          "quantity": 1
+        },
+        {
+          "name": "enchanted key",
+          "quantity": 1
+        },
+        {
+          "name": "ring of dueling",
+          "quantity": 1
+        },
+        {
+          "name": "air rune",
+          "quantity": null
+        },
+        {
+          "name": "earth rune",
+          "quantity": null
+        }
+      ]
+    },
+    "6de1622494": {
+      "items": [
+        {
+          "name": "ardougne cloak 1",
+          "quantity": 1
+        },
+        {
+          "name": "dramen staff",
+          "quantity": 1
+        },
+        {
+          "name": "energy potion(4)",
+          "quantity": 1
+        },
+        {
+          "name": "rope",
+          "quantity": 1
+        },
+        {
+          "name": "waterskin(4)",
+          "quantity": 1
+        },
+        {
+          "name": "camulet",
+          "quantity": 1
+        },
+        {
+          "name": "catspeak amulet",
+          "quantity": 1
+        }
+      ]
+    },
+    "194de2d72f": {
+      "items": [
+        {
+          "name": "gold bar",
+          "quantity": 3
+        },
+        {
+          "name": "hammer",
+          "quantity": 1
+        },
+        {
+          "name": "swordfish",
+          "quantity": null
+        }
+      ]
+    },
+    "a77e21e073": {
+      "items": [
+        {
+          "name": "coins",
+          "quantity": null
+        },
+        {
+          "name": "mist rune",
+          "quantity": 10
+        },
+        {
+          "name": "lava rune",
+          "quantity": 10
+        },
+        {
+          "name": "blood rune",
+          "quantity": 5
+        },
+        {
+          "name": "airtight pot",
+          "quantity": 1
+        },
+        {
+          "name": "rune pickaxe",
+          "quantity": 1
+        },
+        {
+          "name": "rune axe",
+          "quantity": 1
+        },
+        {
+          "name": "tinderbox",
+          "quantity": 1
+        },
+        {
+          "name": "hammer",
+          "quantity": 1
+        },
+        {
+          "name": "ring of charos(a)",
+          "quantity": 1
+        },
+        {
+          "name": "dramen staff",
+          "quantity": 1
+        },
+        {
+          "name": "ardougne cloak 1",
+          "quantity": 1
+        },
+        {
+          "name": "swordfish",
+          "quantity": 1
+        },
+        {
+          "name": "yellow dye",
+          "quantity": 1
+        },
+        {
+          "name": "swamp tar",
+          "quantity": 1
+        },
+        {
+          "name": "necklace of passage",
+          "quantity": 1
+        },
+        {
+          "name": "rope",
+          "quantity": 1
+        },
+        {
+          "name": "teasing stick",
+          "quantity": 1
+        },
+        {
+          "name": "box trap",
+          "quantity": 1
+        },
+        {
+          "name": "rabbit snare",
+          "quantity": 1
+        },
+        {
+          "name": "law rune",
+          "quantity": null
+        },
+        {
+          "name": "soul rune",
+          "quantity": null
+        }
+      ]
+    },
+    "60300df55e": {
+      "items": [
+        {
+          "name": "bones",
+          "quantity": 1400
+        }
+      ]
+    },
+    "8bba3b1272": {
+      "items": [
+        {
+          "name": "green dragonhide",
+          "quantity": null
+        },
+        {
+          "name": "coins",
+          "quantity": null
+        },
+        {
+          "name": "nature rune",
+          "quantity": null
+        },
+        {
+          "name": "staff of fire",
+          "quantity": 1
+        },
+        {
+          "name": "maple logs",
+          "quantity": null
+        },
+        {
+          "name": "knife",
+          "quantity": 1
+        },
+        {
+          "name": "feather",
+          "quantity": null
+        },
+        {
+          "name": "kharedst's memoirs",
+          "quantity": 1
+        },
+        {
+          "name": "log basket",
+          "quantity": 1
+        }
+      ]
+    },
+    "62a88215ec": {
+      "items": [
+        {
+          "name": "law runes",
+          "quantity": 1
+        },
+        {
+          "name": "soul runes",
+          "quantity": 1
+        },
+        {
+          "name": "enchanted silvthrill rod",
+          "quantity": 1
+        },
+        {
+          "name": "rope",
+          "quantity": 1
+        },
+        {
+          "name": "dramen staff",
+          "quantity": 1
+        },
+        {
+          "name": "plank",
+          "quantity": 1
+        },
+        {
+          "name": "nails",
+          "quantity": 8
+        },
+        {
+          "name": "hammer",
+          "quantity": 1
+        }
+      ],
+      "requires": {
+        "skill": "SLAYER",
+        "level": 58
+      }
+    },
+    "bd1de52f50": {
+      "items": [
+        {
+          "name": "crystal saw",
+          "quantity": 1
+        },
+        {
+          "name": "hammer",
+          "quantity": 1
+        },
+        {
+          "name": "marble block",
+          "quantity": 1
+        },
+        {
+          "name": "magic stone",
+          "quantity": 1
+        },
+        {
+          "name": "gold leaf",
+          "quantity": 1
+        },
+        {
+          "name": "spirit sapling",
+          "quantity": 1
+        },
+        {
+          "name": "oak plank",
+          "quantity": 19
+        },
+        {
+          "name": "teak plank",
+          "quantity": 17
+        },
+        {
+          "name": "mahogany plank",
+          "quantity": 8
+        }
+      ]
+    },
+    "81c137ad49": {
+      "items": [
+        {
+          "name": "prayer potion",
+          "quantity": null
+        },
+        {
+          "name": "mirror shield",
+          "quantity": 1
+        },
+        {
+          "name": "law runes",
+          "quantity": null
+        },
+        {
+          "name": "soul runes",
+          "quantity": null
+        },
+        {
+          "name": "dramen staff",
+          "quantity": 1
+        },
+        {
+          "name": "fishing explosive",
+          "quantity": null
+        }
+      ]
+    },
+    "04da2bb8e9": {
+      "items": [
+        {
+          "name": "vial of water",
+          "quantity": 2
+        },
+        {
+          "name": "tarromin",
+          "quantity": 2
+        },
+        {
+          "name": "leather gloves",
+          "quantity": 1
+        },
+        {
+          "name": "rune axe",
+          "quantity": 1
+        },
+        {
+          "name": "potato with cheese",
+          "quantity": null
+        },
+        {
+          "name": "iban's staff",
+          "quantity": 1
+        },
+        {
+          "name": "death runes",
+          "quantity": null
+        },
+        {
+          "name": "fire runes",
+          "quantity": null
+        },
+        {
+          "name": "water runes",
+          "quantity": null
+        },
+        {
+          "name": "staff of air",
+          "quantity": 1
+        },
+        {
+          "name": "law runes",
+          "quantity": null
+        },
+        {
+          "name": "ring of dueling",
+          "quantity": 1
+        },
+        {
+          "name": "prayer potion",
+          "quantity": null
+        },
+        {
+          "name": "energy potion",
+          "quantity": null
+        }
+      ]
+    },
+    "abd5f38f18": {
+      "items": [
+        {
+          "name": "ectophial",
+          "quantity": 1
+        },
+        {
+          "name": "potato with cheese",
+          "quantity": null
+        },
+        {
+          "name": "prayer potion",
+          "quantity": null
+        },
+        {
+          "name": "energy potion",
+          "quantity": null
+        },
+        {
+          "name": "fishbowl helmet",
+          "quantity": 1
+        },
+        {
+          "name": "diving apparatus",
+          "quantity": 1
+        },
+        {
+          "name": "planks",
+          "quantity": 18
+        },
+        {
+          "name": "bear fur",
+          "quantity": 10
+        },
+        {
+          "name": "hammer",
+          "quantity": 1
+        },
+        {
+          "name": "holy symbol",
+          "quantity": 1
+        },
+        {
+          "name": "ring of charos(a)",
+          "quantity": 1
+        },
+        {
+          "name": "bowl",
+          "quantity": 1
+        },
+        {
+          "name": "chaos runes",
+          "quantity": 15
+        },
+        {
+          "name": "law runes",
+          "quantity": null
+        },
+        {
+          "name": "fire runes",
+          "quantity": null
+        },
+        {
+          "name": "staff of air",
+          "quantity": 1
+        },
+        {
+          "name": "rune axe",
+          "quantity": 1
+        },
+        {
+          "name": "fremennik boots",
+          "quantity": 1
+        },
+        {
+          "name": "watermelon seeds",
+          "quantity": 3
+        },
+        {
+          "name": "ultracompost",
+          "quantity": 1
+        },
+        {
+          "name": "rake",
+          "quantity": 1
+        },
+        {
+          "name": "seed dibber",
+          "quantity": 1
+        }
+      ]
+    },
+    "8ba9cb02df": {
+      "requires": {
+        "skill": "FISHING",
+        "level": 99
+      },
+      "items": [
+        {
+          "name": "knife",
+          "quantity": 1
+        },
+        {
+          "name": "teak log",
+          "quantity": 1
+        },
+        {
+          "name": "barbarian rod",
+          "quantity": 1
+        },
+        {
+          "name": "feather"
+        }
+      ]
+    },
+    "132a570483": {
+      "requiresAll": [
+        {
+          "skill": "ATTACK",
+          "level": 78
+        },
+        {
+          "skill": "STRENGTH",
+          "level": 85
+        },
+        {
+          "skill": "DEFENCE",
+          "level": 75
+        },
+        {
+          "skill": "PRAYER",
+          "level": 72
+        },
+        {
+          "skill": "CRAFTING",
+          "level": 80
+        },
+        {
+          "skill": "COMBAT",
+          "level": 100
+        }
+      ]
+    },
+    "64de76d136": {
+      "requiresAll": [
+        {
+          "skill": "CRAFTING",
+          "level": 93
+        },
+        {
+          "skill": "THIEVING",
+          "level": 91
+        }
+      ]
+    },
+    "00e120053d": {
+      "items": [
+        {
+          "name": "necklace of passage",
+          "quantity": 1
+        },
+        {
+          "name": "bronze pickaxe",
+          "quantity": 1
+        },
+        {
+          "name": "adamant pickaxe",
+          "quantity": 1
+        },
+        {
+          "name": "bird snare",
+          "quantity": 1
+        },
+        {
+          "name": "statuette",
+          "quantity": 1
+        },
+        {
+          "name": "papyrus",
+          "quantity": 1
+        },
+        {
+          "name": "strange implement",
+          "quantity": 1
+        },
+        {
+          "name": "phoenix feather",
+          "quantity": 1
+        },
+        {
+          "name": "chisel",
+          "quantity": 1
+        },
+        {
+          "name": "hammer",
+          "quantity": 1
+        },
+        {
+          "name": "black mushroom",
+          "quantity": 1
+        },
+        {
+          "name": "pestle and mortar",
+          "quantity": 1
+        },
+        {
+          "name": "vial",
+          "quantity": 1
+        }
+      ]
+    },
+    "24531c7df9": {
+      "items": [
+        {
+          "name": "ring of dueling",
+          "quantity": 1
+        },
+        {
+          "name": "necklace of passage",
+          "quantity": 1
+        },
+        {
+          "name": "notes",
+          "quantity": 1
+        },
+        {
+          "name": "bronze pickaxe",
+          "quantity": 1
+        },
+        {
+          "name": "adamant pickaxe",
+          "quantity": 1
+        },
+        {
+          "name": "bones",
+          "quantity": 25
+        },
+        {
+          "name": "steel axe",
+          "quantity": 1
+        },
+        {
+          "name": "ball of wool",
+          "quantity": 3
+        },
+        {
+          "name": "rope",
+          "quantity": 1
+        },
+        {
+          "name": "yellow dye",
+          "quantity": 1
+        },
+        {
+          "name": "redberries",
+          "quantity": 1
+        },
+        {
+          "name": "ashes",
+          "quantity": 1
+        },
+        {
+          "name": "bucket of water",
+          "quantity": 1
+        },
+        {
+          "name": "soft clay",
+          "quantity": 6
+        },
+        {
+          "name": "woad leaves",
+          "quantity": 8
+        },
+        {
+          "name": "pot of flour",
+          "quantity": 1
+        }
+      ]
+    },
+    "773f8191db": {
+      "items": [
+        {
+          "name": "dramen staff",
+          "quantity": 1
+        },
+        {
+          "name": "iron bar",
+          "quantity": 1
+        },
+        {
+          "name": "rune pickaxe",
+          "quantity": 1
+        },
+        {
+          "name": "rune axe",
+          "quantity": 1
+        },
+        {
+          "name": "gold ring",
+          "quantity": 1
+        },
+        {
+          "name": "cake"
+        },
+        {
+          "name": "oak shortbow",
+          "quantity": 1
+        },
+        {
+          "name": "energy potion"
+        },
+        {
+          "name": "prayer potion"
+        },
+        {
+          "name": "swordfish"
+        }
+      ]
+    },
+    "3946fdb8db": {
+      "items": [
+        {
+          "name": "cat",
+          "quantity": 1
+        },
+        {
+          "name": "stew",
+          "quantity": 9
+        },
+        {
+          "name": "tiara",
+          "quantity": 1
+        },
+        {
+          "name": "mind talisman",
+          "quantity": 1
+        },
+        {
+          "name": "pure essence",
+          "quantity": 10
+        },
+        {
+          "name": "binding necklace",
+          "quantity": 1
+        },
+        {
+          "name": "earth talisman",
+          "quantity": 1
+        },
+        {
+          "name": "earth rune"
+        },
+        {
+          "name": "dramen staff",
+          "quantity": 1
+        }
+      ]
+    },
+    "93e5b3b8cf": {
+      "items": [
+        {
+          "name": "coins",
+          "quantity": 2000
+        },
+        {
+          "name": "stodgy mattress",
+          "quantity": 1
+        },
+        {
+          "name": "opal",
+          "quantity": 2
+        },
+        {
+          "name": "jade",
+          "quantity": 2
+        },
+        {
+          "name": "red topaz",
+          "quantity": 2
+        },
+        {
+          "name": "sapphire",
+          "quantity": 2
+        },
+        {
+          "name": "ardougne cloak 1",
+          "quantity": 1
+        },
+        {
+          "name": "dramen staff",
+          "quantity": 1
+        },
+        {
+          "name": "teasing stick",
+          "quantity": 1
+        },
+        {
+          "name": "knife",
+          "quantity": 1
+        },
+        {
+          "name": "logs",
+          "quantity": 1
+        },
+        {
+          "name": "hammer",
+          "quantity": 1
+        },
+        {
+          "name": "chisel",
+          "quantity": 1
+        },
+        {
+          "name": "ring of dueling(8)",
+          "quantity": 1
+        },
+        {
+          "name": "energy potion(4)",
+          "quantity": 1
+        },
+        {
+          "name": "games necklace(8)",
+          "quantity": 1
+        }
+      ]
+    },
+    "e1299c5290": {
+      "items": [
+        {
+          "name": "law rune"
+        },
+        {
+          "name": "staff of air",
+          "quantity": 1
+        },
+        {
+          "name": "hammer",
+          "quantity": 1
+        },
+        {
+          "name": "ring of dueling",
+          "quantity": 1
+        },
+        {
+          "name": "swordfish"
+        },
+        {
+          "name": "prayer potion"
+        },
+        {
+          "name": "energy potion"
+        },
+        {
+          "name": "dwarven stout",
+          "quantity": 1
+        },
+        {
+          "name": "soft clay",
+          "quantity": 2
+        },
+        {
+          "name": "fire rune"
+        },
+        {
+          "name": "herbal tincture",
+          "quantity": 1
+        },
+        {
+          "name": "pigeon cage",
+          "quantity": 5
+        }
+      ]
+    },
+    "eba86becc3": {
+      "items": [
+        {
+          "name": "potato with cheese"
+        },
+        {
+          "name": "prayer potion"
+        },
+        {
+          "name": "defence potion",
+          "quantity": 1
+        },
+        {
+          "name": "volcanic sulphur"
+        },
+        {
+          "name": "molten glass"
+        },
+        {
+          "name": "dark essence block"
+        }
+      ]
+    }
+  }
 }
