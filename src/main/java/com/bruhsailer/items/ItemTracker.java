@@ -88,11 +88,27 @@ public class ItemTracker
 		return 0;
 	}
 
+	/** Guide slang -> the item's real in-game name. */
+	private static final Map<String, String> COLLOQUIAL = Map.ofEntries(
+		Map.entry("poh tab", "teleport to house"),
+		Map.entry("poh tabs", "teleport to house"),
+		Map.entry("house tab", "teleport to house"),
+		Map.entry("house tabs", "teleport to house"),
+		Map.entry("varrock tab", "varrock teleport"),
+		Map.entry("falador tab", "falador teleport"),
+		Map.entry("fally tab", "falador teleport"),
+		Map.entry("lumbridge tab", "lumbridge teleport"),
+		Map.entry("lumby tab", "lumbridge teleport"),
+		Map.entry("camelot tab", "camelot teleport"),
+		Map.entry("ardougne tab", "ardougne teleport"),
+		Map.entry("ardy tab", "ardougne teleport"));
+
 	/**
 	 * The in-game item names a guide phrase might refer to, most literal
 	 * first. The guide abbreviates: "100 mind" means Mind runes, "1 log" is
 	 * the item "Logs", "2 buckets" is the item "Bucket", "bolts of cloth"
-	 * is "Bolt of cloth". Also used by the bank filter.
+	 * is "Bolt of cloth", "POH tab" is "Teleport to house". Also used by
+	 * the bank filter.
 	 */
 	public static String[] aliases(String name)
 	{
@@ -101,6 +117,11 @@ public class ItemTracker
 		if (key.equals("gp") || key.equals("gold") || key.equals("cash") || key.equals("money"))
 		{
 			key = "coins";
+		}
+		String colloquial = COLLOQUIAL.get(key);
+		if (colloquial != null)
+		{
+			key = colloquial;
 		}
 		String singular = key.endsWith("s") ? key.substring(0, key.length() - 1) : key;
 

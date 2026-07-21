@@ -74,6 +74,17 @@ public class SentenceSplitterTest
 	}
 
 	@Test
+	public void shortItemsLikeSawAndGpGetTheirOwnFragment()
+	{
+		List<List<TextRun>> clauses = SentenceSplitter.split(Arrays.asList(
+			plain("grab your hammer, saw, steel nails, one POH tab, GP, burnt meat")));
+
+		assertEquals(6, clauses.size());
+		assertEquals("saw", join(clauses.get(1)));
+		assertEquals("GP", join(clauses.get(4)));
+	}
+
+	@Test
 	public void doesNotSplitNumbersWithThousandsSeparators()
 	{
 		List<List<TextRun>> clauses = SentenceSplitter.split(Arrays.asList(

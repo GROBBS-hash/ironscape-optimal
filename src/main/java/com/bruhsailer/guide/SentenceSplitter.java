@@ -25,8 +25,12 @@ final class SentenceSplitter
 	private static final Pattern SENTENCE_BOUNDARY =
 		Pattern.compile("(?<=[.!?])\\s+(?=[\"(A-Z0-9])|\\n+");
 
-	/** Fragments shorter than this (or with no letters/digits) merge into the previous sentence. */
-	private static final int MIN_FRAGMENT_LENGTH = 4;
+	/**
+	 * Fragments shorter than this (or with no letters/digits) merge into
+	 * the previous sentence. Two, not more: "saw" and "GP" are real items
+	 * that deserve their own row.
+	 */
+	private static final int MIN_FRAGMENT_LENGTH = 2;
 
 	private SentenceSplitter()
 	{

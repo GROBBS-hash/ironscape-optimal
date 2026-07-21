@@ -62,17 +62,20 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 async function listQuestTitles() {
   const titles = [];
-  let cmcontinue;
-  do {
-    const url = 'https://oldschool.runescape.wiki/api.php?action=query&list=categorymembers'
-      + '&cmtitle=Category%3AQuests&cmlimit=500&cmnamespace=0&format=json'
-      + (cmcontinue ? '&cmcontinue=' + encodeURIComponent(cmcontinue) : '');
-    const res = await fetch(url, { headers: { 'User-Agent': USER_AGENT } });
-    const json = await res.json();
-    titles.push(...json.query.categorymembers.map((m) => m.title));
-    cmcontinue = json.continue?.cmcontinue;
-    await sleep(REQUEST_DELAY_MS);
-  } while (cmcontinue);
+  // Miniquests (Daddy's Home etc.) live in their own category.
+  for (const category of ['Category%3AQuests', 'Category%3AMiniquests']) {
+    let cmcontinue;
+    do {
+      const url = 'https://oldschool.runescape.wiki/api.php?action=query&list=categorymembers'
+        + `&cmtitle=${category}&cmlimit=500&cmnamespace=0&format=json`
+        + (cmcontinue ? '&cmcontinue=' + encodeURIComponent(cmcontinue) : '');
+      const res = await fetch(url, { headers: { 'User-Agent': USER_AGENT } });
+      const json = await res.json();
+      titles.push(...json.query.categorymembers.map((m) => m.title));
+      cmcontinue = json.continue?.cmcontinue;
+      await sleep(REQUEST_DELAY_MS);
+    } while (cmcontinue);
+  }
   return titles;
 }
 

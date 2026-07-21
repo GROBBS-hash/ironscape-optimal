@@ -3457,6 +3457,125 @@
       "x": 3040,
       "y": 2980,
       "plane": 0
+    },
+    "alfred grimhand's barcrawl": {
+      "display": "Alfred Grimhand's Barcrawl",
+      "type": "quest",
+      "x": 2544,
+      "y": 3569,
+      "plane": 0
+    },
+    "architectural alliance": {
+      "display": "Architectural Alliance",
+      "type": "quest",
+      "x": 1632,
+      "y": 3669,
+      "plane": 0
+    },
+    "barbarian training": {
+      "display": "Barbarian Training",
+      "type": "quest",
+      "x": 2504,
+      "y": 3488,
+      "plane": 0
+    },
+    "bear your soul/quick guide": {
+      "display": "Bear Your Soul/Quick guide",
+      "type": "quest",
+      "x": 1632,
+      "y": 3807,
+      "plane": 0
+    },
+    "curse of the empty lord": {
+      "display": "Curse of the Empty Lord",
+      "type": "quest",
+      "x": 2554,
+      "y": 3445,
+      "plane": 0
+    },
+    "daddy's home": {
+      "display": "Daddy's Home",
+      "type": "quest",
+      "x": 3240,
+      "y": 3474,
+      "plane": 0
+    },
+    "enter the abyss": {
+      "display": "Enter the Abyss",
+      "type": "quest",
+      "x": 3104,
+      "y": 3561,
+      "plane": 0
+    },
+    "family pest": {
+      "display": "Family Pest",
+      "type": "quest",
+      "x": 3279,
+      "y": 3404,
+      "plane": 0
+    },
+    "hopespear's will": {
+      "display": "Hopespear's Will",
+      "type": "quest",
+      "x": 3742,
+      "y": 4387,
+      "plane": 0
+    },
+    "in search of knowledge": {
+      "display": "In Search of Knowledge",
+      "type": "quest",
+      "x": 1840,
+      "y": 9926,
+      "plane": 0
+    },
+    "knight waves": {
+      "display": "Knight Waves",
+      "type": "quest",
+      "x": 2758,
+      "y": 3507,
+      "plane": 2
+    },
+    "mage arena i": {
+      "display": "Mage Arena I",
+      "type": "quest",
+      "x": 2538,
+      "y": 4716,
+      "plane": 0
+    },
+    "sacred bone burner": {
+      "display": "Sacred Bone Burner",
+      "type": "quest",
+      "x": 1810,
+      "y": 9951,
+      "plane": 0
+    },
+    "skippy and the mogres": {
+      "display": "Skippy and the Mogres",
+      "type": "quest",
+      "x": 2977,
+      "y": 3195,
+      "plane": 0
+    },
+    "the enchanted key": {
+      "display": "The Enchanted Key",
+      "type": "quest",
+      "x": 2658,
+      "y": 3315,
+      "plane": 0
+    },
+    "the frozen door/quick guide": {
+      "display": "The Frozen Door/Quick guide",
+      "type": "quest",
+      "x": 2884,
+      "y": 5279,
+      "plane": 0
+    },
+    "vale totems (miniquest)": {
+      "display": "Vale Totems (miniquest)",
+      "type": "quest",
+      "x": 1367,
+      "y": 3368,
+      "plane": 0
     }
   }
 }
