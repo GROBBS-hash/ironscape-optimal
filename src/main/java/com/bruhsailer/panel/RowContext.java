@@ -41,4 +41,7 @@ class RowContext
 
 	/** Routes to a named place via Shortest Path. Null if unwired. */
 	Consumer<String> placeNavigateHandler;
+
+	/** Hops to a world number ("world 444" links). Null if unwired. */
+	Consumer<Integer> worldHopHandler;
 }

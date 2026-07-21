@@ -53,6 +53,43 @@ public final class GoalDetector
 		"crafting", "smithing", "mining", "herblore", "agility", "thieving", "slayer",
 		"farming", "runecraft", "runecrafting", "hunter", "construction", "combat");
 
+	/**
+	 * Guide word -> Skill enum, including the guide's abbreviations.
+	 * "combat" is deliberately absent — it's not one trainable skill.
+	 */
+	private static final java.util.Map<String, Skill> SKILL_BY_WORD = java.util.Map.ofEntries(
+		java.util.Map.entry("attack", Skill.ATTACK),
+		java.util.Map.entry("strength", Skill.STRENGTH),
+		java.util.Map.entry("defence", Skill.DEFENCE),
+		java.util.Map.entry("defense", Skill.DEFENCE),
+		java.util.Map.entry("hitpoints", Skill.HITPOINTS),
+		java.util.Map.entry("hp", Skill.HITPOINTS),
+		java.util.Map.entry("ranged", Skill.RANGED),
+		java.util.Map.entry("range", Skill.RANGED),
+		java.util.Map.entry("prayer", Skill.PRAYER),
+		java.util.Map.entry("magic", Skill.MAGIC),
+		java.util.Map.entry("cooking", Skill.COOKING),
+		java.util.Map.entry("woodcutting", Skill.WOODCUTTING),
+		java.util.Map.entry("fletching", Skill.FLETCHING),
+		java.util.Map.entry("fishing", Skill.FISHING),
+		java.util.Map.entry("firemaking", Skill.FIREMAKING),
+		java.util.Map.entry("crafting", Skill.CRAFTING),
+		java.util.Map.entry("smithing", Skill.SMITHING),
+		java.util.Map.entry("mining", Skill.MINING),
+		java.util.Map.entry("herblore", Skill.HERBLORE),
+		java.util.Map.entry("agility", Skill.AGILITY),
+		java.util.Map.entry("thieving", Skill.THIEVING),
+		java.util.Map.entry("slayer", Skill.SLAYER),
+		java.util.Map.entry("farming", Skill.FARMING),
+		java.util.Map.entry("runecraft", Skill.RUNECRAFT),
+		java.util.Map.entry("runecrafting", Skill.RUNECRAFT),
+		java.util.Map.entry("hunter", Skill.HUNTER),
+		java.util.Map.entry("construction", Skill.CONSTRUCTION));
+
+	/** "50 firemaking", "level 43 prayer", "70 range" — number then skill word. */
+	private static final Pattern LEVEL_SKILL = Pattern.compile(
+		"\\b(\\d{1,2})\\s+([a-zA-Z]+)");
+
 	/** "Grab a bucket of milk" — acquisition without a number means quantity 1. */
 	private static final Pattern VERB_NO_QUANTITY = Pattern.compile(
 		"\\b(?:get|grab|buy|collect|take|withdraw)\\s+(?:(?:a|an|some|your|the)\\s+)?([a-z][a-z'/ -]+)",
@@ -119,11 +156,40 @@ public final class GoalDetector
 		Skill skill;
 	}
 
+	/**
+	 * "burn them to level 50 firemaking" — the sub-step completes when the
+	 * REAL skill level reaches the target. Monotonic, so it's strong
+	 * evidence, like quest state. A sub with several ("get 40 attack and
+	 * 30 strength") completes when ALL are met, mirroring item goals.
+	 */
+	@Value
+	public static class SkillLevelGoal
+	{
+		GuideStep step;
+		SubStep sub;
+		Skill skill;
+		int level;
+	}
+
 	@Value
 	public static class TravelGoal
 	{
 		GuideStep step;
 		SubStep sub;
+	}
+
+	/**
+	 * "Minigame teleport to Soul Wars" — completion is still the travel
+	 * goal's position jump; this extra goal exists so an overlay can walk
+	 * the player through the Grouping UI (tab -> dropdown -> Teleport).
+	 */
+	@Value
+	public static class MinigameTeleportGoal
+	{
+		GuideStep step;
+		SubStep sub;
+		/** The minigame name as written in the guide, e.g. "Soul Wars". */
+		String minigame;
 	}
 
 	@Value
@@ -160,7 +226,13 @@ public final class GoalDetector
 		List<TravelGoal> travelGoals;
 		List<InteractionGoal> interactionGoals;
 		List<CountedSkillGoal> countedSkillGoals;
+		List<MinigameTeleportGoal> minigameTeleportGoals;
+		List<SkillLevelGoal> skillLevelGoals;
 	}
+
+	/** "Minigame teleport to Soul Wars" — the name feeds the Grouping-UI overlay. */
+	private static final Pattern MINIGAME_TELEPORT = Pattern.compile(
+		"minigame teleport to ([A-Za-z][A-Za-z' -]+)", Pattern.CASE_INSENSITIVE);
 
 	/**
 	 * "use your planks to train construction (6 wooden chairs, 1 rug...)"
@@ -211,6 +283,8 @@ public final class GoalDetector
 		List<TravelGoal> travelGoals = new ArrayList<>();
 		List<InteractionGoal> interactionGoals = new ArrayList<>();
 		List<CountedSkillGoal> countedGoals = new ArrayList<>();
+		List<MinigameTeleportGoal> minigameGoals = new ArrayList<>();
+		List<SkillLevelGoal> levelGoals = new ArrayList<>();
 
 		for (GuideStep step : guide.getAllSteps())
 		{
@@ -225,9 +299,13 @@ public final class GoalDetector
 				boolean producedItems = itemGoals.size() > itemsBefore;
 				inItemList = producedItems;
 				detectQuestGoal(step, sub, questGoals);
+				// "burn them to level 50 firemaking" — a level target.
+				List<SkillLevelGoal> subLevels = detectLevelGoals(step, sub);
+				levelGoals.addAll(subLevels);
 				// Item goals are stronger evidence than an action verb —
 				// "chop 110 logs" waits for the logs, not the first swing.
-				if (!producedItems)
+				// A level target likewise beats "first xp drop ticks it".
+				if (!producedItems && subLevels.isEmpty())
 				{
 					detectActionGoal(step, sub, actionGoals);
 				}
@@ -250,9 +328,19 @@ public final class GoalDetector
 					travelGoals.add(new TravelGoal(step, sub));
 				}
 
-				// "train construction (6 chairs, 1 rug...)" -> counted XP drops
+				// "Minigame teleport to X" — remember which minigame, so the
+				// overlay can point at the Grouping UI while this sub is next.
+				Matcher minigame = MINIGAME_TELEPORT.matcher(sub.getPlainText());
+				if (minigame.find())
+				{
+					minigameGoals.add(new MinigameTeleportGoal(step, sub, minigame.group(1).trim()));
+				}
+
+				// "train construction (6 chairs, 1 rug...)" -> counted XP drops.
+				// Not when a level target exists — "train fm to 50" counts
+				// levels, not drops (and the 50 would poison the drop sum).
 				Matcher train = TRAIN_SKILL.matcher(sub.getPlainText());
-				if (!producedItems && train.find())
+				if (!producedItems && subLevels.isEmpty() && train.find())
 				{
 					Skill skill = Skill.valueOf(train.group(1).toUpperCase(Locale.ROOT));
 					int count = 0;
@@ -265,7 +353,33 @@ public final class GoalDetector
 				}
 			}
 		}
-		return new Goals(itemGoals, questGoals, actionGoals, travelGoals, interactionGoals, countedGoals);
+		return new Goals(itemGoals, questGoals, actionGoals, travelGoals, interactionGoals,
+			countedGoals, minigameGoals, levelGoals);
+	}
+
+	/**
+	 * Every "number + skill word" pair in the sub-step is a level target:
+	 * "burn them to level 50 firemaking", "get 43 prayer", "until 70 range".
+	 * Parentheticals are commentary and skipped, same as for items. If a
+	 * skill appears twice the higher target wins.
+	 */
+	private static List<SkillLevelGoal> detectLevelGoals(GuideStep step, SubStep sub)
+	{
+		String text = sub.getPlainText().replaceAll("\\([^)]*\\)", " ");
+		java.util.Map<Skill, Integer> targets = new java.util.LinkedHashMap<>();
+		Matcher matcher = LEVEL_SKILL.matcher(text);
+		while (matcher.find())
+		{
+			Skill skill = SKILL_BY_WORD.get(matcher.group(2).toLowerCase(Locale.ROOT));
+			int level = Integer.parseInt(matcher.group(1));
+			if (skill != null && level >= 2 && level <= 99)
+			{
+				targets.merge(skill, level, Math::max);
+			}
+		}
+		List<SkillLevelGoal> goals = new ArrayList<>(targets.size());
+		targets.forEach((skill, level) -> goals.add(new SkillLevelGoal(step, sub, skill, level)));
+		return goals;
 	}
 
 	/** "Chop down a dying tree" -> a Woodcutting XP drop completes it. */

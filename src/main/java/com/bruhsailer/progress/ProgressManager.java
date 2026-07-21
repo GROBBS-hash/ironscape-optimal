@@ -6,6 +6,7 @@ import com.bruhsailer.guide.GuideVariant;
 import com.bruhsailer.guide.SubStep;
 import java.util.Collections;
 import java.util.EnumMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
@@ -32,6 +33,11 @@ public class ProgressManager
 	// In-memory cache so we don't re-parse the config string on every
 	// checkbox read. Rebuilt after a profile switch via invalidate().
 	private final Map<GuideVariant, Set<String>> cache = new EnumMap<>(GuideVariant.class);
+
+	// Counted xp-drop progress ("train construction (6 chairs...)"): how many
+	// drops have been seen per sub-step id. Same cache/persist scheme as
+	// completed ids, stored as comma-joined "subId=count" pairs.
+	private final Map<GuideVariant, Map<String, Integer>> countedCache = new EnumMap<>(GuideVariant.class);
 
 	@Inject
 	public ProgressManager(ConfigManager configManager)
@@ -60,6 +66,21 @@ public class ProgressManager
 		if (changed)
 		{
 			save(variant, ids);
+		}
+		if (!completed)
+		{
+			// Unticking says "this isn't done" — a kept-around full counter
+			// would instantly re-tick the step on the next xp drop.
+			Map<String, Integer> counts = countedFor(variant);
+			boolean countsChanged = false;
+			for (SubStep sub : step.getSubSteps())
+			{
+				countsChanged |= counts.remove(sub.getId()) != null;
+			}
+			if (countsChanged)
+			{
+				saveCounted(variant, counts);
+			}
 		}
 	}
 
@@ -104,8 +125,30 @@ public class ProgressManager
 				}
 			}
 			ids.remove(sub.getId());
+			// See setCompleted: an unticked sub restarts its xp-drop count.
+			Map<String, Integer> counts = countedFor(variant);
+			if (counts.remove(sub.getId()) != null)
+			{
+				saveCounted(variant, counts);
+			}
 		}
 		save(variant, ids);
+	}
+
+	/** Xp drops seen so far for a counted sub-step ("train construction (6 chairs...)"). */
+	public synchronized int countedProgress(GuideVariant variant, String subId)
+	{
+		Integer count = countedFor(variant).get(subId);
+		return count == null ? 0 : count;
+	}
+
+	/** Record one more xp drop for a counted sub-step; returns the new total. */
+	public synchronized int incrementCounted(GuideVariant variant, String subId)
+	{
+		Map<String, Integer> counts = countedFor(variant);
+		int total = counts.merge(subId, 1, Integer::sum);
+		saveCounted(variant, counts);
+		return total;
 	}
 
 	/**
@@ -145,6 +188,7 @@ public class ProgressManager
 	public synchronized void invalidate()
 	{
 		cache.clear();
+		countedCache.clear();
 	}
 
 	private Set<String> completedIds(GuideVariant variant)
@@ -178,5 +222,71 @@ public class ProgressManager
 	private static String key(GuideVariant variant)
 	{
 		return "progress_" + variant.name();
+	}
+
+	private Map<String, Integer> countedFor(GuideVariant variant)
+	{
+		return countedCache.computeIfAbsent(variant,
+			v -> decodeCounts(configManager.getConfiguration(CONFIG_GROUP, countedKey(v))));
+	}
+
+	private void saveCounted(GuideVariant variant, Map<String, Integer> counts)
+	{
+		String encoded = encodeCounts(counts);
+		if (encoded.isEmpty())
+		{
+			configManager.unsetConfiguration(CONFIG_GROUP, countedKey(variant));
+		}
+		else
+		{
+			configManager.setConfiguration(CONFIG_GROUP, countedKey(variant), encoded);
+		}
+	}
+
+	/** "s1-14:0=3,s1-14:2=6" -> {s1-14:0: 3, ...}. Malformed entries are dropped. */
+	static Map<String, Integer> decodeCounts(String stored)
+	{
+		Map<String, Integer> counts = new LinkedHashMap<>();
+		if (stored == null || stored.isEmpty())
+		{
+			return counts;
+		}
+		for (String entry : stored.split(","))
+		{
+			// lastIndexOf: sub ids contain ':' and '-' but never '='
+			int eq = entry.lastIndexOf('=');
+			if (eq <= 0)
+			{
+				continue;
+			}
+			try
+			{
+				counts.put(entry.substring(0, eq), Integer.parseInt(entry.substring(eq + 1)));
+			}
+			catch (NumberFormatException e)
+			{
+				// drop the corrupted entry, keep the rest
+			}
+		}
+		return counts;
+	}
+
+	static String encodeCounts(Map<String, Integer> counts)
+	{
+		StringBuilder sb = new StringBuilder();
+		for (Map.Entry<String, Integer> entry : counts.entrySet())
+		{
+			if (sb.length() > 0)
+			{
+				sb.append(',');
+			}
+			sb.append(entry.getKey()).append('=').append(entry.getValue());
+		}
+		return sb.toString();
+	}
+
+	private static String countedKey(GuideVariant variant)
+	{
+		return "counted_" + variant.name();
 	}
 }

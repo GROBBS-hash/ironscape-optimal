@@ -13,6 +13,20 @@ public class RichTextTest
 	}
 
 	@Test
+	public void linkifiesWorldNumbers()
+	{
+		assertEquals(
+			"hop to <a href='bruh:world:444'>world 444</a> for forestry",
+			RichText.linkifyWorlds("hop to world 444 for forestry"));
+		// Capitalised, and multiple mentions
+		assertEquals(
+			"<a href='bruh:world:330'>World 330</a> or <a href='bruh:world:444'>world 444</a>",
+			RichText.linkifyWorlds("World 330 or world 444"));
+		// "world" without a 3-digit number is prose, not a link
+		assertEquals("a forestry world is best", RichText.linkifyWorlds("a forestry world is best"));
+	}
+
+	@Test
 	public void lightensUnreadablyDarkColors()
 	{
 		// Black on a dark panel must come out lighter.
