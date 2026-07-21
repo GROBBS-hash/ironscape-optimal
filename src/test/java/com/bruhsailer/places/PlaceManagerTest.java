@@ -32,6 +32,25 @@ public class PlaceManagerTest
 	}
 
 	@Test
+	public void toleratesApostropheAndAmpersandVariants() throws Exception
+	{
+		PlaceManager manager = freshManager();
+		manager.add("Daddy's Home", new WorldPoint(3241, 3398, 0));
+		manager.add("Romeo & Juliet", new WorldPoint(3211, 3424, 0));
+
+		// guide text uses a curly apostrophe; ours is straight
+		String html = manager.linkify("complete Daddy’s Home quickly");
+		assertEquals("complete <a href='bruh:place:daddy%27s+home'>Daddy’s Home</a> quickly", html);
+
+		// linkify runs on HTML-escaped text where & became &amp;
+		String escaped = manager.linkify("progress Romeo &amp; Juliet.");
+		assertEquals("progress <a href='bruh:place:romeo+%26+juliet'>Romeo &amp; Juliet</a>.", escaped);
+
+		// lookups normalize the same way
+		assertEquals(3241, manager.get("daddy’s home").getX());
+	}
+
+	@Test
 	public void lookupAndPersistence() throws Exception
 	{
 		File dir = Files.createTempDirectory("bruhsailer-places").toFile();

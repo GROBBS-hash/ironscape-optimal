@@ -142,6 +142,25 @@ public class GoalDetectorTest
 	}
 
 	@Test
+	public void handlesNumberWordsAndShortContinuations()
+	{
+		Guide guide = guideWithSubTexts(
+			"grab your hammer", // starts the list
+			"saw",
+			"one POH tab",
+			"GP");
+
+		GoalDetector.Goals goals = GoalDetector.detect(guide);
+
+		assertEquals(4, goals.getItemGoals().size());
+		assertEquals("hammer", goals.getItemGoals().get(0).getItemName());
+		assertEquals("saw", goals.getItemGoals().get(1).getItemName());
+		assertEquals("poh tab", goals.getItemGoals().get(2).getItemName());
+		assertEquals(1, goals.getItemGoals().get(2).getQuantity());
+		assertEquals("gp", goals.getItemGoals().get(3).getItemName());
+	}
+
+	@Test
 	public void detectsInteractionGoals()
 	{
 		Guide guide = guideWithSubTexts(

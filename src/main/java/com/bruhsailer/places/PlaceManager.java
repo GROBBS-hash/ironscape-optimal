@@ -152,7 +152,8 @@ public class PlaceManager
 		StringBuffer sb = new StringBuffer();
 		while (matcher.find())
 		{
-			String href = LINK_PREFIX + encode(matcher.group());
+			// normalized key in the href, original spelling as the label
+			String href = LINK_PREFIX + encode(key(matcher.group()));
 			matcher.appendReplacement(sb,
 				Matcher.quoteReplacement("<a href='" + href + "'>" + matcher.group() + "</a>"));
 		}
@@ -170,7 +171,7 @@ public class PlaceManager
 			namePattern = null;
 			return;
 		}
-		// Longest first so "Duke Horacio" beats a hypothetical "Duke".
+		// Longest first so "Romeo & Juliet" beats "Romeo".
 		names.sort((a, b) -> b.length() - a.length());
 		StringBuilder alternation = new StringBuilder();
 		for (String name : names)
@@ -179,15 +180,48 @@ public class PlaceManager
 			{
 				alternation.append('|');
 			}
-			alternation.append(Pattern.quote(name));
+			alternation.append(tolerantPattern(name));
 		}
 		namePattern = Pattern.compile("\\b(?:" + alternation + ")\\b",
 			Pattern.CASE_INSENSITIVE);
 	}
 
+	/**
+	 * A regex for one name that tolerates the punctuation drift between
+	 * the wiki, the guide's Google-Docs text, and HTML escaping:
+	 * both apostrophes (' and ’), and & as either "&" or "&amp;".
+	 */
+	private static String tolerantPattern(String name)
+	{
+		StringBuilder sb = new StringBuilder();
+		for (char c : name.toCharArray())
+		{
+			if (Character.isLetterOrDigit(c) || c == ' ')
+			{
+				sb.append(c);
+			}
+			else if (c == '\'' || c == '’')
+			{
+				sb.append("['’]");
+			}
+			else if (c == '&')
+			{
+				sb.append("(?:&amp;|&)");
+			}
+			else
+			{
+				sb.append(Pattern.quote(String.valueOf(c)));
+			}
+		}
+		return sb.toString();
+	}
+
+	/** Normalized lookup key: lowercase, straight apostrophes, raw ampersand. */
 	private static String key(String name)
 	{
-		return name.toLowerCase(Locale.ROOT).trim();
+		return name.toLowerCase(Locale.ROOT).trim()
+			.replace('’', '\'')
+			.replace("&amp;", "&");
 	}
 
 	private static String encode(String name)

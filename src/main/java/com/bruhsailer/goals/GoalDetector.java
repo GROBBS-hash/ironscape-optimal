@@ -58,9 +58,14 @@ public final class GoalDetector
 		"\\b(?:get|grab|buy|collect|take|withdraw)\\s+(?:(?:a|an|some|your|the)\\s+)?([a-z][a-z'/ -]+)",
 		Pattern.CASE_INSENSITIVE);
 
-	/** A bare noun fragment that can continue an item list ("raw sardine"). */
+	/** A bare noun fragment that can continue an item list ("raw sardine", "GP"). */
 	private static final Pattern BARE_ITEM = Pattern.compile(
-		"^[A-Za-z][A-Za-z'/ -]{2,40}$");
+		"^[A-Za-z][A-Za-z'/ -]{1,40}$");
+
+	/** "one POH tab" means quantity 1; "two buckets" means quantity 2. */
+	private static final java.util.Map<String, Integer> NUMBER_WORDS = java.util.Map.of(
+		"one", 1, "two", 2, "three", 3, "four", 4, "five", 5,
+		"six", 6, "seven", 7, "eight", 8, "nine", 9, "ten", 10);
 
 	/**
 	 * A name can't START with these — "all but 10 of your logs" must not
@@ -309,6 +314,19 @@ public final class GoalDetector
 			return;
 		}
 		String name = NAME_TERMINATOR.matcher(rawName).replaceFirst("").trim().toLowerCase(Locale.ROOT);
+
+		// "one POH tab" -> quantity 1 of "poh tab"
+		String[] numberSplit = name.split(" ", 2);
+		Integer numberWord = NUMBER_WORDS.get(numberSplit[0]);
+		if (numberWord != null && numberSplit.length > 1)
+		{
+			name = numberSplit[1];
+			if (quantity == 1)
+			{
+				quantity = numberWord;
+			}
+		}
+
 		// "110 logs" good; "110 of the things you like most" is not an item.
 		// "gp" gets a pass on the length rule — it's the guide's word for coins.
 		if ((name.length() < 3 && !name.equals("gp")) || name.split(" ").length > 4)
