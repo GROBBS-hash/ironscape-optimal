@@ -136,7 +136,9 @@ class StepRow extends JPanel
 				needs.add(need);
 			}
 		}
-		if (needs.isEmpty())
+		boolean hasActionBadge = goalSubId != null && ctx.getActionBadge() != null
+			&& ctx.getActionBadge().apply(goalSubId) != null;
+		if (needs.isEmpty() && !hasActionBadge)
 		{
 			return;
 		}
@@ -147,15 +149,26 @@ class StepRow extends JPanel
 		// indent + wrap width must stay inside the panel column, or this
 		// badge widens EVERY row and pushes the buttons off-screen
 		int wrapWidth = Math.max(80, 170 - indentPx);
-		StringBuilder tip = new StringBuilder("<html>Counts inventory + worn + bank "
-			+ "(bank as of your last visit).<br>Matching item names:");
-		for (StepAnnotation.ItemNeed need : needs)
+		if (!needs.isEmpty())
 		{
-			tip.append(" \"").append(RichText.escape(need.name)).append('"');
+			StringBuilder tip = new StringBuilder("<html>Counts inventory + worn + bank "
+				+ "(bank as of your last visit).<br>Matching item names:");
+			for (StepAnnotation.ItemNeed need : needs)
+			{
+				tip.append(" \"").append(RichText.escape(need.name)).append('"');
+			}
+			badge.setToolTipText(tip.append("</html>").toString());
 		}
-		badge.setToolTipText(tip.append("</html>").toString());
+		else
+		{
+			badge.setToolTipText("Counts XP drops this session — restarting the client resets it");
+		}
 		List<StepAnnotation.ItemNeed> badgeNeeds = needs;
-		Runnable refresh = () -> badge.setText(badgeHtml(badgeNeeds, wrapWidth));
+		String actionSubId = goalSubId;
+		Runnable refresh = () -> badge.setText(!badgeNeeds.isEmpty()
+			? badgeHtml(badgeNeeds, wrapWidth)
+			: "<html><body style='width:" + wrapWidth + "px'>"
+				+ ctx.getActionBadge().apply(actionSubId) + "</body></html>");
 		refresh.run();
 		badgeRefreshers.add(refresh);
 		add(badge);

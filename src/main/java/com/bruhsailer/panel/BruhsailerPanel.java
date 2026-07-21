@@ -86,6 +86,9 @@ public class BruhsailerPanel extends PluginPanel
 	/** Set by the plugin; notified after any manual tick (drives auto-navigation). */
 	private Runnable progressChangedListener;
 
+	/** Set by the plugin; sub-id -> html for counted-action progress badges. */
+	private java.util.function.Function<String, String> actionBadgeSupplier;
+
 	// Toolbar (stays fixed while the content below scrolls)
 	private final JProgressBar progressBar = new JProgressBar();
 	private final IconTextField searchBar = new IconTextField();
@@ -239,6 +242,11 @@ public class BruhsailerPanel extends PluginPanel
 	public void setItemGoals(Map<String, List<GoalDetector.ItemGoal>> itemGoals)
 	{
 		this.itemGoals = itemGoals;
+	}
+
+	public void setActionBadgeSupplier(java.util.function.Function<String, String> actionBadgeSupplier)
+	{
+		this.actionBadgeSupplier = actionBadgeSupplier;
 	}
 
 	public void setProgressChangedListener(Runnable progressChangedListener)
@@ -593,7 +601,7 @@ public class BruhsailerPanel extends PluginPanel
 	{
 		return new RowContext(
 			guide.getVariant(), progressManager, annotationManager, itemTracker, placeManager,
-			itemGoals,
+			itemGoals, actionBadgeSupplier,
 			this::onManualProgressChange,
 			config.showCaptureButtons() ? captureHandler : null,
 			navigateHandler,

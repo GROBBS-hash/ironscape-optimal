@@ -88,7 +88,8 @@ public final class GoalDetector
 		"bring", "show", "search", "dig", "light", "burn", "sell", "then", "when", "once",
 		"optional", "optionally", "remember", "swap", "hop", "log", "world",
 		"travel", "fly", "sail", "ride", "cross", "move", "follow", "proceed", "wait",
-		"stay", "chop");
+		"stay", "chop", "break", "drink", "eat", "empty", "fill", "rub", "activate",
+		"unnote", "train");
 
 	@Value
 	public static class ItemGoal
@@ -141,6 +142,16 @@ public final class GoalDetector
 		"give", "fix", "repair", "build", "hand", "deliver", "pay", "feed");
 
 	@Value
+	public static class CountedSkillGoal
+	{
+		GuideStep step;
+		SubStep sub;
+		Skill skill;
+		/** Expected number of XP drops (builds/crafts) to complete this sub. */
+		int count;
+	}
+
+	@Value
 	public static class Goals
 	{
 		List<ItemGoal> itemGoals;
@@ -148,7 +159,17 @@ public final class GoalDetector
 		List<SkillActionGoal> skillActionGoals;
 		List<TravelGoal> travelGoals;
 		List<InteractionGoal> interactionGoals;
+		List<CountedSkillGoal> countedSkillGoals;
 	}
+
+	/**
+	 * "use your planks to train construction (6 wooden chairs, 1 rug...)"
+	 * — built things never enter the inventory, but each build is one XP
+	 * drop, and the parenthetical tells us how many to expect.
+	 */
+	private static final Pattern TRAIN_SKILL = Pattern.compile(
+		"train\\s+(construction|crafting|smithing|cooking|firemaking|fletching|herblore|prayer|magic|fishing|woodcutting|mining|thieving|agility)",
+		Pattern.CASE_INSENSITIVE);
 
 	/** A sub-step about moving via teleport/transport, completed by a position jump. */
 	private static final Pattern TRAVEL_WORDS = Pattern.compile(
@@ -189,6 +210,7 @@ public final class GoalDetector
 		List<SkillActionGoal> actionGoals = new ArrayList<>();
 		List<TravelGoal> travelGoals = new ArrayList<>();
 		List<InteractionGoal> interactionGoals = new ArrayList<>();
+		List<CountedSkillGoal> countedGoals = new ArrayList<>();
 
 		for (GuideStep step : guide.getAllSteps())
 		{
@@ -227,9 +249,23 @@ public final class GoalDetector
 				{
 					travelGoals.add(new TravelGoal(step, sub));
 				}
+
+				// "train construction (6 chairs, 1 rug...)" -> counted XP drops
+				Matcher train = TRAIN_SKILL.matcher(sub.getPlainText());
+				if (!producedItems && train.find())
+				{
+					Skill skill = Skill.valueOf(train.group(1).toUpperCase(Locale.ROOT));
+					int count = 0;
+					Matcher quantities = Pattern.compile("\\b(\\d{1,3})\\b").matcher(sub.getPlainText());
+					while (quantities.find())
+					{
+						count += Integer.parseInt(quantities.group(1));
+					}
+					countedGoals.add(new CountedSkillGoal(step, sub, skill, Math.max(1, count)));
+				}
 			}
 		}
-		return new Goals(itemGoals, questGoals, actionGoals, travelGoals, interactionGoals);
+		return new Goals(itemGoals, questGoals, actionGoals, travelGoals, interactionGoals, countedGoals);
 	}
 
 	/** "Chop down a dying tree" -> a Woodcutting XP drop completes it. */

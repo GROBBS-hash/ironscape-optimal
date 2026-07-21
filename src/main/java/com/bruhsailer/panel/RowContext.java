@@ -27,6 +27,9 @@ class RowContext
 	/** Text-detected item goals keyed by sub-step id (never null; may be empty). */
 	Map<String, List<GoalDetector.ItemGoal>> itemGoals;
 
+	/** sub-id -> html for counted-action badges ("construction 3/9"); may be null. */
+	java.util.function.Function<String, String> actionBadge;
+
 	/** Tells the panel to refresh the progress bar after a tick. */
 	Runnable onProgressChanged;
 
