@@ -182,8 +182,10 @@ All six build-order steps are DONE, plus substantial extras. Current state:
   getSearchingTagTab callback) or type "bruh" in bank search. Shows items
   still needed by the CURRENT SECTION (incomplete steps/subs only), not a
   fixed sub-step lookahead.
-- **Tooling** (`tools/*.mjs`, Node): extract/review annotations (skills +
-  items — owner has NOT run the review yet), verify-annotations (LLM
+- **Tooling** (`tools/*.mjs`, Node): extract/review annotations (review
+  COMPLETE 2026-07-22: bundled annotations cover 187 steps — 48 skill
+  requirements, 170 item lists; review --trust auto-applies verifier
+  verdicts >=0.8), verify-annotations (LLM
   verifier pass over the drafts: confirm/adjust/reject + confidence +
   flags written into draft-annotations.json; needs ANTHROPIC_API_KEY,
   `cd tools && npm install` first; review tool then shows verdicts, 'a'
