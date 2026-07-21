@@ -135,6 +135,41 @@ Do not start step 6 before step 3 works end to end.
 Plugin Hub distribution eventually requires a public GitHub repo with a
 `runelite-plugin.properties` file, but that's a later concern.
 
+## Implementation status (2026-07-21, end of first build session)
+
+All six build-order steps are DONE, plus substantial extras. Current state:
+
+- **Panel:** steps render as clause-level tick-lists (SentenceSplitter →
+  SubStep, positional ids `parentId:N`); master checkbox per multi-action
+  step; search, progress bar, Resume, hide-done; place names/quests are
+  clickable links (PlaceManager, 562 seeded entries, punctuation-tolerant
+  matching).
+- **Auto-completion** (`GoalDetector` + evaluator in plugin): item goals
+  (carried counts only), quest state, xp-drop actions, counted xp drops
+  ("train construction (6 chairs...)" — session-memory only), teleport
+  position-jumps, arrival, and consumption-gated interactions (give/fix).
+  Everything gated to an in-order window of 8 (owner wants order).
+- **Items:** ItemTracker counts inventory+worn live + bank (live container
+  when cached, else persisted snapshot per account); badges show have/need
+  with green/orange "(in bank)"/red; alias chain handles plurals,
+  of-phrases, "noted X", gp→coins, POH/city tabs.
+- **Navigation:** Shortest Path PluginMessages; auto-navigate to next
+  target after any progress; nearest-bank routing when frontier items are
+  banked; route cleared when nothing targetable ahead.
+- **Bank filter:** button inside the bank UI (Quest Helper-style widget +
+  getSearchingTagTab callback) or type "bruh" in bank search.
+- **Tooling** (`tools/*.mjs`, Node): extract/review annotations (skills +
+  items — owner has NOT run the review yet), seed-places (NPC scan,
+  --quests incl. miniquests, --locations), tag-quest-places.
+- **Known limits:** interaction/arrival detection is heuristic (proxy
+  signals, not quest varbits — deliberate; QH-style per-quest authoring
+  rejected); counted-xp progress not persisted; sub ids reset when their
+  parent step's text changes upstream.
+
+Owner's testing profile: RuneLite profile "ironman test" (keep "IRONMAN"
+untouched). Jagex-account dev login via `--insecure-write-credentials`
+refresh when "Failed to login" appears.
+
 ## Scope notes
 
 - Owner decision (2026-07-21): the plugin's display name is **IRONSCAPE

@@ -165,6 +165,14 @@ public class BruhsailerPlugin extends Plugin
 	/** Sub-step ids that require items LEAVING the inventory (give/fix/...). */
 	private final java.util.Set<String> interactionGoalSubs = new java.util.HashSet<>();
 
+	/** "train construction (6 chairs...)" goals: N xp drops complete the sub. */
+	private final Map<String, GoalDetector.CountedSkillGoal> countedGoalBySub =
+		new java.util.concurrent.ConcurrentHashMap<>();
+
+	/** XP drops seen per counted goal THIS SESSION (not persisted). */
+	private final Map<String, Integer> countedProgress =
+		new java.util.concurrent.ConcurrentHashMap<>();
+
 	/** Ticks remaining in which a recent item consumption can complete an interaction sub. */
 	private int recentConsumeTicks;
 
@@ -271,11 +279,28 @@ public class BruhsailerPlugin extends Plugin
 		{
 			interactionGoalSubs.add(goal.getSub().getId());
 		}
+		countedGoalBySub.clear();
+		countedProgress.clear();
+		for (GoalDetector.CountedSkillGoal goal : goals.getCountedSkillGoals())
+		{
+			countedGoalBySub.put(goal.getSub().getId(), goal);
+		}
 		log.info("Detected {} item goals and {} quest goals in the guide text",
 			goals.getItemGoals().size(), goals.getQuestGoals().size());
 
 		panel = panelProvider.get();
 		panel.setItemGoals(itemGoalsBySub);
+		panel.setActionBadgeSupplier(subId -> {
+			GoalDetector.CountedSkillGoal counted = countedGoalBySub.get(subId);
+			if (counted == null)
+			{
+				return null;
+			}
+			int seen = Math.min(countedProgress.getOrDefault(subId, 0), counted.getCount());
+			String color = seen >= counted.getCount() ? "#4caf50" : "#ffa000";
+			return "<font color='" + color + "'>" + counted.getSkill().getName().toLowerCase()
+				+ " " + seen + "/" + counted.getCount() + " done (this session)</font>";
+		});
 		panel.setProgressChangedListener(this::maybeNavigateToNext);
 		panel.setCaptureHandler(this::captureLocation);
 		panel.setNavigateHandler(this::navigateToStep);
@@ -320,6 +345,8 @@ public class BruhsailerPlugin extends Plugin
 		actionGoalBySub.clear();
 		travelGoalSubs.clear();
 		interactionGoalSubs.clear();
+		countedGoalBySub.clear();
+		countedProgress.clear();
 		lastXpBySkill.clear();
 		lastTickPosition = null;
 		goals = null;
@@ -377,11 +404,30 @@ public class BruhsailerPlugin extends Plugin
 		{
 			for (Current current : findWindow(AUTO_COMPLETE_WINDOW))
 			{
-				if (!itemGoalsBySub.containsKey(current.sub.getId())
-					&& event.getSkill() == actionGoalBySub.get(current.sub.getId()))
+				String subId = current.sub.getId();
+				if (itemGoalsBySub.containsKey(subId))
+				{
+					continue;
+				}
+				if (event.getSkill() == actionGoalBySub.get(subId))
 				{
 					// "Chop down a dying tree" + Woodcutting xp = done.
 					completeSubGoal(current.step, current.sub);
+					break;
+				}
+				GoalDetector.CountedSkillGoal counted = countedGoalBySub.get(subId);
+				if (counted != null && counted.getSkill() == event.getSkill())
+				{
+					// one build = one xp drop; N of them completes the sub
+					int seen = countedProgress.merge(subId, 1, Integer::sum);
+					if (seen >= counted.getCount())
+					{
+						completeSubGoal(current.step, current.sub);
+					}
+					if (panel != null)
+					{
+						SwingUtilities.invokeLater(panel::refreshItemCounts);
+					}
 					break;
 				}
 			}
