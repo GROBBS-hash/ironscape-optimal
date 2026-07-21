@@ -77,6 +77,43 @@ const approveSkill = (d, chosen) => {
   approved++;
 };
 
+// The item list the verifier stands behind: its correction if any, else the parse.
+const itemRecommendation = (d) =>
+  (d.verifier && d.verifier.correctedItems) || d.items;
+
+const approveItems = (d, items) => {
+  bundled.annotations[d.stepId] = bundled.annotations[d.stepId] || {};
+  bundled.annotations[d.stepId].items = items;
+  approved++;
+};
+
+// --trust: apply every verifier verdict at or above the threshold without
+// asking (approve confirms/adjusts, reject rejects), leaving only the
+// low-confidence stragglers for the interactive pass. Non-interactive.
+if (process.argv.includes('--trust')) {
+  const THRESHOLD = 0.8;
+  let left = 0;
+  const applyTrusted = (list, approve, recommend) => {
+    for (const d of list) {
+      const v = d.verifier;
+      if (!v || v.confidence < THRESHOLD) { left++; continue; }
+      if (v.verdict === 'reject') {
+        d.rejected = true;
+        rejected++;
+      } else {
+        approve(d, recommend(d));
+      }
+    }
+  };
+  applyTrusted(pending, approveSkill, skillRecommendation);
+  applyTrusted(pendingItems, approveItems, itemRecommendation);
+  save();
+  console.log(left > 0
+    ? `${left} draft(s) below confidence ${THRESHOLD} still need eyes — run without --trust to review them.`
+    : 'Every draft handled — nothing left to review.');
+  process.exit(0);
+}
+
 let quit = false;
 let bulk = false;
 for (let i = 0; i < pending.length && !quit; i++) {
@@ -128,16 +165,6 @@ for (let i = 0; i < pending.length && !quit; i++) {
   }
   approveSkill(d, chosen);
 }
-
-// The item list the verifier stands behind: its correction if any, else the parse.
-const itemRecommendation = (d) =>
-  (d.verifier && d.verifier.correctedItems) || d.items;
-
-const approveItems = (d, items) => {
-  bundled.annotations[d.stepId] = bundled.annotations[d.stepId] || {};
-  bundled.annotations[d.stepId].items = items;
-  approved++;
-};
 
 for (let i = 0; i < pendingItems.length && !quit; i++) {
   const d = pendingItems[i];
