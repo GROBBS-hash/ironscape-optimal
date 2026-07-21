@@ -362,8 +362,11 @@ public class BruhsailerPlugin extends Plugin
 		{
 			progressManager.remapIds(GuideVariant.MAIN, guideRemap);
 			int moved = annotationManager.remapIds(guideRemap);
+			// The remap holds one entry per edited step plus one per sub
+			// clause of sub-aware steps; count only the step entries here.
+			long editedSteps = guideRemap.keySet().stream().filter(k -> k.indexOf(':') < 0).count();
 			log.info("Guide update: re-linked {} edited step(s) to saved progress ({} annotation(s) moved)",
-				guideRemap.size(), moved);
+				editedSteps, moved);
 		}
 		guideManifest.save(loadedGuide);
 

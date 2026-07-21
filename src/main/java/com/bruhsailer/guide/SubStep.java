@@ -15,7 +15,9 @@ public class SubStep
 	/**
 	 * Parent step id + ":" + position, e.g. "0b04db5277:2". Positional is
 	 * fine here: if upstream edits the step's text, the PARENT hash id
-	 * changes anyway, so sub ids share their parent's fate regardless.
+	 * changes anyway. GuideManifest then re-links each saved sub tick to
+	 * the identically-worded clause of the edited step (by fingerprint),
+	 * so ticks survive edits that reword only one clause of a step.
 	 */
 	String id;
 

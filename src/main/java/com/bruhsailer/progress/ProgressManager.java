@@ -203,6 +203,13 @@ public class ProgressManager
 		for (String id : ids)
 		{
 			String mapped = com.bruhsailer.guide.GuideManifest.remapId(id, remap);
+			if (mapped == null)
+			{
+				// The clause this tick belonged to was edited away —
+				// dropping it merely unticks a box the player can re-tick.
+				idsChanged = true;
+				continue;
+			}
 			idsChanged |= !mapped.equals(id);
 			remappedIds.add(mapped);
 		}
@@ -219,6 +226,11 @@ public class ProgressManager
 		for (Map.Entry<String, Integer> entry : counts.entrySet())
 		{
 			String mapped = com.bruhsailer.guide.GuideManifest.remapId(entry.getKey(), remap);
+			if (mapped == null)
+			{
+				countsChanged = true; // clause gone; its count restarts at 0
+				continue;
+			}
 			countsChanged |= !mapped.equals(entry.getKey());
 			remappedCounts.merge(mapped, entry.getValue(), Math::max);
 		}
