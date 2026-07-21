@@ -42,9 +42,13 @@ import net.runelite.api.QuestState;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.ItemContainerChanged;
+import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.events.ScriptCallbackEvent;
+import net.runelite.api.events.ScriptPostFired;
 import net.runelite.api.events.StatChanged;
+import net.runelite.api.events.WidgetLoaded;
 import net.runelite.client.game.ItemManager;
+import com.bruhsailer.items.BankFilterButton;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.EventBus;
@@ -110,6 +114,9 @@ public class BruhsailerPlugin extends Plugin
 
 	@Inject
 	private ItemManager itemManager;
+
+	@Inject
+	private BankFilterButton bankFilterButton;
 
 	@Inject
 	private PlaceManager placeManager;
@@ -424,6 +431,43 @@ public class BruhsailerPlugin extends Plugin
 		}
 	}
 
+	/** The bank interface (re)opened: (re)create our filter button in it. */
+	@Subscribe
+	public void onWidgetLoaded(WidgetLoaded event)
+	{
+		if (event.getGroupId() == net.runelite.api.gameval.InterfaceID.BANKMAIN)
+		{
+			bankFilterButton.init();
+		}
+	}
+
+	/** Clicking a real bank tab or the search button turns our filter off. */
+	@Subscribe
+	public void onMenuOptionClicked(MenuOptionClicked event)
+	{
+		if (!bankFilterButton.isActive())
+		{
+			return;
+		}
+		String option = event.getMenuOption();
+		if (option != null
+			&& (option.startsWith("View tab") || option.equals("View all items")
+				|| option.startsWith("View tag tab") || option.startsWith("Potion store")))
+		{
+			bankFilterButton.deactivate();
+		}
+	}
+
+	@Subscribe
+	public void onScriptPostFired(ScriptPostFired event)
+	{
+		if (event.getScriptId() == net.runelite.api.ScriptID.BANKMAIN_SEARCH_TOGGLE
+			&& bankFilterButton.isActive())
+		{
+			bankFilterButton.deactivate();
+		}
+	}
+
 	/** Once per game tick (0.6s) on the client thread. */
 	@Subscribe
 	public void onGameTick(GameTick event)
@@ -473,13 +517,26 @@ public class BruhsailerPlugin extends Plugin
 	@Subscribe
 	public void onScriptCallbackEvent(ScriptCallbackEvent event)
 	{
+		// The bank layout script asks whether a "tag tab" search is active;
+		// answering 1 while our button is toggled makes it lay the bank out
+		// through bankSearchFilter below with an empty search string.
+		if ("getSearchingTagTab".equals(event.getEventName()))
+		{
+			if (bankFilterButton.isActive())
+			{
+				client.getIntStack()[client.getIntStackSize() - 1] = 1;
+			}
+			return;
+		}
 		if (!"bankSearchFilter".equals(event.getEventName()))
 		{
 			return;
 		}
 		Object[] objectStack = client.getObjectStack();
 		String search = (String) objectStack[client.getObjectStackSize() - 1];
-		if (search == null || !BANK_FILTER_KEYWORD.equalsIgnoreCase(search.trim()))
+		boolean keywordSearch = search != null
+			&& BANK_FILTER_KEYWORD.equalsIgnoreCase(search.trim());
+		if (!keywordSearch && !bankFilterButton.isActive())
 		{
 			return;
 		}

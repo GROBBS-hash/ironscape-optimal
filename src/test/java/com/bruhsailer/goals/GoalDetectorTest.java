@@ -142,6 +142,19 @@ public class GoalDetectorTest
 	}
 
 	@Test
+	public void ignoresParentheticalCommentary()
+	{
+		Guide guide = guideWithSubTexts(
+			"5 noted bolts of cloth and 5 noted planks (so there are 3 planks left in your bank)");
+
+		GoalDetector.Goals goals = GoalDetector.detect(guide);
+
+		assertEquals(2, goals.getItemGoals().size());
+		assertEquals("noted bolts of cloth", goals.getItemGoals().get(0).getItemName());
+		assertEquals("noted planks", goals.getItemGoals().get(1).getItemName());
+	}
+
+	@Test
 	public void handlesNumberWordsAndShortContinuations()
 	{
 		Guide guide = guideWithSubTexts(

@@ -1,0 +1,117 @@
+package com.bruhsailer.items;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
+import net.runelite.api.Client;
+import net.runelite.api.gameval.InterfaceID;
+import net.runelite.api.gameval.SpriteID;
+import net.runelite.api.widgets.JavaScriptCallback;
+import net.runelite.api.widgets.Widget;
+import net.runelite.api.widgets.WidgetType;
+import net.runelite.client.plugins.bank.BankSearch;
+
+/**
+ * The clickable button inside the bank interface that toggles the
+ * "guide items only" view — same approach as Quest Helper's bank tab:
+ * a child widget on the bank root, and while active the plugin answers
+ * the bank layout script's getSearchingTagTab/bankSearchFilter callbacks
+ * so the bank lays itself out as if a search matched our items.
+ *
+ * Everything here must run on the client thread.
+ */
+@Slf4j
+@Singleton
+public class BankFilterButton
+{
+	private static final int BUTTON_SIZE = 25;
+	// Sits left of where Quest Helper puts its button (408), so both fit.
+	private static final int BUTTON_X = 380;
+	private static final int BUTTON_Y = 5;
+
+	private final Client client;
+	private final BankSearch bankSearch;
+
+	/** True while the bank is showing only guide items. */
+	@Getter
+	private boolean active;
+
+	private Widget background;
+
+	@Inject
+	public BankFilterButton(Client client, BankSearch bankSearch)
+	{
+		this.client = client;
+		this.bankSearch = bankSearch;
+	}
+
+	/** (Re)create the button when the bank interface loads. */
+	public void init()
+	{
+		Widget parent = client.getWidget(InterfaceID.Bankmain.UNIVERSE);
+		if (parent == null)
+		{
+			return;
+		}
+		active = false;
+
+		background = createGraphic(parent, "IRONSCAPE Optimal",
+			SpriteID.Miscgraphics3.UNKNOWN_BUTTON_SQUARE_SMALL,
+			BUTTON_SIZE, BUTTON_SIZE, BUTTON_X, BUTTON_Y);
+		background.setAction(1, "View guide items");
+		background.setOnOpListener((JavaScriptCallback) event -> toggle());
+
+		createGraphic(parent, "",
+			SpriteID.AchievementDiaryIcons.BLUE_QUESTS,
+			BUTTON_SIZE - 6, BUTTON_SIZE - 6, BUTTON_X + 3, BUTTON_Y + 3);
+	}
+
+	private void toggle()
+	{
+		if (active)
+		{
+			deactivate();
+			bankSearch.reset(true);
+		}
+		else
+		{
+			active = true;
+			background.setSpriteId(SpriteID.Miscgraphics3.UNKNOWN_BUTTON_SQUARE_SMALL_SELECTED);
+			background.revalidate();
+			// Relayout: the bank re-runs its layout script, which now asks
+			// us which items to show.
+			bankSearch.reset(true);
+		}
+	}
+
+	/** Turn the filter off (e.g. the player clicked a real bank tab). */
+	public void deactivate()
+	{
+		if (!active)
+		{
+			return;
+		}
+		active = false;
+		if (background != null)
+		{
+			background.setSpriteId(SpriteID.Miscgraphics3.UNKNOWN_BUTTON_SQUARE_SMALL);
+			background.revalidate();
+		}
+	}
+
+	private static Widget createGraphic(Widget parent, String name, int spriteId,
+		int width, int height, int x, int y)
+	{
+		Widget widget = parent.createChild(-1, WidgetType.GRAPHIC);
+		widget.setOriginalWidth(width);
+		widget.setOriginalHeight(height);
+		widget.setOriginalX(x);
+		widget.setOriginalY(y);
+		widget.setSpriteId(spriteId);
+		widget.setName(name);
+		widget.setHasListener(true);
+		widget.revalidate();
+		return widget;
+	}
+}
