@@ -2,13 +2,25 @@
 
 The [BRUHsailer](https://osrsper.github.io/BRUHsailer/) efficient ironman
 guide as a step-by-step side panel inside RuneLite, with automatic step
-completion, live item tracking, and Shortest Path navigation.
+completion, an on-screen step overlay with live item/level counts,
+teleport click-path highlights, click-to-hop world links, a bank filter
+for upcoming items, and Shortest Path navigation.
+
+**Every step of guide content in this plugin is the work of the
+BRUHsailer authors** — this plugin is only a different way to read and
+follow it. If you find it useful, the credit belongs to them.
 
 ## Credits
 
-- **Guide:** So Iron BRUH & ParasailerOSRS
-- **Web adaptation:** kyyznn, improved by Jesper ([osrsper](https://github.com/osrsper))
-- Upstream guide data: https://github.com/umkyzn/BRUHsailer
+- **Guide written by [So Iron BRUH](https://www.youtube.com/@SoIronBRUH)
+  & ParasailerOSRS** — the BRUHsailer efficient ironman guide, ~1000
+  steps of routing that this plugin merely displays.
+- **Web adaptation by kyyznn** ([umkyzn/BRUHsailer](https://github.com/umkyzn/BRUHsailer)),
+  **improved and maintained by Jesper** ([osrsper](https://github.com/osrsper)) —
+  the structured guide data this plugin ingests comes from their site,
+  <https://osrsper.github.io/BRUHsailer/>.
+- Navigation integrates with [Shortest Path](https://github.com/Skretzo/shortest-path)
+  by Skretzo (separate plugin, install it from the Plugin Hub).
 
 ## Development
 
@@ -23,8 +35,8 @@ launches a RuneLite client with the plugin loaded. Log in on any account
 and enable **IRONSCAPE Optimal** in the plugin list (wrench icon) if it
 isn't already on.
 
-Tip: type `bruh` in the bank search box to filter the bank to items the
-guide needs soon.
+Tip: the button in the bank UI (or typing `bruh` in bank search) filters
+the bank to items your current guide section still needs.
 
 ```
 gradlew build
