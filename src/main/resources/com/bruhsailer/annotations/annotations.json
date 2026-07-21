@@ -7459,16 +7459,44 @@
       ]
     },
     "132a570483": {
-      "requires": {
-        "skill": "ATTACK",
-        "level": 78
-      }
+      "requiresAll": [
+        {
+          "skill": "ATTACK",
+          "level": 78
+        },
+        {
+          "skill": "STRENGTH",
+          "level": 85
+        },
+        {
+          "skill": "DEFENCE",
+          "level": 75
+        },
+        {
+          "skill": "PRAYER",
+          "level": 72
+        },
+        {
+          "skill": "CRAFTING",
+          "level": 80
+        },
+        {
+          "skill": "COMBAT",
+          "level": 100
+        }
+      ]
     },
     "64de76d136": {
-      "requires": {
-        "skill": "CRAFTING",
-        "level": 93
-      }
+      "requiresAll": [
+        {
+          "skill": "CRAFTING",
+          "level": 93
+        },
+        {
+          "skill": "THIEVING",
+          "level": 91
+        }
+      ]
     },
     "00e120053d": {
       "items": [
