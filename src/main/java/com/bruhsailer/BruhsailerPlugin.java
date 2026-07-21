@@ -136,6 +136,16 @@ public class BruhsailerPlugin extends Plugin
 	@Inject
 	private ProgressManager progressManager;
 
+	@Inject
+	private com.bruhsailer.guide.GuideManifest guideManifest;
+
+	/**
+	 * Old->new ids for steps a guide refresh edited in place, kept for
+	 * the whole session: progress lives per RuneLite profile, so every
+	 * profile that becomes active needs the same remap applied once.
+	 */
+	private Map<String, String> guideRemap = new HashMap<>();
+
 	/** The client's sidebar, where our navigation button goes. */
 	@Inject
 	private ClientToolbar clientToolbar;
@@ -296,6 +306,21 @@ public class BruhsailerPlugin extends Plugin
 	protected void startUp() throws Exception
 	{
 		annotationManager.load();
+
+		// Did a guide refresh edit steps in place since last run? If so
+		// their ids changed (ids hash the text) — re-link saved progress
+		// and annotations BEFORE anything reads them.
+		Guide loadedGuide = guideFor(GuideVariant.MAIN);
+		guideRemap = guideManifest.reconcile(loadedGuide);
+		if (!guideRemap.isEmpty())
+		{
+			progressManager.remapIds(GuideVariant.MAIN, guideRemap);
+			int moved = annotationManager.remapIds(guideRemap);
+			log.info("Guide update: re-linked {} edited step(s) to saved progress ({} annotation(s) moved)",
+				guideRemap.size(), moved);
+		}
+		guideManifest.save(loadedGuide);
+
 		placeManager.load();
 		rebuildStepRequirements();
 		goals = GoalDetector.detect(guideFor(GuideVariant.MAIN));
@@ -438,6 +463,7 @@ public class BruhsailerPlugin extends Plugin
 		travelGoalSubs.clear();
 		interactionGoalSubs.clear();
 		countedGoalBySub.clear();
+		guideRemap = new HashMap<>();
 		lastXpBySkill.clear();
 		lastTickPosition = null;
 		goals = null;
@@ -472,6 +498,9 @@ public class BruhsailerPlugin extends Plugin
 	public void onProfileChanged(ProfileChanged event)
 	{
 		progressManager.invalidate();
+		// The new profile's saved progress may still use pre-refresh step
+		// ids; apply the same remap startUp applied (no-op if none).
+		progressManager.remapIds(GuideVariant.MAIN, guideRemap);
 		if (panel != null)
 		{
 			SwingUtilities.invokeLater(panel::refresh);

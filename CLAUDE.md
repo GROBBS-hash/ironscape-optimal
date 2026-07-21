@@ -183,8 +183,19 @@ All six build-order steps are DONE, plus substantial extras. Current state:
   still needed by the CURRENT SECTION (incomplete steps/subs only), not a
   fixed sub-step lookahead.
 - **Tooling** (`tools/*.mjs`, Node): extract/review annotations (skills +
-  items — owner has NOT run the review yet), seed-places (NPC scan,
-  --quests incl. miniquests, --locations), tag-quest-places.
+  items — owner has NOT run the review yet), verify-annotations (LLM
+  verifier pass over the drafts: confirm/adjust/reject + confidence +
+  flags written into draft-annotations.json; needs ANTHROPIC_API_KEY,
+  `cd tools && npm install` first; review tool then shows verdicts, 'a'
+  accepts recommendation, 'b' bulk-approves confirmed), seed-places (NPC
+  scan, --quests incl. miniquests, --locations), tag-quest-places.
+- **Guide-refresh safety:** GuideManifest persists each load's step
+  ids+positions (~/.runelite/bruhsailer/guide_manifest.json). On load,
+  steps EDITED IN PLACE upstream (same section, same index, both ids
+  changed) get their old ids remapped onto the new ones — progress
+  (incl. sub ids + counted keys, re-applied per profile on switch) and
+  local annotations survive text edits. Insertions/reorders are left
+  alone (conservative).
 - **Known limits:** interaction/arrival detection is heuristic (proxy
   signals, not quest varbits — deliberate; QH-style per-quest authoring
   rejected); sub ids reset when their parent step's text changes upstream.

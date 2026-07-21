@@ -1,0 +1,9 @@
+{
+  "name": "bruhsailer-tools",
+  "private": true,
+  "type": "module",
+  "description": "Annotation tooling for the IRONSCAPE Optimal plugin (extract, verify, review, seed-places)",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.110.0"
+  }
+}

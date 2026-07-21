@@ -184,6 +184,52 @@ public class ProgressManager
 		return count;
 	}
 
+	/**
+	 * A guide refresh gave some edited steps new ids (see GuideManifest):
+	 * rewrite this profile's saved progress — step ids, their "id:N" sub
+	 * ids, and counted xp-drop keys — so ticks survive the edit. Only
+	 * touches the ACTIVE profile; call again after a profile switch
+	 * (idempotent: already-remapped ids simply aren't in the map).
+	 */
+	public synchronized void remapIds(GuideVariant variant, Map<String, String> remap)
+	{
+		if (remap.isEmpty())
+		{
+			return;
+		}
+		Set<String> ids = completedIds(variant);
+		Set<String> remappedIds = new LinkedHashSet<>();
+		boolean idsChanged = false;
+		for (String id : ids)
+		{
+			String mapped = com.bruhsailer.guide.GuideManifest.remapId(id, remap);
+			idsChanged |= !mapped.equals(id);
+			remappedIds.add(mapped);
+		}
+		if (idsChanged)
+		{
+			ids.clear();
+			ids.addAll(remappedIds);
+			save(variant, ids);
+		}
+
+		Map<String, Integer> counts = countedFor(variant);
+		Map<String, Integer> remappedCounts = new LinkedHashMap<>();
+		boolean countsChanged = false;
+		for (Map.Entry<String, Integer> entry : counts.entrySet())
+		{
+			String mapped = com.bruhsailer.guide.GuideManifest.remapId(entry.getKey(), remap);
+			countsChanged |= !mapped.equals(entry.getKey());
+			remappedCounts.merge(mapped, entry.getValue(), Math::max);
+		}
+		if (countsChanged)
+		{
+			counts.clear();
+			counts.putAll(remappedCounts);
+			saveCounted(variant, counts);
+		}
+	}
+
 	/** Call when the active RuneLite profile changes: cached progress belongs to the old profile. */
 	public synchronized void invalidate()
 	{
