@@ -71,7 +71,8 @@
         "notes": "The \"10 fishing\" evidence refers to \"10 fishing bait\" — a quantity of an item to buy, not a Fishing skill level. This step does not instruct the player to reach Fishing 10.",
         "model": "claude-opus-4-8",
         "verifiedOn": "2026-07-21"
-      }
+      },
+      "rejected": true
     },
     {
       "stepId": "1b45329d6f",
@@ -477,7 +478,8 @@
         "notes": "The \"60 magic\" here refers to a temporary boost via a Wizard's Mind Bomb to unlock Bones to Peaches, not a required base level the player must reach. Auto-ticking on reaching level 60 Magic would fire incorrectly, since the step is completed via a boost rather than a genuine 60 Magic level. This step is about collecting MTA points, not training Magic to 60.",
         "model": "claude-opus-4-8",
         "verifiedOn": "2026-07-21"
-      }
+      },
+      "rejected": true
     },
     {
       "stepId": "11c59dc98e",
@@ -500,7 +502,8 @@
         "notes": "The \"62 cooking\" mention is a conditional aside (\"you only need one cod if you've collected xp outside this guide and are at least 62 cooking\"), not an instruction to reach level 62 in this step. The step's actual skill goal is Herblore to level 10, not Cooking 62.",
         "model": "claude-opus-4-8",
         "verifiedOn": "2026-07-21"
-      }
+      },
+      "rejected": true
     },
     {
       "stepId": "9a97882f3a",
@@ -523,7 +526,8 @@
         "notes": "The step explicitly states \"YOU DO NOT NEED 40 CRAFTING\" — this is a negation clarifying that 40 Crafting is NOT required, so it should not be an annotated skill requirement.",
         "model": "claude-opus-4-8",
         "verifiedOn": "2026-07-21"
-      }
+      },
+      "rejected": true
     },
     {
       "stepId": "567f568640",
@@ -602,7 +606,8 @@
         "notes": "The \"27 herblore\" mention is conditional commentary (\"If you are not level 27 herblore yet, make...\"), not an instruction to reach level 27. The step actually has the player boost herblore to progress rather than requiring the level be reached, so auto-ticking on HERBLORE 27 would be wrong.",
         "model": "claude-opus-4-8",
         "verifiedOn": "2026-07-21"
-      }
+      },
+      "rejected": true
     },
     {
       "stepId": "6d7f197a68",
@@ -660,7 +665,8 @@
         "notes": "The step says \"You should have at least 15 hunter by now from bird runs\" — this is a passive observation about progress made in prior steps, not an instruction to train Hunter here. This step's main task is Grand Tree quest progress and buying gnome food; it does not tell the player to reach 15 Hunter.",
         "model": "claude-opus-4-8",
         "verifiedOn": "2026-07-21"
-      }
+      },
+      "rejected": true
     },
     {
       "stepId": "084fc8cea0",
@@ -844,7 +850,8 @@
         "notes": "The 78 Thieving is offered as an optional suggestion (\"If you are not yet level 78 thieving, consider staying here\"), not a requirement of this step. The step's main instruction is to make 1580 unpowered orbs via arteglass, not to reach a thieving level.",
         "model": "claude-opus-4-8",
         "verifiedOn": "2026-07-21"
-      }
+      },
+      "rejected": true
     },
     {
       "stepId": "5af6719aed",
@@ -867,7 +874,8 @@
         "notes": "The \"level 40 herblore\" mention is descriptive commentary about the expected outcome after completing the quests (\"After this quest you should have level 40 herblore\"), not an instruction to train Herblore to 40 as a requirement of this step. Auto-ticking on reaching 40 Herblore would be incorrect.",
         "model": "claude-opus-4-8",
         "verifiedOn": "2026-07-21"
-      }
+      },
+      "rejected": true
     },
     {
       "stepId": "b3f8ee25f1",
@@ -981,7 +989,8 @@
         "notes": "Both levels are conditional/incidental, not hard requirements the step tells you to reach. \"37 construction\" is gated by \"If you have at least 37 construction\" (optional Scrambled!), and \"60 magic\" appears in a contingency (\"if you somehow aren't 60 magic yet use Wizard's Mind Bombs to boost\"), meaning the step explicitly accommodates being below 60. Neither directs the player to train to these levels. Auto-ticking on 60 magic would misfire since the whole orb-charging method is designed to work at low magic via boosting.",
         "model": "claude-opus-4-8",
         "verifiedOn": "2026-07-21"
-      }
+      },
+      "rejected": true
     },
     {
       "stepId": "c9a1b387ae",
@@ -1026,7 +1035,8 @@
         "notes": "The \"+2 construction boost\" is a temporary boost from tea, not a level requirement. \"CONSTRUCTION 2\" is a misread of the boost magnitude, not a level the player must reach. This step has no skill-level requirement to auto-tick on.",
         "model": "claude-opus-4-8",
         "verifiedOn": "2026-07-21"
-      }
+      },
+      "rejected": true
     },
     {
       "stepId": "74310cee37",
@@ -1092,7 +1102,8 @@
         "notes": "The \"76 farming\" is described as a boostable requirement for the Attas anima plant, mentioned as a recommendation (\"highly recommended to have... before starting seaweed runs\") and gated on \"if you have this level.\" It is not a level this step instructs the player to reach — it's optional/conditional commentary. Auto-ticking on Farming 76 would falsely complete the step.",
         "model": "claude-opus-4-8",
         "verifiedOn": "2026-07-21"
-      }
+      },
+      "rejected": true
     },
     {
       "stepId": "a38610470a",
@@ -1121,7 +1132,8 @@
         "notes": "Both the 70 ranging and 59 fletching/smithing figures appear in the optional second paragraph, which is conditional commentary (\"If you decide to go for more smithing...\", \"Alternatively you can make several yourself\"). They are prerequisites for an optional mithril-grapple detour and God Wars droptrick, not requirements the main step instructs the player to reach. Ticking on these would fire the step prematurely.",
         "model": "claude-opus-4-8",
         "verifiedOn": "2026-07-21"
-      }
+      },
+      "rejected": true
     },
     {
       "stepId": "694fd138bf",
@@ -1166,7 +1178,8 @@
         "notes": "The \"40 prayer\" refers to sipping a prayer potion to reach ~40 prayer points during the xlog maneuver, not a Prayer skill level requirement for the step. The step does not instruct the player to train Prayer to level 40.",
         "model": "claude-opus-4-8",
         "verifiedOn": "2026-07-21"
-      }
+      },
+      "rejected": true
     },
     {
       "stepId": "76f3cc0ff1",
@@ -1216,7 +1229,8 @@
         "notes": "\"80 hunter\" here is descriptive: the step explains that Misc mahogany logs will fund bird runs to train Hunter from level 49-80. It is a goal/rationale for resource gathering, not an instruction to reach level 80 Hunter as a prerequisite of this step. Auto-ticking at Hunter 80 would fire incorrectly.",
         "model": "claude-opus-4-8",
         "verifiedOn": "2026-07-21"
-      }
+      },
+      "rejected": true
     },
     {
       "stepId": "62ab4d7e31",
@@ -1521,7 +1535,8 @@
         "notes": "The \"99 farming\" mention is a conditional caveat for when to include coral in farm runs (\"only with attas active and 99 farming\"), not an instruction to reach 99 farming in this step. The step's actual training target is level 50 (up to 53) Sailing. Auto-ticking on 99 Farming would be incorrect.",
         "model": "claude-opus-4-8",
         "verifiedOn": "2026-07-21"
-      }
+      },
+      "rejected": true
     },
     {
       "stepId": "f5a2ef3bd4",
@@ -1698,7 +1713,8 @@
         "notes": "Neither level is a hard requirement to reach in this step. Fletching 70 is a conditional (\"if you have reached... or are close enough to boost\") gate for the diary, and slayer 58 is described as a goal/reminder for lamping, not something the step instructs the player to reach here. Auto-ticking on either level would be wrong. The step's main instruction is building POH furniture and diary work, not hitting these levels.",
         "model": "claude-opus-4-8",
         "verifiedOn": "2026-07-21"
-      }
+      },
+      "rejected": true
     },
     {
       "stepId": "e42941b865",
@@ -1990,7 +2006,8 @@
         "notes": "The main instruction is to complete Guardians of the Rift for the full Raiments of the Eye and colossal pouch. The \"At 65 runecrafting complete the Ardougne Hard diary\" is a supplementary side note about a different task, not a level this step tells the player to reach. Auto-ticking on RC 65 would complete the GotR step prematurely.",
         "model": "claude-opus-4-8",
         "verifiedOn": "2026-07-21"
-      }
+      },
+      "rejected": true
     },
     {
       "stepId": "2afa61221e",
@@ -2142,7 +2159,8 @@
         "notes": "This step is explicitly \"optional but recommended\" and suggests training runecrafting to level 90 OR 95 at the player's own convenience — it does not mandate reaching level 95. Treating it as a hard requirement would auto-tick the step early. The \"90 or 95\" phrasing also makes 95 ambiguous as the true threshold.",
         "model": "claude-opus-4-8",
         "verifiedOn": "2026-07-21"
-      }
+      },
+      "rejected": true
     },
     {
       "stepId": "10bb94c0dc",
@@ -11241,7 +11259,8 @@
         "notes": "\"pickaxe\" is a valid item family name, but this step is about Mahogany Homes contracts, moving your POH, and making arrow shafts/headless arrows — nothing in the step text requires a pickaxe. The metadata appears to be a spurious/carried-over entry not relevant to this step.",
         "model": "claude-opus-4-8",
         "verifiedOn": "2026-07-21"
-      }
+      },
+      "rejected": true
     },
     {
       "stepId": "f4ca68e93e",
@@ -14162,7 +14181,8 @@
         "notes": "The raw metadata is just the placeholder \"tbd\", which is not a real countable OSRS item. Nothing for the plugin to match against.",
         "model": "claude-opus-4-8",
         "verifiedOn": "2026-07-21"
-      }
+      },
+      "rejected": true
     },
     {
       "stepId": "d45768cae2",
@@ -14183,7 +14203,8 @@
         "notes": "The raw metadata is a placeholder (\"tbd\"), not a real item. There is nothing the plugin can match against inventory or bank by name.",
         "model": "claude-opus-4-8",
         "verifiedOn": "2026-07-21"
-      }
+      },
+      "rejected": true
     },
     {
       "stepId": "ad795c7887",
@@ -14204,7 +14225,8 @@
         "notes": "The raw metadata is the placeholder \"tbd\", which is not a real OSRS item and cannot be matched by name against the player's inventory/bank. No countable item requirement exists here.",
         "model": "claude-opus-4-8",
         "verifiedOn": "2026-07-21"
-      }
+      },
+      "rejected": true
     },
     {
       "stepId": "8d297ecd54",
@@ -14225,7 +14247,8 @@
         "notes": "\"tbd\" is a placeholder, not a real OSRS item the plugin can count by name. This is not an actual item requirement.",
         "model": "claude-opus-4-8",
         "verifiedOn": "2026-07-21"
-      }
+      },
+      "rejected": true
     },
     {
       "stepId": "ead6fd36fd",
@@ -14246,7 +14269,8 @@
         "notes": "The raw metadata is just the placeholder \"tbd\", which is not a real countable OSRS item. This is a placeholder, not an actual requirement the plugin can match by name.",
         "model": "claude-opus-4-8",
         "verifiedOn": "2026-07-21"
-      }
+      },
+      "rejected": true
     },
     {
       "stepId": "5155208848",
@@ -14267,7 +14291,8 @@
         "notes": "The raw metadata is just the placeholder \"tbd\", which is not a real OSRS item the plugin can match or count. This is not an actual item requirement.",
         "model": "claude-opus-4-8",
         "verifiedOn": "2026-07-21"
-      }
+      },
+      "rejected": true
     },
     {
       "stepId": "9781e971de",
@@ -14287,7 +14312,8 @@
         "notes": "The raw metadata is a placeholder (\"tbd\"), not a real item. The plugin cannot match this against inventory/bank by name. This is not a countable requirement.",
         "model": "claude-opus-4-8",
         "verifiedOn": "2026-07-21"
-      }
+      },
+      "rejected": true
     },
     {
       "stepId": "694fd138bf",
@@ -14864,7 +14890,8 @@
         "notes": "The raw metadata is just the placeholder \"tbd\", which is not a real OSRS item and cannot be matched against inventory/bank. No countable item requirement exists for this step.",
         "model": "claude-opus-4-8",
         "verifiedOn": "2026-07-21"
-      }
+      },
+      "rejected": true
     },
     {
       "stepId": "e5892b0d60",
@@ -17413,7 +17440,8 @@
         "notes": "The raw metadata is just the placeholder \"tbd\", which is not a real item and cannot be matched or counted by the plugin. No item requirement can be extracted for this step.",
         "model": "claude-opus-4-8",
         "verifiedOn": "2026-07-21"
-      }
+      },
+      "rejected": true
     },
     {
       "stepId": "c5f10f34ee",
@@ -17453,7 +17481,8 @@
         "notes": "This draft is dominated by abstractions the plugin cannot match by name or count: \"melee gear (now incl. dscim/dds)\", \"mithril armour set\", \"stat-boosting potions\", and \"cheese potatoes (buy in guild)\" are all category/description strings, not exact in-game item names. \"cash stack\" is not a real item (should be \"coins\" with a quantity), \"cut diamond\" should be \"diamond\", and \"prayer potions\" would need a real dose-specific name and count. The list needs manual re-authoring rather than a single-item correction.",
         "model": "claude-opus-4-8",
         "verifiedOn": "2026-07-21"
-      }
+      },
+      "rejected": true
     },
     {
       "stepId": "eba86becc3",
@@ -17535,7 +17564,8 @@
         "notes": "The draft is dominated by abstractions the plugin cannot match by name: \"melee gear (as mentioned)\", \"stat-boosting pots\", and \"runes for thralls\" are not real countable in-game items. \"cheese potatoes\" is also not an exact item (the real item is \"potato with cheese\"). Only \"looting bag\" is a valid concrete item, so this metadata is not usable as a countable item list.",
         "model": "claude-opus-4-8",
         "verifiedOn": "2026-07-21"
-      }
+      },
+      "rejected": true
     },
     {
       "stepId": "60300df55e",
@@ -17749,7 +17779,8 @@
         "notes": "The metadata is a placeholder (\"tbd\"), not a real item. The plugin cannot match this by name against inventory/bank.",
         "model": "claude-opus-4-8",
         "verifiedOn": "2026-07-21"
-      }
+      },
+      "rejected": true
     },
     {
       "stepId": "e08f56f59f",
@@ -17770,7 +17801,8 @@
         "notes": "\"tbd\" is placeholder text, not a real OSRS item the plugin can match by name or count. The metadata was never filled in for this step.",
         "model": "claude-opus-4-8",
         "verifiedOn": "2026-07-21"
-      }
+      },
+      "rejected": true
     },
     {
       "stepId": "f5a2ef3bd4",
@@ -17791,7 +17823,8 @@
         "notes": "The raw metadata is just the placeholder \"tbd\", which is not a real countable OSRS item. Nothing for the plugin to match by name.",
         "model": "claude-opus-4-8",
         "verifiedOn": "2026-07-21"
-      }
+      },
+      "rejected": true
     },
     {
       "stepId": "335ec3107a",
@@ -17840,7 +17873,8 @@
         "notes": "This draft is dominated by abstractions the plugin cannot count by exact name: \"green/blue d'hides\" is a choice between two item categories, \"box traps\", \"sara items\", \"hammer\", \"fire staff\", \"nature runes\" are all vague/uncountable as listed, and the metadata itself flags \"whatever other ranged gear you can scrounge up\" and \"a lot of money\" as non-countable. Item names like \"salve amulet(ei)\" (should be \"salve amulet (ei)\"), \"teak log(s)\", and generic \"crossbow\" would each need normalization, and every quantity is a placeholder 1x that does not reflect actual need. This list is not reliable enough to confirm or piecemeal-adjust; it should be re-authored with exact in-game names and real quantities.",
         "model": "claude-opus-4-8",
         "verifiedOn": "2026-07-21"
-      }
+      },
+      "rejected": true
     },
     {
       "stepId": "357f33db1e",
@@ -17861,7 +17895,8 @@
         "notes": "The raw metadata is the placeholder \"tbd\", not an actual item. This is not a countable OSRS item and cannot be matched against inventory/bank.",
         "model": "claude-opus-4-8",
         "verifiedOn": "2026-07-21"
-      }
+      },
+      "rejected": true
     },
     {
       "stepId": "72bf406a25",
@@ -18013,7 +18048,8 @@
         "notes": "items_needed is the literal placeholder 'tbd' — the guide authors have not filled it in; nothing countable.",
         "model": "claude-fable-5 (in-session)",
         "verifiedOn": "2026-07-21"
-      }
+      },
+      "rejected": true
     },
     {
       "stepId": "a751e9ab88",
@@ -18034,7 +18070,8 @@
         "notes": "items_needed is the literal placeholder 'tbd'.",
         "model": "claude-fable-5 (in-session)",
         "verifiedOn": "2026-07-21"
-      }
+      },
+      "rejected": true
     },
     {
       "stepId": "9b020d7817",
@@ -18055,7 +18092,8 @@
         "notes": "items_needed is the literal placeholder 'tbd'.",
         "model": "claude-fable-5 (in-session)",
         "verifiedOn": "2026-07-21"
-      }
+      },
+      "rejected": true
     },
     {
       "stepId": "473f07bc8f",
@@ -18076,7 +18114,8 @@
         "notes": "items_needed is the literal placeholder 'tbd'.",
         "model": "claude-fable-5 (in-session)",
         "verifiedOn": "2026-07-21"
-      }
+      },
+      "rejected": true
     },
     {
       "stepId": "88d93ea5b3",
@@ -18097,7 +18136,8 @@
         "notes": "items_needed is the literal placeholder 'tbd'.",
         "model": "claude-fable-5 (in-session)",
         "verifiedOn": "2026-07-21"
-      }
+      },
+      "rejected": true
     },
     {
       "stepId": "14f9e17919",
@@ -18118,7 +18158,8 @@
         "notes": "items_needed is the literal placeholder 'tbd'.",
         "model": "claude-fable-5 (in-session)",
         "verifiedOn": "2026-07-21"
-      }
+      },
+      "rejected": true
     },
     {
       "stepId": "0e83d68978",
@@ -18139,7 +18180,8 @@
         "notes": "items_needed is the literal placeholder 'tbd'.",
         "model": "claude-fable-5 (in-session)",
         "verifiedOn": "2026-07-21"
-      }
+      },
+      "rejected": true
     },
     {
       "stepId": "2c4d32ccb8",
@@ -18160,7 +18202,8 @@
         "notes": "items_needed is the literal placeholder 'tbd'.",
         "model": "claude-fable-5 (in-session)",
         "verifiedOn": "2026-07-21"
-      }
+      },
+      "rejected": true
     },
     {
       "stepId": "81c137ad49",
@@ -18246,7 +18289,8 @@
         "notes": "items_needed is the literal placeholder 'tbd'.",
         "model": "claude-fable-5 (in-session)",
         "verifiedOn": "2026-07-21"
-      }
+      },
+      "rejected": true
     },
     {
       "stepId": "04da2bb8e9",
@@ -18566,7 +18610,8 @@
         "notes": "items_needed is the literal placeholder 'tbd'.",
         "model": "claude-fable-5 (in-session)",
         "verifiedOn": "2026-07-21"
-      }
+      },
+      "rejected": true
     },
     {
       "stepId": "277324984d",
@@ -18587,7 +18632,8 @@
         "notes": "items_needed is the literal placeholder 'tbd'.",
         "model": "claude-fable-5 (in-session)",
         "verifiedOn": "2026-07-21"
-      }
+      },
+      "rejected": true
     },
     {
       "stepId": "e42941b865",
@@ -18608,7 +18654,8 @@
         "notes": "items_needed is the literal placeholder 'tbd'.",
         "model": "claude-fable-5 (in-session)",
         "verifiedOn": "2026-07-21"
-      }
+      },
+      "rejected": true
     },
     {
       "stepId": "ceb3e1f3ed",
@@ -18629,7 +18676,8 @@
         "notes": "items_needed is the literal placeholder 'tbd'.",
         "model": "claude-fable-5 (in-session)",
         "verifiedOn": "2026-07-21"
-      }
+      },
+      "rejected": true
     },
     {
       "stepId": "121769edde",
@@ -18650,7 +18698,8 @@
         "notes": "items_needed is the literal placeholder 'tbd'.",
         "model": "claude-fable-5 (in-session)",
         "verifiedOn": "2026-07-21"
-      }
+      },
+      "rejected": true
     },
     {
       "stepId": "027d2d4044",
@@ -18701,7 +18750,8 @@
         "notes": "items_needed is the literal placeholder 'tbd'.",
         "model": "claude-fable-5 (in-session)",
         "verifiedOn": "2026-07-21"
-      }
+      },
+      "rejected": true
     },
     {
       "stepId": "296ac5abed",
@@ -18722,7 +18772,8 @@
         "notes": "items_needed is the literal placeholder 'tbd'.",
         "model": "claude-fable-5 (in-session)",
         "verifiedOn": "2026-07-21"
-      }
+      },
+      "rejected": true
     },
     {
       "stepId": "edeb8b7a42",
@@ -18798,7 +18849,8 @@
         "notes": "items_needed is the literal placeholder 'tbd'.",
         "model": "claude-fable-5 (in-session)",
         "verifiedOn": "2026-07-21"
-      }
+      },
+      "rejected": true
     },
     {
       "stepId": "832305f635",
@@ -18819,7 +18871,8 @@
         "notes": "items_needed is the literal placeholder 'tbd'.",
         "model": "claude-fable-5 (in-session)",
         "verifiedOn": "2026-07-21"
-      }
+      },
+      "rejected": true
     },
     {
       "stepId": "9981564de1",
@@ -18840,7 +18893,8 @@
         "notes": "items_needed is the literal placeholder 'tbd'.",
         "model": "claude-fable-5 (in-session)",
         "verifiedOn": "2026-07-21"
-      }
+      },
+      "rejected": true
     },
     {
       "stepId": "9aadbc2cad",
@@ -18861,7 +18915,8 @@
         "notes": "items_needed is the literal placeholder 'tbd'.",
         "model": "claude-fable-5 (in-session)",
         "verifiedOn": "2026-07-21"
-      }
+      },
+      "rejected": true
     },
     {
       "stepId": "619214082c",
@@ -18882,7 +18937,8 @@
         "notes": "items_needed is the literal placeholder 'tbd'.",
         "model": "claude-fable-5 (in-session)",
         "verifiedOn": "2026-07-21"
-      }
+      },
+      "rejected": true
     },
     {
       "stepId": "e461b8fce1",
@@ -18902,7 +18958,8 @@
         "notes": "Metadata says 'none (!!!)' — Corrupted Gauntlet provides all gear inside; there is deliberately nothing to bring.",
         "model": "claude-fable-5 (in-session)",
         "verifiedOn": "2026-07-21"
-      }
+      },
+      "rejected": true
     },
     {
       "stepId": "22068e3377",
@@ -18923,7 +18980,8 @@
         "notes": "items_needed is the literal placeholder 'tbd'.",
         "model": "claude-fable-5 (in-session)",
         "verifiedOn": "2026-07-21"
-      }
+      },
+      "rejected": true
     },
     {
       "stepId": "979caccc22",
@@ -18944,7 +19002,8 @@
         "notes": "items_needed is the literal placeholder 'tbd'.",
         "model": "claude-fable-5 (in-session)",
         "verifiedOn": "2026-07-21"
-      }
+      },
+      "rejected": true
     },
     {
       "stepId": "f1ec24a2dd",
@@ -18965,7 +19024,8 @@
         "notes": "items_needed is the literal placeholder 'tbd'.",
         "model": "claude-fable-5 (in-session)",
         "verifiedOn": "2026-07-21"
-      }
+      },
+      "rejected": true
     },
     {
       "stepId": "2afa61221e",
@@ -18986,7 +19046,8 @@
         "notes": "items_needed is the literal placeholder 'tbd'.",
         "model": "claude-fable-5 (in-session)",
         "verifiedOn": "2026-07-21"
-      }
+      },
+      "rejected": true
     },
     {
       "stepId": "a70a0da210",
@@ -19007,7 +19068,8 @@
         "notes": "items_needed is the literal placeholder 'tbd'.",
         "model": "claude-fable-5 (in-session)",
         "verifiedOn": "2026-07-21"
-      }
+      },
+      "rejected": true
     },
     {
       "stepId": "ae367a35d7",
@@ -19028,7 +19090,8 @@
         "notes": "items_needed is the literal placeholder 'tbd'.",
         "model": "claude-fable-5 (in-session)",
         "verifiedOn": "2026-07-21"
-      }
+      },
+      "rejected": true
     },
     {
       "stepId": "85eb33cceb",
@@ -19049,7 +19112,8 @@
         "notes": "items_needed is the literal placeholder 'tbd'.",
         "model": "claude-fable-5 (in-session)",
         "verifiedOn": "2026-07-21"
-      }
+      },
+      "rejected": true
     },
     {
       "stepId": "9bab0351d6",
@@ -19070,7 +19134,8 @@
         "notes": "items_needed is the literal placeholder 'tbd'.",
         "model": "claude-fable-5 (in-session)",
         "verifiedOn": "2026-07-21"
-      }
+      },
+      "rejected": true
     },
     {
       "stepId": "6e4279ca8b",
@@ -19091,7 +19156,8 @@
         "notes": "items_needed is the literal placeholder 'tbd'.",
         "model": "claude-fable-5 (in-session)",
         "verifiedOn": "2026-07-21"
-      }
+      },
+      "rejected": true
     },
     {
       "stepId": "64de76d136",
@@ -19112,7 +19178,8 @@
         "notes": "items_needed is the literal placeholder 'tbd'.",
         "model": "claude-fable-5 (in-session)",
         "verifiedOn": "2026-07-21"
-      }
+      },
+      "rejected": true
     },
     {
       "stepId": "1b09cf8f61",
@@ -19133,7 +19200,8 @@
         "notes": "items_needed is the literal placeholder 'tbd'.",
         "model": "claude-fable-5 (in-session)",
         "verifiedOn": "2026-07-21"
-      }
+      },
+      "rejected": true
     },
     {
       "stepId": "2722e957f1",
@@ -19154,7 +19222,8 @@
         "notes": "items_needed is the literal placeholder 'tbd'.",
         "model": "claude-fable-5 (in-session)",
         "verifiedOn": "2026-07-21"
-      }
+      },
+      "rejected": true
     },
     {
       "stepId": "10bb94c0dc",
@@ -19175,7 +19244,8 @@
         "notes": "items_needed is the literal placeholder 'tbd'.",
         "model": "claude-fable-5 (in-session)",
         "verifiedOn": "2026-07-21"
-      }
+      },
+      "rejected": true
     }
   ]
 }
