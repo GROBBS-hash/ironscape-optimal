@@ -21,4 +21,14 @@ public class ItemAliasTest
 		assertTrue(hasAlias("mind", "mind rune"));
 		assertTrue(hasAlias("log", "logs"));
 	}
+
+	@Test
+	public void teleportTabPhrasesResolveToWikiNames()
+	{
+		assertTrue(hasAlias("house teleport", "teleport to house"));
+		assertTrue(hasAlias("house teleports", "teleport to house"));
+		assertTrue(hasAlias("rellekka tab", "rellekka teleport"));
+		assertTrue(hasAlias("rimmington tab", "rimmington teleport"));
+		assertTrue(hasAlias("trollheim tab", "trollheim teleport"));
+	}
 }

@@ -31,8 +31,13 @@ public class StepOverlay extends OverlayPanel
 	public static class Model
 	{
 		String title;
-		/** The step's remaining action texts, already truncated. */
-		List<String> lines;
+		/** The ONE action to do right now (already truncated). */
+		String current;
+		/** A short dimmed preview of what follows. */
+		List<String> upNext;
+		/** How many further sub-steps the step holds beyond the preview. */
+		int moreCount;
+		/** Live counts for the CURRENT action only. */
 		List<Requirement> requirements;
 	}
 
@@ -67,26 +72,41 @@ public class StepOverlay extends OverlayPanel
 			return null;
 		}
 
-		panelComponent.setPreferredSize(new Dimension(190, 0));
+		panelComponent.setPreferredSize(new Dimension(230, 0));
 		panelComponent.getChildren().add(TitleComponent.builder()
 			.text(model.getTitle())
 			.color(TITLE_COLOR)
 			.build());
 
-		for (String line : model.getLines())
-		{
-			panelComponent.getChildren().add(LineComponent.builder()
-				.left(line)
-				.build());
-		}
+		// The one thing to do NOW, bright...
+		panelComponent.getChildren().add(LineComponent.builder()
+			.left(model.getCurrent())
+			.leftColor(Color.WHITE)
+			.build());
 
 		for (Requirement requirement : model.getRequirements())
 		{
 			panelComponent.getChildren().add(LineComponent.builder()
-				.left(requirement.getName())
+				.left("   " + requirement.getName())
 				.leftColor(Color.LIGHT_GRAY)
 				.right(requirement.getProgress())
 				.rightColor(requirement.getColor())
+				.build());
+		}
+
+		// ...then a dimmed glimpse of what follows.
+		for (String next : model.getUpNext())
+		{
+			panelComponent.getChildren().add(LineComponent.builder()
+				.left("then: " + next)
+				.leftColor(Color.GRAY)
+				.build());
+		}
+		if (model.getMoreCount() > 0)
+		{
+			panelComponent.getChildren().add(LineComponent.builder()
+				.left("… +" + model.getMoreCount() + " more in this step")
+				.leftColor(Color.DARK_GRAY)
 				.build());
 		}
 

@@ -528,7 +528,12 @@ public class BruhsailerPanel extends PluginPanel
 				scrollRowIntoView(target, attemptsLeft - 1);
 				return;
 			}
-			content.scrollRectToVisible(target.getBounds());
+			// Land on the first UNTICKED sub, top-aligned. (A step taller
+			// than the viewport would otherwise show its far end.)
+			javax.swing.JViewport viewport = scrollPane.getViewport();
+			int y = Math.max(0, target.getY() + target.firstIncompleteSubY() - 8);
+			int maxY = Math.max(0, viewport.getViewSize().height - viewport.getExtentSize().height);
+			viewport.setViewPosition(new java.awt.Point(0, Math.min(y, maxY)));
 		});
 	}
 
@@ -727,20 +732,29 @@ public class BruhsailerPanel extends PluginPanel
 		{
 			return;
 		}
-		for (GuideStep step : guide.getAllSteps())
+		// "Current" = the first incomplete step AFTER the last completed
+		// one — unticked steps further back were skipped on purpose, and
+		// landing on them every time the panel opens buries real progress.
+		java.util.List<GuideStep> steps = guide.getAllSteps();
+		int start = 0;
+		for (int i = 0; i < steps.size(); i++)
 		{
-			if (!progressManager.isCompleted(guide.getVariant(), step.getId()))
+			if (progressManager.isCompleted(guide.getVariant(), steps.get(i).getId()))
 			{
-				openSection(step.getChapterIndex(), step.getSectionIndex(), step.getId());
-				// Resume also points the map at what's next.
-				if (navigate && progressChangedListener != null)
-				{
-					progressChangedListener.run();
-				}
-				return;
+				start = i + 1;
 			}
 		}
-		// Everything done — nothing to resume. (Congratulations.)
+		if (start >= steps.size())
+		{
+			return; // everything done — nothing to resume. (Congratulations.)
+		}
+		GuideStep step = steps.get(start);
+		openSection(step.getChapterIndex(), step.getSectionIndex(), step.getId());
+		// Resume also points the map at what's next.
+		if (navigate && progressChangedListener != null)
+		{
+			progressChangedListener.run();
+		}
 	}
 
 	private void updateProgressBar()

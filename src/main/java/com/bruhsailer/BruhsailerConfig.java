@@ -57,6 +57,16 @@ public interface BruhsailerConfig extends Config
 	}
 
 	@ConfigItem(
+		keyName = "showQuestStartMarker",
+		name = "Quest start marker",
+		description = "Float the blue quest icon over a quest's start point while you head there; disappears once the quest begins (and Quest Helper takes over)"
+	)
+	default boolean showQuestStartMarker()
+	{
+		return true;
+	}
+
+	@ConfigItem(
 		keyName = "showTeleportHints",
 		name = "Highlight teleport UI",
 		description = "When the current step is a minigame teleport, highlight the tab, dropdown entry, and Teleport button to click, Quest Helper-style"

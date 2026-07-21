@@ -101,7 +101,23 @@ public class ItemTracker
 		Map.entry("lumby tab", "lumbridge teleport"),
 		Map.entry("camelot tab", "camelot teleport"),
 		Map.entry("ardougne tab", "ardougne teleport"),
-		Map.entry("ardy tab", "ardougne teleport"));
+		Map.entry("ardy tab", "ardougne teleport"),
+		// The POH tab's in-game name is "Teleport to house"; the guide also
+		// says "house teleport". Redirected tabs (scroll of redirection) are
+		// literally named "<Place> teleport" in game — wiki-confirmed.
+		Map.entry("house teleport", "teleport to house"),
+		Map.entry("house teleports", "teleport to house"),
+		Map.entry("redirected poh tab", "teleport to house"),
+		Map.entry("rimmington tab", "rimmington teleport"),
+		Map.entry("taverley tab", "taverley teleport"),
+		Map.entry("pollnivneach tab", "pollnivneach teleport"),
+		Map.entry("hosidius tab", "hosidius teleport"),
+		Map.entry("rellekka tab", "rellekka teleport"),
+		Map.entry("brimhaven tab", "brimhaven teleport"),
+		Map.entry("yanille tab", "yanille teleport"),
+		Map.entry("trollheim tab", "trollheim teleport"),
+		Map.entry("prifddinas tab", "prifddinas teleport"),
+		Map.entry("catherby tab", "catherby teleport"));
 
 	/**
 	 * The in-game item names a guide phrase might refer to, most literal
