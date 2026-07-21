@@ -1,0 +1,61 @@
+plugins {
+	id 'java'
+}
+
+repositories {
+	mavenLocal()
+	maven {
+		url = 'https://repo.runelite.net'
+		content {
+			includeGroupByRegex("net\\.runelite.*")
+		}
+	}
+	mavenCentral()
+}
+
+def runeLiteVersion = 'latest.release'
+
+// This class only exists in the test source set. It boots a full RuneLite
+// client with our plugin side-loaded — that's how plugin development works:
+// you run a real client, not some sandbox.
+def pluginMainClass = 'com.bruhsailer.BruhsailerPluginTest'
+
+dependencies {
+	// compileOnly = "we compile against the RuneLite client API, but we don't
+	// ship it". When the plugin runs inside a real client, RuneLite provides
+	// these classes itself.
+	compileOnly group: 'net.runelite', name: 'client', version: runeLiteVersion
+
+	// Lombok generates boilerplate (loggers, getters) at compile time via
+	// annotations like @Slf4j. RuneLite's own code uses it heavily.
+	compileOnly 'org.projectlombok:lombok:1.18.30'
+	annotationProcessor 'org.projectlombok:lombok:1.18.30'
+
+	testImplementation 'junit:junit:4.13.2'
+	// For the dev launcher we DO need the full client on the classpath,
+	// hence testImplementation rather than compileOnly.
+	testImplementation group: 'net.runelite', name: 'client', version: runeLiteVersion
+	testImplementation group: 'net.runelite', name: 'jshell', version: runeLiteVersion
+}
+
+group = 'com.bruhsailer'
+version = '0.0.1'
+
+tasks.withType(JavaCompile).configureEach {
+	options.encoding = 'UTF-8'
+	// RuneLite plugins must be compatible with Java 11 even when built on a
+	// newer JDK (you have 17). This flag enforces that at compile time.
+	options.release.set(11)
+}
+
+// `gradlew run` — launches a RuneLite client with the plugin loaded.
+tasks.register('run', JavaExec) {
+	group = 'runelite'
+	description = 'Launch a RuneLite client with the BRUHsailer plugin loaded'
+	classpath = sourceSets.test.runtimeClasspath
+	mainClass = pluginMainClass
+
+	// RuneLite's developer mode requires JVM assertions to be enabled (-ea).
+	jvmArgs "-ea"
+	args "--developer-mode"
+}

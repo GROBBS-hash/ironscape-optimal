@@ -1,0 +1,3462 @@
+{
+  "version": 1,
+  "places": {
+    "baraek": {
+      "display": "Baraek",
+      "x": 3217,
+      "y": 3435,
+      "plane": 0
+    },
+    "betty": {
+      "display": "Betty",
+      "x": 3013,
+      "y": 3259,
+      "plane": 0
+    },
+    "bob": {
+      "display": "Bob",
+      "x": 3228,
+      "y": 3206,
+      "plane": 0
+    },
+    "boot": {
+      "display": "Boot",
+      "x": 2984,
+      "y": 9810,
+      "plane": 0
+    },
+    "councillor andrews": {
+      "display": "Councillor Andrews",
+      "x": 1434,
+      "y": 9949,
+      "plane": 0
+    },
+    "ectophial": {
+      "display": "Ectophial",
+      "x": 3660,
+      "y": 3522,
+      "plane": 0
+    },
+    "gertrude": {
+      "display": "Gertrude",
+      "x": 3151,
+      "y": 3409,
+      "plane": 0
+    },
+    "port sarim": {
+      "display": "Port Sarim",
+      "x": 3009,
+      "y": 3207,
+      "plane": 0
+    },
+    "alain": {
+      "display": "Alain",
+      "x": 2937,
+      "y": 3439,
+      "plane": 0
+    },
+    "ali morrisane": {
+      "display": "Ali Morrisane",
+      "x": 3304,
+      "y": 3211,
+      "plane": 0
+    },
+    "ardougne": {
+      "display": "Ardougne",
+      "x": 2570,
+      "y": 3300,
+      "plane": 0
+    },
+    "askeladden": {
+      "display": "Askeladden",
+      "x": 2658,
+      "y": 3660,
+      "plane": 0
+    },
+    "bill teach": {
+      "display": "Bill Teach",
+      "x": 3677,
+      "y": 3495,
+      "plane": 0
+    },
+    "brian": {
+      "display": "Brian",
+      "x": 3027,
+      "y": 3249,
+      "plane": 0
+    },
+    "brother kojo": {
+      "display": "Brother Kojo",
+      "x": 2569,
+      "y": 3249,
+      "plane": 0
+    },
+    "brother omad": {
+      "display": "Brother Omad",
+      "x": 2604,
+      "y": 3209,
+      "plane": 0
+    },
+    "burntmeat": {
+      "display": "Burntmeat",
+      "x": 2909,
+      "y": 10088,
+      "plane": 0
+    },
+    "burntof": {
+      "display": "Burntof",
+      "x": 2957,
+      "y": 3367,
+      "plane": 0
+    },
+    "captain tock": {
+      "display": "Captain Tock",
+      "x": 3030,
+      "y": 3273,
+      "plane": 0
+    },
+    "ceril": {
+      "display": "Ceril",
+      "x": 2566,
+      "y": 3270,
+      "plane": 0
+    },
+    "ceril carnillean": {
+      "display": "Ceril Carnillean",
+      "x": 2566,
+      "y": 3270,
+      "plane": 0
+    },
+    "curator herminius": {
+      "display": "Curator Herminius",
+      "x": 1712,
+      "y": 3163,
+      "plane": 0
+    },
+    "dantaera": {
+      "display": "Dantaera",
+      "x": 2810,
+      "y": 3464,
+      "plane": 0
+    },
+    "dreven": {
+      "display": "Dreven",
+      "x": 3183,
+      "y": 3356,
+      "plane": 0
+    },
+    "drezel": {
+      "display": "Drezel",
+      "x": 3440,
+      "y": 9895,
+      "plane": 0
+    },
+    "elstan": {
+      "display": "Elstan",
+      "x": 3053,
+      "y": 3305,
+      "plane": 0
+    },
+    "erin": {
+      "display": "Erin",
+      "x": 2658,
+      "y": 3315,
+      "plane": 0
+    },
+    "father lawrence": {
+      "display": "Father Lawrence",
+      "x": 3254,
+      "y": 3485,
+      "plane": 0
+    },
+    "frizzy skernip": {
+      "display": "Frizzy Skernip",
+      "x": 3057,
+      "y": 3259,
+      "plane": 0
+    },
+    "ganala": {
+      "display": "Ganala",
+      "x": 1649,
+      "y": 3824,
+      "plane": 0
+    },
+    "general khazard": {
+      "display": "General Khazard",
+      "x": 2723,
+      "y": 3622,
+      "plane": 0
+    },
+    "hassan": {
+      "display": "Hassan",
+      "x": 3302,
+      "y": 3163,
+      "plane": 0
+    },
+    "hazelmere": {
+      "display": "Hazelmere",
+      "x": 2678,
+      "y": 3086,
+      "plane": 1
+    },
+    "hetty": {
+      "display": "Hetty",
+      "x": 2968,
+      "y": 3206,
+      "plane": 0
+    },
+    "jack seagull": {
+      "display": "Jack Seagull",
+      "x": 3050,
+      "y": 3257,
+      "plane": 0
+    },
+    "katrine": {
+      "display": "Katrine",
+      "x": 3186,
+      "y": 3385,
+      "plane": 0
+    },
+    "khorvak": {
+      "display": "Khorvak",
+      "x": 2864,
+      "y": 9876,
+      "plane": 0
+    },
+    "king arthur": {
+      "display": "King Arthur",
+      "x": 2764,
+      "y": 3515,
+      "plane": 0
+    },
+    "king narnode": {
+      "display": "King Narnode",
+      "x": 2466,
+      "y": 3496,
+      "plane": 0
+    },
+    "king narnode shareen": {
+      "display": "King Narnode Shareen",
+      "x": 2466,
+      "y": 3496,
+      "plane": 0
+    },
+    "king roald": {
+      "display": "King Roald",
+      "x": 3222,
+      "y": 3472,
+      "plane": 0
+    },
+    "kragen": {
+      "display": "Kragen",
+      "x": 2667,
+      "y": 3375,
+      "plane": 0
+    },
+    "lyra": {
+      "display": "Lyra",
+      "x": 3600,
+      "y": 3524,
+      "plane": 0
+    },
+    "marley": {
+      "display": "Marley",
+      "x": 3088,
+      "y": 3472,
+      "plane": 0
+    },
+    "morgan": {
+      "display": "Morgan",
+      "x": 3099,
+      "y": 3269,
+      "plane": 0
+    },
+    "murcaily": {
+      "display": "Murcaily",
+      "x": 2816,
+      "y": 3084,
+      "plane": 0
+    },
+    "osman": {
+      "display": "Osman",
+      "x": 3286,
+      "y": 3180,
+      "plane": 0
+    },
+    "port piscarilius": {
+      "display": "Port Piscarilius",
+      "x": 1803,
+      "y": 3752,
+      "plane": 0
+    },
+    "praistan ebola": {
+      "display": "Praistan Ebola",
+      "x": 2800,
+      "y": 3205,
+      "plane": 0
+    },
+    "regulus cento": {
+      "display": "Regulus Cento",
+      "x": 3281,
+      "y": 3413,
+      "plane": 0
+    },
+    "reldo": {
+      "display": "Reldo",
+      "x": 3210,
+      "y": 3495,
+      "plane": 0
+    },
+    "rolad": {
+      "display": "Rolad",
+      "x": 3021,
+      "y": 3452,
+      "plane": 0
+    },
+    "romeo": {
+      "display": "Romeo",
+      "x": 3211,
+      "y": 3425,
+      "plane": 0
+    },
+    "sanfew": {
+      "display": "Sanfew",
+      "x": 2897,
+      "y": 3426,
+      "plane": 1
+    },
+    "seth groats": {
+      "display": "Seth Groats",
+      "x": 3228,
+      "y": 3291,
+      "plane": 0
+    },
+    "sherlock": {
+      "display": "Sherlock",
+      "x": 2733,
+      "y": 3413,
+      "plane": 0
+    },
+    "simon templeton": {
+      "display": "Simon Templeton",
+      "x": 3344,
+      "y": 2828,
+      "plane": 0
+    },
+    "sin seer": {
+      "display": "Sin Seer",
+      "x": 2702,
+      "y": 3473,
+      "plane": 1
+    },
+    "sir amik varze": {
+      "display": "Sir Amik Varze",
+      "x": 2960,
+      "y": 3337,
+      "plane": 2
+    },
+    "sir renitee": {
+      "display": "Sir Renitee",
+      "x": 2982,
+      "y": 3341,
+      "plane": 1
+    },
+    "straven": {
+      "display": "Straven",
+      "x": 3246,
+      "y": 9780,
+      "plane": 0
+    },
+    "the face": {
+      "display": "The Face",
+      "x": 3018,
+      "y": 3233,
+      "plane": 0
+    },
+    "thurgo": {
+      "display": "Thurgo",
+      "x": 3001,
+      "y": 3144,
+      "plane": 0
+    },
+    "vasquen": {
+      "display": "Vasquen",
+      "x": 3227,
+      "y": 3314,
+      "plane": 0
+    },
+    "veos": {
+      "display": "Veos",
+      "x": 3054,
+      "y": 3245,
+      "plane": 0
+    },
+    "wizard sedridor": {
+      "display": "Wizard Sedridor",
+      "x": 3103,
+      "y": 9571,
+      "plane": 0
+    },
+    "wizard traiborn": {
+      "display": "Wizard Traiborn",
+      "x": 3112,
+      "y": 3157,
+      "plane": 1
+    },
+    "animal magnetism": {
+      "display": "Animal Magnetism",
+      "x": 3093,
+      "y": 3358,
+      "plane": 0,
+      "type": "quest"
+    },
+    "another slice of h.a.m.": {
+      "display": "Another Slice of H.A.M.",
+      "x": 2733,
+      "y": 5365,
+      "plane": 1,
+      "type": "quest"
+    },
+    "the ascent of arceuus": {
+      "display": "The Ascent of Arceuus",
+      "x": 1700,
+      "y": 3742,
+      "plane": 0,
+      "type": "quest"
+    },
+    "at first light": {
+      "display": "At First Light",
+      "x": 1555,
+      "y": 3033,
+      "plane": 0,
+      "type": "quest"
+    },
+    "below ice mountain": {
+      "display": "Below Ice Mountain",
+      "x": 3002,
+      "y": 3436,
+      "plane": 0,
+      "type": "quest"
+    },
+    "beneath cursed sands": {
+      "display": "Beneath Cursed Sands",
+      "x": 3309,
+      "y": 2779,
+      "plane": 0,
+      "type": "quest"
+    },
+    "between a rock...": {
+      "display": "Between a Rock...",
+      "x": 2821,
+      "y": 10168,
+      "plane": 0,
+      "type": "quest"
+    },
+    "big chompy bird hunting": {
+      "display": "Big Chompy Bird Hunting",
+      "x": 2630,
+      "y": 2981,
+      "plane": 0,
+      "type": "quest"
+    },
+    "biohazard": {
+      "display": "Biohazard",
+      "x": 2592,
+      "y": 3336,
+      "plane": 0,
+      "type": "quest"
+    },
+    "black knights' fortress": {
+      "display": "Black Knights' Fortress",
+      "x": 2959,
+      "y": 3336,
+      "plane": 2,
+      "type": "quest"
+    },
+    "bone voyage": {
+      "display": "Bone Voyage",
+      "x": 3260,
+      "y": 3450,
+      "plane": 0,
+      "type": "quest"
+    },
+    "cabin fever": {
+      "display": "Cabin Fever",
+      "x": 3675,
+      "y": 3496,
+      "plane": 0,
+      "type": "quest"
+    },
+    "children of the sun": {
+      "display": "Children of the Sun",
+      "x": 3225,
+      "y": 3428,
+      "plane": 0,
+      "type": "quest"
+    },
+    "client of kourend": {
+      "display": "Client of Kourend",
+      "x": 1826,
+      "y": 3690,
+      "plane": 0,
+      "type": "quest"
+    },
+    "clock tower": {
+      "display": "Clock Tower",
+      "x": 2569,
+      "y": 3249,
+      "plane": 0,
+      "type": "quest"
+    },
+    "cold war": {
+      "display": "Cold War",
+      "x": 2594,
+      "y": 3265,
+      "plane": 0,
+      "type": "quest"
+    },
+    "contact!": {
+      "display": "Contact!",
+      "x": 3281,
+      "y": 2771,
+      "plane": 0,
+      "type": "quest"
+    },
+    "cook's assistant": {
+      "display": "Cook's Assistant",
+      "x": 3208,
+      "y": 3214,
+      "plane": 0,
+      "type": "quest"
+    },
+    "the corsair curse": {
+      "display": "The Corsair Curse",
+      "x": 3030,
+      "y": 3273,
+      "plane": 0,
+      "type": "quest"
+    },
+    "creature of fenkenstrain": {
+      "display": "Creature of Fenkenstrain",
+      "x": 3488,
+      "y": 3485,
+      "plane": 0,
+      "type": "quest"
+    },
+    "current affairs": {
+      "display": "Current Affairs",
+      "x": 2803,
+      "y": 3432,
+      "plane": 0,
+      "type": "quest"
+    },
+    "darkness of hallowvale": {
+      "display": "Darkness of Hallowvale",
+      "x": 3494,
+      "y": 9628,
+      "plane": 0,
+      "type": "quest"
+    },
+    "death on the isle": {
+      "display": "Death on the Isle",
+      "x": 1413,
+      "y": 2937,
+      "plane": 0,
+      "type": "quest"
+    },
+    "death plateau": {
+      "display": "Death Plateau",
+      "x": 2896,
+      "y": 3528,
+      "plane": 0,
+      "type": "quest"
+    },
+    "death to the dorgeshuun": {
+      "display": "Death to the Dorgeshuun",
+      "x": 3317,
+      "y": 9613,
+      "plane": 0,
+      "type": "quest"
+    },
+    "defender of varrock": {
+      "display": "Defender of Varrock",
+      "x": 3283,
+      "y": 3501,
+      "plane": 0,
+      "type": "quest"
+    },
+    "demon slayer": {
+      "display": "Demon Slayer",
+      "x": 3203,
+      "y": 3424,
+      "plane": 0,
+      "type": "quest"
+    },
+    "the depths of despair": {
+      "display": "The Depths of Despair",
+      "x": 1782,
+      "y": 3570,
+      "plane": 0,
+      "type": "quest"
+    },
+    "desert treasure i": {
+      "display": "Desert Treasure I",
+      "x": 3178,
+      "y": 3043,
+      "plane": 0,
+      "type": "quest"
+    },
+    "desert treasure ii - the fallen empire": {
+      "display": "Desert Treasure II - The Fallen Empire",
+      "x": 3511,
+      "y": 2971,
+      "plane": 0,
+      "type": "quest"
+    },
+    "devious minds": {
+      "display": "Devious Minds",
+      "x": 3406,
+      "y": 3492,
+      "plane": 0,
+      "type": "quest"
+    },
+    "the dig site": {
+      "display": "The Dig Site",
+      "x": 3361,
+      "y": 3340,
+      "plane": 0,
+      "type": "quest"
+    },
+    "doric's quest": {
+      "display": "Doric's Quest",
+      "x": 2952,
+      "y": 3451,
+      "plane": 0,
+      "type": "quest"
+    },
+    "dragon slayer i": {
+      "display": "Dragon Slayer I",
+      "x": 3190,
+      "y": 3360,
+      "plane": 0,
+      "type": "quest"
+    },
+    "dragon slayer ii": {
+      "display": "Dragon Slayer II",
+      "x": 2457,
+      "y": 2868,
+      "plane": 0,
+      "type": "quest"
+    },
+    "dream mentor": {
+      "display": "Dream Mentor",
+      "x": 2343,
+      "y": 10360,
+      "plane": 2,
+      "type": "quest"
+    },
+    "druidic ritual": {
+      "display": "Druidic Ritual",
+      "x": 2926,
+      "y": 3484,
+      "plane": 0,
+      "type": "quest"
+    },
+    "dwarf cannon": {
+      "display": "Dwarf Cannon",
+      "x": 2567,
+      "y": 3461,
+      "plane": 0,
+      "type": "quest"
+    },
+    "eadgar's ruse": {
+      "display": "Eadgar's Ruse",
+      "x": 2897,
+      "y": 3427,
+      "plane": 1,
+      "type": "quest"
+    },
+    "eagles' peak": {
+      "display": "Eagles' Peak",
+      "x": 2606,
+      "y": 3264,
+      "plane": 0,
+      "type": "quest"
+    },
+    "elemental workshop i": {
+      "display": "Elemental Workshop I",
+      "x": 2716,
+      "y": 3481,
+      "plane": 0,
+      "type": "quest"
+    },
+    "elemental workshop ii": {
+      "display": "Elemental Workshop II",
+      "x": 3366,
+      "y": 3335,
+      "plane": 0,
+      "type": "quest"
+    },
+    "enakhra's lament": {
+      "display": "Enakhra's Lament",
+      "x": 3191,
+      "y": 2926,
+      "plane": 0,
+      "type": "quest"
+    },
+    "enlightened journey": {
+      "display": "Enlightened Journey",
+      "x": 2810,
+      "y": 3356,
+      "plane": 0,
+      "type": "quest"
+    },
+    "ernest the chicken": {
+      "display": "Ernest the Chicken",
+      "x": 3110,
+      "y": 3330,
+      "plane": 0,
+      "type": "quest"
+    },
+    "ethically acquired antiquities": {
+      "display": "Ethically Acquired Antiquities",
+      "x": 1720,
+      "y": 3165,
+      "plane": 0,
+      "type": "quest"
+    },
+    "the eyes of glouphrie": {
+      "display": "The Eyes of Glouphrie",
+      "x": 2406,
+      "y": 9817,
+      "plane": 0,
+      "type": "quest"
+    },
+    "fairytale i - growing pains": {
+      "display": "Fairytale I - Growing Pains",
+      "x": 3077,
+      "y": 3258,
+      "plane": 0,
+      "type": "quest"
+    },
+    "fairytale ii - cure a queen": {
+      "display": "Fairytale II - Cure a Queen",
+      "x": 3077,
+      "y": 3258,
+      "plane": 0,
+      "type": "quest"
+    },
+    "family crest": {
+      "display": "Family Crest",
+      "x": 3279,
+      "y": 3404,
+      "plane": 0,
+      "type": "quest"
+    },
+    "the feud": {
+      "display": "The Feud",
+      "x": 3302,
+      "y": 3211,
+      "plane": 0,
+      "type": "quest"
+    },
+    "fight arena": {
+      "display": "Fight Arena",
+      "x": 2566,
+      "y": 3199,
+      "plane": 0,
+      "type": "quest"
+    },
+    "fishing contest": {
+      "display": "Fishing Contest",
+      "x": 2876,
+      "y": 3481,
+      "plane": 0,
+      "type": "quest"
+    },
+    "forgettable tale...": {
+      "display": "Forgettable Tale...",
+      "x": 2826,
+      "y": 10214,
+      "plane": 0,
+      "type": "quest"
+    },
+    "the forsaken tower": {
+      "display": "The Forsaken Tower",
+      "x": 1483,
+      "y": 3748,
+      "plane": 0,
+      "type": "quest"
+    },
+    "the fremennik exiles": {
+      "display": "The Fremennik Exiles",
+      "x": 2658,
+      "y": 3668,
+      "plane": 0,
+      "type": "quest"
+    },
+    "the fremennik isles": {
+      "display": "The Fremennik Isles",
+      "x": 2646,
+      "y": 3710,
+      "plane": 0,
+      "type": "quest"
+    },
+    "the fremennik trials": {
+      "display": "The Fremennik Trials",
+      "x": 2658,
+      "y": 3668,
+      "plane": 0,
+      "type": "quest"
+    },
+    "the garden of death": {
+      "display": "The Garden of Death",
+      "x": 1312,
+      "y": 3472,
+      "plane": 0,
+      "type": "quest"
+    },
+    "garden of tranquillity": {
+      "display": "Garden of Tranquillity",
+      "x": 3228,
+      "y": 3477,
+      "plane": 0,
+      "type": "quest"
+    },
+    "gertrude's cat": {
+      "display": "Gertrude's Cat",
+      "x": 3150,
+      "y": 3412,
+      "plane": 0,
+      "type": "quest"
+    },
+    "getting ahead": {
+      "display": "Getting Ahead",
+      "x": 1248,
+      "y": 3686,
+      "plane": 0,
+      "type": "quest"
+    },
+    "ghosts ahoy": {
+      "display": "Ghosts Ahoy",
+      "x": 3677,
+      "y": 3510,
+      "plane": 0,
+      "type": "quest"
+    },
+    "the giant dwarf": {
+      "display": "The Giant Dwarf",
+      "x": 2842,
+      "y": 10129,
+      "plane": 0,
+      "type": "quest"
+    },
+    "goblin diplomacy": {
+      "display": "Goblin Diplomacy",
+      "x": 2957,
+      "y": 3512,
+      "plane": 0,
+      "type": "quest"
+    },
+    "the golem": {
+      "display": "The Golem",
+      "x": 3488,
+      "y": 3089,
+      "plane": 0,
+      "type": "quest"
+    },
+    "the grand tree": {
+      "display": "The Grand Tree",
+      "x": 2466,
+      "y": 3495,
+      "plane": 0,
+      "type": "quest"
+    },
+    "the great brain robbery": {
+      "display": "The Great Brain Robbery",
+      "x": 3682,
+      "y": 2963,
+      "plane": 0,
+      "type": "quest"
+    },
+    "grim tales": {
+      "display": "Grim Tales",
+      "x": 2891,
+      "y": 3454,
+      "plane": 0,
+      "type": "quest"
+    },
+    "the hand in the sand": {
+      "display": "The Hand in the Sand",
+      "x": 2550,
+      "y": 3100,
+      "plane": 0,
+      "type": "quest"
+    },
+    "haunted mine": {
+      "display": "Haunted Mine",
+      "x": 3444,
+      "y": 3257,
+      "plane": 0,
+      "type": "quest"
+    },
+    "hazeel cult": {
+      "display": "Hazeel Cult",
+      "x": 2566,
+      "y": 3270,
+      "plane": 0,
+      "type": "quest"
+    },
+    "the heart of darkness": {
+      "display": "The Heart of Darkness",
+      "x": 1453,
+      "y": 3173,
+      "plane": 0,
+      "type": "quest"
+    },
+    "heroes' quest": {
+      "display": "Heroes' Quest",
+      "x": 2904,
+      "y": 3511,
+      "plane": 0,
+      "type": "quest"
+    },
+    "holy grail": {
+      "display": "Holy Grail",
+      "x": 2764,
+      "y": 3513,
+      "plane": 0,
+      "type": "quest"
+    },
+    "horror from the deep": {
+      "display": "Horror from the Deep",
+      "x": 2508,
+      "y": 3634,
+      "plane": 0,
+      "type": "quest"
+    },
+    "icthlarin's little helper": {
+      "display": "Icthlarin's Little Helper",
+      "x": 3315,
+      "y": 2849,
+      "plane": 0,
+      "type": "quest"
+    },
+    "imp catcher": {
+      "display": "Imp Catcher",
+      "x": 3103,
+      "y": 3164,
+      "plane": 2,
+      "type": "quest"
+    },
+    "in aid of the myreque": {
+      "display": "In Aid of the Myreque",
+      "x": 3506,
+      "y": 9839,
+      "plane": 0,
+      "type": "quest"
+    },
+    "in search of the myreque": {
+      "display": "In Search of the Myreque",
+      "x": 3503,
+      "y": 3477,
+      "plane": 0,
+      "type": "quest"
+    },
+    "jungle potion": {
+      "display": "Jungle Potion",
+      "x": 2810,
+      "y": 3086,
+      "plane": 0,
+      "type": "quest"
+    },
+    "king's ransom": {
+      "display": "King's Ransom",
+      "x": 2742,
+      "y": 3554,
+      "plane": 0,
+      "type": "quest"
+    },
+    "a kingdom divided": {
+      "display": "A Kingdom Divided",
+      "x": 1664,
+      "y": 3672,
+      "plane": 0,
+      "type": "quest"
+    },
+    "the knight's sword": {
+      "display": "The Knight's Sword",
+      "x": 2977,
+      "y": 3342,
+      "plane": 0,
+      "type": "quest"
+    },
+    "land of the goblins": {
+      "display": "Land of the Goblins",
+      "x": 3319,
+      "y": 9616,
+      "plane": 0,
+      "type": "quest"
+    },
+    "learning the ropes": {
+      "display": "Learning the Ropes",
+      "x": 3094,
+      "y": 3107,
+      "plane": 0,
+      "type": "quest"
+    },
+    "legends' quest": {
+      "display": "Legends' Quest",
+      "x": 2728,
+      "y": 3349,
+      "plane": 0,
+      "type": "quest"
+    },
+    "lost city": {
+      "display": "Lost City",
+      "x": 3150,
+      "y": 3205,
+      "plane": 0,
+      "type": "quest"
+    },
+    "the lost tribe": {
+      "display": "The Lost Tribe",
+      "x": 3210,
+      "y": 3222,
+      "plane": 1,
+      "type": "quest"
+    },
+    "lunar diplomacy": {
+      "display": "Lunar Diplomacy",
+      "x": 2620,
+      "y": 3689,
+      "plane": 0,
+      "type": "quest"
+    },
+    "making friends with my arm": {
+      "display": "Making Friends with My Arm",
+      "x": 2841,
+      "y": 10060,
+      "plane": 1,
+      "type": "quest"
+    },
+    "making history": {
+      "display": "Making History",
+      "x": 2435,
+      "y": 3346,
+      "plane": 0,
+      "type": "quest"
+    },
+    "meat and greet": {
+      "display": "Meat and Greet",
+      "x": 1754,
+      "y": 3074,
+      "plane": 0,
+      "type": "quest"
+    },
+    "merlin's crystal": {
+      "display": "Merlin's Crystal",
+      "x": 2764,
+      "y": 3513,
+      "plane": 0,
+      "type": "quest"
+    },
+    "misthalin mystery": {
+      "display": "Misthalin Mystery",
+      "x": 3236,
+      "y": 3155,
+      "plane": 0,
+      "type": "quest"
+    },
+    "monk's friend": {
+      "display": "Monk's Friend",
+      "x": 2606,
+      "y": 3209,
+      "plane": 0,
+      "type": "quest"
+    },
+    "monkey madness i": {
+      "display": "Monkey Madness I",
+      "x": 2466,
+      "y": 3495,
+      "plane": 0,
+      "type": "quest"
+    },
+    "monkey madness ii": {
+      "display": "Monkey Madness II",
+      "x": 2466,
+      "y": 3495,
+      "plane": 0,
+      "type": "quest"
+    },
+    "mountain daughter": {
+      "display": "Mountain Daughter",
+      "x": 2808,
+      "y": 3672,
+      "plane": 0,
+      "type": "quest"
+    },
+    "mourning's end part i": {
+      "display": "Mourning's End Part I",
+      "x": 2206,
+      "y": 3159,
+      "plane": 0,
+      "type": "quest"
+    },
+    "mourning's end part ii": {
+      "display": "Mourning's End Part II",
+      "x": 2838,
+      "y": 3285,
+      "plane": 0,
+      "type": "quest"
+    },
+    "murder mystery": {
+      "display": "Murder Mystery",
+      "x": 2741,
+      "y": 3562,
+      "plane": 0,
+      "type": "quest"
+    },
+    "my arm's big adventure": {
+      "display": "My Arm's Big Adventure",
+      "x": 2845,
+      "y": 10056,
+      "plane": 1,
+      "type": "quest"
+    },
+    "nature spirit": {
+      "display": "Nature Spirit",
+      "x": 3440,
+      "y": 9894,
+      "plane": 0,
+      "type": "quest"
+    },
+    "a night at the theatre": {
+      "display": "A Night at the Theatre",
+      "x": 3673,
+      "y": 3224,
+      "plane": 0,
+      "type": "quest"
+    },
+    "observatory quest": {
+      "display": "Observatory Quest",
+      "x": 2441,
+      "y": 3187,
+      "plane": 0,
+      "type": "quest"
+    },
+    "olaf's quest": {
+      "display": "Olaf's Quest",
+      "x": 2724,
+      "y": 3729,
+      "plane": 0,
+      "type": "quest"
+    },
+    "one small favour": {
+      "display": "One Small Favour",
+      "x": 2835,
+      "y": 2987,
+      "plane": 0,
+      "type": "quest"
+    },
+    "pandemonium": {
+      "display": "Pandemonium",
+      "x": 3025,
+      "y": 3209,
+      "plane": 0,
+      "type": "quest"
+    },
+    "the path of glouphrie": {
+      "display": "The Path of Glouphrie",
+      "x": 2540,
+      "y": 3171,
+      "plane": 0,
+      "type": "quest"
+    },
+    "perilous moons": {
+      "display": "Perilous Moons",
+      "x": 1436,
+      "y": 3122,
+      "plane": 0,
+      "type": "quest"
+    },
+    "pirate's treasure": {
+      "display": "Pirate's Treasure",
+      "x": 3052,
+      "y": 3252,
+      "plane": 0,
+      "type": "quest"
+    },
+    "plague city": {
+      "display": "Plague City",
+      "x": 2569,
+      "y": 3333,
+      "plane": 0,
+      "type": "quest"
+    },
+    "a porcine of interest": {
+      "display": "A Porcine of Interest",
+      "x": 3086,
+      "y": 3251,
+      "plane": 0,
+      "type": "quest"
+    },
+    "priest in peril": {
+      "display": "Priest in Peril",
+      "x": 3221,
+      "y": 3473,
+      "plane": 0,
+      "type": "quest"
+    },
+    "prince ali rescue": {
+      "display": "Prince Ali Rescue",
+      "x": 3301,
+      "y": 3163,
+      "plane": 0,
+      "type": "quest"
+    },
+    "prying times": {
+      "display": "Prying Times",
+      "x": 3050,
+      "y": 2966,
+      "plane": 0,
+      "type": "quest"
+    },
+    "the queen of thieves": {
+      "display": "The Queen of Thieves",
+      "x": 1796,
+      "y": 3782,
+      "plane": 0,
+      "type": "quest"
+    },
+    "rag and bone man i": {
+      "display": "Rag and Bone Man I",
+      "x": 3360,
+      "y": 3504,
+      "plane": 0,
+      "type": "quest"
+    },
+    "rag and bone man ii": {
+      "display": "Rag and Bone Man II",
+      "x": 3362,
+      "y": 3507,
+      "plane": 0,
+      "type": "quest"
+    },
+    "ratcatchers": {
+      "display": "Ratcatchers",
+      "x": 3150,
+      "y": 3412,
+      "plane": 0,
+      "type": "quest"
+    },
+    "recipe for disaster": {
+      "display": "Recipe for Disaster",
+      "x": 3208,
+      "y": 3214,
+      "plane": 0,
+      "type": "quest"
+    },
+    "recipe for disaster/freeing evil dave": {
+      "display": "Recipe for Disaster/Freeing Evil Dave",
+      "x": 3208,
+      "y": 3222,
+      "plane": 0,
+      "type": "quest"
+    },
+    "recipe for disaster/freeing king awowogei": {
+      "display": "Recipe for Disaster/Freeing King Awowogei",
+      "x": 1865,
+      "y": 5343,
+      "plane": 0,
+      "type": "quest"
+    },
+    "recipe for disaster/freeing pirate pete": {
+      "display": "Recipe for Disaster/Freeing Pirate Pete",
+      "x": 1862,
+      "y": 5347,
+      "plane": 0,
+      "type": "quest"
+    },
+    "recipe for disaster/freeing sir amik varze": {
+      "display": "Recipe for Disaster/Freeing Sir Amik Varze",
+      "x": 2818,
+      "y": 2895,
+      "plane": 0,
+      "type": "quest"
+    },
+    "recipe for disaster/freeing skrach uglogwee": {
+      "display": "Recipe for Disaster/Freeing Skrach Uglogwee",
+      "x": 3208,
+      "y": 3225,
+      "plane": 0,
+      "type": "quest"
+    },
+    "recipe for disaster/freeing the mountain dwarf": {
+      "display": "Recipe for Disaster/Freeing the Mountain Dwarf",
+      "x": 2865,
+      "y": 9877,
+      "plane": 0,
+      "type": "quest"
+    },
+    "recruitment drive": {
+      "display": "Recruitment Drive",
+      "x": 2959,
+      "y": 3336,
+      "plane": 2,
+      "type": "quest"
+    },
+    "regicide": {
+      "display": "Regicide",
+      "x": 2577,
+      "y": 3293,
+      "plane": 1,
+      "type": "quest"
+    },
+    "the restless ghost": {
+      "display": "The Restless Ghost",
+      "x": 3243,
+      "y": 3210,
+      "plane": 0,
+      "type": "quest"
+    },
+    "the ribbiting tale of a lily pad labour dispute": {
+      "display": "The Ribbiting Tale of a Lily Pad Labour Dispute",
+      "x": 1684,
+      "y": 2973,
+      "plane": 0,
+      "type": "quest"
+    },
+    "romeo & juliet": {
+      "display": "Romeo & Juliet",
+      "x": 3211,
+      "y": 3423,
+      "plane": 0,
+      "type": "quest"
+    },
+    "roving elves": {
+      "display": "Roving Elves",
+      "x": 2206,
+      "y": 3159,
+      "plane": 0,
+      "type": "quest"
+    },
+    "royal trouble": {
+      "display": "Royal Trouble",
+      "x": 2501,
+      "y": 3859,
+      "plane": 0,
+      "type": "quest"
+    },
+    "rum deal": {
+      "display": "Rum Deal",
+      "x": 3678,
+      "y": 3537,
+      "plane": 0,
+      "type": "quest"
+    },
+    "rune mysteries": {
+      "display": "Rune Mysteries",
+      "x": 3210,
+      "y": 3222,
+      "plane": 1,
+      "type": "quest"
+    },
+    "scorpion catcher": {
+      "display": "Scorpion Catcher",
+      "x": 2701,
+      "y": 3405,
+      "plane": 3,
+      "type": "quest"
+    },
+    "scrambled!": {
+      "display": "Scrambled!",
+      "x": 1247,
+      "y": 3166,
+      "plane": 0,
+      "type": "quest"
+    },
+    "sea slug": {
+      "display": "Sea Slug",
+      "x": 2716,
+      "y": 3302,
+      "plane": 0,
+      "type": "quest"
+    },
+    "secrets of the north": {
+      "display": "Secrets of the North",
+      "x": 2570,
+      "y": 3276,
+      "plane": 0,
+      "type": "quest"
+    },
+    "shades of mort'ton": {
+      "display": "Shades of Mort'ton",
+      "x": 3481,
+      "y": 3279,
+      "plane": 0,
+      "type": "quest"
+    },
+    "shadow of the storm": {
+      "display": "Shadow of the Storm",
+      "x": 3271,
+      "y": 3158,
+      "plane": 0,
+      "type": "quest"
+    },
+    "shadows of custodia": {
+      "display": "Shadows of Custodia",
+      "x": 1396,
+      "y": 3356,
+      "plane": 0,
+      "type": "quest"
+    },
+    "sheep herder": {
+      "display": "Sheep Herder",
+      "x": 2617,
+      "y": 3299,
+      "plane": 0,
+      "type": "quest"
+    },
+    "sheep shearer": {
+      "display": "Sheep Shearer",
+      "x": 3189,
+      "y": 3273,
+      "plane": 0,
+      "type": "quest"
+    },
+    "shield of arrav": {
+      "display": "Shield of Arrav",
+      "x": 3209,
+      "y": 3495,
+      "plane": 0,
+      "type": "quest"
+    },
+    "shilo village": {
+      "display": "Shilo Village",
+      "x": 2881,
+      "y": 2951,
+      "plane": 0,
+      "type": "quest"
+    },
+    "sins of the father": {
+      "display": "Sins of the Father",
+      "x": 3729,
+      "y": 3319,
+      "plane": 0,
+      "type": "quest"
+    },
+    "sleeping giants": {
+      "display": "Sleeping Giants",
+      "x": 3362,
+      "y": 3146,
+      "plane": 0,
+      "type": "quest"
+    },
+    "the slug menace": {
+      "display": "The Slug Menace",
+      "x": 2997,
+      "y": 3373,
+      "plane": 0,
+      "type": "quest"
+    },
+    "song of the elves": {
+      "display": "Song of the Elves",
+      "x": 2569,
+      "y": 3333,
+      "plane": 0,
+      "type": "quest"
+    },
+    "a soul's bane": {
+      "display": "A Soul's Bane",
+      "x": 3308,
+      "y": 3454,
+      "plane": 0,
+      "type": "quest"
+    },
+    "spirits of the elid": {
+      "display": "Spirits of the Elid",
+      "x": 3434,
+      "y": 2917,
+      "plane": 0,
+      "type": "quest"
+    },
+    "swan song": {
+      "display": "Swan Song",
+      "x": 2353,
+      "y": 3680,
+      "plane": 0,
+      "type": "quest"
+    },
+    "tai bwo wannai trio": {
+      "display": "Tai Bwo Wannai Trio",
+      "x": 2782,
+      "y": 3087,
+      "plane": 0,
+      "type": "quest"
+    },
+    "a tail of two cats": {
+      "display": "A Tail of Two Cats",
+      "x": 2919,
+      "y": 3558,
+      "plane": 0,
+      "type": "quest"
+    },
+    "tale of the righteous": {
+      "display": "Tale of the Righteous",
+      "x": 1542,
+      "y": 3570,
+      "plane": 0,
+      "type": "quest"
+    },
+    "a taste of hope": {
+      "display": "A Taste of Hope",
+      "x": 3668,
+      "y": 3215,
+      "plane": 0,
+      "type": "quest"
+    },
+    "tears of guthix": {
+      "display": "Tears of Guthix",
+      "x": 3252,
+      "y": 9516,
+      "plane": 2,
+      "type": "quest"
+    },
+    "temple of ikov": {
+      "display": "Temple of Ikov",
+      "x": 2573,
+      "y": 3320,
+      "plane": 0,
+      "type": "quest"
+    },
+    "temple of the eye": {
+      "display": "Temple of the Eye",
+      "x": 3286,
+      "y": 3232,
+      "plane": 0,
+      "type": "quest"
+    },
+    "the blood moon rises": {
+      "display": "The Blood Moon Rises",
+      "x": 3696,
+      "y": 3184,
+      "plane": 0,
+      "type": "quest"
+    },
+    "the curse of arrav": {
+      "display": "The Curse of Arrav",
+      "x": 3505,
+      "y": 3038,
+      "plane": 0,
+      "type": "quest"
+    },
+    "the final dawn": {
+      "display": "The Final Dawn",
+      "x": 1678,
+      "y": 3168,
+      "plane": 0,
+      "type": "quest"
+    },
+    "the ides of milk": {
+      "display": "The Ides of Milk",
+      "x": 3168,
+      "y": 3275,
+      "plane": 0,
+      "type": "quest"
+    },
+    "the red reef": {
+      "display": "The Red Reef",
+      "x": 3188,
+      "y": 2405,
+      "plane": 0,
+      "type": "quest"
+    },
+    "throne of miscellania": {
+      "display": "Throne of Miscellania",
+      "x": 2501,
+      "y": 3859,
+      "plane": 0,
+      "type": "quest"
+    },
+    "the tourist trap": {
+      "display": "The Tourist Trap",
+      "x": 3303,
+      "y": 3113,
+      "plane": 0,
+      "type": "quest"
+    },
+    "tower of life": {
+      "display": "Tower of Life",
+      "x": 2639,
+      "y": 3218,
+      "plane": 0,
+      "type": "quest"
+    },
+    "tree gnome village": {
+      "display": "Tree Gnome Village",
+      "x": 2542,
+      "y": 3169,
+      "plane": 0,
+      "type": "quest"
+    },
+    "tribal totem": {
+      "display": "Tribal Totem",
+      "x": 2791,
+      "y": 3182,
+      "plane": 0,
+      "type": "quest"
+    },
+    "troll romance": {
+      "display": "Troll Romance",
+      "x": 2827,
+      "y": 10065,
+      "plane": 1,
+      "type": "quest"
+    },
+    "troll stronghold": {
+      "display": "Troll Stronghold",
+      "x": 2896,
+      "y": 3528,
+      "plane": 0,
+      "type": "quest"
+    },
+    "troubled tortugans": {
+      "display": "Troubled Tortugans",
+      "x": 2958,
+      "y": 2606,
+      "plane": 0,
+      "type": "quest"
+    },
+    "twilight's promise": {
+      "display": "Twilight's Promise",
+      "x": 1686,
+      "y": 3141,
+      "plane": 0,
+      "type": "quest"
+    },
+    "underground pass": {
+      "display": "Underground Pass",
+      "x": 2577,
+      "y": 3293,
+      "plane": 1,
+      "type": "quest"
+    },
+    "vampyre slayer": {
+      "display": "Vampyre Slayer",
+      "x": 3098,
+      "y": 3268,
+      "plane": 0,
+      "type": "quest"
+    },
+    "wanted!": {
+      "display": "Wanted!",
+      "x": 2997,
+      "y": 3373,
+      "plane": 0,
+      "type": "quest"
+    },
+    "watchtower": {
+      "display": "Watchtower",
+      "x": 2546,
+      "y": 3116,
+      "plane": 2,
+      "type": "quest"
+    },
+    "waterfall quest": {
+      "display": "Waterfall Quest",
+      "x": 2521,
+      "y": 3497,
+      "plane": 0,
+      "type": "quest"
+    },
+    "what lies below": {
+      "display": "What Lies Below",
+      "x": 3266,
+      "y": 3333,
+      "plane": 0,
+      "type": "quest"
+    },
+    "while guthix sleeps": {
+      "display": "While Guthix Sleeps",
+      "x": 2907,
+      "y": 3449,
+      "plane": 0,
+      "type": "quest"
+    },
+    "witch's house": {
+      "display": "Witch's House",
+      "x": 2928,
+      "y": 3456,
+      "plane": 0,
+      "type": "quest"
+    },
+    "witch's potion": {
+      "display": "Witch's Potion",
+      "x": 2967,
+      "y": 3205,
+      "plane": 0,
+      "type": "quest"
+    },
+    "x marks the spot": {
+      "display": "X Marks the Spot",
+      "x": 3228,
+      "y": 3242,
+      "plane": 0,
+      "type": "quest"
+    },
+    "zogre flesh eaters": {
+      "display": "Zogre Flesh Eaters",
+      "x": 2444,
+      "y": 3051,
+      "plane": 0,
+      "type": "quest"
+    },
+    "adventurer ada": {
+      "display": "Adventurer Ada",
+      "x": 3048,
+      "y": 2970,
+      "plane": 0
+    },
+    "agility arena": {
+      "display": "Agility Arena",
+      "x": 2809,
+      "y": 3194,
+      "plane": 0
+    },
+    "al kharid": {
+      "display": "Al Kharid",
+      "x": 3290,
+      "y": 3185,
+      "plane": 0
+    },
+    "ali the mayor": {
+      "display": "Ali the Mayor",
+      "x": 3368,
+      "y": 2971,
+      "plane": 0
+    },
+    "altar of guthix": {
+      "display": "Altar of Guthix",
+      "x": 2925,
+      "y": 3484,
+      "plane": 0
+    },
+    "ape atoll": {
+      "display": "Ape Atoll",
+      "x": 2750,
+      "y": 2750,
+      "plane": 0
+    },
+    "arceuus library": {
+      "display": "Arceuus Library",
+      "x": 1606,
+      "y": 3833,
+      "plane": 0
+    },
+    "ardent ocean": {
+      "display": "Ardent Ocean",
+      "x": 3051,
+      "y": 3193,
+      "plane": 0
+    },
+    "ardougne easy diary": {
+      "display": "Ardougne Easy Diary",
+      "x": 2574,
+      "y": 3323,
+      "plane": 0
+    },
+    "ardougne elite": {
+      "display": "Ardougne Elite",
+      "x": 2574,
+      "y": 3323,
+      "plane": 0
+    },
+    "ardougne elite diary": {
+      "display": "Ardougne Elite Diary",
+      "x": 2574,
+      "y": 3323,
+      "plane": 0
+    },
+    "ardougne hard": {
+      "display": "Ardougne Hard",
+      "x": 2574,
+      "y": 3323,
+      "plane": 0
+    },
+    "ardougne monastery": {
+      "display": "Ardougne Monastery",
+      "x": 2595,
+      "y": 3215,
+      "plane": 0
+    },
+    "ardougne zoo": {
+      "display": "Ardougne Zoo",
+      "x": 2615,
+      "y": 3272,
+      "plane": 0
+    },
+    "aris maye": {
+      "display": "Aris Maye",
+      "x": 3204,
+      "y": 3425,
+      "plane": 0
+    },
+    "ascent of arceuus": {
+      "display": "Ascent of Arceuus",
+      "x": 1700,
+      "y": 3742,
+      "plane": 0
+    },
+    "barbarian assault": {
+      "display": "Barbarian Assault",
+      "x": 2533,
+      "y": 3571,
+      "plane": 0
+    },
+    "barbarian guard": {
+      "display": "Barbarian Guard",
+      "x": 2543,
+      "y": 3569,
+      "plane": 0
+    },
+    "barbarian outpost": {
+      "display": "Barbarian Outpost",
+      "x": 2549,
+      "y": 3558,
+      "plane": 0
+    },
+    "barbarian village": {
+      "display": "Barbarian Village",
+      "x": 3080,
+      "y": 3427,
+      "plane": 0
+    },
+    "bear your soul": {
+      "display": "Bear Your Soul",
+      "x": 1815,
+      "y": 3856,
+      "plane": 0
+    },
+    "blast furnace": {
+      "display": "Blast Furnace",
+      "x": 2930,
+      "y": 10197,
+      "plane": 0
+    },
+    "blast mining": {
+      "display": "Blast Mining",
+      "x": 1489,
+      "y": 3864,
+      "plane": 0
+    },
+    "blue moon inn": {
+      "display": "Blue Moon Inn",
+      "x": 3216,
+      "y": 3397,
+      "plane": 0
+    },
+    "brimhaven": {
+      "display": "Brimhaven",
+      "x": 2760,
+      "y": 3195,
+      "plane": 0
+    },
+    "brother althric": {
+      "display": "Brother Althric",
+      "x": 3052,
+      "y": 3505,
+      "plane": 0
+    },
+    "brother cedric": {
+      "display": "Brother Cedric",
+      "x": 2614,
+      "y": 3259,
+      "plane": 0
+    },
+    "brother jered": {
+      "display": "Brother Jered",
+      "x": 3052,
+      "y": 3491,
+      "plane": 1
+    },
+    "burthorpe": {
+      "display": "Burthorpe",
+      "x": 2870,
+      "y": 3544,
+      "plane": 0
+    },
+    "butler jones": {
+      "display": "Butler Jones",
+      "x": 2570,
+      "y": 3272,
+      "plane": 0
+    },
+    "cairn isle": {
+      "display": "Cairn Isle",
+      "x": 2765,
+      "y": 2976,
+      "plane": 0
+    },
+    "cam torum": {
+      "display": "Cam Torum",
+      "x": 1453,
+      "y": 9565,
+      "plane": 0
+    },
+    "camelot": {
+      "display": "Camelot",
+      "x": 2758,
+      "y": 3507,
+      "plane": 0
+    },
+    "canifis": {
+      "display": "Canifis",
+      "x": 3493,
+      "y": 3488,
+      "plane": 0
+    },
+    "captain ginea": {
+      "display": "Captain Ginea",
+      "x": 1504,
+      "y": 3632,
+      "plane": 0
+    },
+    "captain lawgof": {
+      "display": "Captain Lawgof",
+      "x": 2567,
+      "y": 3462,
+      "plane": 0
+    },
+    "captain magoro": {
+      "display": "Captain Magoro",
+      "x": 1505,
+      "y": 3401,
+      "plane": 0
+    },
+    "captain rovin": {
+      "display": "Captain Rovin",
+      "x": 3204,
+      "y": 3497,
+      "plane": 2
+    },
+    "captain shanks": {
+      "display": "Captain Shanks",
+      "x": 2761,
+      "y": 2956,
+      "plane": 0
+    },
+    "captain siad": {
+      "display": "Captain Siad",
+      "x": 3291,
+      "y": 3033,
+      "plane": 1
+    },
+    "castle wars": {
+      "display": "Castle Wars",
+      "x": 2407,
+      "y": 3105,
+      "plane": 0
+    },
+    "catherby": {
+      "display": "Catherby",
+      "x": 2814,
+      "y": 3443,
+      "plane": 0
+    },
+    "champions' guild": {
+      "display": "Champions' Guild",
+      "x": 3191,
+      "y": 3357,
+      "plane": 0
+    },
+    "chaos altar": {
+      "display": "Chaos Altar",
+      "x": 2270,
+      "y": 4841,
+      "plane": 0
+    },
+    "charlie the tramp": {
+      "display": "Charlie the Tramp",
+      "x": 3206,
+      "y": 3390,
+      "plane": 0
+    },
+    "charred island": {
+      "display": "Charred Island",
+      "x": 2648,
+      "y": 2406,
+      "plane": 0
+    },
+    "chinchompa island": {
+      "display": "Chinchompa Island",
+      "x": 1884,
+      "y": 3434,
+      "plane": 0
+    },
+    "civitas illa fortis": {
+      "display": "Civitas illa Fortis",
+      "x": 1725,
+      "y": 3128,
+      "plane": 0
+    },
+    "clan wars": {
+      "display": "Clan Wars",
+      "x": 3130,
+      "y": 3622,
+      "plane": 0
+    },
+    "coal trucks": {
+      "display": "Coal Trucks",
+      "x": 2598,
+      "y": 3490,
+      "plane": 0
+    },
+    "combat training camp": {
+      "display": "Combat Training Camp",
+      "x": 2515,
+      "y": 3370,
+      "plane": 0
+    },
+    "corporeal beast": {
+      "display": "Corporeal Beast",
+      "x": 3203,
+      "y": 3681,
+      "plane": 0
+    },
+    "corrupted gauntlet": {
+      "display": "Corrupted Gauntlet",
+      "x": 3228,
+      "y": 6116,
+      "plane": 0
+    },
+    "corsair cove": {
+      "display": "Corsair Cove",
+      "x": 2573,
+      "y": 2856,
+      "plane": 0
+    },
+    "councillor hughes": {
+      "display": "Councillor Hughes",
+      "x": 1619,
+      "y": 3679,
+      "plane": 2
+    },
+    "curator haig halen": {
+      "display": "Curator Haig Halen",
+      "x": 3260,
+      "y": 3451,
+      "plane": 0
+    },
+    "dark altar": {
+      "display": "Dark Altar",
+      "x": 1716,
+      "y": 3883,
+      "plane": 0
+    },
+    "dark mage": {
+      "display": "Dark Mage",
+      "x": 2458,
+      "y": 3311,
+      "plane": 0
+    },
+    "deepfin point": {
+      "display": "Deepfin Point",
+      "x": 1948,
+      "y": 2782,
+      "plane": 0
+    },
+    "demon butler": {
+      "display": "Demon Butler",
+      "x": 2667,
+      "y": 3332,
+      "plane": 0
+    },
+    "demonic ruins": {
+      "display": "Demonic Ruins",
+      "x": 3289,
+      "y": 3885,
+      "plane": 0
+    },
+    "deposit pool": {
+      "display": "Deposit Pool",
+      "x": 3609,
+      "y": 9487,
+      "plane": 0
+    },
+    "depths of despair": {
+      "display": "Depths of Despair",
+      "x": 1782,
+      "y": 3570,
+      "plane": 0
+    },
+    "desert hard": {
+      "display": "Desert Hard",
+      "x": 3302,
+      "y": 3122,
+      "plane": 0
+    },
+    "desert treasure": {
+      "display": "Desert Treasure",
+      "x": 3178,
+      "y": 3043,
+      "plane": 0
+    },
+    "desert treasure ii": {
+      "display": "Desert Treasure II",
+      "x": 3511,
+      "y": 2971,
+      "plane": 0
+    },
+    "dig site": {
+      "display": "Dig Site",
+      "x": 3354,
+      "y": 3420,
+      "plane": 0
+    },
+    "dognose island": {
+      "display": "Dognose Island",
+      "x": 3048,
+      "y": 2648,
+      "plane": 0
+    },
+    "doric’s quest": {
+      "display": "Doric’s Quest",
+      "x": 2952,
+      "y": 3451,
+      "plane": 0
+    },
+    "dr harlow": {
+      "display": "Dr Harlow",
+      "x": 3222,
+      "y": 3397,
+      "plane": 0
+    },
+    "dragon inn": {
+      "display": "Dragon Inn",
+      "x": 2553,
+      "y": 3080,
+      "plane": 0
+    },
+    "dragon slayer": {
+      "display": "Dragon Slayer",
+      "x": 3190,
+      "y": 3360,
+      "plane": 0
+    },
+    "draynor manor": {
+      "display": "Draynor Manor",
+      "x": 3108,
+      "y": 3358,
+      "plane": 0
+    },
+    "draynor village": {
+      "display": "Draynor Village",
+      "x": 3103,
+      "y": 3265,
+      "plane": 0
+    },
+    "duke horacio": {
+      "display": "Duke Horacio",
+      "x": 3208,
+      "y": 3226,
+      "plane": 1
+    },
+    "east ardougne": {
+      "display": "East Ardougne",
+      "x": 2624,
+      "y": 3300,
+      "plane": 0
+    },
+    "edgeville": {
+      "display": "Edgeville",
+      "x": 3080,
+      "y": 3492,
+      "plane": 0
+    },
+    "edgeville monastery": {
+      "display": "Edgeville Monastery",
+      "x": 3052,
+      "y": 3490,
+      "plane": 0
+    },
+    "elnock inquisitor": {
+      "display": "Elnock Inquisitor",
+      "x": 2586,
+      "y": 4314,
+      "plane": 0
+    },
+    "emblem trader": {
+      "display": "Emblem Trader",
+      "x": 3424,
+      "y": 4064,
+      "plane": 0
+    },
+    "evil dave": {
+      "display": "Evil Dave",
+      "x": 3080,
+      "y": 9890,
+      "plane": 0
+    },
+    "fairytale ii": {
+      "display": "Fairytale II",
+      "x": 3077,
+      "y": 3258,
+      "plane": 0
+    },
+    "falador": {
+      "display": "Falador",
+      "x": 3000,
+      "y": 3360,
+      "plane": 0
+    },
+    "falador hard": {
+      "display": "Falador Hard",
+      "x": 2978,
+      "y": 3347,
+      "plane": 0
+    },
+    "farming guild": {
+      "display": "Farming Guild",
+      "x": 1249,
+      "y": 3737,
+      "plane": 0
+    },
+    "father urhney": {
+      "display": "Father Urhney",
+      "x": 3144,
+      "y": 3178,
+      "plane": 0
+    },
+    "feldip hills": {
+      "display": "Feldip Hills",
+      "x": 2515,
+      "y": 2954,
+      "plane": 0
+    },
+    "ferox enclave": {
+      "display": "Ferox Enclave",
+      "x": 3137,
+      "y": 3623,
+      "plane": 0
+    },
+    "fight cave": {
+      "display": "Fight Cave",
+      "x": 2439,
+      "y": 5172,
+      "plane": 0
+    },
+    "fight caves": {
+      "display": "Fight Caves",
+      "x": 2439,
+      "y": 5172,
+      "plane": 0
+    },
+    "fire of dehumidification": {
+      "display": "Fire of Dehumidification",
+      "x": 3410,
+      "y": 3431,
+      "plane": 0
+    },
+    "fire of unseasonal warmth": {
+      "display": "Fire of Unseasonal Warmth",
+      "x": 2906,
+      "y": 3735,
+      "plane": 0
+    },
+    "fisher realm": {
+      "display": "Fisher Realm",
+      "x": 2656,
+      "y": 4704,
+      "plane": 0
+    },
+    "fishing trawler": {
+      "display": "Fishing Trawler",
+      "x": 2669,
+      "y": 3161,
+      "plane": 0
+    },
+    "flying horse inn": {
+      "display": "Flying Horse Inn",
+      "x": 2572,
+      "y": 3327,
+      "plane": 0
+    },
+    "forgettable tale": {
+      "display": "Forgettable Tale",
+      "x": 2826,
+      "y": 10214,
+      "plane": 0
+    },
+    "forgotten cemetery": {
+      "display": "Forgotten Cemetery",
+      "x": 2976,
+      "y": 3750,
+      "plane": 0
+    },
+    "forsaken tower": {
+      "display": "Forsaken Tower",
+      "x": 1483,
+      "y": 3748,
+      "plane": 0
+    },
+    "fossil island": {
+      "display": "Fossil Island",
+      "x": 3730,
+      "y": 3807,
+      "plane": 0
+    },
+    "fountain of rune": {
+      "display": "Fountain of Rune",
+      "x": 3366,
+      "y": 3899,
+      "plane": 0
+    },
+    "fred the farmer": {
+      "display": "Fred the Farmer",
+      "x": 3189,
+      "y": 3273,
+      "plane": 0
+    },
+    "fremennik easy": {
+      "display": "Fremennik Easy",
+      "x": 2659,
+      "y": 3627,
+      "plane": 0
+    },
+    "fremennik exiles": {
+      "display": "Fremennik Exiles",
+      "x": 2658,
+      "y": 3668,
+      "plane": 0
+    },
+    "fremmy trials": {
+      "display": "Fremmy Trials",
+      "x": 2658,
+      "y": 3668,
+      "plane": 0
+    },
+    "garden of death": {
+      "display": "Garden of Death",
+      "x": 1312,
+      "y": 3472,
+      "plane": 0
+    },
+    "garden of tranquility": {
+      "display": "Garden of Tranquility",
+      "x": 3228,
+      "y": 3477,
+      "plane": 0
+    },
+    "gnome agility course": {
+      "display": "Gnome Agility Course",
+      "x": 2480,
+      "y": 3428,
+      "plane": 0
+    },
+    "gnome ball": {
+      "display": "Gnome Ball",
+      "x": 2393,
+      "y": 3496,
+      "plane": 0
+    },
+    "gnome stronghold": {
+      "display": "Gnome Stronghold",
+      "x": 2440,
+      "y": 3460,
+      "plane": 0
+    },
+    "gnome waiter": {
+      "display": "Gnome Waiter",
+      "x": 2448,
+      "y": 3503,
+      "plane": 1
+    },
+    "goblin village": {
+      "display": "Goblin Village",
+      "x": 3525,
+      "y": 2975,
+      "plane": 0
+    },
+    "grand exchange": {
+      "display": "Grand Exchange",
+      "x": 3165,
+      "y": 3490,
+      "plane": 0
+    },
+    "grand tree": {
+      "display": "Grand Tree",
+      "x": 2466,
+      "y": 3492,
+      "plane": 0
+    },
+    "grand tree groceries": {
+      "display": "Grand Tree Groceries",
+      "x": 2448,
+      "y": 3508,
+      "plane": 1
+    },
+    "graveyard of heroes": {
+      "display": "Graveyard of Heroes",
+      "x": 1497,
+      "y": 3564,
+      "plane": 0
+    },
+    "great conch": {
+      "display": "Great Conch",
+      "x": 3200,
+      "y": 2435,
+      "plane": 0
+    },
+    "guardians of the rift": {
+      "display": "Guardians of the Rift",
+      "x": 3616,
+      "y": 9492,
+      "plane": 0
+    },
+    "gwenith glide": {
+      "display": "Gwenith Glide",
+      "x": 2183,
+      "y": 3370,
+      "plane": 0
+    },
+    "gypsy aris": {
+      "display": "Gypsy Aris",
+      "x": 3204,
+      "y": 3425,
+      "plane": 0
+    },
+    "hallowed sepulchre": {
+      "display": "Hallowed Sepulchre",
+      "x": 3654,
+      "y": 3387,
+      "plane": 0
+    },
+    "his faithful servants": {
+      "display": "His Faithful Servants",
+      "x": 3565,
+      "y": 3292,
+      "plane": 0
+    },
+    "historian minas": {
+      "display": "Historian Minas",
+      "x": 3265,
+      "y": 3454,
+      "plane": 1
+    },
+    "hooknosed jack": {
+      "display": "Hooknosed Jack",
+      "x": 3269,
+      "y": 3401,
+      "plane": 0
+    },
+    "ice mountain": {
+      "display": "Ice Mountain",
+      "x": 3010,
+      "y": 3486,
+      "plane": 0
+    },
+    "ice queen": {
+      "display": "Ice Queen",
+      "x": 2837,
+      "y": 3518,
+      "plane": 0
+    },
+    "ignatius vulcan": {
+      "display": "Ignatius Vulcan",
+      "x": 2720,
+      "y": 3430,
+      "plane": 0
+    },
+    "into the tombs": {
+      "display": "Into the Tombs",
+      "x": 3351,
+      "y": 2718,
+      "plane": 0
+    },
+    "isle of bones": {
+      "display": "Isle of Bones",
+      "x": 2533,
+      "y": 2533,
+      "plane": 0
+    },
+    "isle of serpents": {
+      "display": "Isle of Serpents",
+      "x": 1855,
+      "y": 2425,
+      "plane": 0
+    },
+    "isle of souls": {
+      "display": "Isle of Souls",
+      "x": 2210,
+      "y": 2900,
+      "plane": 0
+    },
+    "jimmy dazzler": {
+      "display": "Jimmy Dazzler",
+      "x": 2562,
+      "y": 3320,
+      "plane": 0
+    },
+    "jittery jim": {
+      "display": "Jittery Jim",
+      "x": 2653,
+      "y": 3165,
+      "plane": 0
+    },
+    "jobless jim": {
+      "display": "Jobless Jim",
+      "x": 3051,
+      "y": 3257,
+      "plane": 0
+    },
+    "jolly boar inn": {
+      "display": "Jolly Boar Inn",
+      "x": 3275,
+      "y": 3507,
+      "plane": 0
+    },
+    "jubbly jive": {
+      "display": "Jubbly Jive",
+      "x": 2400,
+      "y": 2970,
+      "plane": 0
+    },
+    "kandarin elite": {
+      "display": "Kandarin Elite",
+      "x": 2759,
+      "y": 3476,
+      "plane": 0
+    },
+    "kandarin hard": {
+      "display": "Kandarin Hard",
+      "x": 2759,
+      "y": 3476,
+      "plane": 0
+    },
+    "kangai mau": {
+      "display": "Kangai Mau",
+      "x": 2791,
+      "y": 3183,
+      "plane": 0
+    },
+    "karamja": {
+      "display": "Karamja",
+      "x": 2843,
+      "y": 3070,
+      "plane": 0
+    },
+    "karamja hard": {
+      "display": "Karamja Hard",
+      "x": 2809,
+      "y": 3193,
+      "plane": 0
+    },
+    "karamja shipyard": {
+      "display": "Karamja Shipyard",
+      "x": 2987,
+      "y": 3050,
+      "plane": 0
+    },
+    "karamja spirits bar": {
+      "display": "Karamja Spirits Bar",
+      "x": 2918,
+      "y": 3145,
+      "plane": 0
+    },
+    "kebos hard": {
+      "display": "Kebos Hard",
+      "x": 1648,
+      "y": 3665,
+      "plane": 0
+    },
+    "king shareen": {
+      "display": "King Shareen",
+      "x": 2466,
+      "y": 3496,
+      "plane": 0
+    },
+    "kingdom divided": {
+      "display": "Kingdom Divided",
+      "x": 1664,
+      "y": 3672,
+      "plane": 0
+    },
+    "knight waves training grounds": {
+      "display": "Knight Waves Training Grounds",
+      "x": 2758,
+      "y": 3507,
+      "plane": 2
+    },
+    "kourend easy": {
+      "display": "Kourend Easy",
+      "x": 1648,
+      "y": 3665,
+      "plane": 0
+    },
+    "kourend hard": {
+      "display": "Kourend Hard",
+      "x": 1648,
+      "y": 3665,
+      "plane": 0
+    },
+    "kourend woodland": {
+      "display": "Kourend Woodland",
+      "x": 1540,
+      "y": 3464,
+      "plane": 0
+    },
+    "lady zay": {
+      "display": "Lady Zay",
+      "x": 2140,
+      "y": 3901,
+      "plane": 0
+    },
+    "lady of the lake": {
+      "display": "Lady of the Lake",
+      "x": 2925,
+      "y": 3405,
+      "plane": 0
+    },
+    "lady of the waves": {
+      "display": "Lady of the Waves",
+      "x": 2761,
+      "y": 2956,
+      "plane": 0
+    },
+    "laguna aurorae": {
+      "display": "Laguna Aurorae",
+      "x": 1195,
+      "y": 2772,
+      "plane": 0
+    },
+    "lair of tarn razorlor": {
+      "display": "Lair of Tarn Razorlor",
+      "x": 3424,
+      "y": 9661,
+      "plane": 0
+    },
+    "lake molch": {
+      "display": "Lake Molch",
+      "x": 1370,
+      "y": 3633,
+      "plane": 0
+    },
+    "last man standing": {
+      "display": "Last Man Standing",
+      "x": 3142,
+      "y": 3636,
+      "plane": 0
+    },
+    "laughing miner": {
+      "display": "Laughing Miner",
+      "x": 2910,
+      "y": 10197,
+      "plane": 0
+    },
+    "lava maze": {
+      "display": "Lava Maze",
+      "x": 3072,
+      "y": 3854,
+      "plane": 0
+    },
+    "lead navigator": {
+      "display": "Lead Navigator",
+      "x": 3363,
+      "y": 3453,
+      "plane": 0
+    },
+    "lumber yard": {
+      "display": "Lumber Yard",
+      "x": 3298,
+      "y": 3518,
+      "plane": 0
+    },
+    "lumbridge": {
+      "display": "Lumbridge",
+      "x": 3188,
+      "y": 3220,
+      "plane": 0
+    },
+    "lumbridge castle": {
+      "display": "Lumbridge Castle",
+      "x": 3204,
+      "y": 3237,
+      "plane": 0
+    },
+    "lumbridge elite": {
+      "display": "Lumbridge Elite",
+      "x": 3234,
+      "y": 3214,
+      "plane": 0
+    },
+    "lumbridge guide": {
+      "display": "Lumbridge Guide",
+      "x": 3238,
+      "y": 3220,
+      "plane": 0
+    },
+    "lumbridge hard": {
+      "display": "Lumbridge Hard",
+      "x": 3234,
+      "y": 3214,
+      "plane": 0
+    },
+    "lumbridge swamp": {
+      "display": "Lumbridge Swamp",
+      "x": 3197,
+      "y": 3166,
+      "plane": 0
+    },
+    "lumbridge swamp cave": {
+      "display": "Lumbridge Swamp Cave",
+      "x": 3169,
+      "y": 3172,
+      "plane": 0
+    },
+    "lunar isle": {
+      "display": "Lunar Isle",
+      "x": 2117,
+      "y": 3903,
+      "plane": 0
+    },
+    "mage arena": {
+      "display": "Mage Arena",
+      "x": 3095,
+      "y": 3955,
+      "plane": 0
+    },
+    "mage arena ii": {
+      "display": "Mage Arena II",
+      "x": 2538,
+      "y": 4716,
+      "plane": 0
+    },
+    "mage training arena": {
+      "display": "Mage Training Arena",
+      "x": 3364,
+      "y": 3312,
+      "plane": 0
+    },
+    "mage of zamorak": {
+      "display": "Mage of Zamorak",
+      "x": 3107,
+      "y": 3555,
+      "plane": 0
+    },
+    "mahogany homes": {
+      "display": "Mahogany Homes",
+      "x": 2989,
+      "y": 3363,
+      "plane": 0
+    },
+    "martin thwait": {
+      "display": "Martin Thwait",
+      "x": 3051,
+      "y": 4974,
+      "plane": 0
+    },
+    "mess hall": {
+      "display": "Mess Hall",
+      "x": 1635,
+      "y": 3636,
+      "plane": 0
+    },
+    "monkey madness": {
+      "display": "Monkey Madness",
+      "x": 2466,
+      "y": 3495,
+      "plane": 0
+    },
+    "moons of peril": {
+      "display": "Moons of Peril",
+      "x": 1485,
+      "y": 9632,
+      "plane": 0
+    },
+    "morytania hard": {
+      "display": "Morytania Hard",
+      "x": 3465,
+      "y": 3478,
+      "plane": 0
+    },
+    "moss giant island": {
+      "display": "Moss Giant Island",
+      "x": 2696,
+      "y": 3208,
+      "plane": 0
+    },
+    "motherlode mine": {
+      "display": "Motherlode Mine",
+      "x": 3744,
+      "y": 5664,
+      "plane": 0
+    },
+    "mount karuulm": {
+      "display": "Mount Karuulm",
+      "x": 1311,
+      "y": 3807,
+      "plane": 0
+    },
+    "mount quidamortem": {
+      "display": "Mount Quidamortem",
+      "x": 1246,
+      "y": 3550,
+      "plane": 0
+    },
+    "mountain guide": {
+      "display": "Mountain Guide",
+      "x": 1278,
+      "y": 3562,
+      "plane": 0
+    },
+    "musa point": {
+      "display": "Musa Point",
+      "x": 2904,
+      "y": 3162,
+      "plane": 0
+    },
+    "my arm": {
+      "display": "My Arm",
+      "x": 2830,
+      "y": 3697,
+      "plane": 0
+    },
+    "nardah": {
+      "display": "Nardah",
+      "x": 3427,
+      "y": 2911,
+      "plane": 0
+    },
+    "nature grotto": {
+      "display": "Nature Grotto",
+      "x": 3441,
+      "y": 3337,
+      "plane": 0
+    },
+    "nightmare zone": {
+      "display": "Nightmare Zone",
+      "x": 2605,
+      "y": 3115,
+      "plane": 0
+    },
+    "northern ocean": {
+      "display": "Northern Ocean",
+      "x": 2630,
+      "y": 3705,
+      "plane": 0
+    },
+    "northern tundras": {
+      "display": "Northern Tundras",
+      "x": 1630,
+      "y": 3957,
+      "plane": 0
+    },
+    "odd old man": {
+      "display": "Odd Old Man",
+      "x": 3360,
+      "y": 3504,
+      "plane": 0
+    },
+    "old crone": {
+      "display": "Old Crone",
+      "x": 3463,
+      "y": 3558,
+      "plane": 0
+    },
+    "old man yarlo": {
+      "display": "Old Man Yarlo",
+      "x": 3239,
+      "y": 3395,
+      "plane": 0
+    },
+    "orlando smith": {
+      "display": "Orlando Smith",
+      "x": 1759,
+      "y": 4956,
+      "plane": 0
+    },
+    "pandemonium ii": {
+      "display": "Pandemonium II",
+      "x": 2973,
+      "y": 2994,
+      "plane": 0
+    },
+    "paterdomus temple": {
+      "display": "Paterdomus Temple",
+      "x": 3416,
+      "y": 3487,
+      "plane": 0
+    },
+    "peer the seer": {
+      "display": "Peer the Seer",
+      "x": 2634,
+      "y": 3668,
+      "plane": 0
+    },
+    "pest control": {
+      "display": "Pest Control",
+      "x": 2658,
+      "y": 2625,
+      "plane": 0
+    },
+    "poison salesman": {
+      "display": "Poison Salesman",
+      "x": 2694,
+      "y": 3494,
+      "plane": 0
+    },
+    "port khazard": {
+      "display": "Port Khazard",
+      "x": 2653,
+      "y": 3159,
+      "plane": 0
+    },
+    "port phasmatys": {
+      "display": "Port Phasmatys",
+      "x": 3679,
+      "y": 3486,
+      "plane": 0
+    },
+    "port roberts": {
+      "display": "Port Roberts",
+      "x": 1888,
+      "y": 3298,
+      "plane": 0
+    },
+    "port tyras": {
+      "display": "Port Tyras",
+      "x": 2153,
+      "y": 3122,
+      "plane": 0
+    },
+    "prifddinas": {
+      "display": "Prifddinas",
+      "x": 3263,
+      "y": 6083,
+      "plane": 0
+    },
+    "puro puro": {
+      "display": "Puro Puro",
+      "x": 2593,
+      "y": 4320,
+      "plane": 0
+    },
+    "pyramid plunder": {
+      "display": "Pyramid Plunder",
+      "x": 3289,
+      "y": 2793,
+      "plane": 0
+    },
+    "queen of thieves": {
+      "display": "Queen of Thieves",
+      "x": 1796,
+      "y": 3782,
+      "plane": 0
+    },
+    "rat burgiss": {
+      "display": "Rat Burgiss",
+      "x": 3267,
+      "y": 3333,
+      "plane": 0
+    },
+    "red rock": {
+      "display": "Red Rock",
+      "x": 2799,
+      "y": 2517,
+      "plane": 0
+    },
+    "restless ghost": {
+      "display": "Restless Ghost",
+      "x": 3250,
+      "y": 3193,
+      "plane": 0
+    },
+    "rimmington": {
+      "display": "Rimmington",
+      "x": 2956,
+      "y": 3232,
+      "plane": 0
+    },
+    "rising sun inn": {
+      "display": "Rising Sun Inn",
+      "x": 2955,
+      "y": 3379,
+      "plane": 0
+    },
+    "river molch": {
+      "display": "River Molch",
+      "x": 1262,
+      "y": 3686,
+      "plane": 0
+    },
+    "rogues den": {
+      "display": "Rogues Den",
+      "x": 2906,
+      "y": 3537,
+      "plane": 0
+    },
+    "romily weaklax": {
+      "display": "Romily Weaklax",
+      "x": 3143,
+      "y": 3449,
+      "plane": 0
+    },
+    "rowdy dwarf": {
+      "display": "Rowdy Dwarf",
+      "x": 2916,
+      "y": 10192,
+      "plane": 0
+    },
+    "ruins of morra": {
+      "display": "Ruins of Morra",
+      "x": 1452,
+      "y": 3509,
+      "plane": 0
+    },
+    "ruins of unkah": {
+      "display": "Ruins of Unkah",
+      "x": 3165,
+      "y": 2845,
+      "plane": 0
+    },
+    "rusty anchor inn": {
+      "display": "Rusty Anchor Inn",
+      "x": 3050,
+      "y": 3257,
+      "plane": 0
+    },
+    "sacred grove": {
+      "display": "Sacred Grove",
+      "x": 3200,
+      "y": 2485,
+      "plane": 0
+    },
+    "safta doc": {
+      "display": "Safta Doc",
+      "x": 2791,
+      "y": 3102,
+      "plane": 0
+    },
+    "security guard": {
+      "display": "Security Guard",
+      "x": 3013,
+      "y": 3192,
+      "plane": 1
+    },
+    "seers village": {
+      "display": "Seers Village",
+      "x": 2710,
+      "y": 3485,
+      "plane": 0
+    },
+    "seers' village": {
+      "display": "Seers' Village",
+      "x": 2710,
+      "y": 3485,
+      "plane": 0
+    },
+    "shadow dungeon": {
+      "display": "Shadow Dungeon",
+      "x": 2688,
+      "y": 5088,
+      "plane": 0
+    },
+    "shantay pass": {
+      "display": "Shantay Pass",
+      "x": 3304,
+      "y": 3123,
+      "plane": 0
+    },
+    "shayzien encampment": {
+      "display": "Shayzien Encampment",
+      "x": 1505,
+      "y": 3645,
+      "plane": 0
+    },
+    "shayzien styles": {
+      "display": "Shayzien Styles",
+      "x": 1504,
+      "y": 3596,
+      "plane": 0
+    },
+    "shields of mistrock": {
+      "display": "Shields of Mistrock",
+      "x": 1384,
+      "y": 2872,
+      "plane": 0
+    },
+    "shimmering atoll": {
+      "display": "Shimmering Atoll",
+      "x": 1569,
+      "y": 2786,
+      "plane": 0
+    },
+    "shooting stars": {
+      "display": "Shooting Stars",
+      "x": 3290,
+      "y": 3353,
+      "plane": 0
+    },
+    "shrouded ocean": {
+      "display": "Shrouded Ocean",
+      "x": 1872,
+      "y": 2984,
+      "plane": 0
+    },
+    "silver merchant": {
+      "display": "Silver Merchant",
+      "x": 2658,
+      "y": 3315,
+      "plane": 0
+    },
+    "sir prysin": {
+      "display": "Sir Prysin",
+      "x": 3203,
+      "y": 3472,
+      "plane": 0
+    },
+    "sophanem": {
+      "display": "Sophanem",
+      "x": 3297,
+      "y": 2783,
+      "plane": 0
+    },
+    "soul wars": {
+      "display": "Soul Wars",
+      "x": 2206,
+      "y": 2900,
+      "plane": 0
+    },
+    "summer shore": {
+      "display": "Summer Shore",
+      "x": 3155,
+      "y": 2415,
+      "plane": 0
+    },
+    "sunbleak island": {
+      "display": "Sunbleak Island",
+      "x": 2209,
+      "y": 2330,
+      "plane": 0
+    },
+    "sunset ocean": {
+      "display": "Sunset Ocean",
+      "x": 1512,
+      "y": 2974,
+      "plane": 0
+    },
+    "tai bwo wannai": {
+      "display": "Tai Bwo Wannai",
+      "x": 2795,
+      "y": 3065,
+      "plane": 0
+    },
+    "tail of two cats": {
+      "display": "Tail of Two Cats",
+      "x": 2919,
+      "y": 3558,
+      "plane": 0
+    },
+    "tal teklan": {
+      "display": "Tal Teklan",
+      "x": 1223,
+      "y": 3111,
+      "plane": 0
+    },
+    "tal teklan rune shop": {
+      "display": "Tal Teklan Rune Shop",
+      "x": 1211,
+      "y": 3118,
+      "plane": 0
+    },
+    "taste of hope": {
+      "display": "Taste of Hope",
+      "x": 3668,
+      "y": 3215,
+      "plane": 0
+    },
+    "taverley": {
+      "display": "Taverley",
+      "x": 2910,
+      "y": 3451,
+      "plane": 0
+    },
+    "taverley dungeon": {
+      "display": "Taverley Dungeon",
+      "x": 2884,
+      "y": 3398,
+      "plane": 0
+    },
+    "tear of the soul": {
+      "display": "Tear of the Soul",
+      "x": 2333,
+      "y": 2768,
+      "plane": 0
+    },
+    "temple trekking": {
+      "display": "Temple Trekking",
+      "x": 3480,
+      "y": 3240,
+      "plane": 0
+    },
+    "tempor tantrum": {
+      "display": "Tempor Tantrum",
+      "x": 3032,
+      "y": 2850,
+      "plane": 0
+    },
+    "the corrupted gauntlet": {
+      "display": "The Corrupted Gauntlet",
+      "x": 3228,
+      "y": 6116,
+      "plane": 0
+    },
+    "the digsite": {
+      "display": "The Digsite",
+      "x": 3361,
+      "y": 3340,
+      "plane": 0
+    },
+    "the general's shadow": {
+      "display": "The General's Shadow",
+      "x": 2716,
+      "y": 3631,
+      "plane": 0
+    },
+    "the great conch": {
+      "display": "The Great Conch",
+      "x": 3200,
+      "y": 2435,
+      "plane": 0
+    },
+    "the knight’s sword": {
+      "display": "The Knight’s Sword",
+      "x": 2977,
+      "y": 3342,
+      "plane": 0
+    },
+    "the ribbiting tale": {
+      "display": "The Ribbiting Tale",
+      "x": 1684,
+      "y": 2973,
+      "plane": 0
+    },
+    "the sheared ram": {
+      "display": "The Sheared Ram",
+      "x": 3226,
+      "y": 3243,
+      "plane": 0
+    },
+    "the summer shore": {
+      "display": "The Summer Shore",
+      "x": 3155,
+      "y": 2415,
+      "plane": 0
+    },
+    "tindel marchant": {
+      "display": "Tindel Marchant",
+      "x": 2673,
+      "y": 3150,
+      "plane": 0
+    },
+    "tourist trap": {
+      "display": "Tourist Trap",
+      "x": 3303,
+      "y": 3113,
+      "plane": 0
+    },
+    "trader stan": {
+      "display": "Trader Stan",
+      "x": 3039,
+      "y": 3192,
+      "plane": 0
+    },
+    "tree gnome stronghold": {
+      "display": "Tree Gnome Stronghold",
+      "x": 2440,
+      "y": 3460,
+      "plane": 0
+    },
+    "tutorial island": {
+      "display": "Tutorial Island",
+      "x": 3100,
+      "y": 3100,
+      "plane": 0
+    },
+    "unquiet ocean": {
+      "display": "Unquiet Ocean",
+      "x": 3061,
+      "y": 2631,
+      "plane": 0
+    },
+    "vale totems": {
+      "display": "Vale Totems",
+      "x": 1365,
+      "y": 3370,
+      "plane": 0
+    },
+    "vanstrom klause": {
+      "display": "Vanstrom Klause",
+      "x": 3503,
+      "y": 3477,
+      "plane": 0
+    },
+    "varlamore": {
+      "display": "Varlamore",
+      "x": 1580,
+      "y": 3120,
+      "plane": 0
+    },
+    "varrock": {
+      "display": "Varrock",
+      "x": 3210,
+      "y": 3448,
+      "plane": 0
+    },
+    "varrock hard": {
+      "display": "Varrock Hard",
+      "x": 3225,
+      "y": 3415,
+      "plane": 0
+    },
+    "varrock museum": {
+      "display": "Varrock Museum",
+      "x": 3260,
+      "y": 3449,
+      "plane": 0
+    },
+    "varrock palace": {
+      "display": "Varrock Palace",
+      "x": 3212,
+      "y": 3474,
+      "plane": 0
+    },
+    "varrock rooftop course": {
+      "display": "Varrock Rooftop Course",
+      "x": 3220,
+      "y": 3414,
+      "plane": 0
+    },
+    "vatrachos island": {
+      "display": "Vatrachos Island",
+      "x": 1887,
+      "y": 2984,
+      "plane": 0
+    },
+    "volcanic mine": {
+      "display": "Volcanic Mine",
+      "x": 3814,
+      "y": 3807,
+      "plane": 0
+    },
+    "warrens general store": {
+      "display": "Warrens General Store",
+      "x": 1838,
+      "y": 10149,
+      "plane": 0
+    },
+    "waterbirth island": {
+      "display": "Waterbirth Island",
+      "x": 2525,
+      "y": 3743,
+      "plane": 0
+    },
+    "west ardougne": {
+      "display": "West Ardougne",
+      "x": 2500,
+      "y": 3305,
+      "plane": 0
+    },
+    "western ocean": {
+      "display": "Western Ocean",
+      "x": 1507,
+      "y": 3403,
+      "plane": 0
+    },
+    "western provinces diary": {
+      "display": "Western Provinces Diary",
+      "x": 2467,
+      "y": 3459,
+      "plane": 0
+    },
+    "western provinces hard diary": {
+      "display": "Western Provinces Hard Diary",
+      "x": 2467,
+      "y": 3459,
+      "plane": 0
+    },
+    "white wolf mountain": {
+      "display": "White Wolf Mountain",
+      "x": 2845,
+      "y": 3483,
+      "plane": 0
+    },
+    "wilderness hard": {
+      "display": "Wilderness Hard",
+      "x": 3121,
+      "y": 3516,
+      "plane": 0
+    },
+    "wintumber island": {
+      "display": "Wintumber Island",
+      "x": 2068,
+      "y": 2603,
+      "plane": 0
+    },
+    "wise old man": {
+      "display": "Wise Old Man",
+      "x": 3089,
+      "y": 3254,
+      "plane": 0
+    },
+    "witchaven": {
+      "display": "Witchaven",
+      "x": 2720,
+      "y": 3287,
+      "plane": 0
+    },
+    "wizard cromperty": {
+      "display": "Wizard Cromperty",
+      "x": 2684,
+      "y": 3325,
+      "plane": 0
+    },
+    "woodcutting guild": {
+      "display": "Woodcutting Guild",
+      "x": 1565,
+      "y": 3499,
+      "plane": 0
+    },
+    "yanille": {
+      "display": "Yanille",
+      "x": 2577,
+      "y": 3090,
+      "plane": 0
+    },
+    "zandar horfyre": {
+      "display": "Zandar Horfyre",
+      "x": 2908,
+      "y": 3335,
+      "plane": 2
+    },
+    "edgeville bank": {
+      "display": "Edgeville bank",
+      "x": 3091,
+      "y": 3500,
+      "plane": 0
+    },
+    "juliet": {
+      "display": "Juliet",
+      "x": 3159,
+      "y": 3426,
+      "plane": 1
+    },
+    "the pandemonium": {
+      "display": "the Pandemonium",
+      "x": 3040,
+      "y": 2980,
+      "plane": 0
+    }
+  }
+}
