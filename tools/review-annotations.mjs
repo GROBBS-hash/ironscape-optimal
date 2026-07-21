@@ -37,7 +37,21 @@ if (pending.length === 0 && pendingItems.length === 0) {
 }
 
 console.log(`${pending.length} skill drafts and ${pendingItems.length} item drafts to review.`);
-console.log('y/1-9 approve, n reject, s skip, q save & quit.\n');
+console.log('y/1-9 approve, n reject, s skip, q save & quit.');
+console.log('With verifier verdicts (run verify-annotations.mjs first):');
+console.log('  a = accept the verifier\'s recommendation for this draft');
+console.log('  b = bulk-approve every REMAINING verifier-confirmed draft (confidence >= 0.8)\n');
+
+const verifierLine = (d) => {
+  if (!d.verifier) return null;
+  const v = d.verifier;
+  const flags = v.flags && v.flags.length ? ` [${v.flags.join(', ')}]` : '';
+  const notes = v.notes ? ` — ${v.notes}` : '';
+  return `  verifier: ${v.verdict.toUpperCase()} (${v.confidence})${flags}${notes}`;
+};
+
+const verifierConfirmed = (d) =>
+  d.verifier && d.verifier.verdict === 'confirm' && d.verifier.confidence >= 0.8;
 
 const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
 const ask = (q) => new Promise((resolve) => rl.question(q, resolve));
@@ -52,13 +66,35 @@ const save = () => {
   console.log('Approved requirements are in the bundled annotations.json — rebuild the plugin to use them.');
 };
 
+// The requirement the verifier stands behind: an adjusted correction wins,
+// else the top-ranked extracted candidate.
+const skillRecommendation = (d) =>
+  (d.verifier && d.verifier.correctedSkills && d.verifier.correctedSkills[0]) || d.candidates[0];
+
+const approveSkill = (d, chosen) => {
+  bundled.annotations[d.stepId] = bundled.annotations[d.stepId] || {};
+  bundled.annotations[d.stepId].requires = { skill: chosen.skill, level: chosen.level };
+  approved++;
+};
+
 let quit = false;
+let bulk = false;
 for (let i = 0; i < pending.length && !quit; i++) {
   const d = pending[i];
+  if (bulk) {
+    if (verifierConfirmed(d)) approveSkill(d, skillRecommendation(d));
+    continue;
+  }
   console.log(`\n[skill ${i + 1}/${pending.length}] ${d.where}`);
   console.log(`  "${d.excerpt}"`);
   d.candidates.forEach((c, n) =>
     console.log(`  ${n + 1}) ${c.skill} ${c.level}  (${c.confidence}: "${c.evidence}")`));
+  const vline = verifierLine(d);
+  if (vline) console.log(vline);
+  if (d.verifier && d.verifier.correctedSkills) {
+    console.log('  verifier suggests: '
+      + d.verifier.correctedSkills.map((s) => `${s.skill} ${s.level}`).join(', '));
+  }
 
   const answer = (await ask('> ')).trim().toLowerCase();
 
@@ -69,6 +105,20 @@ for (let i = 0; i < pending.length && !quit; i++) {
     rejected++;
     continue;
   }
+  if (answer === 'b') {
+    bulk = true;
+    if (verifierConfirmed(d)) approveSkill(d, skillRecommendation(d));
+    continue;
+  }
+  if (answer === 'a') {
+    if (!d.verifier || d.verifier.verdict === 'reject') {
+      console.log('  ...no verifier recommendation to accept here.');
+      i--; // re-show this draft
+      continue;
+    }
+    approveSkill(d, skillRecommendation(d));
+    continue;
+  }
 
   const pick = answer === 'y' ? 0 : parseInt(answer, 10) - 1;
   const chosen = d.candidates[pick];
@@ -76,16 +126,34 @@ for (let i = 0; i < pending.length && !quit; i++) {
     console.log('  ...didn\'t understand, skipping.');
     continue;
   }
-  bundled.annotations[d.stepId] = bundled.annotations[d.stepId] || {};
-  bundled.annotations[d.stepId].requires = { skill: chosen.skill, level: chosen.level };
-  approved++;
+  approveSkill(d, chosen);
 }
+
+// The item list the verifier stands behind: its correction if any, else the parse.
+const itemRecommendation = (d) =>
+  (d.verifier && d.verifier.correctedItems) || d.items;
+
+const approveItems = (d, items) => {
+  bundled.annotations[d.stepId] = bundled.annotations[d.stepId] || {};
+  bundled.annotations[d.stepId].items = items;
+  approved++;
+};
 
 for (let i = 0; i < pendingItems.length && !quit; i++) {
   const d = pendingItems[i];
+  if (bulk) {
+    if (verifierConfirmed(d)) approveItems(d, itemRecommendation(d));
+    continue;
+  }
   console.log(`\n[items ${i + 1}/${pendingItems.length}] ${d.where}`);
   console.log(`  raw: "${d.raw}"`);
   console.log('  parsed: ' + d.items.map((it) => `${it.quantity || 1}x ${it.name}`).join(', '));
+  const vline = verifierLine(d);
+  if (vline) console.log(vline);
+  if (d.verifier && d.verifier.correctedItems) {
+    console.log('  verifier suggests: '
+      + d.verifier.correctedItems.map((it) => `${it.quantity || 1}x ${it.name}`).join(', '));
+  }
 
   const answer = (await ask('> ')).trim().toLowerCase();
   if (answer === 'q') break;
@@ -95,10 +163,22 @@ for (let i = 0; i < pendingItems.length && !quit; i++) {
     rejected++;
     continue;
   }
+  if (answer === 'b') {
+    bulk = true;
+    if (verifierConfirmed(d)) approveItems(d, itemRecommendation(d));
+    continue;
+  }
+  if (answer === 'a') {
+    if (!d.verifier || d.verifier.verdict === 'reject') {
+      console.log('  ...no verifier recommendation to accept here.');
+      i--; // re-show this draft
+      continue;
+    }
+    approveItems(d, itemRecommendation(d));
+    continue;
+  }
   if (answer === 'y') {
-    bundled.annotations[d.stepId] = bundled.annotations[d.stepId] || {};
-    bundled.annotations[d.stepId].items = d.items;
-    approved++;
+    approveItems(d, d.items);
   }
 }
 

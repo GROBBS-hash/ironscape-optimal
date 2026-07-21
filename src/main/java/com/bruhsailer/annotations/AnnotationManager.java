@@ -120,6 +120,40 @@ public class AnnotationManager
 		return out;
 	}
 
+	/**
+	 * A guide refresh gave some edited steps new ids (see GuideManifest):
+	 * re-key the LOCAL annotations so captured targets survive the edit.
+	 * Bundled annotations are read-only and stay put — an orphaned
+	 * bundled key is harmless and gets fixed at the next bundle
+	 * regeneration. Returns how many annotations moved.
+	 */
+	public synchronized int remapIds(Map<String, String> remap)
+	{
+		if (remap.isEmpty() || local.isEmpty())
+		{
+			return 0;
+		}
+		Map<String, StepAnnotation> remapped = new HashMap<>();
+		int moved = 0;
+		for (Map.Entry<String, StepAnnotation> entry : local.entrySet())
+		{
+			String newKey = com.bruhsailer.guide.GuideManifest.remapId(entry.getKey(), remap);
+			if (!newKey.equals(entry.getKey()))
+			{
+				moved++;
+			}
+			// merge() would need field-level rules; last-in wins is fine
+			// because a collision means the target key already had data.
+			remapped.putIfAbsent(newKey, entry.getValue());
+		}
+		if (moved > 0)
+		{
+			local = remapped;
+			saveLocal();
+		}
+		return moved;
+	}
+
 	/** Called by the capture button: remember where this step happens. */
 	public synchronized void setTarget(String stepId, WorldPoint point)
 	{
