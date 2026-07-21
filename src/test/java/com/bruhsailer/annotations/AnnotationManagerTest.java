@@ -34,6 +34,30 @@ public class AnnotationManagerTest
 	}
 
 	@Test
+	public void requiresAllWinsOverSingleRequires() throws Exception
+	{
+		File dir = Files.createTempDirectory("bruhsailer-test").toFile();
+		File file = new File(dir, "annotations.json");
+		Files.write(file.toPath(), (
+			"{\"version\":1,\"annotations\":{"
+				+ "\"multi\":{\"requires\":{\"skill\":\"PRAYER\",\"level\":43},"
+				+ "\"requiresAll\":[{\"skill\":\"CRAFTING\",\"level\":93},{\"skill\":\"COMBAT\",\"level\":100}]},"
+				+ "\"single\":{\"requires\":{\"skill\":\"FISHING\",\"level\":56}}"
+				+ "}}").getBytes(java.nio.charset.StandardCharsets.UTF_8));
+
+		AnnotationManager manager = new AnnotationManager(new Gson(), file);
+		manager.load();
+
+		java.util.Map<String, java.util.List<StepAnnotation.Requirement>> all = manager.allRequirements();
+		assertEquals(2, all.get("multi").size());
+		assertEquals("CRAFTING", all.get("multi").get(0).skill);
+		assertEquals("COMBAT", all.get("multi").get(1).skill);
+		assertEquals(Integer.valueOf(100), all.get("multi").get(1).level);
+		assertEquals(1, all.get("single").size());
+		assertEquals("FISHING", all.get("single").get(0).skill);
+	}
+
+	@Test
 	public void recaptureOverwrites() throws Exception
 	{
 		File dir = Files.createTempDirectory("bruhsailer-test").toFile();

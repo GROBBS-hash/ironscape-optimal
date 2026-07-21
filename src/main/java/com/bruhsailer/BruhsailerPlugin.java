@@ -178,8 +178,8 @@ public class BruhsailerPlugin extends Plugin
 	/** Parsed guides, loaded once per client session. */
 	private final Map<GuideVariant, Guide> guides = new EnumMap<>(GuideVariant.class);
 
-	/** Step id -> its reviewed skill requirement annotation. */
-	private final Map<String, StepRequirement> stepSkillRequirements = new HashMap<>();
+	/** Step id -> its reviewed requirements (ALL must be met to auto-complete). */
+	private final Map<String, List<StepRequirement>> stepSkillRequirements = new HashMap<>();
 
 	/** Quest goals by sub-step id, for the in-order evaluator. */
 	private final Map<String, GoalDetector.QuestGoal> questGoalBySub = new HashMap<>();
@@ -958,10 +958,9 @@ public class BruhsailerPlugin extends Plugin
 			for (int i = 0; i < window.size(); i++)
 			{
 				Current current = window.get(i);
-				// A reviewed skill requirement completes a WHOLE step.
-				StepRequirement requirement = stepSkillRequirements.get(current.step.getId());
-				if (requirement != null
-					&& client.getRealSkillLevel(requirement.skill) >= requirement.level)
+				// Reviewed requirements complete a WHOLE step when ALL are met.
+				List<StepRequirement> requirements = stepSkillRequirements.get(current.step.getId());
+				if (requirements != null && requirementsMet(requirements))
 				{
 					completeStep(current.step);
 					completedSomething = true;
@@ -1199,26 +1198,67 @@ public class BruhsailerPlugin extends Plugin
 	private void rebuildStepRequirements()
 	{
 		stepSkillRequirements.clear();
-		annotationManager.allRequirements().forEach((stepId, requires) -> {
-			if (requires.skill == null || requires.level == null)
+		annotationManager.allRequirements().forEach((stepId, requirementList) -> {
+			List<StepRequirement> parsed = new ArrayList<>();
+			for (com.bruhsailer.annotations.StepAnnotation.Requirement requires : requirementList)
 			{
-				return;
+				if (requires.skill == null || requires.level == null)
+				{
+					continue;
+				}
+				if ("COMBAT".equals(requires.skill))
+				{
+					parsed.add(new StepRequirement(null, requires.level));
+					continue;
+				}
+				try
+				{
+					parsed.add(new StepRequirement(Skill.valueOf(requires.skill), requires.level));
+				}
+				catch (IllegalArgumentException e)
+				{
+					// One bad name poisons the whole step: evaluating only the
+					// valid remainder could tick the step early.
+					log.warn("Annotation for step {} names unknown skill '{}' — requirement disabled",
+						stepId, requires.skill);
+					return;
+				}
 			}
-			Skill skill;
-			try
+			if (!parsed.isEmpty())
 			{
-				skill = Skill.valueOf(requires.skill);
+				stepSkillRequirements.put(stepId, parsed);
 			}
-			catch (IllegalArgumentException e)
-			{
-				log.warn("Annotation for step {} names unknown skill '{}'", stepId, requires.skill);
-				return;
-			}
-			stepSkillRequirements.put(stepId, new StepRequirement(skill, requires.level));
 		});
 	}
 
-	/** "This step is done at skill level N", from a reviewed annotation. */
+	/** ALL requirements met? (Reviewed annotations; runs on the client thread.) */
+	private boolean requirementsMet(List<StepRequirement> requirements)
+	{
+		for (StepRequirement requirement : requirements)
+		{
+			int have;
+			if (requirement.skill == null)
+			{
+				Player me = client.getLocalPlayer();
+				if (me == null)
+				{
+					return false;
+				}
+				have = me.getCombatLevel();
+			}
+			else
+			{
+				have = client.getRealSkillLevel(requirement.skill);
+			}
+			if (have < requirement.level)
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/** One reviewed condition: a skill level, or combat level when skill is null. */
 	private static class StepRequirement
 	{
 		final Skill skill;
