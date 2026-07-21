@@ -440,6 +440,10 @@ public final class GoalDetector
 		if (inItemList)
 		{
 			String cleaned = NAME_TERMINATOR.matcher(text).replaceFirst("").trim();
+			// "a house teleport" is elliptical for "grab a house teleport" —
+			// strip the article or the name check rejects it, and the sub
+			// then wrongly falls through to travel detection ("teleport").
+			cleaned = cleaned.replaceFirst("(?i)^(?:a|an|some|the)\\s+", "");
 			if (BARE_ITEM.matcher(cleaned).matches()
 				&& !NOT_AN_ITEM_FIRST_WORD.contains(
 					cleaned.split(" ")[0].toLowerCase(Locale.ROOT)))
@@ -527,18 +531,34 @@ public final class GoalDetector
 		for (Quest quest : Quest.values())
 		{
 			String questName = quest.getName().toLowerCase(Locale.ROOT);
-			if (text.contains("complete " + questName)
-				|| text.contains("finish " + questName)
-				|| text.contains("do " + questName))
+			if (verbPhrase(text, questName, "complete", "finish", "do"))
 			{
 				out.add(new QuestGoal(step, sub, quest, true));
 				return; // one quest goal per sub-step is plenty
 			}
-			if (text.contains("start " + questName) || text.contains("begin " + questName))
+			if (verbPhrase(text, questName, "start", "begin"))
 			{
 				out.add(new QuestGoal(step, sub, quest, false));
 				return;
 			}
 		}
+	}
+
+	/**
+	 * "complete Tower of Life" AND "complete THE Tower of Life" — the
+	 * guide freely inserts the article, which used to break the match
+	 * (so finishing the quest never ticked the sub).
+	 */
+	private static boolean verbPhrase(String text, String questName, String... verbs)
+	{
+		for (String verb : verbs)
+		{
+			if (text.contains(verb + " " + questName)
+				|| text.contains(verb + " the " + questName))
+			{
+				return true;
+			}
+		}
+		return false;
 	}
 }

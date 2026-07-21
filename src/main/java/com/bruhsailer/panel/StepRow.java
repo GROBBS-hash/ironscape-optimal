@@ -117,6 +117,24 @@ class StepRow extends JPanel
 	}
 
 	/**
+	 * Y offset (inside this row) of the first unticked sub-step — where a
+	 * scroll should land. A giant step is taller than the panel, so
+	 * scrolling to "the step" would otherwise show whichever end Swing
+	 * favours instead of the player's actual position within it.
+	 */
+	int firstIncompleteSubY()
+	{
+		for (SubRowUi row : subRows)
+		{
+			if (!row.checkBox.isSelected())
+			{
+				return row.panel.getY();
+			}
+		}
+		return 0;
+	}
+
+	/**
 	 * Adds a live "have/need" line. Sources, in priority order: reviewed
 	 * item annotations for the annotation id, else item goals detected in
 	 * the sub-step's own text ("buy 1250 nature runes").

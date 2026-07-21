@@ -149,6 +149,42 @@ public class GoalDetectorTest
 	}
 
 	@Test
+	public void questPhrasesMatchWithAndWithoutArticle()
+	{
+		Guide guide = guideWithSubTexts(
+			"Complete the Tower of Life.",   // article — used to silently not match
+			"Start Rune Mysteries");
+
+		GoalDetector.Goals goals = GoalDetector.detect(guide);
+
+		assertEquals(2, goals.getQuestGoals().size());
+		assertEquals(net.runelite.api.Quest.TOWER_OF_LIFE, goals.getQuestGoals().get(0).getQuest());
+		assertTrue(goals.getQuestGoals().get(0).isRequiresFinished());
+		assertEquals(net.runelite.api.Quest.RUNE_MYSTERIES, goals.getQuestGoals().get(1).getQuest());
+		assertFalse(goals.getQuestGoals().get(1).isRequiresFinished());
+	}
+
+	@Test
+	public void articleLedListContinuationIsAnItemNotATravelGoal()
+	{
+		// The bank-withdrawal list from step 17: "a house teleport" is an
+		// ITEM to grab. Before the article strip it produced no item goal
+		// and — containing "teleport" — became a travel sub that ANY
+		// position jump ticked.
+		Guide guide = guideWithSubTexts(
+			"grab your gp",
+			"one beer",
+			"a house teleport");
+
+		GoalDetector.Goals goals = GoalDetector.detect(guide);
+
+		assertEquals(3, goals.getItemGoals().size());
+		assertEquals("house teleport", goals.getItemGoals().get(2).getItemName());
+		assertEquals(1, goals.getItemGoals().get(2).getQuantity());
+		assertTrue(goals.getTravelGoals().isEmpty());
+	}
+
+	@Test
 	public void detectsMinigameTeleportNames()
 	{
 		Guide guide = guideWithSubTexts(

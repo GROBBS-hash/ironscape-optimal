@@ -158,11 +158,34 @@ public class BruhsailerPlugin extends Plugin
 	@Inject
 	private net.runelite.client.game.WorldService worldService;
 
+	/** All loaded plugins — used to find Quest Helper for the quest handoff. */
+	@Inject
+	private net.runelite.client.plugins.PluginManager pluginManager;
+
 	@Inject
 	private com.bruhsailer.overlay.MinigameTeleportOverlay minigameTeleportOverlay;
 
 	@Inject
 	private com.bruhsailer.overlay.StepOverlay stepOverlay;
+
+	@Inject
+	private com.bruhsailer.overlay.QuestStartMarkerOverlay questStartMarkerOverlay;
+
+	@Inject
+	private com.bruhsailer.overlay.NpcTargetOverlay npcTargetOverlay;
+
+	/** Lowercased names of scene NPCs the current sub mentions. Written per tick. */
+	private volatile java.util.Set<String> npcTargetNames = java.util.Collections.emptySet();
+
+	/** True while the current sub is a quest goal (adds the NPC quest icon). */
+	private volatile boolean currentSubIsQuest;
+
+	/** Where the quest-start icon floats; null = hidden. Written per tick. */
+	private volatile WorldPoint questStartMarker;
+
+	/** Quest whose start marker was requested by clicking its link. */
+	private Quest clickedQuest;
+	private int clickedQuestTicks;
 
 	/** Snapshot the step overlay draws; rebuilt once per game tick. */
 	private volatile com.bruhsailer.overlay.StepOverlay.Model stepOverlayModel;
@@ -260,7 +283,12 @@ public class BruhsailerPlugin extends Plugin
 	 */
 	private static final int AUTO_COMPLETE_WINDOW = 8;
 
-	/** Well-known bank locations, for "your items are in the bank" routing. */
+	/**
+	 * Well-known bank locations, for "your items are in the bank" routing.
+	 * Includes bank CHESTS, not just booths — routing someone standing at
+	 * Port Khazard all the way to Ardougne is worse than useless. Targets
+	 * only need to be near the bank; Shortest Path ends the trail there.
+	 */
 	private static final WorldPoint[] BANKS = {
 		new WorldPoint(3164, 3487, 0), // Grand Exchange
 		new WorldPoint(3185, 3436, 0), // Varrock west
@@ -275,6 +303,24 @@ public class BruhsailerPlugin extends Plugin
 		new WorldPoint(2725, 3491, 0), // Seers' Village
 		new WorldPoint(2615, 3332, 0), // Ardougne north
 		new WorldPoint(2655, 3283, 0), // Ardougne south
+		new WorldPoint(2664, 3161, 0), // Port Khazard bank chest
+		new WorldPoint(2443, 3083, 0), // Castle Wars bank chest
+		new WorldPoint(3130, 3631, 0), // Ferox Enclave bank chest
+		new WorldPoint(3308, 3120, 0), // Shantay Pass bank chest
+		new WorldPoint(2613, 3093, 0), // Yanille
+		new WorldPoint(3045, 3234, 0), // Port Sarim
+		new WorldPoint(2586, 3420, 0), // Fishing Guild
+		new WorldPoint(1640, 3944, 0), // Wintertodt camp bank chest
+		new WorldPoint(1512, 3421, 0), // Land's End bank chest
+		new WorldPoint(1591, 3479, 0), // Woodcutting Guild bank chest
+		new WorldPoint(1749, 3599, 0), // Hosidius
+		new WorldPoint(1624, 3745, 0), // Arceuus
+		new WorldPoint(2852, 2954, 0), // Shilo Village
+		new WorldPoint(3512, 3480, 0), // Canifis
+		new WorldPoint(3688, 3467, 0), // Port Phasmatys
+		new WorldPoint(2383, 4458, 0), // Zanaris bank chest
+		new WorldPoint(3381, 3268, 0), // PvP Arena bank
+		new WorldPoint(3428, 2892, 0), // Nardah
 	};
 
 	/** How close (tiles) counts as "arrived" for a location goal. */
@@ -367,10 +413,17 @@ public class BruhsailerPlugin extends Plugin
 		log.info("Detected {} item goals and {} quest goals in the guide text",
 			goals.getItemGoals().size(), goals.getQuestGoals().size());
 
+		cleanupStaleAmbientTicks();
+
 		minigameTeleportOverlay.setTargetSupplier(() -> activeMinigameTarget);
 		overlayManager.add(minigameTeleportOverlay);
 		stepOverlay.setModelSupplier(() -> stepOverlayModel);
 		overlayManager.add(stepOverlay);
+		questStartMarkerOverlay.setTargetSupplier(() -> questStartMarker);
+		overlayManager.add(questStartMarkerOverlay);
+		npcTargetOverlay.setNamesSupplier(() -> npcTargetNames);
+		npcTargetOverlay.setQuestIconSupplier(() -> currentSubIsQuest);
+		overlayManager.add(npcTargetOverlay);
 
 		panel = panelProvider.get();
 		panel.setItemGoals(itemGoalsBySub);
@@ -444,6 +497,13 @@ public class BruhsailerPlugin extends Plugin
 	{
 		overlayManager.remove(minigameTeleportOverlay);
 		overlayManager.remove(stepOverlay);
+		overlayManager.remove(questStartMarkerOverlay);
+		overlayManager.remove(npcTargetOverlay);
+		npcTargetNames = java.util.Collections.emptySet();
+		currentSubIsQuest = false;
+		questStartMarker = null;
+		clickedQuest = null;
+		clickedQuestTicks = 0;
 		stepOverlayModel = null;
 		minigameBySub.clear();
 		activeMinigameTarget = null;
@@ -501,6 +561,7 @@ public class BruhsailerPlugin extends Plugin
 		// The new profile's saved progress may still use pre-refresh step
 		// ids; apply the same remap startUp applied (no-op if none).
 		progressManager.remapIds(GuideVariant.MAIN, guideRemap);
+		cleanupStaleAmbientTicks();
 		if (panel != null)
 		{
 			SwingUtilities.invokeLater(panel::refresh);
@@ -606,10 +667,88 @@ public class BruhsailerPlugin extends Plugin
 			recentConsumeTicks = 10;
 		}
 
+		reopenBankedItemSubs();
 		evaluateAutoCompletion();
 		if (panel != null)
 		{
 			SwingUtilities.invokeLater(panel::refreshItemCounts);
+		}
+	}
+
+	/**
+	 * Re-banking items the CURRENT step already "grabbed" re-opens those
+	 * subs — the tick meant "in hand", and upcoming steps still need the
+	 * items. Items that were CONSUMED (fletched away, eaten, handed in)
+	 * stay ticked: a sub only re-opens when every missing item is sitting
+	 * in the bank in full, which is the signature of re-banking.
+	 */
+	private void reopenBankedItemSubs()
+	{
+		if (!config.autoCompleteSteps() || goals == null || loginGraceTicks > 0
+			|| client.getGameState() != GameState.LOGGED_IN)
+		{
+			return;
+		}
+		List<Current> window = findWindow(1);
+		if (window.isEmpty())
+		{
+			return;
+		}
+		GuideStep step = window.get(0).step;
+		boolean reopened = false;
+		boolean pastFirstIncomplete = false;
+		for (SubStep sub : step.getSubSteps())
+		{
+			if (!progressManager.isSubCompleted(GuideVariant.MAIN, step, sub))
+			{
+				pastFirstIncomplete = true;
+				continue;
+			}
+			// The contiguous done-head is HISTORY: "grab a house teleport"
+			// stays ticked when you later break that tab with spares in
+			// the bank — indistinguishable from re-banking by state alone,
+			// and un-ticking it wrecks the ordering. Only out-of-order
+			// ticks past your position are eligible to reopen.
+			if (!pastFirstIncomplete)
+			{
+				continue;
+			}
+			List<GoalDetector.ItemGoal> subGoals = itemGoalsBySub.get(sub.getId());
+			if (subGoals == null)
+			{
+				continue;
+			}
+			boolean missingSomething = false;
+			boolean missingAllBanked = true;
+			for (GoalDetector.ItemGoal goal : subGoals)
+			{
+				if (itemTracker.carriedCountOf(goal.getItemName()) >= goal.getQuantity())
+				{
+					continue;
+				}
+				missingSomething = true;
+				if (itemTracker.countOf(goal.getItemName()) < goal.getQuantity())
+				{
+					missingAllBanked = false; // consumed, not banked: stays done
+					break;
+				}
+			}
+			if (missingSomething && missingAllBanked)
+			{
+				progressManager.setSubCompleted(GuideVariant.MAIN, step, sub, false);
+				reopened = true;
+				String text = sub.getPlainText().trim();
+				if (text.length() > 60)
+				{
+					text = text.substring(0, 57) + "...";
+				}
+				client.addChatMessage(ChatMessageType.CONSOLE, "",
+					"IRONSCAPE: ↩ " + text + " (items back in the bank)", null);
+			}
+		}
+		if (reopened && panel != null)
+		{
+			SwingUtilities.invokeLater(panel::refresh);
 		}
 	}
 
@@ -712,10 +851,11 @@ public class BruhsailerPlugin extends Plugin
 			}
 		}
 
-		// Feed the teleport-hint overlay: a clicked minigame link wins
-		// while its countdown runs; otherwise ask whether the current
-		// sub-step is a "Minigame teleport to X". (Overlay renders every
-		// frame, so the lookup happens here, once per tick, not per frame.)
+		// Feed the overlays. Computed here once per tick, not per frame.
+		Current current = findCurrent();
+
+		// Teleport hints: a clicked minigame link wins while its countdown
+		// runs; otherwise the current "Minigame teleport to X" sub.
 		if (clickedMinigameTicks > 0)
 		{
 			clickedMinigameTicks--;
@@ -730,9 +870,75 @@ public class BruhsailerPlugin extends Plugin
 		}
 		else
 		{
-			Current current = findCurrent();
 			activeMinigameTarget = current == null ? null : minigameBySub.get(current.sub.getId());
 		}
+
+		// Quest-start marker: float the quest icon at the start point of
+		// the quest the player is heading to — a clicked quest link, or
+		// the current "Start X" sub. Clears itself the moment the quest
+		// actually begins (Quest Helper's overlays take over from there).
+		if (clickedQuestTicks > 0)
+		{
+			clickedQuestTicks--;
+			if (clickedQuest == null || clickedQuest.getState(client) != QuestState.NOT_STARTED)
+			{
+				clickedQuestTicks = 0;
+				clickedQuest = null;
+			}
+		}
+		WorldPoint marker = null;
+		if (config.showQuestStartMarker())
+		{
+			if (clickedQuestTicks > 0 && clickedQuest != null)
+			{
+				marker = placeManager.get(clickedQuest.getName());
+			}
+			else if (current != null)
+			{
+				GoalDetector.QuestGoal questGoal = questGoalBySub.get(current.sub.getId());
+				if (questGoal != null && !questGoal.isRequiresFinished()
+					&& questGoal.getQuest().getState(client) == QuestState.NOT_STARTED)
+				{
+					marker = placeManager.get(questGoal.getQuest().getName());
+				}
+			}
+		}
+		questStartMarker = marker;
+
+		// NPC targets: outline scene NPCs whose name the current sub-step
+		// mentions ("speak with Veos" -> Veos). Names matched once per
+		// tick; the overlay re-reads the live hulls per frame, which is
+		// what keeps the outline glued to wandering NPCs.
+		java.util.Set<String> npcNames = new java.util.HashSet<>();
+		if (current != null)
+		{
+			String subText = " " + current.sub.getPlainText().toLowerCase(Locale.ROOT)
+				.replace('’', '\'') + " ";
+			for (net.runelite.api.NPC npc : client.getTopLevelWorldView().npcs())
+			{
+				String name = npc.getName();
+				if (name == null)
+				{
+					continue;
+				}
+				// NPC names use non-breaking spaces; the guide uses real ones.
+				String clean = net.runelite.client.util.Text.removeTags(name)
+					.replace(' ', ' ').trim().toLowerCase(Locale.ROOT);
+				if (clean.length() < 3)
+				{
+					continue;
+				}
+				int at = subText.indexOf(clean);
+				if (at > 0
+					&& !Character.isLetter(subText.charAt(at - 1))
+					&& !Character.isLetter(subText.charAt(at + clean.length())))
+				{
+					npcNames.add(clean);
+				}
+			}
+		}
+		npcTargetNames = npcNames;
+		currentSubIsQuest = current != null && questGoalBySub.containsKey(current.sub.getId());
 
 		updateStepOverlay();
 	}
@@ -760,7 +966,8 @@ public class BruhsailerPlugin extends Plugin
 		}
 
 		GuideStep step = frontier.step;
-		List<String> lines = new ArrayList<>();
+		String current = null;
+		List<String> upNext = new ArrayList<>();
 		List<com.bruhsailer.overlay.StepOverlay.Requirement> reqs = new ArrayList<>();
 		int openSubs = 0;
 		for (SubStep sub : step.getSubSteps())
@@ -770,54 +977,60 @@ public class BruhsailerPlugin extends Plugin
 				continue;
 			}
 			openSubs++;
-			if (lines.size() < OVERLAY_MAX_LINES)
+			if (current == null)
 			{
-				lines.add(truncate(sub.getPlainText().trim(), 90));
-			}
-
-			List<GoalDetector.ItemGoal> itemGoals = itemGoalsBySub.get(sub.getId());
-			if (itemGoals != null)
-			{
-				for (GoalDetector.ItemGoal goal : itemGoals)
+				// The ONE action to do now — only ITS counts are shown, so
+				// a huge step's far-off errands can't read as current.
+				current = truncate(sub.getPlainText().trim(), 130);
+				List<GoalDetector.ItemGoal> itemGoals = itemGoalsBySub.get(sub.getId());
+				if (itemGoals != null)
 				{
-					int carried = itemTracker.carriedCountOf(goal.getItemName());
-					int have = itemTracker.countOf(goal.getItemName());
-					java.awt.Color color = carried >= goal.getQuantity() ? OVERLAY_GREEN
-						: have >= goal.getQuantity() ? OVERLAY_ORANGE : OVERLAY_RED;
+					for (GoalDetector.ItemGoal goal : itemGoals)
+					{
+						int carried = itemTracker.carriedCountOf(goal.getItemName());
+						int have = itemTracker.countOf(goal.getItemName());
+						java.awt.Color color = carried >= goal.getQuantity() ? OVERLAY_GREEN
+							: have >= goal.getQuantity() ? OVERLAY_ORANGE : OVERLAY_RED;
+						reqs.add(new com.bruhsailer.overlay.StepOverlay.Requirement(
+							goal.getItemName(), have + "/" + goal.getQuantity(), color));
+					}
+				}
+				List<GoalDetector.SkillLevelGoal> levels = levelGoalsBySub.get(sub.getId());
+				if (levels != null)
+				{
+					for (GoalDetector.SkillLevelGoal goal : levels)
+					{
+						int have = realLevelBySkill.getOrDefault(goal.getSkill(), 1);
+						reqs.add(new com.bruhsailer.overlay.StepOverlay.Requirement(
+							goal.getSkill().getName().toLowerCase(Locale.ROOT),
+							have + "/" + goal.getLevel(),
+							have >= goal.getLevel() ? OVERLAY_GREEN : OVERLAY_ORANGE));
+					}
+				}
+				GoalDetector.CountedSkillGoal counted = countedGoalBySub.get(sub.getId());
+				if (counted != null)
+				{
+					int seen = Math.min(progressManager.countedProgress(GuideVariant.MAIN, sub.getId()),
+						counted.getCount());
 					reqs.add(new com.bruhsailer.overlay.StepOverlay.Requirement(
-						goal.getItemName(), have + "/" + goal.getQuantity(), color));
+						counted.getSkill().getName().toLowerCase(Locale.ROOT) + " actions",
+						seen + "/" + counted.getCount(),
+						seen >= counted.getCount() ? OVERLAY_GREEN : OVERLAY_ORANGE));
 				}
 			}
-			List<GoalDetector.SkillLevelGoal> levels = levelGoalsBySub.get(sub.getId());
-			if (levels != null)
+			else if (upNext.size() < OVERLAY_MAX_LINES - 1)
 			{
-				for (GoalDetector.SkillLevelGoal goal : levels)
-				{
-					int have = realLevelBySkill.getOrDefault(goal.getSkill(), 1);
-					reqs.add(new com.bruhsailer.overlay.StepOverlay.Requirement(
-						goal.getSkill().getName().toLowerCase(Locale.ROOT),
-						have + "/" + goal.getLevel(),
-						have >= goal.getLevel() ? OVERLAY_GREEN : OVERLAY_ORANGE));
-				}
-			}
-			GoalDetector.CountedSkillGoal counted = countedGoalBySub.get(sub.getId());
-			if (counted != null)
-			{
-				int seen = Math.min(progressManager.countedProgress(GuideVariant.MAIN, sub.getId()),
-					counted.getCount());
-				reqs.add(new com.bruhsailer.overlay.StepOverlay.Requirement(
-					counted.getSkill().getName().toLowerCase(Locale.ROOT) + " actions",
-					seen + "/" + counted.getCount(),
-					seen >= counted.getCount() ? OVERLAY_GREEN : OVERLAY_ORANGE));
+				upNext.add(truncate(sub.getPlainText().trim(), 70));
 			}
 		}
-		if (openSubs > OVERLAY_MAX_LINES)
+		if (current == null)
 		{
-			lines.add("… and " + (openSubs - OVERLAY_MAX_LINES) + " more");
+			stepOverlayModel = null;
+			return;
 		}
-
+		int moreCount = openSubs - 1 - upNext.size();
 		stepOverlayModel = new com.bruhsailer.overlay.StepOverlay.Model(
-			"Step " + (step.getStepIndex() + 1), lines, reqs);
+			"Step " + (step.getStepIndex() + 1), current, upNext, moreCount, reqs);
 	}
 
 	private static final java.awt.Color OVERLAY_GREEN = new java.awt.Color(0x4c, 0xaf, 0x50);
@@ -874,12 +1087,14 @@ public class BruhsailerPlugin extends Plugin
 		}
 	}
 
+	/** How many upcoming incomplete STEPS the bank filter collects items from. */
+	private static final int BANK_FILTER_STEPS = 10;
+
 	/**
-	 * Item names the CURRENT SECTION still needs (alias-expanded): every
-	 * not-yet-ticked step from the section the frontier step is in.
-	 * Deliberately section-scoped — collecting from a fixed lookahead of
-	 * sub-steps pulled in items from steps far past what the player is
-	 * doing, which made the bank filter useless as a filter.
+	 * Item names the next few steps still need (alias-expanded), starting
+	 * at the frontier. Step-count scoped: a fixed sub-step window reached
+	 * too far, and section scoping collected almost nothing near a section
+	 * boundary. Ten steps of shopping ahead is predictable.
 	 */
 	private java.util.Set<String> upcomingItemNames()
 	{
@@ -892,16 +1107,17 @@ public class BruhsailerPlugin extends Plugin
 		if (frontier != null)
 		{
 			Guide guide = guideFor(GuideVariant.MAIN);
-			List<GuideStep> sectionSteps = guide.getChapters()
-				.get(frontier.step.getChapterIndex())
-				.getSections().get(frontier.step.getSectionIndex())
-				.getSteps();
-			for (GuideStep step : sectionSteps)
+			List<GuideStep> steps = guide.getAllSteps();
+			int included = 0;
+			for (int i = frontier.step.getGlobalIndex();
+				i < steps.size() && included < BANK_FILTER_STEPS; i++)
 			{
+				GuideStep step = steps.get(i);
 				if (progressManager.isCompleted(GuideVariant.MAIN, step.getId()))
 				{
 					continue;
 				}
+				included++;
 				for (StepAnnotation.ItemNeed need : annotationManager.getItems(step.getId()))
 				{
 					java.util.Collections.addAll(names, ItemTracker.aliases(need.name));
@@ -1005,17 +1221,29 @@ public class BruhsailerPlugin extends Plugin
 		return window.isEmpty() ? null : window.get(0);
 	}
 
-	/** The first `limit` incomplete sub-steps in guide order. */
+	/**
+	 * The first `limit` incomplete sub-steps in guide order — starting
+	 * AFTER the last completed step. Unticked steps before that point were
+	 * skipped on purpose; anchoring the frontier (auto-ticks, overlay,
+	 * navigation, panel landing) on them would pin everything to old
+	 * content the player has moved past.
+	 */
 	private List<Current> findWindow(int limit)
 	{
 		List<Current> window = new ArrayList<>();
 		Guide guide = guideFor(GuideVariant.MAIN);
-		for (GuideStep step : guide.getAllSteps())
+		List<GuideStep> steps = guide.getAllSteps();
+		int start = 0;
+		for (int i = 0; i < steps.size(); i++)
 		{
-			if (progressManager.isCompleted(GuideVariant.MAIN, step.getId()))
+			if (progressManager.isCompleted(GuideVariant.MAIN, steps.get(i).getId()))
 			{
-				continue;
+				start = i + 1;
 			}
+		}
+		for (int i = start; i < steps.size(); i++)
+		{
+			GuideStep step = steps.get(i);
 			for (SubStep sub : step.getSubSteps())
 			{
 				if (!progressManager.isSubCompleted(GuideVariant.MAIN, step, sub))
@@ -1193,6 +1421,68 @@ public class BruhsailerPlugin extends Plugin
 				panel.markSubCompleted(stepId, subId);
 			}
 		});
+	}
+
+	/**
+	 * One-time hygiene per profile. Before frontier gating (2026-07-22),
+	 * ambient signals — carried items, xp drops, teleports, consumption —
+	 * could tick sub-steps up to 8 ahead, crossing into steps and errands
+	 * the player never reached ("buy shears" done before ever visiting the
+	 * shop). Gating stopped NEW strays; this clears the leftovers: every
+	 * ticked ambient-goal sub past the first incomplete one. Quest and
+	 * level ticks (strong evidence) and goal-less manual ticks stay.
+	 */
+	private void cleanupStaleAmbientTicks()
+	{
+		if ("done".equals(configManager.getConfiguration(CONFIG_GROUP, "ambientTickCleanupV1")))
+		{
+			return;
+		}
+		Guide guide = guideFor(GuideVariant.MAIN);
+		List<GuideStep> steps = guide.getAllSteps();
+		int lastCompleted = -1;
+		for (int i = 0; i < steps.size(); i++)
+		{
+			if (progressManager.isCompleted(GuideVariant.MAIN, steps.get(i).getId()))
+			{
+				lastCompleted = i;
+			}
+		}
+		int cleared = 0;
+		boolean pastFirstIncomplete = false;
+		for (int i = lastCompleted + 1; i < steps.size(); i++)
+		{
+			GuideStep step = steps.get(i);
+			for (SubStep sub : step.getSubSteps())
+			{
+				boolean ticked = progressManager.isSubCompleted(GuideVariant.MAIN, step, sub);
+				if (!ticked)
+				{
+					pastFirstIncomplete = true;
+					continue;
+				}
+				if (!pastFirstIncomplete)
+				{
+					continue; // the contiguous done-head of the frontier step is real progress
+				}
+				String subId = sub.getId();
+				boolean ambient = itemGoalsBySub.containsKey(subId)
+					|| travelGoalSubs.contains(subId)
+					|| interactionGoalSubs.contains(subId)
+					|| actionGoalBySub.containsKey(subId)
+					|| countedGoalBySub.containsKey(subId);
+				if (ambient)
+				{
+					progressManager.setSubCompleted(GuideVariant.MAIN, step, sub, false);
+					cleared++;
+				}
+			}
+		}
+		configManager.setConfiguration(CONFIG_GROUP, "ambientTickCleanupV1", "done");
+		if (cleared > 0)
+		{
+			log.info("Cleared {} stale ambient tick(s) beyond the current position", cleared);
+		}
 	}
 
 	private void rebuildStepRequirements()
@@ -1458,16 +1748,30 @@ public class BruhsailerPlugin extends Plugin
 				QuestState state = quest.getState(client);
 				if (state == QuestState.NOT_STARTED)
 				{
+					// Route there AND float the quest icon at the start
+					// point (~2 min, or until the quest begins).
+					clickedQuest = quest;
+					clickedQuestTicks = 200;
+					questStartMarker = point;
 					eventBus.post(new PluginMessage("shortestpath", "path", Map.of("target", point)));
+				}
+				else if (state == QuestState.FINISHED)
+				{
+					client.addChatMessage(ChatMessageType.CONSOLE, "",
+						"IRONSCAPE: " + quest.getName() + " is already finished.", null);
+				}
+				else if (tryQuestHelperSelect(quest.getName()))
+				{
+					client.addChatMessage(ChatMessageType.CONSOLE, "",
+						"IRONSCAPE: " + quest.getName()
+							+ " is in progress — opened it in Quest Helper.", null);
 				}
 				else
 				{
 					client.addChatMessage(ChatMessageType.CONSOLE, "",
 						"IRONSCAPE: " + quest.getName()
-							+ (state == QuestState.FINISHED
-								? " is already finished."
-								: " is in progress — its start point isn't where you need to go. "
-									+ "Select it in Quest Helper for step-by-step guidance."),
+							+ " is in progress — its start point isn't where you need to go. "
+							+ "Select it in Quest Helper for step-by-step guidance.",
 						null);
 				}
 			});
@@ -1520,6 +1824,43 @@ public class BruhsailerPlugin extends Plugin
 	{
 		clientThread.invokeLater(() ->
 			eventBus.post(new PluginMessage("shortestpath", "clear")));
+	}
+
+	/**
+	 * Best-effort handoff to the Quest Helper plugin: select the quest in
+	 * its panel so its step-by-step overlays activate. QH exposes no
+	 * public API, so this reaches its QuestMenuHandler#startUpQuest(String)
+	 * — a public method on a private field — via reflection on the live
+	 * plugin instance (works across plugin classloaders). Any version
+	 * drift or missing plugin just returns false and the caller falls
+	 * back to a chat message. Client thread.
+	 */
+	private boolean tryQuestHelperSelect(String questName)
+	{
+		try
+		{
+			for (net.runelite.client.plugins.Plugin plugin : pluginManager.getPlugins())
+			{
+				if (!"Quest Helper".equals(plugin.getName()))
+				{
+					continue;
+				}
+				if (!pluginManager.isPluginEnabled(plugin))
+				{
+					return false;
+				}
+				java.lang.reflect.Field field = plugin.getClass().getDeclaredField("questMenuHandler");
+				field.setAccessible(true);
+				Object handler = field.get(plugin);
+				handler.getClass().getMethod("startUpQuest", String.class).invoke(handler, questName);
+				return true;
+			}
+		}
+		catch (Throwable t)
+		{
+			log.debug("Quest Helper handoff failed (its internals may have changed)", t);
+		}
+		return false;
 	}
 
 	/** The guide's minigame-teleport name matching this place name, or null. */
