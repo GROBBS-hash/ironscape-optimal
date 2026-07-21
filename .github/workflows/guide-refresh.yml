@@ -1,0 +1,147 @@
+# Watches the upstream BRUHsailer guide data and opens a PR here whenever
+# it changes. The PR carries the refreshed guide JSON plus regenerated
+# annotation drafts (earlier verifier verdicts and rejections are carried
+# over for unchanged steps — see tools/extract-annotations.mjs).
+#
+# The human stays in the loop: review the PR, run the verifier on the new
+# drafts (node tools/verify-annotations.mjs — needs ANTHROPIC_API_KEY, or
+# ask Claude to verify in-session), review-annotations.mjs, then merge.
+#
+# One-time repo setting for this to work:
+#   Settings -> Actions -> General -> Workflow permissions:
+#   "Read and write permissions" + "Allow GitHub Actions to create and
+#   approve pull requests".
+name: Guide refresh
+
+on:
+  schedule:
+    - cron: '0 6 * * 1' # Mondays 06:00 UTC
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # The authors publish the guide as DATE-STAMPED Google Docs
+      # (20260717Chapter1, ...) linked from their public links doc. Those
+      # names are the true "a new guide version exists" signal, upstream
+      # of the site's doc->JSON pipeline that we actually ingest from.
+      - name: Check the authors' source docs
+        id: docs
+        run: |
+          curl -fsSL --retry 3 \
+            "https://docs.google.com/document/d/1CBkFM70SnrW4hJXvHM2F1fYCuBF_fRnEXnTYgRnRkAE/export?format=txt" \
+            -o /tmp/links.txt || true
+          # The doc also links OLDER guide versions (archives) — the
+          # current release is the set of names with the NEWEST date.
+          ALL=$(grep -oE '[0-9]{8}(Chapter[0-9]+|DetailedStepsGuide)' /tmp/links.txt 2>/dev/null | sort -u)
+          LATEST=$(printf '%s\n' "$ALL" | grep -oE '^[0-9]{8}' | sort | tail -1)
+          CURRENT=$(printf '%s\n' "$ALL" | grep "^$LATEST" | tr '\n' ' ' | sed 's/ $//')
+          KNOWN=$(cat .github/upstream-doc-state.txt 2>/dev/null | tr '\n' ' ' | sed 's/ $//')
+          echo "current=$CURRENT" >> "$GITHUB_OUTPUT"
+          if [ -z "$CURRENT" ]; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "Could not read the links doc (export blocked or layout changed) - skipping the doc check."
+          elif [ "$CURRENT" != "$KNOWN" ]; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            echo "Authors' docs changed: '$KNOWN' -> '$CURRENT'"
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "Authors' docs unchanged ($CURRENT)."
+          fi
+
+      - name: Fetch upstream guide data
+        run: |
+          curl -fsSL --retry 3 \
+            https://raw.githubusercontent.com/umkyzn/BRUHsailer/main/data/guide_data.json \
+            -o /tmp/guide_data.json
+
+      - name: Sanity-check the download
+        # A truncated or malformed regeneration must not become a PR.
+        run: |
+          node -e "
+            const g = JSON.parse(require('fs').readFileSync('/tmp/guide_data.json', 'utf8'));
+            const steps = g.chapters.flatMap(c => c.sections).flatMap(s => s.steps).length;
+            if (!g.updatedOn || !g.title || steps < 100) {
+              throw new Error('upstream guide data looks wrong: ' + steps + ' steps');
+            }
+            console.log('upstream ' + g.updatedOn + ', ' + steps + ' steps - OK');
+          "
+
+      - name: Apply if changed
+        id: apply
+        run: |
+          DEST=src/main/resources/com/bruhsailer/guide/guide_data.json
+          if cmp -s /tmp/guide_data.json "$DEST"; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "Guide data unchanged upstream - nothing to do."
+          else
+            cp /tmp/guide_data.json "$DEST"
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            echo "updated_on=$(node -p "require('/tmp/guide_data.json').updatedOn")" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Regenerate annotation drafts
+        if: steps.apply.outputs.changed == 'true'
+        # Carries over verdicts/rejections for unchanged steps; only
+        # new/edited steps arrive unverified.
+        run: node tools/extract-annotations.mjs
+
+      - name: Record the authors' doc state
+        # Rides along in the refresh PR, so the sentinel only advances
+        # once the JSON caught up with the docs.
+        if: steps.apply.outputs.changed == 'true' && steps.docs.outputs.current != ''
+        run: printf '%s\n' "${{ steps.docs.outputs.current }}" > .github/upstream-doc-state.txt
+
+      - name: Warn when the docs moved but the JSON did not
+        # The authors published a new guide version, but the site's
+        # doc->JSON pipeline hasn't regenerated yet. Open ONE issue so a
+        # human can nudge it; skip if that issue is already open.
+        if: steps.apply.outputs.changed == 'false' && steps.docs.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TITLE="Upstream guide docs updated, site JSON not yet regenerated"
+          if [ -z "$(gh issue list --state open --search "in:title \"$TITLE\"" --json number --jq '.[].number')" ]; then
+            gh issue create --title "$TITLE" --body "$(printf 'The BRUHsailer authors published new guide docs (%s), but the JSON at umkyzn/BRUHsailer has not changed yet.\n\nUsually the pipeline catches up on its own — this run will keep checking weekly and open the refresh PR when it does. If this issue stays open for several weeks, the doc-to-JSON pipeline may be stalled; consider asking Jesper (osrsper).' "${{ steps.docs.outputs.current }}")"
+          else
+            echo "Warning issue already open - nothing to do."
+          fi
+
+      - name: Open pull request
+        if: steps.apply.outputs.changed == 'true'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          branch: guide-refresh/upstream
+          commit-message: 'Refresh guide data from upstream (${{ steps.apply.outputs.updated_on }})'
+          title: 'Guide refresh: upstream ${{ steps.apply.outputs.updated_on }}'
+          body: |
+            The BRUHsailer guide data changed upstream
+            ([umkyzn/BRUHsailer](https://github.com/umkyzn/BRUHsailer)).
+            This PR updates the bundled copy and regenerates the annotation
+            drafts — verdicts and rejections for unchanged steps were
+            carried over, so only new or edited steps need attention.
+
+            Before merging:
+            1. `node tools/verify-annotations.mjs` (verifies only the new
+               drafts; needs `ANTHROPIC_API_KEY`) — or have Claude verify
+               them in-session.
+            2. `node tools/review-annotations.mjs` and approve.
+            3. `gradlew test`, then a quick in-game sanity check.
+
+            Progress and captured locations for steps that were merely
+            edited upstream are re-linked automatically at plugin startup
+            (GuideManifest remapping).
+          labels: guide-refresh
+          delete-branch: true
