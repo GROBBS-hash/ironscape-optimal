@@ -12,9 +12,9 @@ follow it. If you find it useful, the credit belongs to them.
 
 ## Credits
 
-- **Guide written by [So Iron BRUH](https://www.youtube.com/@SoIronBRUH)
-  & ParasailerOSRS** — the BRUHsailer efficient ironman guide, ~1000
-  steps of routing that this plugin merely displays.
+- **Guide written by So Iron BRUH & ParasailerOSRS** — the
+  [BRUHsailer efficient ironman guide](https://docs.google.com/document/d/1CBkFM70SnrW4hJXvHM2F1fYCuBF_fRnEXnTYgRnRkAE/),
+  ~1000 steps of routing that this plugin merely displays.
 - **Web adaptation by kyyznn** ([umkyzn/BRUHsailer](https://github.com/umkyzn/BRUHsailer)),
   **improved and maintained by Jesper** ([osrsper](https://github.com/osrsper)) —
   the structured guide data this plugin ingests comes from their site,
