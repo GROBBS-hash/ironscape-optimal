@@ -401,7 +401,9 @@ public final class GoalDetector
 
 	private static void detectQuestGoal(GuideStep step, SubStep sub, List<QuestGoal> out)
 	{
-		String text = sub.getPlainText().toLowerCase(Locale.ROOT);
+		// straight apostrophes: the guide writes "Witch’s Potion" (curly),
+		// the Quest enum says "Witch's Potion"
+		String text = sub.getPlainText().toLowerCase(Locale.ROOT).replace('’', '\'');
 		if (!text.contains("start") && !text.contains("begin")
 			&& !text.contains("complete") && !text.contains("finish") && !text.contains("do "))
 		{

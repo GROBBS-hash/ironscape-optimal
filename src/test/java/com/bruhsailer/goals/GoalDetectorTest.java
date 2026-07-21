@@ -174,6 +174,23 @@ public class GoalDetectorTest
 	}
 
 	@Test
+	public void questNamesMatchDespiteCurlyApostrophes()
+	{
+		// the guide's Google-Docs text uses ’, the Quest enum uses '
+		Guide guide = guideWithSubTexts(
+			"Talk to Hetty to start Witch’s Potion",
+			"then return to Hetty complete Witch’s Potion.");
+
+		GoalDetector.Goals goals = GoalDetector.detect(guide);
+
+		assertEquals(2, goals.getQuestGoals().size());
+		assertEquals(Quest.WITCHS_POTION, goals.getQuestGoals().get(0).getQuest());
+		assertFalse(goals.getQuestGoals().get(0).isRequiresFinished());
+		assertTrue("return-and-complete must wait for FINISHED",
+			goals.getQuestGoals().get(1).isRequiresFinished());
+	}
+
+	@Test
 	public void detectsInteractionGoals()
 	{
 		Guide guide = guideWithSubTexts(
