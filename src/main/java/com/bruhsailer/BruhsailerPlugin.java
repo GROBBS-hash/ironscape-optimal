@@ -776,7 +776,42 @@ public class BruhsailerPlugin extends Plugin
 		{
 			return;
 		}
-		GuideStep step = window.get(0).step;
+		GuideStep frontier = window.get(0).step;
+		boolean reopened = reopenItemSubsIn(frontier, false);
+
+		// The step COMPLETED just before the frontier is still "live" for
+		// gather goals: dropping the 130 planks you just collected must
+		// reopen it. Further back, later steps legitimately CONSUME the
+		// gathered items, so history stays history.
+		int previousIndex = frontier.getGlobalIndex() - 1;
+		if (previousIndex >= 0)
+		{
+			GuideStep previous = guideFor(activeVariant).getAllSteps().get(previousIndex);
+			if (progressManager.isCompleted(activeVariant, previous.getId()))
+			{
+				reopened |= reopenItemSubsIn(previous, true);
+			}
+		}
+		if (reopened && panel != null)
+		{
+			SwingUtilities.invokeLater(panel::refresh);
+		}
+	}
+
+	/**
+	 * Reopens ticked item subs of one step. Two triggers:
+	 *  - a GATHER goal (>28, counts the bank) fell below its quantity —
+	 *    the stack was dropped/lost, unambiguous at any position;
+	 *  - re-banking (carried items all back in the bank), only for
+	 *    out-of-order ticks past the first incomplete sub — the
+	 *    contiguous done-head is HISTORY: "grab a house teleport" stays
+	 *    ticked when you later break that tab with spares in the bank.
+	 *
+	 * @param gatherOnly true for the already-completed step before the
+	 *                   frontier: only gather-loss reopens there
+	 */
+	private boolean reopenItemSubsIn(GuideStep step, boolean gatherOnly)
+	{
 		boolean reopened = false;
 		boolean pastFirstIncomplete = false;
 		for (SubStep sub : step.getSubSteps())
@@ -786,42 +821,38 @@ public class BruhsailerPlugin extends Plugin
 				pastFirstIncomplete = true;
 				continue;
 			}
-			// The contiguous done-head is HISTORY: "grab a house teleport"
-			// stays ticked when you later break that tab with spares in
-			// the bank — indistinguishable from re-banking by state alone,
-			// and un-ticking it wrecks the ordering. Only out-of-order
-			// ticks past your position are eligible to reopen.
-			if (!pastFirstIncomplete)
-			{
-				continue;
-			}
 			List<GoalDetector.ItemGoal> subGoals = itemGoalsBySub.get(sub.getId());
 			if (subGoals == null)
 			{
 				continue;
 			}
+			boolean gatherLost = false;
 			boolean missingSomething = false;
 			boolean missingAllBanked = true;
 			for (GoalDetector.ItemGoal goal : subGoals)
 			{
-				// Gather goals (>28) count the bank by design — banking the
-				// planks is expected, never a reason to reopen the sub.
 				boolean gather = goal.getQuantity() > GoalDetector.CARRYABLE_LIMIT;
-				int count = gather
-					? itemTracker.countOf(goal.getItemName())
-					: itemTracker.carriedCountOf(goal.getItemName());
-				if (count >= goal.getQuantity())
+				if (gather)
+				{
+					if (itemTracker.countOf(goal.getItemName()) < goal.getQuantity())
+					{
+						gatherLost = true;
+					}
+					continue; // banking a gather batch is expected, never "re-banked"
+				}
+				if (itemTracker.carriedCountOf(goal.getItemName()) >= goal.getQuantity())
 				{
 					continue;
 				}
 				missingSomething = true;
-				if (gather || itemTracker.countOf(goal.getItemName()) < goal.getQuantity())
+				if (itemTracker.countOf(goal.getItemName()) < goal.getQuantity())
 				{
 					missingAllBanked = false; // consumed, not banked: stays done
-					break;
 				}
 			}
-			if (missingSomething && missingAllBanked)
+			boolean rebanked = !gatherOnly && pastFirstIncomplete
+				&& missingSomething && missingAllBanked;
+			if (gatherLost || rebanked)
 			{
 				progressManager.setSubCompleted(activeVariant, step, sub, false);
 				reopened = true;
@@ -831,13 +862,12 @@ public class BruhsailerPlugin extends Plugin
 					text = text.substring(0, 57) + "...";
 				}
 				client.addChatMessage(ChatMessageType.CONSOLE, "",
-					"IRONSCAPE: ↩ " + text + " (items back in the bank)", null);
+					"IRONSCAPE: ↩ " + text
+						+ (gatherLost ? " (you no longer have enough)" : " (items back in the bank)"),
+					null);
 			}
 		}
-		if (reopened && panel != null)
-		{
-			SwingUtilities.invokeLater(panel::refresh);
-		}
+		return reopened;
 	}
 
 	/** The bank interface (re)opened: (re)create our filter button in it. */
