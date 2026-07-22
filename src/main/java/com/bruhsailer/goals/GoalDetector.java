@@ -39,10 +39,12 @@ public final class GoalDetector
 		"(\\d[\\d,]*)\\s+([a-z][a-z'/ -]+)", Pattern.CASE_INSENSITIVE);
 
 	/** Words that end an item name ("110 logs AND bank them" -> "logs",
-	 *  "5 swamp tar AROUND the cave entrance" -> "swamp tar"). */
+	 *  "5 swamp tar AROUND the cave entrance" -> "swamp tar",
+	 *  "130 planks NORTH of the Barb agility course" -> "planks"). */
 	private static final Pattern NAME_TERMINATOR = Pattern.compile(
 		"\\s+(?:and|from|at|in|to|for|so|until|then|with|on|off|per"
-			+ "|around|near|along|inside|outside|behind|beside|under|by)\\b.*|[(.,].*");
+			+ "|around|near|along|inside|outside|behind|beside|under|by"
+			+ "|north|south|east|west|northwest|northeast|southwest|southeast)\\b.*|[(.,].*");
 
 	/** "air/mind runes" — two alternatives sharing a suffix word. */
 	private static final Pattern COMPOUND_NAME = Pattern.compile(

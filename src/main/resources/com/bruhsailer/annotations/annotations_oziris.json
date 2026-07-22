@@ -7,6 +7,30 @@
         "value": 9
       }
     },
+    "476c85b265:0": {
+      "requires": {
+        "varp": 65,
+        "value": 3
+      }
+    },
+    "d99967bb49:0": {
+      "requires": {
+        "varp": 150,
+        "value": 80
+      }
+    },
+    "13f33630f0:0": {
+      "requires": {
+        "varbit": 532,
+        "value": 5
+      }
+    },
+    "7ca10e694f:0": {
+      "requires": {
+        "varbit": 532,
+        "value": 6
+      }
+    },
     "5418678270": {
       "requires": {
         "skill": "FIREMAKING",
