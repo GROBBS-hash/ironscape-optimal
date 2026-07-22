@@ -130,10 +130,16 @@ function toRawStep(step) {
       formatting: { underline: true, url: link.url, isLink: true },
     }]);
   }
+  // Author-structured tags ride along as metadata; the panel renders
+  // them as the same location/quest chips the website shows.
+  const metadata = {};
+  if (step.location) metadata.location = step.location;
+  if (step.quest) metadata.quest = step.quest;
+  if (step.questStatus) metadata.questStatus = step.questStatus;
   return {
     content: [{ text: step.text, formatting: {} }],
     ...(additional.length ? { additionalContent: additional } : {}),
-    ...(step.location ? { metadata: { location: step.location } } : {}),
+    ...(Object.keys(metadata).length ? { metadata } : {}),
   };
 }
 

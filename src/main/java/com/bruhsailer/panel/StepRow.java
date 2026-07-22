@@ -93,6 +93,8 @@ class StepRow extends JPanel
 				22 + sub.getIndentLevel() * INDENT_PER_LEVEL);
 		}
 
+		addMetadataChips();
+
 		// Trailing commentary paragraphs — informational, not tickable.
 		for (List<TextRun> paragraph : step.getAdditionalContent())
 		{
@@ -388,6 +390,64 @@ class StepRow extends JPanel
 		{
 			navigate.setVisible(target != null);
 		}
+	}
+
+	/**
+	 * The Oziris guide tags each step with a location and sometimes a
+	 * quest — render them as the same 📍/📜 chips the website shows.
+	 * Clicking one routes there (locations via places.json, quest names
+	 * via the quest-start/Quest Helper handoff). Steps without these
+	 * metadata keys (all of BRUHsailer's) simply show nothing.
+	 */
+	private void addMetadataChips()
+	{
+		String location = step.getMetadata().get("location");
+		String quest = step.getMetadata().get("quest");
+		if (location == null && quest == null)
+		{
+			return;
+		}
+		JPanel chips = new JPanel();
+		chips.setLayout(new BoxLayout(chips, BoxLayout.X_AXIS));
+		chips.setBackground(ColorScheme.DARK_GRAY_COLOR);
+		chips.setAlignmentX(LEFT_ALIGNMENT);
+		chips.setBorder(BorderFactory.createEmptyBorder(1, 22, 1, 0));
+		if (location != null)
+		{
+			chips.add(chip("📍 " + location, location));
+		}
+		if (quest != null)
+		{
+			boolean completes = "complete".equalsIgnoreCase(step.getMetadata().get("questStatus"));
+			if (location != null)
+			{
+				chips.add(javax.swing.Box.createHorizontalStrut(8));
+			}
+			chips.add(chip("📜 " + quest + (completes ? " ✓" : ""), quest));
+		}
+		add(chips);
+	}
+
+	/** One small clickable tag; clicking routes to the named place/quest. */
+	private JLabel chip(String label, String target)
+	{
+		JLabel chip = new JLabel(label);
+		chip.setFont(new Font(Font.DIALOG, Font.PLAIN, 11));
+		chip.setForeground(ColorScheme.BRAND_ORANGE);
+		if (ctx.getPlaceNavigateHandler() != null)
+		{
+			chip.setCursor(java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.HAND_CURSOR));
+			chip.setToolTipText("Show the route (needs the Shortest Path plugin)");
+			chip.addMouseListener(new java.awt.event.MouseAdapter()
+			{
+				@Override
+				public void mouseClicked(java.awt.event.MouseEvent e)
+				{
+					ctx.getPlaceNavigateHandler().accept(target);
+				}
+			});
+		}
+		return chip;
 	}
 
 	/** Metadata block as a tooltip, so rows stay compact. */

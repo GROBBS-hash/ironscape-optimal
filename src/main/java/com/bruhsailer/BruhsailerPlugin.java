@@ -1359,6 +1359,19 @@ public class BruhsailerPlugin extends Plugin
 	private boolean currentSubSatisfied(GuideStep step, SubStep sub, boolean frontier,
 		boolean inFrontierStep)
 	{
+		// Quest state FIRST: atomic guide steps combine errands with the
+		// quest action ("Buy a spade, start X marks the spot quest") — the
+		// quest's own state is the authoritative "done" signal, and it's
+		// strong evidence (monotonic), unlike carried-item counts.
+		GoalDetector.QuestGoal atomicQuestGoal = questGoalBySub.get(sub.getId());
+		if (atomicQuestGoal != null && itemGoalsBySub.containsKey(sub.getId()))
+		{
+			QuestState state = atomicQuestGoal.getQuest().getState(client);
+			return atomicQuestGoal.isRequiresFinished()
+				? state == QuestState.FINISHED
+				: state != QuestState.NOT_STARTED;
+		}
+
 		List<GoalDetector.ItemGoal> itemGoals = itemGoalsBySub.get(sub.getId());
 		if (itemGoals != null)
 		{

@@ -36,6 +36,19 @@ public class GuideLoaderTest
 	}
 
 	@Test
+	public void atomicGuideStepsAreOneTickboxEach() throws Exception
+	{
+		// The Oziris guide writes one action per step — the panel must
+		// mirror its step list exactly, never split it into clauses.
+		Guide guide = loader.load(GuideVariant.OZIRIS);
+		for (GuideStep step : guide.getAllSteps())
+		{
+			assertEquals("step " + step.getId() + " should be a single tickbox",
+				1, step.getSubSteps().size());
+		}
+	}
+
+	@Test
 	public void stepIdsAreUniqueAndStable() throws Exception
 	{
 		Guide guide = loader.load(GuideVariant.MAIN);

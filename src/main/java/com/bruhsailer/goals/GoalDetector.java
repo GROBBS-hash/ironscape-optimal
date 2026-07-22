@@ -50,7 +50,7 @@ public final class GoalDetector
 	private static final java.util.Set<String> SKILL_WORDS = java.util.Set.of(
 		"attack", "strength", "defence", "defense", "hitpoints", "hp", "ranged", "range",
 		"prayer", "magic", "cooking", "woodcutting", "fletching", "fishing", "firemaking",
-		"crafting", "smithing", "mining", "herblore", "agility", "thieving", "slayer",
+		"crafting", "smithing", "mining", "herblore", "herb", "agility", "thieving", "slayer",
 		"farming", "runecraft", "runecrafting", "hunter", "construction", "combat");
 
 	/**
@@ -77,6 +77,7 @@ public final class GoalDetector
 		java.util.Map.entry("smithing", Skill.SMITHING),
 		java.util.Map.entry("mining", Skill.MINING),
 		java.util.Map.entry("herblore", Skill.HERBLORE),
+		java.util.Map.entry("herb", Skill.HERBLORE), // "UNTIL 77 herb"
 		java.util.Map.entry("agility", Skill.AGILITY),
 		java.util.Map.entry("thieving", Skill.THIEVING),
 		java.util.Map.entry("slayer", Skill.SLAYER),
