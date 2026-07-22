@@ -4,16 +4,21 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Guide versions. Upstream also publishes a "Landlubber" variant; the owner
- * only follows Main, so that's all we ship — but everything (progress,
- * annotations, the loader) stays keyed by variant, so re-adding one is just
- * a new enum entry plus its bundled JSON.
+ * The guides this plugin can follow. Everything (progress, annotations,
+ * the loader, the manifest) is keyed by variant, so adding one is a new
+ * enum entry plus its bundled JSON.
+ *
+ * MAIN is the BRUHsailer guide (upstream also publishes "Landlubber",
+ * not shipped). OZIRIS is the Ironman Efficiency Guide v4 in the
+ * community "Enhanced 2026" edition, scraped from ironman.guide by
+ * tools/scrape-oziris.mjs.
  */
 @Getter
 @RequiredArgsConstructor // Lombok: generates the constructor taking the two fields below
 public enum GuideVariant
 {
-	MAIN("Main", "guide_data.json");
+	MAIN("BRUHsailer", "guide_data.json"),
+	OZIRIS("Ironman Efficiency (Oziris)", "guide_data_oziris.json");
 
 	/** Name shown to the user in the panel. */
 	private final String displayName;
