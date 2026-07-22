@@ -79,21 +79,23 @@ public class BankFilterButton
 	{
 		if (active)
 		{
-			log.debug("bank filter: deactivated by button");
+			log.info("bank filter: deactivated by button");
 			deactivate();
 			selfToggle = true;
-			bankSearch.reset(true);
+			bankSearch.layoutBank();
 		}
 		else
 		{
-			log.debug("bank filter: activated");
+			log.info("bank filter: activated");
 			active = true;
 			background.setSpriteId(SpriteID.Miscgraphics3.UNKNOWN_BUTTON_SQUARE_SMALL_SELECTED);
 			background.revalidate();
-			// Relayout: the bank re-runs its layout script, which now asks
-			// us which items to show.
+			// Relayout so the bank re-runs its layout script, which now
+			// asks us which items to show. layoutBank(), not reset():
+			// reset only rebuilds when a real search is active — with none,
+			// activation had no visible effect at all.
 			selfToggle = true;
-			bankSearch.reset(true);
+			bankSearch.layoutBank();
 		}
 	}
 
