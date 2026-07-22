@@ -7,7 +7,7 @@
 // 3. Merges hits into src/main/resources/com/bruhsailer/places/places.json
 //    (existing entries are never overwritten — your in-game captures win).
 //
-// Usage: node tools/seed-places.mjs [--dry-run] [--quests] [--locations]
+// Usage: node tools/seed-places.mjs [--dry-run] [--quests] [--locations] [--links] [--pois]
 //   --dry-run:   only print the names it would look up.
 //   --quests:    instead of NPCs, seed every quest name with its start
 //                point (from the wiki's Category:Quests), so quest names
@@ -15,6 +15,14 @@
 //   --locations: seed location names — capitalized phrases found in the
 //                guide ("Lumber Yard") plus a curated list of cities and
 //                areas — with coordinates from their wiki pages.
+//   --links:     POI harvest, source 1 — every oldschool.runescape.wiki
+//                hyperlink the guide authors embedded. The link TEXT is
+//                what the panel must match, the URL names the exact wiki
+//                page, so there's no name-guessing: "Shayzien Styles" ->
+//                w/Shayzien_Styles -> its {{Map}} coordinates.
+//   --pois:      POI harvest, source 2 — lowercase-suffix phrases the
+//                --locations capitalized scan can't see ("the Shayzien
+//                agility course"), looked up with a Title Case fallback.
 
 import fs from 'fs';
 import path from 'path';
@@ -120,19 +128,107 @@ function locationCandidates() {
   return [...found.keys()].sort();
 }
 
+// ---------------------------------------------------------------------
+// POI harvest source 1: wiki links the guide authors embedded.
+// The panel matches the link TEXT against places.json keys, so the text
+// is the key; the URL removes all ambiguity about WHICH wiki page.
+// Returns Map of display text -> wiki page title.
+// ---------------------------------------------------------------------
+
+function linkCandidates() {
+  const found = new Map();
+  const eachRun = (runs) => (runs || []).forEach((run) => {
+    // The upstream generator nests the url inside "formatting".
+    const url = run.url || run.formatting?.url;
+    if (!url || !run.text) return;
+    const m = url.match(/^https?:\/\/oldschool\.runescape\.wiki\/w\/([^#?]+)/);
+    if (!m) return; // imgur, youtube, etc.
+    const page = decodeURIComponent(m[1]).replace(/_/g, ' ');
+    // File:/Category: etc. pages have no useful map of their own.
+    if (/^(?:File|Category|Special|Template):/i.test(page)) return;
+    // The authors sometimes label links "<thing> - OSRS Wiki".
+    let text = run.text.replace(/\s*[-–—]\s*OSRS Wiki\s*$/i, '')
+      .replace(/^[\s"'“”]+|[\s"'“”.,:;!]+$/g, '');
+    // Only strip an unbalanced trailing ")" — "Chest (Aldarin Villas)"
+    // keeps its parenthetical.
+    if (text.endsWith(')') && !text.includes('(')) {
+      text = text.slice(0, -1);
+    }
+    if (text.includes('(') && !text.endsWith(')')) {
+      text += ')';
+    }
+    if (text.length < 4 || text.length > 35) return;
+    if (/^(?:here|this|link|video|map|guide|wiki)$/i.test(text)) return;
+    if (!found.has(text)) found.set(text, page);
+  });
+  guide.chapters.forEach((ch) => ch.sections.forEach((sec) => sec.steps.forEach((step) => {
+    eachRun(step.content);
+    (step.nestedContent || []).forEach((n) => eachRun(n.content));
+    (step.additionalContent || []).forEach(eachRun);
+  })));
+  return found;
+}
+
+// ---------------------------------------------------------------------
+// POI harvest source 2: phrases built from a proper noun + a lowercase
+// POI suffix ("Shayzien agility course", "Woodcutting Guild bank").
+// The --locations scan needs EVERY word capitalized, so these slip by.
+// ---------------------------------------------------------------------
+
+const POI_SUFFIXES = [
+  'agility course', 'agility shortcut', 'farming patch', 'mine', 'bank',
+];
+
+function poiCandidates() {
+  const found = new Map();
+  const suffixes = POI_SUFFIXES.join('|');
+  const pattern = new RegExp(
+    String.raw`\b([A-Z][A-Za-z'’]+(?:\s+[A-Za-z'’]+)?\s+(?:${suffixes}))\b`, 'g');
+  guide.chapters.forEach((ch) => ch.sections.forEach((sec) => sec.steps.forEach((step) => {
+    const text = [
+      runText(step.content),
+      ...(step.nestedContent || []).map((n) => runText(n.content)),
+      ...(step.additionalContent || []).map(runText),
+    ].join('\n');
+    for (const m of text.matchAll(pattern)) {
+      const name = m[1].replace(LEADING_VERBS, '').trim();
+      if (name.length < 8 || name.length > 35) continue;
+      // Prose glue, not a name: "Ferox and bank", "Khazard to bank",
+      // and verb-stripped leftovers that no longer start capitalized.
+      if (/^[a-z]/.test(name)) continue;
+      if (/\s(?:and|to|then|or)\s/.test(name)) continue;
+      if (/^(?:Now|Then|Next)\s/.test(name)) continue;
+      found.set(name, (found.get(name) || 0) + 1);
+    }
+  })));
+  return [...found.keys()].sort();
+}
+
 const questMode = process.argv.includes('--quests');
 const locationMode = process.argv.includes('--locations');
+const linkMode = process.argv.includes('--links');
+const poiMode = process.argv.includes('--pois');
+
+// In link mode the wiki page differs from the display text; everywhere
+// else they're the same string.
+const linkPages = linkMode ? linkCandidates() : new Map();
 const names = questMode ? await listQuestTitles()
   : locationMode ? locationCandidates()
+  : linkMode ? [...linkPages.keys()].sort()
+  : poiMode ? poiCandidates()
   : [...mentions.keys()].sort();
 console.log(questMode
   ? `Found ${names.length} pages in the wiki's quest category.`
   : locationMode
     ? `Found ${names.length} location candidates (guide phrases + curated list).`
-    : `Found ${names.length} distinct "talk to" names in the guide.`);
+    : linkMode
+      ? `Found ${names.length} wiki-linked names in the guide.`
+      : poiMode
+        ? `Found ${names.length} POI-suffix phrases in the guide.`
+        : `Found ${names.length} distinct "talk to" names in the guide.`);
 
 if (process.argv.includes('--dry-run')) {
-  names.forEach((n) => console.log(`  ${n}`));
+  names.forEach((n) => console.log(linkMode ? `  ${n} -> ${linkPages.get(n)}` : `  ${n}`));
   process.exit(0);
 }
 
@@ -144,6 +240,12 @@ async function fetchCoords(name) {
   const json = await res.json();
   const wikitext = json?.parse?.wikitext?.['*'];
   if (!wikitext) return null;
+
+  // A redirect to a "Foo/Bar" subpage means we landed on a listing
+  // ("Falador farming patch" -> "Farming/Patch locations") whose first
+  // map is some OTHER place entirely. Better no coords than wrong ones.
+  const finalTitle = json?.parse?.title || '';
+  if (finalTitle !== name && finalTitle.includes('/')) return null;
 
   // Quest pages: {{Quest details|...|startmap = 3210,3222,plane:1|...}}
   const start = wikitext.match(/startmap\s*=\s*(\d{3,5}),\s*(\d{3,5})(?:,\s*plane:(\d))?/);
@@ -159,10 +261,21 @@ async function fetchCoords(name) {
   //   {{Map|name=...|3208,3226|3213,3226|plane=1}}     (positional pairs)
   //   {{Map|x=3210|y=3495|plane=0|r=3}}                (named params)
   //   {{NPC map|x=3222|y=3472|r=3}}                    (different template)
-  const tpl = wikitext.match(/\{\{(?:NPC[ _]map|Object[ _]map|Map)\s*\|([^{}]*)\}\}/i);
-  if (!tpl) return null;
-  const body = tpl[1];
+  // A page can carry several. Prefer the first SURFACE one (y < 8000):
+  // dungeon pages often lead with the underground map while a later
+  // "entrance" map is where navigation should actually point.
+  const templates = [...wikitext.matchAll(/\{\{(?:NPC[ _]map|Object[ _]map|Map)\s*\|([^{}]*)\}\}/gi)];
+  let fallback = null;
+  for (const tpl of templates) {
+    const coords = parseMapBody(tpl[1]);
+    if (!coords) continue;
+    if (coords.y < 8000) return coords;
+    fallback = fallback || coords;
+  }
+  return fallback;
+}
 
+function parseMapBody(body) {
   let x;
   let y;
   const xm = body.match(/(?:^|\|)\s*x\s*=\s*(\d{3,5})/i);
@@ -195,7 +308,17 @@ for (const name of names) {
   }
   await sleep(REQUEST_DELAY_MS);
   try {
-    const coords = await fetchCoords(name);
+    // Link mode knows the exact page; other modes look the name up as-is.
+    let coords = await fetchCoords(linkMode ? linkPages.get(name) : name);
+    if (!coords && poiMode) {
+      // The wiki titles POIs in Title Case ("Shayzien Agility Course");
+      // the guide writes them in prose case. Retry titled.
+      const titled = name.replace(/\b[a-z]/g, (c) => c.toUpperCase());
+      if (titled !== name) {
+        await sleep(REQUEST_DELAY_MS);
+        coords = await fetchCoords(titled);
+      }
+    }
     if (!coords) {
       misses.push(name);
       continue;
