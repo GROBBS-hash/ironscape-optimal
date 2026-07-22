@@ -57,6 +57,21 @@ public class GoalDetectorTest
 	}
 
 	@Test
+	public void herbCountsAsHerbloreNotAnItem()
+	{
+		// Oziris writes "UNTIL 77 herb" — a level target, not 77 herbs.
+		Guide guide = guideWithSubTexts(
+			"Use every book and lamp on Herblore UNTIL 77 herb, after that use them on agility");
+
+		GoalDetector.Goals goals = GoalDetector.detect(guide);
+
+		assertTrue(goals.getItemGoals().isEmpty());
+		assertEquals(1, goals.getSkillLevelGoals().size());
+		assertEquals(net.runelite.api.Skill.HERBLORE, goals.getSkillLevelGoals().get(0).getSkill());
+		assertEquals(77, goals.getSkillLevelGoals().get(0).getLevel());
+	}
+
+	@Test
 	public void agilityLapAndLeadingConnectiveProduceActionGoals()
 	{
 		Guide guide = guideWithSubTexts(

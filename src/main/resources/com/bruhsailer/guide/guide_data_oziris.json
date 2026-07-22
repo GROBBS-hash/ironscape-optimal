@@ -61,7 +61,9 @@
                 }
               ],
               "metadata": {
-                "location": "Lumbridge"
+                "location": "Lumbridge",
+                "quest": "X Marks the Spot",
+                "questStatus": "start"
               }
             },
             {
@@ -105,7 +107,9 @@
                 }
               ],
               "metadata": {
-                "location": "Lumbridge Castle"
+                "location": "Lumbridge Castle",
+                "quest": "Rune Mysteries",
+                "questStatus": "start"
               }
             },
             {
@@ -243,7 +247,9 @@
                 }
               ],
               "metadata": {
-                "location": "Lumbridge"
+                "location": "Lumbridge",
+                "quest": "The Restless Ghost",
+                "questStatus": "start"
               }
             },
             {
@@ -397,7 +403,9 @@
                 ]
               ],
               "metadata": {
-                "location": "Draynor Village"
+                "location": "Draynor Village",
+                "quest": "X Marks the Spot",
+                "questStatus": "complete"
               }
             },
             {
@@ -440,7 +448,9 @@
                 }
               ],
               "metadata": {
-                "location": "Falador"
+                "location": "Falador",
+                "quest": "The Knight's Sword",
+                "questStatus": "start"
               }
             },
             {
@@ -518,7 +528,9 @@
                 }
               ],
               "metadata": {
-                "location": "Port Khazard"
+                "location": "Port Khazard",
+                "quest": "Monk's Friend",
+                "questStatus": "complete"
               }
             },
             {
@@ -584,7 +596,9 @@
                 }
               ],
               "metadata": {
-                "location": "Ardougne"
+                "location": "Ardougne",
+                "quest": "Sheep Herder",
+                "questStatus": "complete"
               }
             },
             {
@@ -616,7 +630,9 @@
                 ]
               ],
               "metadata": {
-                "location": "Ardougne"
+                "location": "Ardougne",
+                "quest": "Sea Slug",
+                "questStatus": "complete"
               }
             },
             {
@@ -716,7 +732,9 @@
                 }
               ],
               "metadata": {
-                "location": "North of Ardougne"
+                "location": "North of Ardougne",
+                "quest": "Dwarf Cannon",
+                "questStatus": "start"
               }
             },
             {
@@ -759,7 +777,9 @@
                 }
               ],
               "metadata": {
-                "location": "Barbarian Assault"
+                "location": "Barbarian Assault",
+                "quest": "Alfred Grimhand's Barcrawl",
+                "questStatus": "start"
               }
             },
             {
@@ -770,7 +790,9 @@
                 }
               ],
               "metadata": {
-                "location": "Baxtorian Falls"
+                "location": "Baxtorian Falls",
+                "quest": "Waterfall Quest",
+                "questStatus": "start"
               }
             },
             {
@@ -857,7 +879,9 @@
                 }
               ],
               "metadata": {
-                "location": "Ardougne"
+                "location": "Ardougne",
+                "quest": "Plague City",
+                "questStatus": "complete"
               }
             },
             {
@@ -889,7 +913,9 @@
                 }
               ],
               "metadata": {
-                "location": "Varrock"
+                "location": "Varrock",
+                "quest": "Daddy's Home",
+                "questStatus": "complete"
               }
             },
             {
@@ -1084,7 +1110,9 @@
                 ]
               ],
               "metadata": {
-                "location": "Port Sarim"
+                "location": "Port Sarim",
+                "quest": "Pandemonium",
+                "questStatus": "complete"
               }
             },
             {
@@ -1290,7 +1318,9 @@
                 }
               ],
               "metadata": {
-                "location": "Varrock"
+                "location": "Varrock",
+                "quest": "Gertrude's Cat",
+                "questStatus": "start"
               }
             },
             {
@@ -1312,7 +1342,9 @@
                 }
               ],
               "metadata": {
-                "location": "Varrock"
+                "location": "Varrock",
+                "quest": "Romeo & Juliet",
+                "questStatus": "start"
               }
             },
             {
@@ -1323,7 +1355,9 @@
                 }
               ],
               "metadata": {
-                "location": "Varrock"
+                "location": "Varrock",
+                "quest": "Demon Slayer",
+                "questStatus": "start"
               }
             },
             {
@@ -1345,7 +1379,9 @@
                 }
               ],
               "metadata": {
-                "location": "Varrock"
+                "location": "Varrock",
+                "quest": "Shield of Arrav",
+                "questStatus": "complete"
               }
             },
             {
@@ -1577,7 +1613,9 @@
                 }
               ],
               "metadata": {
-                "location": "Varrock"
+                "location": "Varrock",
+                "quest": "Gertrude's Cat",
+                "questStatus": "complete"
               }
             },
             {
@@ -1718,7 +1756,9 @@
                 ]
               ],
               "metadata": {
-                "location": "Taverley"
+                "location": "Taverley",
+                "quest": "Witch's House",
+                "questStatus": "complete"
               }
             },
             {
@@ -1729,7 +1769,9 @@
                 }
               ],
               "metadata": {
-                "location": "Taverley"
+                "location": "Taverley",
+                "quest": "Druidic Ritual",
+                "questStatus": "complete"
               }
             },
             {
@@ -1773,7 +1815,9 @@
                 }
               ],
               "metadata": {
-                "location": "Rimmington"
+                "location": "Rimmington",
+                "quest": "Witch's Potion",
+                "questStatus": "complete"
               }
             },
             {
@@ -1871,7 +1915,9 @@
                 }
               ],
               "metadata": {
-                "location": "Falador"
+                "location": "Falador",
+                "quest": "The Knight's Sword",
+                "questStatus": "complete"
               }
             },
             {
@@ -1892,7 +1938,9 @@
                 ]
               ],
               "metadata": {
-                "location": "Giants' Foundry"
+                "location": "Giants' Foundry",
+                "quest": "Sleeping Giants",
+                "questStatus": "complete"
               }
             },
             {
@@ -1925,7 +1973,9 @@
                 }
               ],
               "metadata": {
-                "location": "Al Kharid"
+                "location": "Al Kharid",
+                "quest": "Prince Ali Rescue",
+                "questStatus": "start"
               }
             },
             {
@@ -1978,7 +2028,9 @@
                 ]
               ],
               "metadata": {
-                "location": "Desert"
+                "location": "Desert",
+                "quest": "The Tourist Trap",
+                "questStatus": "complete"
               }
             },
             {
@@ -2076,7 +2128,9 @@
                 }
               ],
               "metadata": {
-                "location": "Fight Arena"
+                "location": "Fight Arena",
+                "quest": "Fight Arena",
+                "questStatus": "complete"
               }
             },
             {
@@ -2097,7 +2151,9 @@
                 ]
               ],
               "metadata": {
-                "location": "Khazard Battlefield"
+                "location": "Khazard Battlefield",
+                "quest": "Tree Gnome Village",
+                "questStatus": "complete"
               }
             },
             {
@@ -2183,7 +2239,9 @@
                 }
               ],
               "metadata": {
-                "location": "Ardougne"
+                "location": "Ardougne",
+                "quest": "Hazeel Cult",
+                "questStatus": "complete"
               }
             },
             {
@@ -2215,7 +2273,9 @@
                 ]
               ],
               "metadata": {
-                "location": "Brimhaven"
+                "location": "Brimhaven",
+                "quest": "Tribal Totem",
+                "questStatus": "complete"
               }
             },
             {
@@ -2226,7 +2286,9 @@
                 }
               ],
               "metadata": {
-                "location": "Baxtorian Falls"
+                "location": "Baxtorian Falls",
+                "quest": "Dwarf Cannon",
+                "questStatus": "complete"
               }
             },
             {
@@ -2248,7 +2310,9 @@
                 }
               ],
               "metadata": {
-                "location": "Baxtorian Falls"
+                "location": "Baxtorian Falls",
+                "quest": "Waterfall Quest",
+                "questStatus": "complete"
               }
             },
             {
@@ -2312,7 +2376,9 @@
                 ]
               ],
               "metadata": {
-                "location": "Varlamore"
+                "location": "Varlamore",
+                "quest": "Children of the Sun",
+                "questStatus": "complete"
               }
             },
             {
@@ -2355,7 +2421,9 @@
                 }
               ],
               "metadata": {
-                "location": "Lumbridge"
+                "location": "Lumbridge",
+                "quest": "Cook's Assistant",
+                "questStatus": "complete"
               }
             },
             {
@@ -2366,7 +2434,9 @@
                 }
               ],
               "metadata": {
-                "location": "Lumbridge"
+                "location": "Lumbridge",
+                "quest": "Recipe for Disaster",
+                "questStatus": "start"
               }
             },
             {
@@ -2399,7 +2469,9 @@
                 }
               ],
               "metadata": {
-                "location": "Fred's Farm"
+                "location": "Fred's Farm",
+                "quest": "Sheep Shearer",
+                "questStatus": "complete"
               }
             },
             {
@@ -2485,7 +2557,9 @@
                 }
               ],
               "metadata": {
-                "location": "Draynor Village"
+                "location": "Draynor Village",
+                "quest": "Vampire Slayer",
+                "questStatus": "start"
               }
             },
             {
@@ -2518,7 +2592,9 @@
                 }
               ],
               "metadata": {
-                "location": "Wizard Tower"
+                "location": "Wizard Tower",
+                "quest": "Imp Catcher",
+                "questStatus": "complete"
               }
             },
             {
@@ -2539,7 +2615,9 @@
                 ]
               ],
               "metadata": {
-                "location": "Wizard Tower"
+                "location": "Wizard Tower",
+                "quest": "Rune Mysteries",
+                "questStatus": "complete"
               }
             },
             {
@@ -2615,7 +2693,9 @@
                 ]
               ],
               "metadata": {
-                "location": "Wilderness"
+                "location": "Wilderness",
+                "quest": "Enter the Abyss",
+                "questStatus": "start"
               }
             },
             {
@@ -2637,7 +2717,9 @@
                 }
               ],
               "metadata": {
-                "location": "Varrock"
+                "location": "Varrock",
+                "quest": "Demon Slayer",
+                "questStatus": "complete"
               }
             },
             {
@@ -2659,7 +2741,9 @@
                 }
               ],
               "metadata": {
-                "location": "Varrock"
+                "location": "Varrock",
+                "quest": "Romeo & Juliet",
+                "questStatus": "complete"
               }
             },
             {
@@ -2692,7 +2776,9 @@
                 }
               ],
               "metadata": {
-                "location": "Gnome Stronghold"
+                "location": "Gnome Stronghold",
+                "quest": "The Grand Tree",
+                "questStatus": "start"
               }
             },
             {
@@ -2780,7 +2866,9 @@
                 }
               ],
               "metadata": {
-                "location": "Port Sarim"
+                "location": "Port Sarim",
+                "quest": "Pirate's Treasure",
+                "questStatus": "start"
               }
             },
             {
@@ -2878,7 +2966,9 @@
                 ]
               ],
               "metadata": {
-                "location": "Gnome Stronghold"
+                "location": "Gnome Stronghold",
+                "quest": "The Grand Tree",
+                "questStatus": "complete"
               }
             },
             {
@@ -2922,7 +3012,9 @@
                 }
               ],
               "metadata": {
-                "location": "Ardougne"
+                "location": "Ardougne",
+                "quest": "Biohazard",
+                "questStatus": "start"
               }
             },
             {
@@ -2998,7 +3090,9 @@
                 }
               ],
               "metadata": {
-                "location": "Camelot"
+                "location": "Camelot",
+                "quest": "Merlin's Crystal",
+                "questStatus": "start"
               }
             },
             {
@@ -3053,7 +3147,9 @@
                 }
               ],
               "metadata": {
-                "location": "Catherby"
+                "location": "Catherby",
+                "quest": "Fishing Contest",
+                "questStatus": "start"
               }
             },
             {
@@ -3085,7 +3181,9 @@
                 }
               ],
               "metadata": {
-                "location": "Seers Village"
+                "location": "Seers Village",
+                "quest": "Murder Mystery",
+                "questStatus": "complete"
               }
             },
             {
@@ -3107,7 +3205,9 @@
                 }
               ],
               "metadata": {
-                "location": "Seers Village"
+                "location": "Seers Village",
+                "quest": "Fishing Contest",
+                "questStatus": "complete"
               }
             },
             {
@@ -3129,7 +3229,9 @@
                 }
               ],
               "metadata": {
-                "location": "Taverley"
+                "location": "Taverley",
+                "quest": "Doric's Quest",
+                "questStatus": "complete"
               }
             },
             {
@@ -3140,7 +3242,9 @@
                 }
               ],
               "metadata": {
-                "location": "Falador"
+                "location": "Falador",
+                "quest": "Pirate's Treasure",
+                "questStatus": "complete"
               }
             },
             {
@@ -3162,7 +3266,9 @@
                 }
               ],
               "metadata": {
-                "location": "Falador"
+                "location": "Falador",
+                "quest": "Black Knights' Fortress",
+                "questStatus": "complete"
               }
             },
             {
@@ -3173,7 +3279,9 @@
                 }
               ],
               "metadata": {
-                "location": "Falador"
+                "location": "Falador",
+                "quest": "Recruitment Drive",
+                "questStatus": "complete"
               }
             },
             {
@@ -3250,7 +3358,9 @@
                 }
               ],
               "metadata": {
-                "location": "Observatory"
+                "location": "Observatory",
+                "quest": "Observatory Quest",
+                "questStatus": "complete"
               }
             },
             {
@@ -3272,7 +3382,9 @@
                 }
               ],
               "metadata": {
-                "location": "Lumbridge"
+                "location": "Lumbridge",
+                "quest": "The Restless Ghost",
+                "questStatus": "complete"
               }
             },
             {
@@ -3283,7 +3395,9 @@
                 }
               ],
               "metadata": {
-                "location": "Lumbridge"
+                "location": "Lumbridge",
+                "quest": "The Lost Tribe",
+                "questStatus": "start"
               }
             },
             {
@@ -3327,7 +3441,9 @@
                 }
               ],
               "metadata": {
-                "location": "Varrock"
+                "location": "Varrock",
+                "quest": "Enter the Abyss",
+                "questStatus": "complete"
               }
             },
             {
@@ -3348,7 +3464,9 @@
                 ]
               ],
               "metadata": {
-                "location": "Wizard Tower"
+                "location": "Wizard Tower",
+                "quest": "Temple of the Eye",
+                "questStatus": "complete"
               }
             },
             {
@@ -3381,7 +3499,9 @@
                 }
               ],
               "metadata": {
-                "location": "Digsite"
+                "location": "Digsite",
+                "quest": "The Dig Site",
+                "questStatus": "complete"
               }
             },
             {
@@ -3392,7 +3512,9 @@
                 }
               ],
               "metadata": {
-                "location": "Champions Guild"
+                "location": "Champions Guild",
+                "quest": "Dragon Slayer I",
+                "questStatus": "start"
               }
             },
             {
@@ -3414,7 +3536,9 @@
                 }
               ],
               "metadata": {
-                "location": "Ardougne"
+                "location": "Ardougne",
+                "quest": "Biohazard",
+                "questStatus": "complete"
               }
             },
             {
@@ -3489,7 +3613,9 @@
                 ]
               ],
               "metadata": {
-                "location": "Karamja"
+                "location": "Karamja",
+                "quest": "Jungle Potion",
+                "questStatus": "complete"
               }
             },
             {
@@ -3518,7 +3644,9 @@
                 ]
               ],
               "metadata": {
-                "location": "Shilo Village"
+                "location": "Shilo Village",
+                "quest": "Shilo Village",
+                "questStatus": "complete"
               }
             },
             {
@@ -3540,7 +3668,9 @@
                 }
               ],
               "metadata": {
-                "location": "Camelot"
+                "location": "Camelot",
+                "quest": "Merlin's Crystal",
+                "questStatus": "complete"
               }
             },
             {
@@ -3551,7 +3681,9 @@
                 }
               ],
               "metadata": {
-                "location": "Camelot"
+                "location": "Camelot",
+                "quest": "Holy Grail",
+                "questStatus": "start"
               }
             },
             {
@@ -3583,7 +3715,9 @@
                 }
               ],
               "metadata": {
-                "location": "Seers Village"
+                "location": "Seers Village",
+                "quest": "Elemental Workshop I",
+                "questStatus": "complete"
               }
             },
             {
@@ -3616,7 +3750,9 @@
                 }
               ],
               "metadata": {
-                "location": "Goblin Village"
+                "location": "Goblin Village",
+                "quest": "Goblin Diplomacy",
+                "questStatus": "complete"
               }
             },
             {
@@ -3649,7 +3785,9 @@
                 }
               ],
               "metadata": {
-                "location": "Lumbridge"
+                "location": "Lumbridge",
+                "quest": "The Lost Tribe",
+                "questStatus": "complete"
               }
             },
             {
@@ -3676,7 +3814,9 @@
                 }
               ],
               "metadata": {
-                "location": "Al Kharid"
+                "location": "Al Kharid",
+                "quest": "The Feud",
+                "questStatus": "start"
               }
             },
             {
@@ -3738,7 +3878,9 @@
                 ]
               ],
               "metadata": {
-                "location": "Pollnivneach"
+                "location": "Pollnivneach",
+                "quest": "The Feud",
+                "questStatus": "complete"
               }
             },
             {
@@ -3996,7 +4138,9 @@
                 ]
               ],
               "metadata": {
-                "location": "Uzer"
+                "location": "Uzer",
+                "quest": "The Golem",
+                "questStatus": "start"
               }
             },
             {
@@ -4017,7 +4161,9 @@
                 ]
               ],
               "metadata": {
-                "location": "Uzer"
+                "location": "Uzer",
+                "quest": "The Golem",
+                "questStatus": "complete"
               }
             },
             {
@@ -4048,7 +4194,9 @@
                 ]
               ],
               "metadata": {
-                "location": "Uzer"
+                "location": "Uzer",
+                "quest": "Shadow of the Storm",
+                "questStatus": "complete"
               }
             },
             {
@@ -4245,7 +4393,9 @@
                 }
               ],
               "metadata": {
-                "location": "Varrock"
+                "location": "Varrock",
+                "quest": "Priest in Peril",
+                "questStatus": "start"
               }
             },
             {
@@ -4267,7 +4417,9 @@
                 }
               ],
               "metadata": {
-                "location": "Varrock"
+                "location": "Varrock",
+                "quest": "Rag and Bone Man",
+                "questStatus": "start"
               }
             },
             {
@@ -4278,7 +4430,9 @@
                 }
               ],
               "metadata": {
-                "location": "Morytania"
+                "location": "Morytania",
+                "quest": "Priest in Peril",
+                "questStatus": "complete"
               }
             },
             {
@@ -4299,7 +4453,9 @@
                 ]
               ],
               "metadata": {
-                "location": "Morytania"
+                "location": "Morytania",
+                "quest": "Nature Spirit",
+                "questStatus": "complete"
               }
             },
             {
@@ -4331,7 +4487,9 @@
                 ]
               ],
               "metadata": {
-                "location": "Canifis"
+                "location": "Canifis",
+                "quest": "Creature of Fenkenstrain",
+                "questStatus": "complete"
               }
             },
             {
@@ -4417,7 +4575,9 @@
                 ]
               ],
               "metadata": {
-                "location": "Seers Village"
+                "location": "Seers Village",
+                "quest": "Elemental Workshop II",
+                "questStatus": "complete"
               }
             },
             {
@@ -4472,7 +4632,9 @@
                 }
               ],
               "metadata": {
-                "location": "Lumbridge Swamp"
+                "location": "Lumbridge Swamp",
+                "quest": "Lost City",
+                "questStatus": "start"
               }
             },
             {
@@ -4494,7 +4656,9 @@
                 }
               ],
               "metadata": {
-                "location": "Draynor Manor"
+                "location": "Draynor Manor",
+                "quest": "Ernest the Chicken",
+                "questStatus": "complete"
               }
             },
             {
@@ -4549,7 +4713,9 @@
                 }
               ],
               "metadata": {
-                "location": "Entrana"
+                "location": "Entrana",
+                "quest": "Lost City",
+                "questStatus": "complete"
               }
             },
             {
@@ -4570,7 +4736,9 @@
                 ]
               ],
               "metadata": {
-                "location": "Draynor"
+                "location": "Draynor",
+                "quest": "Fairytale I - Growing Pains",
+                "questStatus": "start"
               }
             },
             {
@@ -4593,7 +4761,9 @@
                 ]
               ],
               "metadata": {
-                "location": "Zanaris"
+                "location": "Zanaris",
+                "quest": "Fairytale I - Growing Pains",
+                "questStatus": "complete"
               }
             },
             {
@@ -4604,7 +4774,9 @@
                 }
               ],
               "metadata": {
-                "location": "Draynor"
+                "location": "Draynor",
+                "quest": "Fairytale II - Cure a Queen",
+                "questStatus": "start"
               }
             },
             {
@@ -4637,7 +4809,9 @@
                 }
               ],
               "metadata": {
-                "location": "Draynor"
+                "location": "Draynor",
+                "quest": "Prince Ali Rescue",
+                "questStatus": "complete"
               }
             },
             {
@@ -4669,7 +4843,9 @@
                 ]
               ],
               "metadata": {
-                "location": "Lumbridge"
+                "location": "Lumbridge",
+                "quest": "Recipe for Disaster (Evil Dave)",
+                "questStatus": "start"
               }
             },
             {
@@ -4905,7 +5081,9 @@
                 }
               ],
               "metadata": {
-                "location": "Edgeville"
+                "location": "Edgeville",
+                "quest": "Dragon Slayer I",
+                "questStatus": "complete"
               }
             },
             {
@@ -4970,7 +5148,9 @@
                 }
               ],
               "metadata": {
-                "location": "Lumbridge"
+                "location": "Lumbridge",
+                "quest": "Recipe for Disaster (Evil Dave)",
+                "questStatus": "complete"
               }
             },
             {
@@ -4981,7 +5161,9 @@
                 }
               ],
               "metadata": {
-                "location": "Dorgesh-Kaan"
+                "location": "Dorgesh-Kaan",
+                "quest": "Death to the Dorgeshuun",
+                "questStatus": "complete"
               }
             },
             {
@@ -5035,7 +5217,9 @@
                 ]
               ],
               "metadata": {
-                "location": "Fisher King Realm"
+                "location": "Fisher King Realm",
+                "quest": "Holy Grail",
+                "questStatus": "complete"
               }
             },
             {
@@ -5056,7 +5240,9 @@
                 ]
               ],
               "metadata": {
-                "location": "Lighthouse"
+                "location": "Lighthouse",
+                "quest": "Horror from the Deep",
+                "questStatus": "complete"
               }
             },
             {
@@ -5098,7 +5284,9 @@
                 ]
               ],
               "metadata": {
-                "location": "Varlamore"
+                "location": "Varlamore",
+                "quest": "Twilight's Promise",
+                "questStatus": "complete"
               }
             },
             {
@@ -5151,7 +5339,9 @@
                 }
               ],
               "metadata": {
-                "location": "Draynor Manor"
+                "location": "Draynor Manor",
+                "quest": "Animal Magnetism",
+                "questStatus": "complete"
               }
             },
             {
@@ -5194,7 +5384,9 @@
                 ]
               ],
               "metadata": {
-                "location": "Nardah"
+                "location": "Nardah",
+                "quest": "Spirits of the Elid",
+                "questStatus": "complete"
               }
             },
             {
@@ -5233,7 +5425,9 @@
                 ]
               ],
               "metadata": {
-                "location": "Underground Pass"
+                "location": "Underground Pass",
+                "quest": "Underground Pass",
+                "questStatus": "complete"
               }
             },
             {
@@ -5374,7 +5568,9 @@
                 }
               ],
               "metadata": {
-                "location": "Port Phasmatys"
+                "location": "Port Phasmatys",
+                "quest": "Ghosts Ahoy",
+                "questStatus": "start"
               }
             },
             {
@@ -5396,7 +5592,9 @@
                 }
               ],
               "metadata": {
-                "location": "Port Phasmatys"
+                "location": "Port Phasmatys",
+                "quest": "Ghosts Ahoy",
+                "questStatus": "complete"
               }
             },
             {
@@ -5418,7 +5616,9 @@
                 }
               ],
               "metadata": {
-                "location": "Ape Atoll"
+                "location": "Ape Atoll",
+                "quest": "Monkey Madness I",
+                "questStatus": "complete"
               }
             },
             {
@@ -5429,7 +5629,9 @@
                 }
               ],
               "metadata": {
-                "location": "Falador"
+                "location": "Falador",
+                "quest": "Wanted!",
+                "questStatus": "complete"
               }
             },
             {
@@ -5471,7 +5673,9 @@
                 ]
               ],
               "metadata": {
-                "location": "Mort'ton"
+                "location": "Mort'ton",
+                "quest": "Shades of Mort'ton",
+                "questStatus": "complete"
               }
             },
             {
@@ -5493,7 +5697,9 @@
                 }
               ],
               "metadata": {
-                "location": "Various"
+                "location": "Various",
+                "quest": "Heroes' Quest",
+                "questStatus": "complete"
               }
             },
             {
@@ -5504,7 +5710,9 @@
                 }
               ],
               "metadata": {
-                "location": "Rellekka"
+                "location": "Rellekka",
+                "quest": "The Fremennik Trials",
+                "questStatus": "complete"
               }
             },
             {
@@ -5515,7 +5723,9 @@
                 }
               ],
               "metadata": {
-                "location": "Miscellania"
+                "location": "Miscellania",
+                "quest": "Throne of Miscellania",
+                "questStatus": "complete"
               }
             },
             {
@@ -5526,7 +5736,9 @@
                 }
               ],
               "metadata": {
-                "location": "Miscellania"
+                "location": "Miscellania",
+                "quest": "Royal Trouble",
+                "questStatus": "complete"
               }
             },
             {
@@ -5590,7 +5802,9 @@
                 }
               ],
               "metadata": {
-                "location": "Varrock"
+                "location": "Varrock",
+                "quest": "Bone Voyage",
+                "questStatus": "complete"
               }
             },
             {
@@ -5666,7 +5880,9 @@
                 ]
               ],
               "metadata": {
-                "location": "Lumbridge Swamp"
+                "location": "Lumbridge Swamp",
+                "quest": "Tears of Guthix",
+                "questStatus": "complete"
               }
             },
             {
@@ -5677,7 +5893,9 @@
                 }
               ],
               "metadata": {
-                "location": "Keldagrim"
+                "location": "Keldagrim",
+                "quest": "The Giant Dwarf",
+                "questStatus": "start"
               }
             },
             {
@@ -5949,7 +6167,9 @@
                 ]
               ],
               "metadata": {
-                "location": "Keldagrim"
+                "location": "Keldagrim",
+                "quest": "The Giant Dwarf",
+                "questStatus": "complete"
               }
             },
             {
@@ -5981,7 +6201,9 @@
                 ]
               ],
               "metadata": {
-                "location": "Keldagrim"
+                "location": "Keldagrim",
+                "quest": "Forgettable Tale...",
+                "questStatus": "complete"
               }
             },
             {
@@ -5992,7 +6214,9 @@
                 }
               ],
               "metadata": {
-                "location": "Varrock"
+                "location": "Varrock",
+                "quest": "Garden of Tranquility",
+                "questStatus": "complete"
               }
             },
             {
@@ -6013,7 +6237,9 @@
                 ]
               ],
               "metadata": {
-                "location": "Entrana"
+                "location": "Entrana",
+                "quest": "Enlightened Journey",
+                "questStatus": "start"
               }
             },
             {
@@ -6045,7 +6271,9 @@
                 ]
               ],
               "metadata": {
-                "location": "Gnome Stronghold"
+                "location": "Gnome Stronghold",
+                "quest": "The Eyes of Glouphrie",
+                "questStatus": "complete"
               }
             },
             {
@@ -6109,7 +6337,9 @@
                 ]
               ],
               "metadata": {
-                "location": "McGrubor's Wood"
+                "location": "McGrubor's Wood",
+                "quest": "Temple of Ikov",
+                "questStatus": "complete"
               }
             },
             {
@@ -6130,7 +6360,9 @@
                 ]
               ],
               "metadata": {
-                "location": "Entrana"
+                "location": "Entrana",
+                "quest": "Enlightened Journey",
+                "questStatus": "complete"
               }
             },
             {
@@ -6258,7 +6490,9 @@
                 }
               ],
               "metadata": {
-                "location": "Various"
+                "location": "Various",
+                "quest": "Troll Stronghold",
+                "questStatus": "complete"
               }
             },
             {
@@ -6576,7 +6810,9 @@
                 ]
               ],
               "metadata": {
-                "location": "Isafdar"
+                "location": "Isafdar",
+                "quest": "Regicide",
+                "questStatus": "complete"
               }
             },
             {
@@ -6587,7 +6823,9 @@
                 }
               ],
               "metadata": {
-                "location": "Yanille"
+                "location": "Yanille",
+                "quest": "Hand in the Sand",
+                "questStatus": "complete"
               }
             }
           ]
@@ -6613,7 +6851,8 @@
                 ]
               ],
               "metadata": {
-                "location": "Various"
+                "location": "Various",
+                "quest": "Recipe for Disaster"
               }
             },
             {
@@ -6698,7 +6937,9 @@
                 ]
               ],
               "metadata": {
-                "location": "Varlamore"
+                "location": "Varlamore",
+                "quest": "Perilous Moons",
+                "questStatus": "complete"
               }
             },
             {
@@ -6719,7 +6960,9 @@
                 ]
               ],
               "metadata": {
-                "location": "Various"
+                "location": "Various",
+                "quest": "Defender of Varrock",
+                "questStatus": "complete"
               }
             },
             {
@@ -6740,7 +6983,9 @@
                 ]
               ],
               "metadata": {
-                "location": "Sophanem"
+                "location": "Sophanem",
+                "quest": "Beneath Cursed Sands",
+                "questStatus": "complete"
               }
             },
             {
@@ -6761,7 +7006,9 @@
                 ]
               ],
               "metadata": {
-                "location": "Varlamore"
+                "location": "Varlamore",
+                "quest": "At First Light",
+                "questStatus": "complete"
               }
             },
             {
@@ -6782,7 +7029,9 @@
                 ]
               ],
               "metadata": {
-                "location": "Braindeath Island"
+                "location": "Braindeath Island",
+                "quest": "Rum Deal",
+                "questStatus": "complete"
               }
             },
             {
@@ -6793,7 +7042,9 @@
                 }
               ],
               "metadata": {
-                "location": "Mos Le'Harmless"
+                "location": "Mos Le'Harmless",
+                "quest": "Cabin Fever",
+                "questStatus": "complete"
               }
             },
             {
@@ -6804,7 +7055,9 @@
                 }
               ],
               "metadata": {
-                "location": "Various"
+                "location": "Various",
+                "quest": "One Small Favour",
+                "questStatus": "complete"
               }
             },
             {
@@ -6815,7 +7068,9 @@
                 }
               ],
               "metadata": {
-                "location": "Yanille"
+                "location": "Yanille",
+                "quest": "Watchtower",
+                "questStatus": "complete"
               }
             },
             {
@@ -6900,7 +7155,9 @@
                 }
               ],
               "metadata": {
-                "location": "Trollheim"
+                "location": "Trollheim",
+                "quest": "Eadgar's Ruse",
+                "questStatus": "complete"
               }
             },
             {
@@ -6911,7 +7168,9 @@
                 }
               ],
               "metadata": {
-                "location": "Trollheim"
+                "location": "Trollheim",
+                "quest": "My Arm's Big Adventure",
+                "questStatus": "complete"
               }
             },
             {
@@ -6932,7 +7191,9 @@
                 ]
               ],
               "metadata": {
-                "location": "Various"
+                "location": "Various",
+                "quest": "Desert Treasure",
+                "questStatus": "complete"
               }
             },
             {
@@ -6963,7 +7224,9 @@
                 ]
               ],
               "metadata": {
-                "location": "Lumbridge"
+                "location": "Lumbridge",
+                "quest": "Recipe for Disaster",
+                "questStatus": "complete"
               }
             }
           ]
@@ -7092,7 +7355,9 @@
                 ]
               ],
               "metadata": {
-                "location": "Various"
+                "location": "Various",
+                "quest": "Lunar Diplomacy",
+                "questStatus": "complete"
               }
             },
             {
@@ -7264,7 +7529,9 @@
                 ]
               ],
               "metadata": {
-                "location": "Weiss"
+                "location": "Weiss",
+                "quest": "Making Friends with My Arm",
+                "questStatus": "complete"
               }
             },
             {
@@ -7286,7 +7553,9 @@
                 }
               ],
               "metadata": {
-                "location": "Lunar Isle"
+                "location": "Lunar Isle",
+                "quest": "Dream Mentor",
+                "questStatus": "complete"
               }
             },
             {
@@ -7458,7 +7727,9 @@
                 ]
               ],
               "metadata": {
-                "location": "Prifddinas"
+                "location": "Prifddinas",
+                "quest": "Song of the Elves",
+                "questStatus": "complete"
               }
             },
             {
@@ -7512,7 +7783,9 @@
                 }
               ],
               "metadata": {
-                "location": "Varrock"
+                "location": "Varrock",
+                "quest": "Dragon Slayer II",
+                "questStatus": "complete"
               }
             },
             {
@@ -7713,7 +7986,9 @@
                 ]
               ],
               "metadata": {
-                "location": "Various"
+                "location": "Various",
+                "quest": "While Guthix Sleeps",
+                "questStatus": "complete"
               }
             },
             {
@@ -7734,7 +8009,9 @@
                 ]
               ],
               "metadata": {
-                "location": "Various"
+                "location": "Various",
+                "quest": "Secrets of the North",
+                "questStatus": "complete"
               }
             },
             {
@@ -7776,7 +8053,9 @@
                 ]
               ],
               "metadata": {
-                "location": "Various"
+                "location": "Various",
+                "quest": "Desert Treasure II",
+                "questStatus": "complete"
               }
             },
             {
@@ -8059,7 +8338,9 @@
                 ]
               ],
               "metadata": {
-                "location": "Various"
+                "location": "Various",
+                "quest": "Prying Times",
+                "questStatus": "complete"
               }
             },
             {
@@ -8101,7 +8382,9 @@
                 ]
               ],
               "metadata": {
-                "location": "Various"
+                "location": "Various",
+                "quest": "Current Affairs",
+                "questStatus": "complete"
               }
             },
             {
@@ -8143,7 +8426,9 @@
                 ]
               ],
               "metadata": {
-                "location": "Various"
+                "location": "Various",
+                "quest": "Troubled Tortugans",
+                "questStatus": "complete"
               }
             },
             {
@@ -8164,7 +8449,9 @@
                 ]
               ],
               "metadata": {
-                "location": "Various"
+                "location": "Various",
+                "quest": "The Red Reef",
+                "questStatus": "complete"
               }
             },
             {

@@ -95,7 +95,7 @@ public class GuideLoader
 						ci, si, ti, allSteps.size(),
 						plainText,
 						content,
-						buildSubSteps(id, content, nested),
+						buildSubSteps(id, content, nested, variant.isAtomicSteps()),
 						nested,
 						convertParagraphs(rawStep.additionalContent),
 						rawStep.metadata == null
@@ -157,10 +157,20 @@ public class GuideLoader
 	 * One tickable sub-step per sentence of the main paragraph, then one
 	 * per nested bullet. Falls back to a single sub-step covering the whole
 	 * step if splitting somehow yields nothing.
+	 *
+	 * Atomic-step guides (see GuideVariant#atomicSteps) skip the splitter:
+	 * the whole step is ONE action by construction, so it gets exactly one
+	 * sub-step and the panel mirrors the source guide's own step list.
 	 */
-	private static List<SubStep> buildSubSteps(String parentId, List<TextRun> content, List<NestedBlock> nested)
+	private static List<SubStep> buildSubSteps(String parentId, List<TextRun> content,
+		List<NestedBlock> nested, boolean atomicSteps)
 	{
 		List<SubStep> subs = new ArrayList<>();
+		if (atomicSteps)
+		{
+			addSubStep(subs, parentId, 0, content);
+			return Collections.unmodifiableList(subs);
+		}
 		for (List<TextRun> sentence : SentenceSplitter.split(content))
 		{
 			addSubStep(subs, parentId, 0, sentence);

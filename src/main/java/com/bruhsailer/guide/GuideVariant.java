@@ -17,12 +17,20 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor // Lombok: generates the constructor taking the two fields below
 public enum GuideVariant
 {
-	MAIN("BRUHsailer", "guide_data.json"),
-	OZIRIS("Ironman Efficiency (Oziris)", "guide_data_oziris.json");
+	MAIN("BRUHsailer", "guide_data.json", false),
+	OZIRIS("Ironman Efficiency (Oziris)", "guide_data_oziris.json", true);
 
 	/** Name shown to the user in the panel. */
 	private final String displayName;
 
 	/** Bundled resource file next to GuideLoader.class on the classpath. */
 	private final String resourceName;
+
+	/**
+	 * True when the guide's authors already write ONE action per step
+	 * (Oziris) — each step becomes a single tickbox, exactly mirroring
+	 * the source. False for prose guides (BRUHsailer), whose paragraphs
+	 * the SentenceSplitter breaks into tickable clauses.
+	 */
+	private final boolean atomicSteps;
 }
