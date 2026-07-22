@@ -116,10 +116,32 @@ function extractSteps(payload) {
 // they render without becoming tickboxes.
 // ---------------------------------------------------------------------
 
+// Every field the site currently ships. An unknown field means the site
+// grew new data we'd silently drop — warn so the scraper gets taught.
+const KNOWN_STEP_KEYS = new Set(['id', 'text', 'location', 'note', 'quest', 'questStatus',
+  'skillGoal', 'enhanced', 'items', 'links', 'hcim', 'updateNote', 'phase', 'newQuest',
+  'sailingRelated']);
+
+// The site's green "Modern Alternative" callout color, as RawColor floats.
+const CALLOUT_GREEN = { r: 0.298, g: 0.686, b: 0.31 };
+
 function toRawStep(step) {
+  for (const key of Object.keys(step)) {
+    if (!KNOWN_STEP_KEYS.has(key)) {
+      console.warn(`  ! step ${step.id} has unknown field "${key}" — content dropped, teach the scraper`);
+    }
+  }
   const additional = [];
   if (step.note) {
     additional.push([{ text: 'Note: ' + step.note, formatting: { italic: true } }]);
+  }
+  if (step.updateNote) {
+    // The site's collapsible "Modern Alternative" block — often corrects
+    // outdated advice, vital for new players, so always visible here.
+    additional.push([{
+      text: 'Modern alternative: ' + step.updateNote,
+      formatting: { italic: true, color: CALLOUT_GREEN },
+    }]);
   }
   if (step.hcim) {
     additional.push([{ text: '⚠ HCIM warning — see note above.', formatting: { italic: true } }]);
@@ -131,11 +153,15 @@ function toRawStep(step) {
     }]);
   }
   // Author-structured tags ride along as metadata; the panel renders
-  // them as the same location/quest chips the website shows.
+  // location/quest as the same chips the website shows, the rest is
+  // kept for future use.
   const metadata = {};
   if (step.location) metadata.location = step.location;
   if (step.quest) metadata.quest = step.quest;
   if (step.questStatus) metadata.questStatus = step.questStatus;
+  if (step.phase) metadata.phase = String(step.phase);
+  if (step.newQuest) metadata.newQuest = String(step.newQuest);
+  if (step.sailingRelated) metadata.sailingRelated = String(step.sailingRelated);
   return {
     content: [{ text: step.text, formatting: {} }],
     ...(additional.length ? { additionalContent: additional } : {}),
