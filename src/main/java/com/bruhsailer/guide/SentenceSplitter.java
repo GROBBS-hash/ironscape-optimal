@@ -16,6 +16,9 @@ import java.util.regex.Pattern;
  *  2. clauses — cut sentences at ", " and "; ", because the guide writes
  *     action lists that way ("Grab a knife, 2 buckets, cabbage"). Commas
  *     inside parentheses do NOT split, so "(hop once)" stays attached.
+ *     A subordinate fragment ("While visiting Jennifer, ...") is not an
+ *     action on its own — it stays glued to the clause it modifies
+ *     instead of becoming its own tickbox.
  *
  * Heuristic, not perfect: an abbreviation before a number ("incl. 401")
  * can over-split — the cost is only cosmetic granularity, so we accept it.
@@ -24,6 +27,17 @@ final class SentenceSplitter
 {
 	private static final Pattern SENTENCE_BOUNDARY =
 		Pattern.compile("(?<=[.!?])\\s+(?=[\"(A-Z0-9])|\\n+");
+
+	/**
+	 * A comma segment starting like this is a subordinate fragment, not a
+	 * standalone action: "While visiting Jennifer", "if you have spare
+	 * gp", "once inside". It needs the neighbouring clause to mean
+	 * anything, so the comma next to it must not cut. Optional leading
+	 * connective ("and while...", "then once...") is looked through.
+	 */
+	private static final Pattern SUBORDINATE_OPENER = Pattern.compile(
+		"(?:(?:and|then|or|but|so)\\s+)?(?:while|whilst|when|whenever|once|after|before|if|unless|until)\\b.*",
+		Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 
 	/**
 	 * Fragments shorter than this (or with no letters/digits) merge into
@@ -70,8 +84,9 @@ final class SentenceSplitter
 	 */
 	private static void addClauses(List<int[]> ranges, String plain, int from, int to)
 	{
+		// Pass 1: every candidate comma/semicolon position at paren depth 0.
+		List<Integer> boundaries = new ArrayList<>();
 		int parenDepth = 0;
-		int clauseStart = from;
 		for (int i = from; i < to; i++)
 		{
 			char c = plain.charAt(i);
@@ -86,11 +101,43 @@ final class SentenceSplitter
 			else if (parenDepth == 0 && (c == ',' || c == ';')
 				&& i + 1 < to && Character.isWhitespace(plain.charAt(i + 1)))
 			{
-				addRange(ranges, plain, clauseStart, i); // the , or ; itself is dropped
-				clauseStart = i + 1;
+				boundaries.add(i);
+			}
+		}
+
+		// Pass 2: a boundary next to a subordinate SEGMENT does not cut.
+		// A subordinate glues to the clause it introduces ("While visiting
+		// Jennifer, buy shears" — no cut after "Jennifer"); one that ends
+		// the sentence instead glues backward ("buy shears, while visiting
+		// Jennifer" — no cut before "while"). Segments, not accumulated
+		// clauses: "After the quest, if you have gp, buy X" judges "if you
+		// have gp" at the second comma.
+		int clauseStart = from;
+		for (int k = 0; k < boundaries.size(); k++)
+		{
+			int cut = boundaries.get(k);
+			int segmentBefore = k == 0 ? from : boundaries.get(k - 1) + 1;
+			int segmentAfter = k + 1 < boundaries.size() ? boundaries.get(k + 1) : to;
+			boolean glueForward = isSubordinate(plain, segmentBefore, cut);
+			boolean glueBackward = k == boundaries.size() - 1
+				&& isSubordinate(plain, cut + 1, segmentAfter);
+			if (!glueForward && !glueBackward)
+			{
+				addRange(ranges, plain, clauseStart, cut); // the , or ; itself is dropped
+				clauseStart = cut + 1;
 			}
 		}
 		addRange(ranges, plain, clauseStart, to);
+	}
+
+	/** Does [from, to), ignoring leading whitespace, open with a subordinating conjunction? */
+	private static boolean isSubordinate(String plain, int from, int to)
+	{
+		while (from < to && Character.isWhitespace(plain.charAt(from)))
+		{
+			from++;
+		}
+		return SUBORDINATE_OPENER.matcher(plain.substring(from, to)).matches();
 	}
 
 	/** Adds [from, to) trimmed; merges trivial fragments (") ." etc.) into the previous range. */

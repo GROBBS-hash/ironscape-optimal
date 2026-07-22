@@ -140,6 +140,21 @@ public class GuideManifest
 		Set<String> currentIds = guide.getStepsById().keySet();
 
 		Map<String, String> remap = new LinkedHashMap<>();
+
+		// A step whose id (= text) DIDN'T change can still have different
+		// sub-steps than last time: our own clause splitter evolves. Its
+		// saved sub ticks are positional, so re-link them by fingerprint
+		// exactly like an edited step's. Matching by id needs no positional
+		// safety net — the id IS the match.
+		for (ManifestStep step : previous)
+		{
+			GuideStep same = guide.getStepsById().get(step.id);
+			if (same != null && step.subs != null && !step.subs.equals(subFingerprints(same)))
+			{
+				addSubRemap(remap, step, same);
+			}
+		}
+
 		int orphans = 0;
 		for (GuideChapter chapter : guide.getChapters())
 		{
@@ -214,7 +229,12 @@ public class GuideManifest
 					break;
 				}
 			}
-			remap.put(old.id + ":" + i, match);
+			// Identity mappings (same step id, same index) would be dead
+			// weight — an id the map doesn't know passes through anyway.
+			if (!match.equals(old.id + ":" + i))
+			{
+				remap.put(old.id + ":" + i, match);
+			}
 		}
 	}
 

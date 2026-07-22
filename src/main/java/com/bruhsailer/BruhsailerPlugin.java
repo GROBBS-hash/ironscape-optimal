@@ -204,6 +204,13 @@ public class BruhsailerPlugin extends Plugin
 	/** Step id -> its reviewed requirements (ALL must be met to auto-complete). */
 	private final Map<String, List<StepRequirement>> stepSkillRequirements = new HashMap<>();
 
+	/**
+	 * Sub id ("stepId:N") -> requirements ticking JUST that sub — used for
+	 * mid-quest checkpoints ("do the quest up to the orb" via a quest
+	 * progress varbit) inside steps that also hold unrelated errands.
+	 */
+	private final Map<String, List<StepRequirement>> subRequirements = new HashMap<>();
+
 	/** Quest goals by sub-step id, for the in-order evaluator. */
 	private final Map<String, GoalDetector.QuestGoal> questGoalBySub = new HashMap<>();
 
@@ -335,6 +342,13 @@ public class BruhsailerPlugin extends Plugin
 	 * counts are met.
 	 */
 	private final Map<String, List<GoalDetector.ItemGoal>> itemGoalsBySub = new LinkedHashMap<>();
+
+	/**
+	 * "subId|item" -> carried count when an acquisition ("buy X") sub first
+	 * became current. Ticking needs the count to RISE above this. Session
+	 * state only, cleared on shutdown and profile switch.
+	 */
+	private final Map<String, Integer> acquisitionBaseline = new HashMap<>();
 
 	/**
 	 * Ticks left before goal completions announce in chat. Login floods
@@ -520,12 +534,14 @@ public class BruhsailerPlugin extends Plugin
 		panel = null;
 		guides.clear();
 		stepSkillRequirements.clear();
+		subRequirements.clear();
 		questGoalBySub.clear();
 		itemGoalsBySub.clear();
 		actionGoalBySub.clear();
 		travelGoalSubs.clear();
 		interactionGoalSubs.clear();
 		countedGoalBySub.clear();
+		acquisitionBaseline.clear();
 		guideRemap = new HashMap<>();
 		lastXpBySkill.clear();
 		lastTickPosition = null;
@@ -561,6 +577,8 @@ public class BruhsailerPlugin extends Plugin
 	public void onProfileChanged(ProfileChanged event)
 	{
 		progressManager.invalidate();
+		// Baselines describe the OLD profile's inventory state.
+		acquisitionBaseline.clear();
 		// The new profile's saved progress may still use pre-refresh step
 		// ids; apply the same remap startUp applied (no-op if none).
 		progressManager.remapIds(GuideVariant.MAIN, guideRemap);
@@ -1186,6 +1204,18 @@ public class BruhsailerPlugin extends Plugin
 					break; // window shifted; rebuild it
 				}
 
+				// Sub-keyed requirements tick one sub: "do the quest up to
+				// the orb" completes off the quest's progress varbit while
+				// the step's other errands stay open. Monotonic game state
+				// = strong evidence, so anywhere in the window is fine.
+				List<StepRequirement> subReqs = subRequirements.get(current.sub.getId());
+				if (subReqs != null && requirementsMet(subReqs))
+				{
+					completeSubGoal(current.step, current.sub);
+					completedSomething = true;
+					break;
+				}
+
 				if (currentSubSatisfied(current.step, current.sub, i == 0,
 					current.step == frontierStep))
 				{
@@ -1301,9 +1331,32 @@ public class BruhsailerPlugin extends Plugin
 			}
 			for (GoalDetector.ItemGoal goal : itemGoals)
 			{
+				int carried = itemTracker.carriedCountOf(goal.getItemName());
+				// "buy shears from her shop" is a TRANSACTION: already
+				// carrying shears from three quests ago must not tick it.
+				// The first evaluation records how many you had when the
+				// sub became current; only gaining one after that counts.
+				// This runs BEFORE the quantity check so the baseline is
+				// captured while you still have too few.
+				if (goal.isAcquisition())
+				{
+					String key = sub.getId() + "|" + goal.getItemName();
+					Integer baseline = acquisitionBaseline.get(key);
+					if (baseline == null || carried < baseline)
+					{
+						// (Re)base — also downward, so banking the spares
+						// and then buying still registers as a gain.
+						acquisitionBaseline.put(key, carried);
+						baseline = carried;
+					}
+					if (carried <= baseline)
+					{
+						return false;
+					}
+				}
 				// Carried only: items sitting in the bank show an orange
 				// badge but do NOT tick the step for you.
-				if (itemTracker.carriedCountOf(goal.getItemName()) < goal.getQuantity())
+				if (carried < goal.getQuantity())
 				{
 					return false;
 				}
@@ -1491,10 +1544,19 @@ public class BruhsailerPlugin extends Plugin
 	private void rebuildStepRequirements()
 	{
 		stepSkillRequirements.clear();
+		subRequirements.clear();
 		annotationManager.allRequirements().forEach((stepId, requirementList) -> {
 			List<StepRequirement> parsed = new ArrayList<>();
 			for (com.bruhsailer.annotations.StepAnnotation.Requirement requires : requirementList)
 			{
+				if (requires.varbit != null || requires.varp != null)
+				{
+					if (requires.value != null)
+					{
+						parsed.add(new StepRequirement(null, requires.varbit, requires.varp, requires.value));
+					}
+					continue;
+				}
 				if (requires.skill == null || requires.level == null)
 				{
 					continue;
@@ -1519,7 +1581,16 @@ public class BruhsailerPlugin extends Plugin
 			}
 			if (!parsed.isEmpty())
 			{
-				stepSkillRequirements.put(stepId, parsed);
+				// "stepId:14" targets ONE sub-step; a bare step id
+				// completes the whole step when met.
+				if (stepId.indexOf(':') >= 0)
+				{
+					subRequirements.put(stepId, parsed);
+				}
+				else
+				{
+					stepSkillRequirements.put(stepId, parsed);
+				}
 			}
 		});
 	}
@@ -1530,7 +1601,15 @@ public class BruhsailerPlugin extends Plugin
 		for (StepRequirement requirement : requirements)
 		{
 			int have;
-			if (requirement.skill == null)
+			if (requirement.varbit != null)
+			{
+				have = client.getVarbitValue(requirement.varbit);
+			}
+			else if (requirement.varp != null)
+			{
+				have = client.getVarpValue(requirement.varp);
+			}
+			else if (requirement.skill == null)
 			{
 				Player me = client.getLocalPlayer();
 				if (me == null)
@@ -1543,7 +1622,7 @@ public class BruhsailerPlugin extends Plugin
 			{
 				have = client.getRealSkillLevel(requirement.skill);
 			}
-			if (have < requirement.level)
+			if (have < requirement.threshold)
 			{
 				return false;
 			}
@@ -1551,16 +1630,29 @@ public class BruhsailerPlugin extends Plugin
 		return true;
 	}
 
-	/** One reviewed condition: a skill level, or combat level when skill is null. */
+	/**
+	 * One reviewed condition: a skill level, combat level (skill null), or
+	 * a varbit/varp threshold — the latter detects mid-quest checkpoints
+	 * ("do the quest up to the orb": quest progress varbits only count up).
+	 */
 	private static class StepRequirement
 	{
 		final Skill skill;
-		final int level;
+		final Integer varbit;
+		final Integer varp;
+		final int threshold;
 
 		StepRequirement(Skill skill, int level)
 		{
+			this(skill, null, null, level);
+		}
+
+		StepRequirement(Skill skill, Integer varbit, Integer varp, int threshold)
+		{
 			this.skill = skill;
-			this.level = level;
+			this.varbit = varbit;
+			this.varp = varp;
+			this.threshold = threshold;
 		}
 	}
 

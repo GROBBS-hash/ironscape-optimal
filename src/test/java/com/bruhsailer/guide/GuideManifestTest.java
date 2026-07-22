@@ -204,6 +204,25 @@ public class GuideManifestTest
 	}
 
 	@Test
+	public void splitterChangeOnUneditedStepRelinksSubTicksById()
+	{
+		// The step's text (and so its id) is unchanged, but OUR clause
+		// splitter now cuts it differently: a clause merged away. Ticks
+		// must follow their text; the vanished clause's tick is dropped.
+		List<GuideManifest.ManifestStep> previous =
+			manifestWithSubs("same", "while visiting jennifer", "buy shears", "then visit styles");
+		Guide current = guideWithSubs("same", "while visiting jennifer, buy shears", "then visit styles");
+
+		Map<String, String> remap = GuideManifest.pairEditedSteps(previous, current);
+
+		assertNull(GuideManifest.remapId("same:0", remap));
+		assertNull(GuideManifest.remapId("same:1", remap));
+		assertEquals("same:1", GuideManifest.remapId("same:2", remap));
+		// untouched ids (identity) aren't in the map and pass through
+		assertEquals("other:0", GuideManifest.remapId("other:0", remap));
+	}
+
+	@Test
 	public void manifestFromBeforeFingerprintsCarriesSubIndexPositionally()
 	{
 		// A version-1 manifest has no sub fingerprints — the old (index
