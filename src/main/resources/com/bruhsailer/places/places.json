@@ -3666,6 +3666,330 @@
       "x": 3185,
       "y": 3440,
       "plane": 0
+    },
+    "aldarin": {
+      "display": "Aldarin",
+      "x": 1391,
+      "y": 2935,
+      "plane": 0
+    },
+    "alfonse": {
+      "display": "Alfonse",
+      "x": 2793,
+      "y": 3188,
+      "plane": 0
+    },
+    "ardy": {
+      "display": "Ardy",
+      "x": 2570,
+      "y": 3300,
+      "plane": 0
+    },
+    "ava": {
+      "display": "Ava",
+      "x": 3094,
+      "y": 3357,
+      "plane": 0
+    },
+    "bardur": {
+      "display": "Bardur",
+      "x": 1850,
+      "y": 4392,
+      "plane": 1
+    },
+    "benny": {
+      "display": "Benny",
+      "x": 3220,
+      "y": 3431,
+      "plane": 0
+    },
+    "bert": {
+      "display": "Bert",
+      "x": 2551,
+      "y": 3100,
+      "plane": 0
+    },
+    "blurberry": {
+      "display": "Blurberry",
+      "x": 2483,
+      "y": 3489,
+      "plane": 1
+    },
+    "chaeldar": {
+      "display": "Chaeldar",
+      "x": 2444,
+      "y": 4431,
+      "plane": 0
+    },
+    "crandor": {
+      "display": "Crandor",
+      "x": 2836,
+      "y": 3271,
+      "plane": 0
+    },
+    "diango": {
+      "display": "Diango",
+      "x": 3081,
+      "y": 3247,
+      "plane": 0
+    },
+    "draynor": {
+      "display": "Draynor",
+      "x": 3103,
+      "y": 3265,
+      "plane": 0
+    },
+    "dusuri's star shop": {
+      "display": "Dusuri's Star Shop",
+      "x": 3022,
+      "y": 3342,
+      "plane": 0
+    },
+    "eblis": {
+      "display": "Eblis",
+      "x": 3214,
+      "y": 2955,
+      "plane": 0
+    },
+    "elnock": {
+      "display": "Elnock",
+      "x": 2586,
+      "y": 4314,
+      "plane": 0
+    },
+    "fortunato": {
+      "display": "Fortunato",
+      "x": 3085,
+      "y": 3252,
+      "plane": 0
+    },
+    "gauss": {
+      "display": "Gauss",
+      "x": 2839,
+      "y": 10195,
+      "plane": 0
+    },
+    "gerrant": {
+      "display": "Gerrant",
+      "x": 3013,
+      "y": 3226,
+      "plane": 0
+    },
+    "gianne": {
+      "display": "Gianne",
+      "x": 2449,
+      "y": 3501,
+      "plane": 1
+    },
+    "harry": {
+      "display": "Harry",
+      "x": 2833,
+      "y": 3444,
+      "plane": 0
+    },
+    "heckel funch": {
+      "display": "Heckel Funch",
+      "x": 2493,
+      "y": 3488,
+      "plane": 1
+    },
+    "horvik": {
+      "display": "Horvik",
+      "x": 3230,
+      "y": 3437,
+      "plane": 0
+    },
+    "jatix": {
+      "display": "Jatix",
+      "x": 2899,
+      "y": 3429,
+      "plane": 0
+    },
+    "konar": {
+      "display": "Konar",
+      "x": 1309,
+      "y": 3785,
+      "plane": 0
+    },
+    "lady of the lake in taverly": {
+      "display": "Lady of the lake in Taverly",
+      "x": 2925,
+      "y": 3405,
+      "plane": 0
+    },
+    "leke": {
+      "display": "Leke",
+      "x": 1298,
+      "y": 3797,
+      "plane": 0
+    },
+    "lowe": {
+      "display": "Lowe",
+      "x": 3233,
+      "y": 3423,
+      "plane": 0
+    },
+    "mlm": {
+      "display": "MLM",
+      "x": 3744,
+      "y": 5664,
+      "plane": 0
+    },
+    "mazchna": {
+      "display": "Mazchna",
+      "x": 3511,
+      "y": 3509,
+      "plane": 0
+    },
+    "merlin": {
+      "display": "Merlin",
+      "x": 2767,
+      "y": 3501,
+      "plane": 1
+    },
+    "miltog": {
+      "display": "Miltog",
+      "x": 2721,
+      "y": 5322,
+      "plane": 0
+    },
+    "misc": {
+      "display": "Misc",
+      "x": 2560,
+      "y": 3870,
+      "plane": 0
+    },
+    "miscellania": {
+      "display": "Miscellania",
+      "x": 2560,
+      "y": 3870,
+      "plane": 0
+    },
+    "oldak": {
+      "display": "Oldak",
+      "x": 2704,
+      "y": 5366,
+      "plane": 0
+    },
+    "olivia": {
+      "display": "Olivia",
+      "x": 3079,
+      "y": 3250,
+      "plane": 0
+    },
+    "oziach": {
+      "display": "Oziach",
+      "x": 3070,
+      "y": 3517,
+      "plane": 0
+    },
+    "pollnivneach": {
+      "display": "Pollnivneach",
+      "x": 3358,
+      "y": 2974,
+      "plane": 0
+    },
+    "rasolo": {
+      "display": "Rasolo",
+      "x": 2535,
+      "y": 3431,
+      "plane": 0
+    },
+    "razmire": {
+      "display": "Razmire",
+      "x": 3489,
+      "y": 3296,
+      "plane": 0
+    },
+    "sarah": {
+      "display": "Sarah",
+      "x": 3036,
+      "y": 3294,
+      "plane": 0
+    },
+    "scavvo": {
+      "display": "Scavvo",
+      "x": 3192,
+      "y": 3354,
+      "plane": 1
+    },
+    "seers'": {
+      "display": "Seers'",
+      "x": 2710,
+      "y": 3485,
+      "plane": 0
+    },
+    "tempoross": {
+      "display": "Tempoross",
+      "x": 3035,
+      "y": 2850,
+      "plane": 0
+    },
+    "thessalia": {
+      "display": "Thessalia",
+      "x": 3206,
+      "y": 3416,
+      "plane": 0
+    },
+    "tithe": {
+      "display": "Tithe",
+      "x": 1796,
+      "y": 3505,
+      "plane": 0
+    },
+    "tob": {
+      "display": "ToB",
+      "x": 3663,
+      "y": 3219,
+      "plane": 0
+    },
+    "valaine": {
+      "display": "Valaine",
+      "x": 3192,
+      "y": 3359,
+      "plane": 1
+    },
+    "vannah": {
+      "display": "Vannah",
+      "x": 1763,
+      "y": 3594,
+      "plane": 0
+    },
+    "vannaka": {
+      "display": "Vannaka",
+      "x": 3147,
+      "y": 9914,
+      "plane": 0
+    },
+    "wgs": {
+      "display": "WGS",
+      "x": 2907,
+      "y": 3449,
+      "plane": 0
+    },
+    "wintertodt": {
+      "display": "Wintertodt",
+      "x": 1630,
+      "y": 3981,
+      "plane": 0
+    },
+    "wyson": {
+      "display": "Wyson",
+      "x": 3027,
+      "y": 3379,
+      "plane": 0
+    },
+    "zaff": {
+      "display": "Zaff",
+      "x": 3203,
+      "y": 3434,
+      "plane": 0
+    },
+    "the oracle": {
+      "display": "the oracle",
+      "x": 3011,
+      "y": 3501,
+      "plane": 0
     }
   }
 }
