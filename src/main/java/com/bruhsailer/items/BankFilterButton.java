@@ -67,22 +67,42 @@ public class BankFilterButton
 			BUTTON_SIZE - 6, BUTTON_SIZE - 6, BUTTON_X + 3, BUTTON_Y + 3);
 	}
 
+	/**
+	 * True right after our own toggle triggered a bank relayout — the
+	 * relayout fires the same search-toggle script the plugin watches to
+	 * turn the filter off when the PLAYER opens a real search. Without
+	 * this the button switches itself straight back off.
+	 */
+	private boolean selfToggle;
+
 	private void toggle()
 	{
 		if (active)
 		{
+			log.debug("bank filter: deactivated by button");
 			deactivate();
+			selfToggle = true;
 			bankSearch.reset(true);
 		}
 		else
 		{
+			log.debug("bank filter: activated");
 			active = true;
 			background.setSpriteId(SpriteID.Miscgraphics3.UNKNOWN_BUTTON_SQUARE_SMALL_SELECTED);
 			background.revalidate();
 			// Relayout: the bank re-runs its layout script, which now asks
 			// us which items to show.
+			selfToggle = true;
 			bankSearch.reset(true);
 		}
+	}
+
+	/** Consume the "that was us" marker; true = ignore this search-toggle event. */
+	public boolean consumeSelfToggle()
+	{
+		boolean was = selfToggle;
+		selfToggle = false;
+		return was;
 	}
 
 	/** Turn the filter off (e.g. the player clicked a real bank tab). */
