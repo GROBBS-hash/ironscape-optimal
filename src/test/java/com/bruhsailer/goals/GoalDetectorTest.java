@@ -57,6 +57,36 @@ public class GoalDetectorTest
 	}
 
 	@Test
+	public void prosePseudoQuantitiesAreNotItems()
+	{
+		Guide guide = guideWithSubTexts(
+			"Hug the fence and run west, make sure you always have at least 15 energy",
+			"Take out GP, Clue, air talisman and spade from the bank");
+
+		GoalDetector.Goals goals = GoalDetector.detect(guide);
+
+		// no "energy 0/15", no "out gp 0/1"
+		for (GoalDetector.ItemGoal goal : goals.getItemGoals())
+		{
+			assertFalse(goal.getItemName(), goal.getItemName().contains("energy"));
+			assertFalse(goal.getItemName(), goal.getItemName().startsWith("out"));
+		}
+	}
+
+	@Test
+	public void locationPhrasesEndItemNames()
+	{
+		Guide guide = guideWithSubTexts(
+			"Pick up 5 swamp tar around the swamp cave entrance");
+
+		GoalDetector.Goals goals = GoalDetector.detect(guide);
+
+		assertEquals(1, goals.getItemGoals().size());
+		assertEquals("swamp tar", goals.getItemGoals().get(0).getItemName());
+		assertEquals(5, goals.getItemGoals().get(0).getQuantity());
+	}
+
+	@Test
 	public void herbCountsAsHerbloreNotAnItem()
 	{
 		// Oziris writes "UNTIL 77 herb" — a level target, not 77 herbs.

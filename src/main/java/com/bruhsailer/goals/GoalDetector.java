@@ -38,9 +38,11 @@ public final class GoalDetector
 	private static final Pattern QUANTITY_NAME = Pattern.compile(
 		"(\\d[\\d,]*)\\s+([a-z][a-z'/ -]+)", Pattern.CASE_INSENSITIVE);
 
-	/** Words that end an item name ("110 logs AND bank them" -> "logs"). */
+	/** Words that end an item name ("110 logs AND bank them" -> "logs",
+	 *  "5 swamp tar AROUND the cave entrance" -> "swamp tar"). */
 	private static final Pattern NAME_TERMINATOR = Pattern.compile(
-		"\\s+(?:and|from|at|in|to|for|so|until|then|with|on|off|per)\\b.*|[(.,].*");
+		"\\s+(?:and|from|at|in|to|for|so|until|then|with|on|off|per"
+			+ "|around|near|along|inside|outside|behind|beside|under|by)\\b.*|[(.,].*");
 
 	/** "air/mind runes" — two alternatives sharing a suffix word. */
 	private static final Pattern COMPOUND_NAME = Pattern.compile(
@@ -112,7 +114,10 @@ public final class GoalDetector
 	private static final java.util.Set<String> NAME_REJECT_FIRST_WORD = java.util.Set.of(
 		"of", "the", "a", "an", "and", "or", "your", "more", "other", "extra",
 		"those", "these", "them", "that", "this", "it", "its", "each", "per",
-		"is", "are", "was", "if", "as", "so");
+		"is", "are", "was", "if", "as", "so",
+		// "at least 15 energy" is not 15 of an item called energy;
+		// "take OUT gp" is a phrasal verb, not an item called "out gp"
+		"energy", "out");
 
 	/**
 	 * Fragments starting with these are actions/prose, never list items —
