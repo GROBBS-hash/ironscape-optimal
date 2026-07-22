@@ -99,13 +99,16 @@ public class GoalDetectorTest
 	public void locationPhrasesEndItemNames()
 	{
 		Guide guide = guideWithSubTexts(
-			"Pick up 5 swamp tar around the swamp cave entrance");
+			"Pick up 5 swamp tar around the swamp cave entrance",
+			"Pick up 130 planks north of the Barb agility course");
 
 		GoalDetector.Goals goals = GoalDetector.detect(guide);
 
-		assertEquals(1, goals.getItemGoals().size());
+		assertEquals(2, goals.getItemGoals().size());
 		assertEquals("swamp tar", goals.getItemGoals().get(0).getItemName());
 		assertEquals(5, goals.getItemGoals().get(0).getQuantity());
+		assertEquals("planks", goals.getItemGoals().get(1).getItemName());
+		assertEquals(130, goals.getItemGoals().get(1).getQuantity());
 	}
 
 	@Test
