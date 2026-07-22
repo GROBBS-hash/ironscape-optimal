@@ -3588,6 +3588,84 @@
       "x": 1367,
       "y": 3368,
       "plane": 0
+    },
+    "chest (aldarin villas)": {
+      "display": "Chest (Aldarin Villas)",
+      "x": 1379,
+      "y": 2971,
+      "plane": 0
+    },
+    "raccoon (vatrachos island)": {
+      "display": "Raccoon (Vatrachos Island)",
+      "x": 1893,
+      "y": 2986,
+      "plane": 0
+    },
+    "the flower girl": {
+      "display": "the flower girl",
+      "x": 2515,
+      "y": 3867,
+      "plane": 0
+    },
+    "draynor bank": {
+      "display": "Draynor bank",
+      "x": 3093,
+      "y": 3243,
+      "plane": 0
+    },
+    "falador east bank": {
+      "display": "Falador east bank",
+      "x": 3009,
+      "y": 3359,
+      "plane": 0
+    },
+    "falador farming patch": {
+      "display": "Falador farming patch",
+      "x": 3054,
+      "y": 3307,
+      "plane": 0
+    },
+    "mount karuulm mine": {
+      "display": "Mount Karuulm mine",
+      "x": 1279,
+      "y": 3814,
+      "plane": 0
+    },
+    "rimmington mine": {
+      "display": "Rimmington mine",
+      "x": 2978,
+      "y": 3239,
+      "plane": 0
+    },
+    "seer bank": {
+      "display": "Seer bank",
+      "x": 2725,
+      "y": 3492,
+      "plane": 0
+    },
+    "seers bank": {
+      "display": "Seers bank",
+      "x": 2725,
+      "y": 3492,
+      "plane": 0
+    },
+    "shilo village mine": {
+      "display": "Shilo Village mine",
+      "x": 2823,
+      "y": 3001,
+      "plane": 0
+    },
+    "varrock east bank": {
+      "display": "Varrock East bank",
+      "x": 3254,
+      "y": 3420,
+      "plane": 0
+    },
+    "varrock west bank": {
+      "display": "Varrock West bank",
+      "x": 3185,
+      "y": 3440,
+      "plane": 0
     }
   }
 }
