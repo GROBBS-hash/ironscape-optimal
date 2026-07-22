@@ -164,6 +164,49 @@ public class ItemTracker
 		};
 	}
 
+	/** Resolved icon item ids by guide item name; -1 = no icon found. */
+	private final Map<String, Integer> iconIdByName = new HashMap<>();
+
+	/**
+	 * Puts the item's sprite on a Swing label (async — RuneLite fills the
+	 * image in when loaded). Names resolve through the same alias chain
+	 * the counters use, against the client's item price list; quest-only
+	 * untradeables simply get no icon.
+	 */
+	public void attachIcon(String name, javax.swing.JLabel label)
+	{
+		int id;
+		synchronized (this)
+		{
+			id = iconIdByName.computeIfAbsent(
+				name.toLowerCase(Locale.ROOT).trim(), this::lookupIconId);
+		}
+		if (id > 0)
+		{
+			itemManager.getImage(id).addTo(label);
+		}
+	}
+
+	private int lookupIconId(String name)
+	{
+		for (String alias : aliases(name))
+		{
+			// Coins aren't tradeable, so the price-list search misses them.
+			if (alias.equals("coins"))
+			{
+				return net.runelite.api.gameval.ItemID.COINS;
+			}
+			for (net.runelite.http.api.item.ItemPrice price : itemManager.search(alias))
+			{
+				if (price.getName().equalsIgnoreCase(alias))
+				{
+					return price.getId();
+				}
+			}
+		}
+		return -1;
+	}
+
 	/** Client thread. Forwarded by the plugin on every container change. */
 	public void onItemContainerChanged(ItemContainerChanged event)
 	{
