@@ -467,7 +467,10 @@ class StepRow extends JPanel
 		pane.setAlignmentX(LEFT_ALIGNMENT);
 		pane.addHyperlinkListener(this::handleLink);
 		pane.setText(html);
-		int width = TEXT_WIDTH + 40;
+		// The border is INSIDE the component width, so the pane must be
+		// content width + indent — sizing it at just the content width
+		// clipped ~20px of every note and chip on the right.
+		int width = TEXT_WIDTH + 40 + leftIndent;
 		pane.setSize(width, Short.MAX_VALUE);
 		pane.setPreferredSize(new Dimension(width, pane.getPreferredSize().height));
 		// BoxLayout stretches children to the widest row; capping the max

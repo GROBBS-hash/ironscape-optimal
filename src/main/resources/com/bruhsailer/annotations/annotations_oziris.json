@@ -1,6 +1,12 @@
 {
   "version": 1,
   "annotations": {
+    "55333783ab:0": {
+      "requires": {
+        "varp": 0,
+        "value": 9
+      }
+    },
     "5418678270": {
       "requires": {
         "skill": "FIREMAKING",
