@@ -1,0 +1,1185 @@
+{
+  "version": 1,
+  "annotations": {
+    "5418678270": {
+      "requires": {
+        "skill": "FIREMAKING",
+        "level": 15
+      }
+    },
+    "9a801a1f57": {
+      "requires": {
+        "skill": "THIEVING",
+        "level": 5
+      }
+    },
+    "6a828a6dfe": {
+      "items": [
+        {
+          "name": "steel axe",
+          "quantity": null
+        },
+        {
+          "name": "gp",
+          "quantity": null
+        },
+        {
+          "name": "tinderbox",
+          "quantity": null
+        },
+        {
+          "name": "jug of water",
+          "quantity": null
+        },
+        {
+          "name": "normal log",
+          "quantity": 1
+        },
+        {
+          "name": "jug of wine",
+          "quantity": null
+        }
+      ]
+    },
+    "1b286e7447": {
+      "requires": {
+        "skill": "WOODCUTTING",
+        "level": 35
+      }
+    },
+    "8c52eb5ee2": {
+      "requires": {
+        "skill": "THIEVING",
+        "level": 20
+      }
+    },
+    "a37ddc831a": {
+      "requires": {
+        "skill": "THIEVING",
+        "level": 25
+      }
+    },
+    "39381b9bca": {
+      "items": [
+        {
+          "name": "rope",
+          "quantity": null
+        },
+        {
+          "name": "spade",
+          "quantity": null
+        },
+        {
+          "name": "gp",
+          "quantity": null
+        },
+        {
+          "name": "few cakes",
+          "quantity": null
+        }
+      ]
+    },
+    "fd04684634": {
+      "items": [
+        {
+          "name": "rope",
+          "quantity": null
+        },
+        {
+          "name": "dwellberries",
+          "quantity": null
+        },
+        {
+          "name": "hangover cure",
+          "quantity": null
+        }
+      ]
+    },
+    "fe720c1e81": {
+      "requires": {
+        "skill": "FIREMAKING",
+        "level": 50
+      }
+    },
+    "b51a2c93c2": {
+      "items": [
+        {
+          "name": "gp",
+          "quantity": null
+        },
+        {
+          "name": "bronze nails",
+          "quantity": null
+        },
+        {
+          "name": "hammer",
+          "quantity": null
+        },
+        {
+          "name": "saw",
+          "quantity": null
+        },
+        {
+          "name": "noted planks",
+          "quantity": 120
+        },
+        {
+          "name": "arrow shafts",
+          "quantity": 1000
+        },
+        {
+          "name": "bronze arrowheads",
+          "quantity": 1000
+        },
+        {
+          "name": "house tab",
+          "quantity": 1
+        }
+      ]
+    },
+    "28d28a1dc8-2": {
+      "items": [
+        {
+          "name": "gp",
+          "quantity": null
+        },
+        {
+          "name": "few cakes",
+          "quantity": null
+        },
+        {
+          "name": "chronicle",
+          "quantity": null
+        },
+        {
+          "name": "all of your mind and air runes",
+          "quantity": null
+        }
+      ]
+    },
+    "2d13cc4955": {
+      "items": [
+        {
+          "name": "bucket",
+          "quantity": null
+        },
+        {
+          "name": "barcrawl card",
+          "quantity": null
+        },
+        {
+          "name": "rune mysteries package",
+          "quantity": null
+        },
+        {
+          "name": "gp",
+          "quantity": null
+        }
+      ]
+    },
+    "2c284110f5": {
+      "requires": {
+        "skill": "HUNTER",
+        "level": 9
+      }
+    },
+    "d892b076aa": {
+      "items": [
+        {
+          "name": "gp",
+          "quantity": null
+        },
+        {
+          "name": "barcrawl card",
+          "quantity": null
+        },
+        {
+          "name": "bucket of milk",
+          "quantity": null
+        },
+        {
+          "name": "seasoned sardine",
+          "quantity": null
+        },
+        {
+          "name": "axe",
+          "quantity": null
+        }
+      ]
+    },
+    "e295543bde": {
+      "items": [
+        {
+          "name": "pickaxe",
+          "quantity": null
+        },
+        {
+          "name": "chronicle",
+          "quantity": null
+        }
+      ]
+    },
+    "5c826bf381": {
+      "items": [
+        {
+          "name": "gp",
+          "quantity": null
+        },
+        {
+          "name": "runes",
+          "quantity": null
+        },
+        {
+          "name": "barcrawl card",
+          "quantity": null
+        },
+        {
+          "name": "cakes",
+          "quantity": null
+        },
+        {
+          "name": "fire staff (equip)",
+          "quantity": null
+        }
+      ]
+    },
+    "6df1649967": {
+      "requires": {
+        "skill": "MAGIC",
+        "level": 13
+      }
+    },
+    "4381dc2ab1": {
+      "items": [
+        {
+          "name": "gp",
+          "quantity": null
+        },
+        {
+          "name": "cheese",
+          "quantity": null
+        },
+        {
+          "name": "runes",
+          "quantity": null
+        },
+        {
+          "name": "all 4 meat for druidic ritual",
+          "quantity": null
+        },
+        {
+          "name": "cakes",
+          "quantity": 18
+        },
+        {
+          "name": "gloves (equip)",
+          "quantity": null
+        }
+      ]
+    },
+    "495faaa6f4-2": {
+      "items": [
+        {
+          "name": "gp",
+          "quantity": null
+        },
+        {
+          "name": "pickaxe",
+          "quantity": null
+        },
+        {
+          "name": "burnt meat",
+          "quantity": null
+        },
+        {
+          "name": "eye of newt",
+          "quantity": null
+        },
+        {
+          "name": "iron bars",
+          "quantity": 2
+        },
+        {
+          "name": "bucket of water",
+          "quantity": null
+        },
+        {
+          "name": "pie dish",
+          "quantity": null
+        },
+        {
+          "name": "cakes",
+          "quantity": 10
+        },
+        {
+          "name": "house teletabs",
+          "quantity": 2
+        },
+        {
+          "name": "fally teletab",
+          "quantity": null
+        }
+      ]
+    },
+    "cf82191582": {
+      "requires": {
+        "skill": "COOKING",
+        "level": 15
+      }
+    },
+    "b2179935dc": {
+      "items": [
+        {
+          "name": "fire strike runes",
+          "quantity": null
+        },
+        {
+          "name": "barcrawl card",
+          "quantity": null
+        },
+        {
+          "name": "cakes",
+          "quantity": null
+        },
+        {
+          "name": "axe",
+          "quantity": null
+        }
+      ]
+    },
+    "55fb71551c": {
+      "requires": {
+        "skill": "MAGIC",
+        "level": 42
+      }
+    },
+    "635b974a08": {
+      "items": [
+        {
+          "name": "glarial's pebble",
+          "quantity": null
+        },
+        {
+          "name": "notes for dwarf cannon",
+          "quantity": null
+        },
+        {
+          "name": "ammo mould",
+          "quantity": null
+        },
+        {
+          "name": "rope",
+          "quantity": null
+        },
+        {
+          "name": "air/water/earth runes",
+          "quantity": 6
+        },
+        {
+          "name": "cakes",
+          "quantity": null
+        }
+      ]
+    },
+    "0115a278ac-2": {
+      "items": [
+        {
+          "name": "gp",
+          "quantity": null
+        },
+        {
+          "name": "hammer",
+          "quantity": null
+        }
+      ]
+    },
+    "f8b24d4d6b": {
+      "requires": {
+        "skill": "THIEVING",
+        "level": 42
+      }
+    },
+    "bc19e291f5": {
+      "items": [
+        {
+          "name": "ball of wool",
+          "quantity": 20
+        },
+        {
+          "name": "cakes",
+          "quantity": 8
+        }
+      ]
+    },
+    "a4ecfb06ea": {
+      "items": [
+        {
+          "name": "soft clay",
+          "quantity": null
+        },
+        {
+          "name": "balls of wool",
+          "quantity": 3
+        },
+        {
+          "name": "ashes",
+          "quantity": null
+        },
+        {
+          "name": "pot of flour",
+          "quantity": null
+        },
+        {
+          "name": "bucket of water",
+          "quantity": null
+        },
+        {
+          "name": "yellow dye",
+          "quantity": null
+        },
+        {
+          "name": "redberries",
+          "quantity": null
+        }
+      ]
+    },
+    "a3da4e08f5": {
+      "items": [
+        {
+          "name": "fire staff (equip)",
+          "quantity": null
+        },
+        {
+          "name": "chronicle (equip)",
+          "quantity": null
+        },
+        {
+          "name": "fire strike runes",
+          "quantity": null
+        },
+        {
+          "name": "rune mysteries notes",
+          "quantity": null
+        },
+        {
+          "name": "beads",
+          "quantity": 4
+        },
+        {
+          "name": "bones (kill goblins south of the draynor jail)",
+          "quantity": 20
+        }
+      ]
+    },
+    "30015bb6df-2": {
+      "items": [
+        {
+          "name": "gp",
+          "quantity": null
+        },
+        {
+          "name": "cadava berries",
+          "quantity": null
+        },
+        {
+          "name": "juliet's letter (item name is just 'message')",
+          "quantity": null
+        }
+      ]
+    },
+    "8e5edf7f76": {
+      "items": [
+        {
+          "name": "gp",
+          "quantity": null
+        },
+        {
+          "name": "chronicle",
+          "quantity": null
+        },
+        {
+          "name": "bark sample",
+          "quantity": null
+        },
+        {
+          "name": "translation notes",
+          "quantity": null
+        },
+        {
+          "name": "barcrawl card",
+          "quantity": null
+        },
+        {
+          "name": "small fishing net",
+          "quantity": null
+        },
+        {
+          "name": "fire strike runes",
+          "quantity": null
+        }
+      ]
+    },
+    "0867eb35ab": {
+      "requires": {
+        "skill": "MAGIC",
+        "level": 43
+      }
+    },
+    "27405fdda8": {
+      "items": [
+        {
+          "name": "gp",
+          "quantity": null
+        },
+        {
+          "name": "scrying orb",
+          "quantity": null
+        },
+        {
+          "name": "pickaxe",
+          "quantity": null
+        },
+        {
+          "name": "fire strike runes",
+          "quantity": null
+        },
+        {
+          "name": "wizard mind bomb",
+          "quantity": 1
+        },
+        {
+          "name": "law rune",
+          "quantity": 1
+        },
+        {
+          "name": "some food",
+          "quantity": null
+        }
+      ]
+    },
+    "8d434c1ca7": {
+      "items": [
+        {
+          "name": "gp",
+          "quantity": null
+        },
+        {
+          "name": "barcrawl card",
+          "quantity": null
+        },
+        {
+          "name": "pot",
+          "quantity": null
+        },
+        {
+          "name": "spade",
+          "quantity": null
+        },
+        {
+          "name": "fishing rod",
+          "quantity": null
+        },
+        {
+          "name": "fishing pass",
+          "quantity": null
+        },
+        {
+          "name": "garlic",
+          "quantity": null
+        }
+      ]
+    },
+    "9e43897ef3": {
+      "items": [
+        {
+          "name": "clay",
+          "quantity": 6
+        },
+        {
+          "name": "copper",
+          "quantity": 4
+        },
+        {
+          "name": "iron",
+          "quantity": 2
+        },
+        {
+          "name": "buckets of sand",
+          "quantity": 5
+        },
+        {
+          "name": "soda ash",
+          "quantity": 5
+        },
+        {
+          "name": "spade",
+          "quantity": null
+        },
+        {
+          "name": "fire strike runes",
+          "quantity": null
+        }
+      ]
+    },
+    "a36955fcc9": {
+      "items": [
+        {
+          "name": "gp",
+          "quantity": null
+        },
+        {
+          "name": "bread",
+          "quantity": 1
+        }
+      ]
+    },
+    "80afccadee": {
+      "items": [
+        {
+          "name": "gp",
+          "quantity": null
+        },
+        {
+          "name": "planks",
+          "quantity": 3
+        },
+        {
+          "name": "bronze bar",
+          "quantity": null
+        },
+        {
+          "name": "molten glass",
+          "quantity": null
+        },
+        {
+          "name": "ghost's skull",
+          "quantity": null
+        },
+        {
+          "name": "runes",
+          "quantity": null
+        },
+        {
+          "name": "some food",
+          "quantity": null
+        },
+        {
+          "name": "empty slots for antipoisons",
+          "quantity": 10
+        }
+      ]
+    },
+    "13f33630f0": {
+      "items": [
+        {
+          "name": "brooch",
+          "quantity": null
+        },
+        {
+          "name": "scrying orb",
+          "quantity": null
+        },
+        {
+          "name": "gp",
+          "quantity": null
+        }
+      ]
+    },
+    "67baf2f956": {
+      "requires": {
+        "skill": "RUNECRAFT",
+        "level": 10
+      }
+    },
+    "49d23fd82b": {
+      "items": [
+        {
+          "name": "pickaxe",
+          "quantity": null
+        },
+        {
+          "name": "hammer",
+          "quantity": null
+        },
+        {
+          "name": "lit candle",
+          "quantity": null
+        },
+        {
+          "name": "excalibur",
+          "quantity": null
+        },
+        {
+          "name": "bat bones",
+          "quantity": null
+        },
+        {
+          "name": "black candle",
+          "quantity": null
+        },
+        {
+          "name": "tinderbox",
+          "quantity": null
+        },
+        {
+          "name": "knife",
+          "quantity": null
+        },
+        {
+          "name": "needle",
+          "quantity": null
+        },
+        {
+          "name": "thread",
+          "quantity": null
+        },
+        {
+          "name": "coal",
+          "quantity": 4
+        }
+      ]
+    },
+    "f6f802d369": {
+      "items": [
+        {
+          "name": "lost tribe brooch and book",
+          "quantity": null
+        },
+        {
+          "name": "blue/orange dyes",
+          "quantity": null
+        }
+      ]
+    },
+    "04e38ee829": {
+      "items": [
+        {
+          "name": "gp",
+          "quantity": null
+        },
+        {
+          "name": "silver ore",
+          "quantity": 5
+        },
+        {
+          "name": "sickle mould",
+          "quantity": null
+        },
+        {
+          "name": "holy mould",
+          "quantity": null
+        },
+        {
+          "name": "key imprint",
+          "quantity": null
+        },
+        {
+          "name": "bronze bar",
+          "quantity": null
+        }
+      ]
+    },
+    "0f1c3c3c58": {
+      "requires": {
+        "skill": "THIEVING",
+        "level": 50
+      }
+    },
+    "ca77f90d2b": {
+      "requires": {
+        "skill": "CRAFTING",
+        "level": 32
+      }
+    },
+    "e7db2d827d": {
+      "requires": {
+        "skill": "FISHING",
+        "level": 58
+      }
+    },
+    "2091be0958": {
+      "requires": {
+        "skill": "AGILITY",
+        "level": 50
+      }
+    },
+    "ca366a8e2f": {
+      "requires": {
+        "skill": "THIEVING",
+        "level": 83
+      }
+    },
+    "83cfaad8c5": {
+      "items": [
+        {
+          "name": "teleport runes",
+          "quantity": null
+        },
+        {
+          "name": "axe",
+          "quantity": null
+        },
+        {
+          "name": "pickaxe",
+          "quantity": null
+        },
+        {
+          "name": "bird snare",
+          "quantity": null
+        },
+        {
+          "name": "all the golem quest items",
+          "quantity": null
+        }
+      ]
+    },
+    "5161094f1d-2": {
+      "items": [
+        {
+          "name": "tele runes",
+          "quantity": null
+        },
+        {
+          "name": "gp",
+          "quantity": null
+        },
+        {
+          "name": "rune scim",
+          "quantity": null
+        }
+      ]
+    },
+    "eae42e5936": {
+      "items": [
+        {
+          "name": "axe",
+          "quantity": null
+        },
+        {
+          "name": "rope",
+          "quantity": null
+        },
+        {
+          "name": "lit candle",
+          "quantity": null
+        },
+        {
+          "name": "hammer",
+          "quantity": null
+        },
+        {
+          "name": "stake (vampire slayer)",
+          "quantity": null
+        },
+        {
+          "name": "spade",
+          "quantity": null
+        }
+      ]
+    },
+    "7ce3f0f91a": {
+      "items": [
+        {
+          "name": "fire strike runes",
+          "quantity": null
+        },
+        {
+          "name": "food",
+          "quantity": null
+        }
+      ]
+    },
+    "a90532b6e2": {
+      "items": [
+        {
+          "name": "gp",
+          "quantity": null
+        },
+        {
+          "name": "maze key",
+          "quantity": null
+        },
+        {
+          "name": "steel nails",
+          "quantity": 90
+        },
+        {
+          "name": "planks",
+          "quantity": 3
+        },
+        {
+          "name": "hammer",
+          "quantity": null
+        },
+        {
+          "name": "food",
+          "quantity": null
+        },
+        {
+          "name": "runes",
+          "quantity": null
+        }
+      ]
+    },
+    "b9e46aef54": {
+      "items": [
+        {
+          "name": "gp",
+          "quantity": null
+        },
+        {
+          "name": "runes",
+          "quantity": null
+        },
+        {
+          "name": "soft clay",
+          "quantity": null
+        },
+        {
+          "name": "wizard mind bomb",
+          "quantity": null
+        },
+        {
+          "name": "lobster pot",
+          "quantity": null
+        },
+        {
+          "name": "silk",
+          "quantity": null
+        }
+      ]
+    },
+    "a5defbd89a": {
+      "requires": {
+        "skill": "SLAYER",
+        "level": 18
+      }
+    },
+    "9c34f09b9e": {
+      "requires": {
+        "skill": "ATTACK",
+        "level": 50
+      }
+    },
+    "326ef20194": {
+      "requires": {
+        "skill": "PRAYER",
+        "level": 43
+      }
+    },
+    "93a955584e": {
+      "items": [
+        {
+          "name": "gp stack",
+          "quantity": null
+        },
+        {
+          "name": "d bones",
+          "quantity": 9
+        },
+        {
+          "name": "pot",
+          "quantity": 9
+        },
+        {
+          "name": "slime",
+          "quantity": 9
+        },
+        {
+          "name": "general store sells pots if you don't have",
+          "quantity": null
+        }
+      ]
+    },
+    "8434cc2318": {
+      "requires": {
+        "skill": "SLAYER",
+        "level": 40
+      }
+    },
+    "5d405ba530": {
+      "requires": {
+        "skill": "HERBLORE",
+        "level": 25
+      }
+    },
+    "3c97bdf391": {
+      "requires": {
+        "skill": "CRAFTING",
+        "level": 45
+      }
+    },
+    "125da94e3b": {
+      "requires": {
+        "skill": "THIEVING",
+        "level": 88
+      }
+    },
+    "97b4790c5d": {
+      "requires": {
+        "skill": "CONSTRUCTION",
+        "level": 50
+      }
+    },
+    "6d7b4bbafd": {
+      "requires": {
+        "skill": "FLETCHING",
+        "level": 55
+      }
+    },
+    "8e59c90a3b": {
+      "requires": {
+        "skill": "SMITHING",
+        "level": 60
+      }
+    },
+    "12107aae6a": {
+      "requires": {
+        "skill": "AGILITY",
+        "level": 60
+      }
+    },
+    "793577fcf3": {
+      "requires": {
+        "skill": "MAGIC",
+        "level": 70
+      }
+    },
+    "e5e636df79": {
+      "requires": {
+        "skill": "SLAYER",
+        "level": 48
+      }
+    },
+    "b8e1b2bf8a": {
+      "requires": {
+        "skill": "RANGED",
+        "level": 50
+      }
+    },
+    "37b28ff40e": {
+      "requires": {
+        "skill": "ATTACK",
+        "level": 60
+      }
+    },
+    "166d2f8b7c": {
+      "requires": {
+        "skill": "CRAFTING",
+        "level": 61
+      },
+      "items": [
+        {
+          "name": "rune pick (equip)",
+          "quantity": null
+        },
+        {
+          "name": "varrock armor 2 (equip)",
+          "quantity": null
+        },
+        {
+          "name": "camulet (equip)",
+          "quantity": null
+        },
+        {
+          "name": "graceful (except body)",
+          "quantity": null
+        },
+        {
+          "name": "empty buckets",
+          "quantity": 1200
+        },
+        {
+          "name": "gp",
+          "quantity": 60000
+        },
+        {
+          "name": "waterskins",
+          "quantity": 6
+        },
+        {
+          "name": "knife and teak log for 3-ticking (preferably)",
+          "quantity": null
+        }
+      ]
+    },
+    "c8ad42719d": {
+      "requires": {
+        "skill": "MINING",
+        "level": 70
+      }
+    },
+    "300d6e8162": {
+      "requires": {
+        "skill": "STRENGTH",
+        "level": 65
+      }
+    },
+    "70dc66edaa": {
+      "requires": {
+        "skill": "SLAYER",
+        "level": 58
+      }
+    },
+    "f8223c13bd": {
+      "requires": {
+        "skill": "AGILITY",
+        "level": 70
+      }
+    },
+    "052270c199": {
+      "requires": {
+        "skill": "SLAYER",
+        "level": 75
+      }
+    },
+    "2d40ed9591": {
+      "requires": {
+        "skill": "HERBLORE",
+        "level": 77
+      }
+    },
+    "04726204ee": {
+      "requires": {
+        "skill": "CONSTRUCTION",
+        "level": 70
+      }
+    },
+    "a5f72793e2": {
+      "requires": {
+        "skill": "WOODCUTTING",
+        "level": 70
+      }
+    },
+    "11770df41e": {
+      "requires": {
+        "skill": "RANGED",
+        "level": 60
+      }
+    },
+    "a65788c382": {
+      "requires": {
+        "skill": "SMITHING",
+        "level": 70
+      }
+    },
+    "f6076f8774": {
+      "requires": {
+        "skill": "RANGED",
+        "level": 87
+      }
+    },
+    "339306bbea": {
+      "requires": {
+        "skill": "SLAYER",
+        "level": 85
+      }
+    },
+    "8ebed04c2e": {
+      "requires": {
+        "skill": "HERBLORE",
+        "level": 77
+      }
+    }
+  }
+}

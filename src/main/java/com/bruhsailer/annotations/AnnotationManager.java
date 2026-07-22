@@ -188,21 +188,33 @@ public class AnnotationManager
 		saveLocal();
 	}
 
+	/**
+	 * One bundled file per guide corpus: the hand-reviewed BRUHsailer
+	 * annotations plus the scraper-generated Oziris ones. Step ids are
+	 * content hashes, so the key spaces can't collide and a flat merge
+	 * is safe.
+	 */
+	private static final String[] BUNDLED_FILES = {"annotations.json", "annotations_oziris.json"};
+
 	private Map<String, StepAnnotation> readBundled()
 	{
-		try (InputStream in = AnnotationManager.class.getResourceAsStream("annotations.json"))
+		Map<String, StepAnnotation> merged = new HashMap<>();
+		for (String file : BUNDLED_FILES)
 		{
-			if (in == null)
+			try (InputStream in = AnnotationManager.class.getResourceAsStream(file))
 			{
-				return new HashMap<>();
+				if (in == null)
+				{
+					continue; // a variant without bundled annotations is fine
+				}
+				merged.putAll(parse(new InputStreamReader(in, StandardCharsets.UTF_8)));
 			}
-			return parse(new InputStreamReader(in, StandardCharsets.UTF_8));
+			catch (IOException e)
+			{
+				log.warn("Could not read bundled annotations from {}", file, e);
+			}
 		}
-		catch (IOException e)
-		{
-			log.warn("Could not read bundled annotations", e);
-			return new HashMap<>();
-		}
+		return merged;
 	}
 
 	private Map<String, StepAnnotation> readLocal()

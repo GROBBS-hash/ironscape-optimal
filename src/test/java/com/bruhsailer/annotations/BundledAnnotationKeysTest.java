@@ -25,9 +25,20 @@ import static org.junit.Assert.assertTrue;
 public class BundledAnnotationKeysTest
 {
 	@Test
-	public void bundledAnnotationKeysResolveToRealStepsAndSubs() throws Exception
+	public void bruhsailerAnnotationKeysResolve() throws Exception
 	{
-		Guide guide = new GuideLoader(new Gson()).load(GuideVariant.MAIN);
+		assertKeysResolve("annotations.json", GuideVariant.MAIN);
+	}
+
+	@Test
+	public void ozirisAnnotationKeysResolve() throws Exception
+	{
+		assertKeysResolve("annotations_oziris.json", GuideVariant.OZIRIS);
+	}
+
+	private static void assertKeysResolve(String resource, GuideVariant variant) throws Exception
+	{
+		Guide guide = new GuideLoader(new Gson()).load(variant);
 		Set<String> validIds = new HashSet<>(guide.getStepsById().keySet());
 		for (GuideStep step : guide.getAllSteps())
 		{
@@ -39,7 +50,7 @@ public class BundledAnnotationKeysTest
 
 		JsonObject file;
 		try (Reader reader = new InputStreamReader(
-			StepAnnotation.class.getResourceAsStream("annotations.json"), StandardCharsets.UTF_8))
+			StepAnnotation.class.getResourceAsStream(resource), StandardCharsets.UTF_8))
 		{
 			// RuneLite ships an older Gson without JsonParser.parseReader.
 			file = new Gson().fromJson(reader, JsonObject.class);
@@ -47,8 +58,8 @@ public class BundledAnnotationKeysTest
 
 		for (String key : file.getAsJsonObject("annotations").keySet())
 		{
-			assertTrue("bundled annotation key '" + key + "' matches no step or sub-step "
-					+ "in the current guide (upstream edit or splitter change?)",
+			assertTrue(resource + " key '" + key + "' matches no step or sub-step "
+					+ "in the " + variant + " guide (upstream edit or splitter change?)",
 				validIds.contains(key));
 		}
 	}

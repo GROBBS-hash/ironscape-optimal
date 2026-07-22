@@ -207,6 +207,14 @@ public class BruhsailerPlugin extends Plugin
 	/** Parsed guides, loaded once per client session. */
 	private final Map<GuideVariant, Guide> guides = new EnumMap<>(GuideVariant.class);
 
+	/**
+	 * The guide being followed, read from config ONCE at startUp — every
+	 * progress/annotation/goal structure in this class is built for one
+	 * variant, so changing it mid-session requires a plugin restart
+	 * (toggle off/on), as the config item says.
+	 */
+	private GuideVariant activeVariant = GuideVariant.OZIRIS;
+
 	/** Step id -> its reviewed requirements (ALL must be met to auto-complete). */
 	private final Map<String, List<StepRequirement>> stepSkillRequirements = new HashMap<>();
 
@@ -371,16 +379,17 @@ public class BruhsailerPlugin extends Plugin
 	@Override
 	protected void startUp() throws Exception
 	{
+		activeVariant = config.activeGuide();
 		annotationManager.load();
 
 		// Did a guide refresh edit steps in place since last run? If so
 		// their ids changed (ids hash the text) — re-link saved progress
 		// and annotations BEFORE anything reads them.
-		Guide loadedGuide = guideFor(GuideVariant.MAIN);
+		Guide loadedGuide = guideFor(activeVariant);
 		guideRemap = guideManifest.reconcile(loadedGuide);
 		if (!guideRemap.isEmpty())
 		{
-			progressManager.remapIds(GuideVariant.MAIN, guideRemap);
+			progressManager.remapIds(activeVariant, guideRemap);
 			int moved = annotationManager.remapIds(guideRemap);
 			// The remap holds one entry per edited step plus one per sub
 			// clause of sub-aware steps; count only the step entries here.
@@ -392,7 +401,7 @@ public class BruhsailerPlugin extends Plugin
 
 		placeManager.load();
 		rebuildStepRequirements();
-		goals = GoalDetector.detect(guideFor(GuideVariant.MAIN));
+		goals = GoalDetector.detect(guideFor(activeVariant));
 		itemGoalsBySub.clear();
 		for (GoalDetector.ItemGoal goal : goals.getItemGoals())
 		{
@@ -479,7 +488,7 @@ public class BruhsailerPlugin extends Plugin
 			{
 				return null;
 			}
-			int seen = Math.min(progressManager.countedProgress(GuideVariant.MAIN, subId),
+			int seen = Math.min(progressManager.countedProgress(activeVariant, subId),
 				counted.getCount());
 			String color = seen >= counted.getCount() ? "#4caf50" : "#ffa000";
 			return "<font color='" + color + "'>" + counted.getSkill().getName().toLowerCase()
@@ -492,7 +501,7 @@ public class BruhsailerPlugin extends Plugin
 		panel.setWorldHopHandler(this::hopToWorld);
 		panel.setAddPlaceHandler(this::addPlace);
 		panel.setClearPathHandler(this::clearPath);
-		panel.setGuide(guideFor(GuideVariant.MAIN));
+		panel.setGuide(guideFor(activeVariant));
 
 		// If we start while already logged in (plugin toggled mid-session),
 		// prime the item counts; otherwise the login event does it.
@@ -511,7 +520,7 @@ public class BruhsailerPlugin extends Plugin
 			.build();
 		clientToolbar.addNavigation(navButton);
 
-		Guide guide = guideFor(GuideVariant.MAIN);
+		Guide guide = guideFor(activeVariant);
 		log.info("IRONSCAPE Optimal started: loaded '{}' ({}), {} chapters, {} steps",
 			guide.getTitle(), guide.getUpdatedOn(),
 			guide.getChapters().size(), guide.getAllSteps().size());
@@ -591,7 +600,7 @@ public class BruhsailerPlugin extends Plugin
 		acquisitionBaseline.clear();
 		// The new profile's saved progress may still use pre-refresh step
 		// ids; apply the same remap startUp applied (no-op if none).
-		progressManager.remapIds(GuideVariant.MAIN, guideRemap);
+		progressManager.remapIds(activeVariant, guideRemap);
 		cleanupStaleAmbientTicks();
 		if (panel != null)
 		{
@@ -647,7 +656,7 @@ public class BruhsailerPlugin extends Plugin
 				if (counted != null && counted.getSkill() == event.getSkill())
 				{
 					// one build = one xp drop; N of them completes the sub
-					int seen = progressManager.incrementCounted(GuideVariant.MAIN, subId);
+					int seen = progressManager.incrementCounted(activeVariant, subId);
 					if (seen >= counted.getCount())
 					{
 						completeSubGoal(current.step, current.sub);
@@ -730,7 +739,7 @@ public class BruhsailerPlugin extends Plugin
 		boolean pastFirstIncomplete = false;
 		for (SubStep sub : step.getSubSteps())
 		{
-			if (!progressManager.isSubCompleted(GuideVariant.MAIN, step, sub))
+			if (!progressManager.isSubCompleted(activeVariant, step, sub))
 			{
 				pastFirstIncomplete = true;
 				continue;
@@ -766,7 +775,7 @@ public class BruhsailerPlugin extends Plugin
 			}
 			if (missingSomething && missingAllBanked)
 			{
-				progressManager.setSubCompleted(GuideVariant.MAIN, step, sub, false);
+				progressManager.setSubCompleted(activeVariant, step, sub, false);
 				reopened = true;
 				String text = sub.getPlainText().trim();
 				if (text.length() > 60)
@@ -1021,7 +1030,7 @@ public class BruhsailerPlugin extends Plugin
 		int openSubs = 0;
 		for (SubStep sub : step.getSubSteps())
 		{
-			if (progressManager.isSubCompleted(GuideVariant.MAIN, step, sub))
+			if (progressManager.isSubCompleted(activeVariant, step, sub))
 			{
 				continue;
 			}
@@ -1059,7 +1068,7 @@ public class BruhsailerPlugin extends Plugin
 				GoalDetector.CountedSkillGoal counted = countedGoalBySub.get(sub.getId());
 				if (counted != null)
 				{
-					int seen = Math.min(progressManager.countedProgress(GuideVariant.MAIN, sub.getId()),
+					int seen = Math.min(progressManager.countedProgress(activeVariant, sub.getId()),
 						counted.getCount());
 					reqs.add(new com.bruhsailer.overlay.StepOverlay.Requirement(
 						counted.getSkill().getName().toLowerCase(Locale.ROOT) + " actions",
@@ -1155,14 +1164,14 @@ public class BruhsailerPlugin extends Plugin
 		Current frontier = findCurrent();
 		if (frontier != null)
 		{
-			Guide guide = guideFor(GuideVariant.MAIN);
+			Guide guide = guideFor(activeVariant);
 			List<GuideStep> steps = guide.getAllSteps();
 			int included = 0;
 			for (int i = frontier.step.getGlobalIndex();
 				i < steps.size() && included < BANK_FILTER_STEPS; i++)
 			{
 				GuideStep step = steps.get(i);
-				if (progressManager.isCompleted(GuideVariant.MAIN, step.getId()))
+				if (progressManager.isCompleted(activeVariant, step.getId()))
 				{
 					continue;
 				}
@@ -1173,7 +1182,7 @@ public class BruhsailerPlugin extends Plugin
 				}
 				for (SubStep sub : step.getSubSteps())
 				{
-					if (progressManager.isSubCompleted(GuideVariant.MAIN, step, sub))
+					if (progressManager.isSubCompleted(activeVariant, step, sub))
 					{
 						continue;
 					}
@@ -1212,7 +1221,7 @@ public class BruhsailerPlugin extends Plugin
 			return;
 		}
 
-		Guide guide = guideFor(GuideVariant.MAIN);
+		Guide guide = guideFor(activeVariant);
 		boolean progressed = false;
 
 		for (int guard = 0; guard < 100; guard++)
@@ -1292,12 +1301,12 @@ public class BruhsailerPlugin extends Plugin
 	private List<Current> findWindow(int limit)
 	{
 		List<Current> window = new ArrayList<>();
-		Guide guide = guideFor(GuideVariant.MAIN);
+		Guide guide = guideFor(activeVariant);
 		List<GuideStep> steps = guide.getAllSteps();
 		int start = 0;
 		for (int i = 0; i < steps.size(); i++)
 		{
-			if (progressManager.isCompleted(GuideVariant.MAIN, steps.get(i).getId()))
+			if (progressManager.isCompleted(activeVariant, steps.get(i).getId()))
 			{
 				start = i + 1;
 			}
@@ -1307,7 +1316,7 @@ public class BruhsailerPlugin extends Plugin
 			GuideStep step = steps.get(i);
 			for (SubStep sub : step.getSubSteps())
 			{
-				if (!progressManager.isSubCompleted(GuideVariant.MAIN, step, sub))
+				if (!progressManager.isSubCompleted(activeVariant, step, sub))
 				{
 					window.add(new Current(step, sub));
 					if (window.size() >= limit)
@@ -1463,7 +1472,7 @@ public class BruhsailerPlugin extends Plugin
 	/** A whole step completed by its skill requirement annotation. */
 	private void completeStep(GuideStep step)
 	{
-		progressManager.setCompleted(GuideVariant.MAIN, step, true);
+		progressManager.setCompleted(activeVariant, step, true);
 		if (loginGraceTicks == 0)
 		{
 			String text = step.getPlainText().trim();
@@ -1485,7 +1494,7 @@ public class BruhsailerPlugin extends Plugin
 	/** Mark one goal sub-step done: persist, announce (unless just logged in), update the panel. */
 	private void completeSubGoal(GuideStep step, SubStep sub)
 	{
-		progressManager.setSubCompleted(GuideVariant.MAIN, step, sub, true);
+		progressManager.setSubCompleted(activeVariant, step, sub, true);
 
 		if (loginGraceTicks == 0)
 		{
@@ -1522,12 +1531,12 @@ public class BruhsailerPlugin extends Plugin
 		{
 			return;
 		}
-		Guide guide = guideFor(GuideVariant.MAIN);
+		Guide guide = guideFor(activeVariant);
 		List<GuideStep> steps = guide.getAllSteps();
 		int lastCompleted = -1;
 		for (int i = 0; i < steps.size(); i++)
 		{
-			if (progressManager.isCompleted(GuideVariant.MAIN, steps.get(i).getId()))
+			if (progressManager.isCompleted(activeVariant, steps.get(i).getId()))
 			{
 				lastCompleted = i;
 			}
@@ -1539,7 +1548,7 @@ public class BruhsailerPlugin extends Plugin
 			GuideStep step = steps.get(i);
 			for (SubStep sub : step.getSubSteps())
 			{
-				boolean ticked = progressManager.isSubCompleted(GuideVariant.MAIN, step, sub);
+				boolean ticked = progressManager.isSubCompleted(activeVariant, step, sub);
 				if (!ticked)
 				{
 					pastFirstIncomplete = true;
@@ -1557,7 +1566,7 @@ public class BruhsailerPlugin extends Plugin
 					|| countedGoalBySub.containsKey(subId);
 				if (ambient)
 				{
-					progressManager.setSubCompleted(GuideVariant.MAIN, step, sub, false);
+					progressManager.setSubCompleted(activeVariant, step, sub, false);
 					cleared++;
 				}
 			}

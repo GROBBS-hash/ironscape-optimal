@@ -271,5 +271,20 @@ refresh when "Failed to login" appears.
 - Guide has two variants upstream: **Main** and **Landlubber**. Owner
   decision (2026-07-21): ship **Main only**. Everything stays keyed by
   `GuideVariant` so re-adding Landlubber is one enum entry + its JSON.
+
+- Owner decision (2026-07-22): the DEFAULT guide is now
+  **GuideVariant.OZIRIS** — the Ironman Efficiency Guide v4, community
+  "Enhanced 2026" edition from https://ironman.guide/, scraped by
+  `tools/scrape-oziris.mjs` (575 steps, 7 sections). The site's React
+  flight payload carries author-structured steps (stable ids like
+  "1.1.76a", location, quest+questStatus, skillGoal, items[], note,
+  hcim, links, enhanced:true flags) — the scraper emits our guide JSON
+  plus `annotations_oziris.json` (82 skill/item annotations for free).
+  AnnotationManager merges both bundled annotation files (hash key
+  spaces can't collide). BRUHsailer stays selectable via the
+  `activeGuide` config item (read once at startUp; restart to switch).
+  Progress is per-variant (`progress_OZIRIS`). PERMISSION EMAIL to the
+  ironman.guide maintainers is drafted but NOT yet confirmed sent —
+  do not publish the bundled Oziris data before that lands.
 - Guide is ~1000 steps across three chapters. Panel performance matters —
   don't naively render every step as a live Swing component at once.
