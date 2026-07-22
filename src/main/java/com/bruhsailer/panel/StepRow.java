@@ -89,7 +89,7 @@ class StepRow extends JPanel
 			SubRowUi row = new SubRowUi(sub, multi);
 			subRows.add(row);
 			add(row.panel);
-			addItemBadge(multi ? sub.getId() : step.getId(), sub.getId(),
+			addItemBadge(multi ? sub.getId() : step.getId(), sub,
 				22 + sub.getIndentLevel() * INDENT_PER_LEVEL);
 		}
 
@@ -140,10 +140,16 @@ class StepRow extends JPanel
 	/**
 	 * Adds a live "have/need" line. Sources, in priority order: reviewed
 	 * item annotations for the annotation id, else item goals detected in
-	 * the sub-step's own text ("buy 1250 nature runes").
+	 * the sub-step's own text ("buy 1250 nature runes"). Once the owning
+	 * sub/step is ticked the badge greys out — a red "0/1" under a done
+	 * step reads as a problem when it's just a consumed item.
+	 *
+	 * @param sub the sub-step this badge belongs to; null = the step
+	 *            header badge of a multi-action step
 	 */
-	private void addItemBadge(String annotationId, String goalSubId, int indentPx)
+	private void addItemBadge(String annotationId, SubStep sub, int indentPx)
 	{
+		String goalSubId = sub == null ? null : sub.getId();
 		List<StepAnnotation.ItemNeed> needs = ctx.getAnnotations().getItems(annotationId);
 		if (needs.isEmpty() && goalSubId != null)
 		{
@@ -186,16 +192,32 @@ class StepRow extends JPanel
 		}
 		List<StepAnnotation.ItemNeed> badgeNeeds = needs;
 		String actionSubId = goalSubId;
-		Runnable refresh = () -> badge.setText(!badgeNeeds.isEmpty()
-			? badgeHtml(badgeNeeds, wrapWidth)
-			: "<html><body style='width:" + wrapWidth + "px'><b>"
-				+ ctx.getActionBadge().apply(actionSubId) + "</b></body></html>");
+		SubStep badgeSub = sub;
+		Runnable refresh = () -> {
+			boolean done = badgeSub == null
+				? ctx.getProgress().isCompleted(ctx.getVariant(), step.getId())
+				: ctx.getProgress().isSubCompleted(ctx.getVariant(), step, badgeSub);
+			if (!badgeNeeds.isEmpty())
+			{
+				badge.setText(badgeHtml(badgeNeeds, wrapWidth, done));
+				return;
+			}
+			String action = ctx.getActionBadge().apply(actionSubId);
+			if (done && action != null)
+			{
+				// The supplier bakes its own colors in; on a done row they
+				// all become the completed-text grey.
+				action = action.replaceAll("color='[^']*'", "color='#808080'");
+			}
+			badge.setText("<html><body style='width:" + wrapWidth + "px'><b>"
+				+ action + "</b></body></html>");
+		};
 		refresh.run();
 		badgeRefreshers.add(refresh);
 		add(badge);
 	}
 
-	private String badgeHtml(List<StepAnnotation.ItemNeed> needs, int wrapWidth)
+	private String badgeHtml(List<StepAnnotation.ItemNeed> needs, int wrapWidth, boolean done)
 	{
 		// The width style makes long badges WRAP instead of widening the
 		// whole panel column (which would break text wrapping everywhere).
@@ -208,10 +230,15 @@ class StepRow extends JPanel
 			int carried = ctx.getItems().carriedCountOf(need.name);
 
 			// green: carrying enough | orange: enough, but some is banked
-			// | red: not enough anywhere
+			// | red: not enough anywhere | grey: the step is already done,
+			// so the count is history, not a warning
 			String color;
 			String note = "";
-			if (carried >= required)
+			if (done)
+			{
+				color = "#808080";
+			}
+			else if (carried >= required)
 			{
 				color = SATISFIED_HEX;
 			}
@@ -257,6 +284,7 @@ class StepRow extends JPanel
 			{
 				row.setCompletedSilently(completed);
 			}
+			refreshItemBadges(); // done rows grey their badges
 			ctx.getOnProgressChanged().run();
 		});
 
@@ -300,6 +328,7 @@ class StepRow extends JPanel
 		{
 			masterBox.setSelected(ctx.getProgress().isCompleted(ctx.getVariant(), step.getId()));
 		}
+		refreshItemBadges();
 	}
 
 	/** The plugin auto-completed this step (requirement met): tick everything, quietly. */
@@ -313,6 +342,7 @@ class StepRow extends JPanel
 		{
 			row.setCompletedSilently(completed);
 		}
+		refreshItemBadges();
 	}
 
 	/**
@@ -562,6 +592,7 @@ class StepRow extends JPanel
 				{
 					masterBox.setSelected(ctx.getProgress().isCompleted(ctx.getVariant(), step.getId()));
 				}
+				refreshItemBadges(); // done rows grey their badges
 				ctx.getOnProgressChanged().run();
 			});
 
