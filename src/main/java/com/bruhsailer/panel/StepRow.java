@@ -96,13 +96,14 @@ class StepRow extends JPanel
 		addMetadataChips();
 
 		// Trailing commentary paragraphs — informational, not tickable.
+		// Rendered as width-locked panes, NOT labels: a pane wraps at our
+		// width (an over-wide child stretches every row and clips the whole
+		// panel) and its links ("Safespot location") actually click.
 		for (List<TextRun> paragraph : step.getAdditionalContent())
 		{
-			JLabel note = new JLabel(RichText.paragraphHtml(paragraph));
+			JEditorPane note = htmlPane(RichText.paragraphHtml(paragraph), 22);
 			note.setFont(new Font(Font.DIALOG, Font.ITALIC, 11));
 			note.setForeground(ColorScheme.LIGHT_GRAY_COLOR);
-			note.setBorder(BorderFactory.createEmptyBorder(2, 22, 0, 0));
-			note.setAlignmentX(LEFT_ALIGNMENT);
 			add(note);
 		}
 	}
@@ -396,8 +397,10 @@ class StepRow extends JPanel
 	 * The Oziris guide tags each step with a location and sometimes a
 	 * quest — render them as the same 📍/📜 chips the website shows.
 	 * Clicking one routes there (locations via places.json, quest names
-	 * via the quest-start/Quest Helper handoff). Steps without these
-	 * metadata keys (all of BRUHsailer's) simply show nothing.
+	 * via the quest-start/Quest Helper handoff). One width-locked HTML
+	 * pane, so a long location + quest pair WRAPS instead of widening
+	 * every row in the panel. Steps without these metadata keys (all of
+	 * BRUHsailer's) simply show nothing.
 	 */
 	private void addMetadataChips()
 	{
@@ -407,47 +410,95 @@ class StepRow extends JPanel
 		{
 			return;
 		}
-		JPanel chips = new JPanel();
-		chips.setLayout(new BoxLayout(chips, BoxLayout.X_AXIS));
-		chips.setBackground(ColorScheme.DARK_GRAY_COLOR);
-		chips.setAlignmentX(LEFT_ALIGNMENT);
-		chips.setBorder(BorderFactory.createEmptyBorder(1, 22, 1, 0));
+		StringBuilder html = new StringBuilder();
 		if (location != null)
 		{
-			chips.add(chip("📍 " + location, location));
+			html.append(chipHtml("📍 " + location, location));
 		}
 		if (quest != null)
 		{
 			boolean completes = "complete".equalsIgnoreCase(step.getMetadata().get("questStatus"));
 			if (location != null)
 			{
-				chips.add(javax.swing.Box.createHorizontalStrut(8));
+				html.append("&nbsp;&nbsp;");
 			}
-			chips.add(chip("📜 " + quest + (completes ? " ✓" : ""), quest));
+			html.append(chipHtml("📜 " + quest + (completes ? " ✓" : ""), quest));
 		}
+		JEditorPane chips = htmlPane("<html><body style='width:" + (TEXT_WIDTH + 30) + "px'>"
+			+ html + "</body></html>", 22);
+		chips.setFont(new Font(Font.DIALOG, Font.PLAIN, 11));
+		chips.setToolTipText("Show the route (needs the Shortest Path plugin)");
 		add(chips);
 	}
 
-	/** One small clickable tag; clicking routes to the named place/quest. */
-	private JLabel chip(String label, String target)
+	/** One chip as a place link — clicks land in the shared hyperlink handler. */
+	private static String chipHtml(String label, String target)
 	{
-		JLabel chip = new JLabel(label);
-		chip.setFont(new Font(Font.DIALOG, Font.PLAIN, 11));
-		chip.setForeground(ColorScheme.BRAND_ORANGE);
-		if (ctx.getPlaceNavigateHandler() != null)
+		try
 		{
-			chip.setCursor(java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.HAND_CURSOR));
-			chip.setToolTipText("Show the route (needs the Shortest Path plugin)");
-			chip.addMouseListener(new java.awt.event.MouseAdapter()
-			{
-				@Override
-				public void mouseClicked(java.awt.event.MouseEvent e)
-				{
-					ctx.getPlaceNavigateHandler().accept(target);
-				}
-			});
+			return "<a style='color:#e8a838;text-decoration:none' href='"
+				+ PlaceManager.LINK_PREFIX + java.net.URLEncoder.encode(target, "UTF-8") + "'>"
+				+ RichText.escape(label).replace(" ", "&nbsp;") + "</a>";
 		}
-		return chip;
+		catch (UnsupportedEncodingException e)
+		{
+			throw new IllegalStateException(e); // UTF-8 always exists
+		}
+	}
+
+	/**
+	 * A non-editable HTML pane, width-locked the same way sub-step text
+	 * is (see SubRowUi#setHtml) and wired to the shared link handler.
+	 */
+	private JEditorPane htmlPane(String html, int leftIndent)
+	{
+		JEditorPane pane = new JEditorPane();
+		pane.setContentType("text/html");
+		pane.setEditable(false);
+		pane.setOpaque(false);
+		pane.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, Boolean.TRUE);
+		pane.setBorder(BorderFactory.createEmptyBorder(2, leftIndent, 0, 0));
+		pane.setAlignmentX(LEFT_ALIGNMENT);
+		pane.addHyperlinkListener(this::handleLink);
+		pane.setText(html);
+		int width = TEXT_WIDTH + 40;
+		pane.setSize(width, Short.MAX_VALUE);
+		pane.setPreferredSize(new Dimension(width, pane.getPreferredSize().height));
+		// BoxLayout stretches children to the widest row; capping the max
+		// size keeps THIS pane from being the widest row.
+		pane.setMaximumSize(new Dimension(width, pane.getPreferredSize().height));
+		return pane;
+	}
+
+	/** Shared link handling: place/quest routing, world hops, real URLs. */
+	private void handleLink(HyperlinkEvent e)
+	{
+		if (e.getEventType() != HyperlinkEvent.EventType.ACTIVATED)
+		{
+			return;
+		}
+		String description = e.getDescription();
+		if (description != null && description.startsWith(PlaceManager.LINK_PREFIX))
+		{
+			if (ctx.getPlaceNavigateHandler() != null)
+			{
+				ctx.getPlaceNavigateHandler().accept(
+					decode(description.substring(PlaceManager.LINK_PREFIX.length())));
+			}
+		}
+		else if (description != null && description.startsWith(RichText.WORLD_LINK_PREFIX))
+		{
+			if (ctx.getWorldHopHandler() != null)
+			{
+				// the regex only puts digits after the prefix
+				ctx.getWorldHopHandler().accept(Integer.parseInt(
+					description.substring(RichText.WORLD_LINK_PREFIX.length())));
+			}
+		}
+		else if (e.getURL() != null)
+		{
+			LinkBrowser.browse(e.getURL().toString());
+		}
 	}
 
 	/** Metadata block as a tooltip, so rows stay compact. */
@@ -521,34 +572,7 @@ class StepRow extends JPanel
 				text.setToolTipText(metadataTooltip());
 				checkBox.setToolTipText(metadataTooltip());
 			}
-			text.addHyperlinkListener(e -> {
-				if (e.getEventType() != HyperlinkEvent.EventType.ACTIVATED)
-				{
-					return;
-				}
-				String description = e.getDescription();
-				if (description != null && description.startsWith(PlaceManager.LINK_PREFIX))
-				{
-					if (ctx.getPlaceNavigateHandler() != null)
-					{
-						ctx.getPlaceNavigateHandler().accept(
-							decode(description.substring(PlaceManager.LINK_PREFIX.length())));
-					}
-				}
-				else if (description != null && description.startsWith(RichText.WORLD_LINK_PREFIX))
-				{
-					if (ctx.getWorldHopHandler() != null)
-					{
-						// the regex only puts digits after the prefix
-						ctx.getWorldHopHandler().accept(Integer.parseInt(
-							description.substring(RichText.WORLD_LINK_PREFIX.length())));
-					}
-				}
-				else if (e.getURL() != null)
-				{
-					LinkBrowser.browse(e.getURL().toString());
-				}
-			});
+			text.addHyperlinkListener(e -> handleLink(e));
 			setHtml(completed);
 
 			JPanel checkBoxWrapper = new JPanel(new BorderLayout());
