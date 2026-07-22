@@ -85,6 +85,17 @@ public class GoalDetectorTest
 	}
 
 	@Test
+	public void vagueQuantityWordsAreStrippedFromItemNames()
+	{
+		Guide guide = guideWithSubTexts("grab a few cakes from the bank");
+
+		GoalDetector.Goals goals = GoalDetector.detect(guide);
+
+		assertEquals(1, goals.getItemGoals().size());
+		assertEquals("cakes", goals.getItemGoals().get(0).getItemName());
+	}
+
+	@Test
 	public void locationPhrasesEndItemNames()
 	{
 		Guide guide = guideWithSubTexts(

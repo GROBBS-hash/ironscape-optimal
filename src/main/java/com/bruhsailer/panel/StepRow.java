@@ -188,8 +188,8 @@ class StepRow extends JPanel
 		String actionSubId = goalSubId;
 		Runnable refresh = () -> badge.setText(!badgeNeeds.isEmpty()
 			? badgeHtml(badgeNeeds, wrapWidth)
-			: "<html><body style='width:" + wrapWidth + "px'>"
-				+ ctx.getActionBadge().apply(actionSubId) + "</body></html>");
+			: "<html><body style='width:" + wrapWidth + "px'><b>"
+				+ ctx.getActionBadge().apply(actionSubId) + "</b></body></html>");
 		refresh.run();
 		badgeRefreshers.add(refresh);
 		add(badge);
@@ -229,11 +229,14 @@ class StepRow extends JPanel
 			{
 				sb.append(" <font color='#606060'>·</font> ");
 			}
-			sb.append("<font color='").append(color).append("'>")
-				.append(RichText.escape(need.name)).append(' ')
+			// The count and "(in bank)" stay glued to the item name
+			// (non-breaking spaces), so entries wrap as whole units
+			// instead of stranding "bank)" on its own line.
+			sb.append("<b><font color='").append(color).append("'>")
+				.append(RichText.escape(need.name)).append("&nbsp;")
 				.append(have).append('/').append(required)
-				.append(note)
-				.append("</font>");
+				.append(note.isEmpty() ? "" : "&nbsp;(in&nbsp;bank)")
+				.append("</font></b>");
 		}
 		return sb.append("</body></html>").toString();
 	}
@@ -420,7 +423,10 @@ class StepRow extends JPanel
 			boolean completes = "complete".equalsIgnoreCase(step.getMetadata().get("questStatus"));
 			if (location != null)
 			{
-				html.append("&nbsp;&nbsp;");
+				// A NORMAL space between chips: the pair must be able to
+				// wrap onto two lines ("📍 Falador 📜 The Knight's Sword"
+				// is wider than the panel).
+				html.append("&nbsp; ");
 			}
 			html.append(chipHtml("📜 " + quest + (completes ? " ✓" : ""), quest));
 		}
