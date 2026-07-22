@@ -135,6 +135,12 @@ public final class GoalDetector
 		SubStep sub;
 		String itemName;
 		int quantity;
+		/**
+		 * True for "buy X from her shop" — a transaction, not a state.
+		 * Already OWNING the item must not tick it; the plugin requires
+		 * the carried count to INCREASE while the sub is current.
+		 */
+		boolean acquisition;
 	}
 
 	@Value
@@ -271,6 +277,10 @@ public final class GoalDetector
 		"\\b(?:make|turn|convert)\\b.*?\\binto\\s+(?:(?:a|an|some)\\s+)?([a-z][a-z'/ -]+)",
 		Pattern.CASE_INSENSITIVE);
 
+	/** Purchase verbs — see ItemGoal#acquisition. */
+	private static final Pattern PURCHASE_VERB = Pattern.compile(
+		"\\b(?:buy|purchase)\\b", Pattern.CASE_INSENSITIVE);
+
 	private GoalDetector()
 	{
 	}
@@ -291,11 +301,14 @@ public final class GoalDetector
 			// True while we're inside a comma-list of items within this
 			// step ("Grab a bucket of milk, raw sardine, doogle leaves…").
 			boolean inItemList = false;
+			// Whether that list was opened with a purchase verb — bare
+			// continuations of "buy 5 X, 3 Y" are purchases too.
+			boolean acquisitionList = false;
 			for (SubStep sub : step.getSubSteps())
 			{
 				int itemsBefore = itemGoals.size();
 				int questsBefore = questGoals.size();
-				detectItemGoal(step, sub, itemGoals, inItemList);
+				acquisitionList = detectItemGoal(step, sub, itemGoals, inItemList, acquisitionList);
 				boolean producedItems = itemGoals.size() > itemsBefore;
 				inItemList = producedItems;
 				detectQuestGoal(step, sub, questGoals);
@@ -397,11 +410,19 @@ public final class GoalDetector
 		}
 	}
 
-	private static void detectItemGoal(GuideStep step, SubStep sub, List<ItemGoal> out, boolean inItemList)
+	/**
+	 * Returns the acquisition flag a bare continuation of this step's item
+	 * list should inherit: a sub with its own verb (re)defines the list
+	 * ("buy 5 X" -> purchases), a bare continuation carries it unchanged,
+	 * and a sub without goals breaks the list.
+	 */
+	private static boolean detectItemGoal(GuideStep step, SubStep sub, List<ItemGoal> out,
+		boolean inItemList, boolean inheritedAcquisition)
 	{
 		// Parentheticals are commentary, not shopping — "(so there are 3
 		// planks left in your bank)" must not become a "planks left" goal.
 		String text = sub.getPlainText().trim().replaceAll("\\([^)]*\\)", " ");
+		boolean ownPurchase = PURCHASE_VERB.matcher(text).find();
 		int before = out.size();
 		java.util.Set<String> seen = new java.util.HashSet<>();
 
@@ -411,28 +432,28 @@ public final class GoalDetector
 		Matcher pairs = QUANTITY_NAME.matcher(text);
 		while (pairs.find())
 		{
-			addIfValid(out, step, sub, pairs.group(1), pairs.group(2), seen);
+			addIfValid(out, step, sub, pairs.group(1), pairs.group(2), seen, ownPurchase);
 		}
 
 		if (out.size() > before)
 		{
-			return; // numbered goals found; done
+			return ownPurchase; // numbered goals found; done
 		}
 
 		// "Make the logs into a plank" — done when you own the product.
 		Matcher product = INTO_PRODUCT.matcher(text);
 		if (product.find())
 		{
-			addIfValid(out, step, sub, "1", product.group(1), seen);
-			return;
+			addIfValid(out, step, sub, "1", product.group(1), seen, false);
+			return false;
 		}
 
 		// "Grab a bucket of milk" — acquisition verb, no number: one of it.
 		Matcher verbOnly = VERB_NO_QUANTITY.matcher(text);
 		if (verbOnly.find())
 		{
-			addIfValid(out, step, sub, "1", verbOnly.group(1), seen);
-			return;
+			addIfValid(out, step, sub, "1", verbOnly.group(1), seen, ownPurchase);
+			return ownPurchase;
 		}
 
 		// "raw sardine" — a bare noun fragment continuing the item list
@@ -448,13 +469,15 @@ public final class GoalDetector
 				&& !NOT_AN_ITEM_FIRST_WORD.contains(
 					cleaned.split(" ")[0].toLowerCase(Locale.ROOT)))
 			{
-				addIfValid(out, step, sub, "1", cleaned, seen);
+				addIfValid(out, step, sub, "1", cleaned, seen, inheritedAcquisition);
+				return inheritedAcquisition;
 			}
 		}
+		return false;
 	}
 
 	private static void addIfValid(List<ItemGoal> out, GuideStep step, SubStep sub,
-		String rawQuantity, String rawName, java.util.Set<String> seen)
+		String rawQuantity, String rawName, java.util.Set<String> seen, boolean acquisition)
 	{
 		int quantity;
 		try
@@ -509,12 +532,12 @@ public final class GoalDetector
 		Matcher compound = COMPOUND_NAME.matcher(name);
 		if (compound.matches())
 		{
-			out.add(new ItemGoal(step, sub, compound.group(1) + " " + compound.group(3), quantity));
-			out.add(new ItemGoal(step, sub, compound.group(2) + " " + compound.group(3), quantity));
+			out.add(new ItemGoal(step, sub, compound.group(1) + " " + compound.group(3), quantity, acquisition));
+			out.add(new ItemGoal(step, sub, compound.group(2) + " " + compound.group(3), quantity, acquisition));
 			return;
 		}
 
-		out.add(new ItemGoal(step, sub, name, quantity));
+		out.add(new ItemGoal(step, sub, name, quantity, acquisition));
 	}
 
 	private static void detectQuestGoal(GuideStep step, SubStep sub, List<QuestGoal> out)

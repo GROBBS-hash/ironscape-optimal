@@ -45,12 +45,23 @@ public class StepAnnotation
 	}
 
 	/**
-	 * Tier-1 requirement: a skill level, e.g. {"skill": "PRAYER", "level": 43}.
-	 * More kinds (quests, items) arrive with the extraction script.
+	 * Tier-1 requirement: a skill level, e.g. {"skill": "PRAYER", "level": 43},
+	 * or a game-state threshold, e.g. {"varbit": 5619, "value": 5} — met
+	 * once the varbit/varp reaches the value. Quest progress varbits count
+	 * up monotonically, which makes mid-quest checkpoints ("do the quest
+	 * up to the orb") detectable without per-quest authoring. Keyed by a
+	 * SUB id ("stepId:14") a requirement ticks just that sub; keyed by a
+	 * step id it completes the whole step.
 	 */
 	public static class Requirement
 	{
 		public String skill;
 		public Integer level;
+		/** Varbit id to watch (e.g. 5619 = Client of Kourend progress). */
+		public Integer varbit;
+		/** Varplayer id to watch — for older quests tracked by varp. */
+		public Integer varp;
+		/** Met when the varbit/varp value is >= this. */
+		public Integer value;
 	}
 }

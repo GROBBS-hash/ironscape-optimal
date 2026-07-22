@@ -57,6 +57,27 @@ public class GoalDetectorTest
 	}
 
 	@Test
+	public void buyIsAnAcquisitionAndBareContinuationsInheritIt()
+	{
+		Guide guide = guideWithSubTexts(
+			"While visiting Jennifer, buy shears from her shop", // purchase
+			"a chef's hat",     // bare continuation of the buy list
+			"grab a knife",     // own verb "grab" resets the list: not a purchase
+			"an apron");        // continues the GRAB list
+
+		GoalDetector.Goals goals = GoalDetector.detect(guide);
+
+		assertEquals(4, goals.getItemGoals().size());
+		assertEquals("shears", goals.getItemGoals().get(0).getItemName());
+		assertTrue(goals.getItemGoals().get(0).isAcquisition());
+		assertEquals("chef's hat", goals.getItemGoals().get(1).getItemName());
+		assertTrue(goals.getItemGoals().get(1).isAcquisition());
+		assertFalse(goals.getItemGoals().get(2).isAcquisition());
+		assertEquals("apron", goals.getItemGoals().get(3).getItemName());
+		assertFalse(goals.getItemGoals().get(3).isAcquisition());
+	}
+
+	@Test
 	public void expandsSlashCompoundsAndSkipsSkillPhrases()
 	{
 		Guide guide = guideWithSubTexts(

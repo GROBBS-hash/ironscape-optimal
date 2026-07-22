@@ -93,4 +93,60 @@ public class SentenceSplitterTest
 		assertEquals(1, clauses.size());
 		assertEquals("Buy 1,500 arrow shafts", join(clauses.get(0)));
 	}
+
+	@Test
+	public void leadingSubordinateFragmentStaysWithItsMainClause()
+	{
+		// "While visiting Jennifer" is not an action — it modifies "buy
+		// shears". The comma after "shop" still cuts normally.
+		List<List<TextRun>> clauses = SentenceSplitter.split(Arrays.asList(
+			plain("While visiting Jennifer, buy shears from her shop, then visit the Shayzien Styles.")));
+
+		assertEquals(2, clauses.size());
+		assertEquals("While visiting Jennifer, buy shears from her shop", join(clauses.get(0)));
+		assertEquals("then visit the Shayzien Styles.", join(clauses.get(1)));
+	}
+
+	@Test
+	public void midSentenceSubordinateGluesToTheClauseItIntroduces()
+	{
+		List<List<TextRun>> clauses = SentenceSplitter.split(Arrays.asList(
+			plain("Bank everything, once you are done, grab your hammer, saw")));
+
+		assertEquals(3, clauses.size());
+		assertEquals("Bank everything", join(clauses.get(0)));
+		assertEquals("once you are done, grab your hammer", join(clauses.get(1)));
+		assertEquals("saw", join(clauses.get(2)));
+	}
+
+	@Test
+	public void sentenceFinalSubordinateGluesBackward()
+	{
+		List<List<TextRun>> clauses = SentenceSplitter.split(Arrays.asList(
+			plain("Buy shears from her shop, while visiting Jennifer")));
+
+		assertEquals(1, clauses.size());
+	}
+
+	@Test
+	public void chainedSubordinateFragmentsKeepAccumulating()
+	{
+		// Each comma is judged by the SEGMENT before it, so a subordinate
+		// chain glues all the way to the action it belongs to.
+		List<List<TextRun>> clauses = SentenceSplitter.split(Arrays.asList(
+			plain("After the quest, if you have spare gp, buy a chronicle, teleport away")));
+
+		assertEquals(2, clauses.size());
+		assertEquals("After the quest, if you have spare gp, buy a chronicle", join(clauses.get(0)));
+	}
+
+	@Test
+	public void connectiveBeforeTheSubordinatorStillMerges()
+	{
+		List<List<TextRun>> clauses = SentenceSplitter.split(Arrays.asList(
+			plain("Talk to the banker, and while you are there, deposit everything")));
+
+		assertEquals(2, clauses.size());
+		assertEquals("and while you are there, deposit everything", join(clauses.get(1)));
+	}
 }

@@ -218,10 +218,34 @@ All six build-order steps are DONE, plus substantial extras. Current state:
   captured targets are never deleted). v1 manifests without fingerprints
   fall back to positional sub carry. Insertions/reorders of whole steps
   are left alone (conservative).
+- **Splitter (2026-07-22):** subordinate fragments no longer become their
+  own tickbox — a comma segment opening with while/whilst/when(ever)/
+  once/after/before/if/unless/until glues to the clause it introduces
+  ("While visiting Jennifer, buy shears" = ONE sub); sentence-final
+  subordinates glue backward. Sub-index shifts from splitter changes are
+  re-linked by the manifest's same-id fingerprint pass (v1 manifests
+  can't be — one-time misalignment on partially-done steps, ticks just
+  need re-doing there).
+- **Acquisitions (2026-07-22):** "buy/purchase X" item goals are
+  transactions — carrying the item already does NOT tick them; the
+  carried count must RISE above a baseline captured when the sub first
+  became current (acquisitionBaseline, session-only, cleared on profile
+  switch). Bare list continuations inherit the purchase flag; an own
+  verb ("grab a knife") resets it.
+- **Mid-quest checkpoints (2026-07-22):** annotation requirements can be
+  `{"varbit": id, "value": n}` (or "varp") — met when the value reaches
+  n; keyed by SUB id ("stepId:14") they tick just that sub. Seeded:
+  Client of Kourend "up to activating the orb" = varbit 5619 (VEOS_
+  PROGRESS) >= 5 (values from Quest Helper's steps.put mapping).
+  BundledAnnotationKeysTest fails the build if any bundled key stops
+  resolving; PrintSubIdProbe (test sources, main()) prints step/sub ids
+  for authoring these.
 - **Known limits:** interaction/arrival detection is heuristic (proxy
   signals, not quest varbits — deliberate; QH-style per-quest authoring
-  rejected). (Counted-xp progress now persists via ProgressManager,
-  `counted_MAIN` config key; unticking a step/sub resets its counter.)
+  for STEP FLOW still rejected — varbit checkpoints are opt-in
+  annotations, not authored quest scripts). (Counted-xp progress now
+  persists via ProgressManager, `counted_MAIN` config key; unticking a
+  step/sub resets its counter.)
 
 Owner's testing profile: RuneLite profile "ironman test" (keep "IRONMAN"
 untouched). Jagex-account dev login via `--insecure-write-credentials`
