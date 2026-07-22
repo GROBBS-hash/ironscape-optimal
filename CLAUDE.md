@@ -234,9 +234,16 @@ All six build-order steps are DONE, plus substantial extras. Current state:
   verb ("grab a knife") resets it.
 - **Mid-quest checkpoints (2026-07-22):** annotation requirements can be
   `{"varbit": id, "value": n}` (or "varp") — met when the value reaches
-  n; keyed by SUB id ("stepId:14") they tick just that sub. Seeded:
-  Client of Kourend "up to activating the orb" = varbit 5619 (VEOS_
-  PROGRESS) >= 5 (values from Quest Helper's steps.put mapping).
+  n; keyed by SUB id ("stepId:14") they tick just that sub. Values come
+  from Quest Helper's steps.put maps (N = quest var value); var ids
+  from javap on the gameval VarbitID/VarPlayerID classes in the gradle
+  cache. Seeded: Client of Kourend orb (varbit 5619>=5, BRUH guide);
+  Oziris (in annotations_oziris.json, scraper preserves hand keys):
+  Dwarf Cannon->Nulodion varp 0>=9, Waterfall->gnome maze varp 65>=3,
+  Grand Tree->shipyard varp 150>=80, Lost Tribe->Varrock varbit
+  532>=5, ->Goblin Village varbit 532>=6. ALL "do X until <part>"
+  steps in the Oziris guide are covered; remaining "until" steps are
+  skill/gp targets the level-goal detector handles.
   BundledAnnotationKeysTest fails the build if any bundled key stops
   resolving; PrintSubIdProbe (test sources, main()) prints step/sub ids
   for authoring these.
