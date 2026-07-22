@@ -198,14 +198,13 @@ public class ItemTracker
 		mergeContainer(carried, client.getItemContainer(InventoryID.INV));
 		mergeContainer(carried, client.getItemContainer(InventoryID.WORN));
 
-		// The client caches the bank container even after you close the
-		// bank, and it's ALWAYS current when present — using it directly
-		// avoids double counting an item during the moment of withdrawal.
-		// The persisted snapshot only covers "haven't banked yet today".
-		ItemContainer liveBank = client.getItemContainer(InventoryID.BANK);
-		Map<String, Integer> bank = liveBank != null ? countByName(liveBank) : bankByName;
-
-		Map<String, Integer> total = new HashMap<>(bank);
+		// Bank counts come ONLY from bank container EVENTS (bankByName):
+		// withdrawals always fire one, so the snapshot tracks reality.
+		// We used to prefer client.getItemContainer(BANK) here, but that
+		// cached container was seen retaining withdrawn items ("steel axe
+		// 2/1" with one axe carried and none banked) — event-sourced state
+		// can't drift like that.
+		Map<String, Integer> total = new HashMap<>(bankByName);
 		carried.forEach((name, count) -> total.merge(name, count, Integer::sum));
 
 		synchronized (this)

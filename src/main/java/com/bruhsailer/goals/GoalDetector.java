@@ -531,6 +531,14 @@ public final class GoalDetector
 			}
 		}
 
+		// "a few cakes" is cakes, not an item called "few cakes". The
+		// vague quantity stays 1 — owning any satisfies "a few" poorly
+		// but predictably, and the badge counts the REAL item.
+		if (name.startsWith("few ") || name.startsWith("couple "))
+		{
+			name = name.substring(name.indexOf(' ') + 1);
+		}
+
 		// "110 logs" good; "110 of the things you like most" is not an item.
 		// "gp" gets a pass on the length rule — it's the guide's word for coins.
 		if ((name.length() < 3 && !name.equals("gp")) || name.split(" ").length > 4)
