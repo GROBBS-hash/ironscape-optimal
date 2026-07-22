@@ -804,12 +804,18 @@ public class BruhsailerPlugin extends Plugin
 			boolean missingAllBanked = true;
 			for (GoalDetector.ItemGoal goal : subGoals)
 			{
-				if (itemTracker.carriedCountOf(goal.getItemName()) >= goal.getQuantity())
+				// Gather goals (>28) count the bank by design — banking the
+				// planks is expected, never a reason to reopen the sub.
+				boolean gather = goal.getQuantity() > GoalDetector.CARRYABLE_LIMIT;
+				int count = gather
+					? itemTracker.countOf(goal.getItemName())
+					: itemTracker.carriedCountOf(goal.getItemName());
+				if (count >= goal.getQuantity())
 				{
 					continue;
 				}
 				missingSomething = true;
-				if (itemTracker.countOf(goal.getItemName()) < goal.getQuantity())
+				if (gather || itemTracker.countOf(goal.getItemName()) < goal.getQuantity())
 				{
 					missingAllBanked = false; // consumed, not banked: stays done
 					break;
@@ -1092,7 +1098,11 @@ public class BruhsailerPlugin extends Plugin
 					{
 						int carried = itemTracker.carriedCountOf(goal.getItemName());
 						int have = itemTracker.countOf(goal.getItemName());
-						java.awt.Color color = carried >= goal.getQuantity() ? OVERLAY_GREEN
+						// gather goals (>28) are green on TOTAL, like the panel
+						boolean enough = carried >= goal.getQuantity()
+							|| (goal.getQuantity() > GoalDetector.CARRYABLE_LIMIT
+								&& have >= goal.getQuantity());
+						java.awt.Color color = enough ? OVERLAY_GREEN
 							: have >= goal.getQuantity() ? OVERLAY_ORANGE : OVERLAY_RED;
 						reqs.add(new com.bruhsailer.overlay.StepOverlay.Requirement(
 							goal.getItemName(), have + "/" + goal.getQuantity(), color));
@@ -1426,7 +1436,14 @@ public class BruhsailerPlugin extends Plugin
 			}
 			for (GoalDetector.ItemGoal goal : itemGoals)
 			{
-				int carried = itemTracker.carriedCountOf(goal.getItemName());
+				// Carried only, so banked items don't tick "grab X" — EXCEPT
+				// gather goals bigger than an inventory ("pick up 130
+				// planks"): those count the bank too, because banking
+				// batches is how the gather happens.
+				boolean gather = goal.getQuantity() > GoalDetector.CARRYABLE_LIMIT;
+				int count = gather
+					? itemTracker.countOf(goal.getItemName())
+					: itemTracker.carriedCountOf(goal.getItemName());
 				// "buy shears from her shop" is a TRANSACTION: already
 				// carrying shears from three quests ago must not tick it.
 				// The first evaluation records how many you had when the
@@ -1437,21 +1454,19 @@ public class BruhsailerPlugin extends Plugin
 				{
 					String key = sub.getId() + "|" + goal.getItemName();
 					Integer baseline = acquisitionBaseline.get(key);
-					if (baseline == null || carried < baseline)
+					if (baseline == null || count < baseline)
 					{
 						// (Re)base — also downward, so banking the spares
 						// and then buying still registers as a gain.
-						acquisitionBaseline.put(key, carried);
-						baseline = carried;
+						acquisitionBaseline.put(key, count);
+						baseline = count;
 					}
-					if (carried <= baseline)
+					if (count <= baseline)
 					{
 						return false;
 					}
 				}
-				// Carried only: items sitting in the bank show an orange
-				// badge but do NOT tick the step for you.
-				if (carried < goal.getQuantity())
+				if (count < goal.getQuantity())
 				{
 					return false;
 				}

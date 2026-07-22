@@ -241,14 +241,17 @@ class StepRow extends JPanel
 
 		// green: carrying enough | orange: enough, but some is banked
 		// | red: not enough anywhere | grey: the step is already done,
-		// so the count is history, not a warning
+		// so the count is history, not a warning. Gather goals bigger
+		// than an inventory (130 planks) are green on TOTAL — carrying
+		// them all unnoted is impossible.
 		String color;
 		String note = "";
 		if (done)
 		{
 			color = "#808080";
 		}
-		else if (carried >= required)
+		else if (carried >= required
+			|| (required > GoalDetector.CARRYABLE_LIMIT && have >= required))
 		{
 			color = SATISFIED_HEX;
 		}

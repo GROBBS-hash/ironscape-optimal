@@ -136,6 +136,14 @@ public final class GoalDetector
 		"stay", "chop", "break", "drink", "eat", "empty", "fill", "rub", "activate",
 		"unnote", "train");
 
+	/**
+	 * An unnoted inventory holds 28 items. An item goal needing MORE than
+	 * that ("pick up 130 planks") can never be satisfied by carried count
+	 * alone — those goals count inventory + worn + bank instead, since
+	 * banking batches is exactly how the gather is supposed to happen.
+	 */
+	public static final int CARRYABLE_LIMIT = 28;
+
 	@Value
 	public static class ItemGoal
 	{
