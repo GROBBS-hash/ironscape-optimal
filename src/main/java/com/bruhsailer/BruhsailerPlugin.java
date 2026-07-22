@@ -208,10 +208,9 @@ public class BruhsailerPlugin extends Plugin
 	private final Map<GuideVariant, Guide> guides = new EnumMap<>(GuideVariant.class);
 
 	/**
-	 * The guide being followed, read from config ONCE at startUp — every
-	 * progress/annotation/goal structure in this class is built for one
-	 * variant, so changing it mid-session requires a plugin restart
-	 * (toggle off/on), as the config item says.
+	 * The guide being followed. Set at startUp and swapped live when the
+	 * config changes: onConfigChanged rebuilds all guide-derived state via
+	 * loadGuideState() on the client thread, then re-feeds the panel.
 	 */
 	private GuideVariant activeVariant = GuideVariant.OZIRIS;
 
@@ -381,7 +380,21 @@ public class BruhsailerPlugin extends Plugin
 	{
 		activeVariant = config.activeGuide();
 		annotationManager.load();
+		placeManager.load();
+		loadGuideState();
+		registerUi();
+	}
 
+	/**
+	 * (Re)builds everything derived from the ACTIVE guide: manifest
+	 * reconcile, requirements, detected goals and their per-sub lookup
+	 * maps. Called from startUp and again when the user switches guides
+	 * in the config — always on a thread that isn't racing the game tick
+	 * (startUp runs before the event subscriptions matter; the config
+	 * switch hops to the client thread first).
+	 */
+	private void loadGuideState()
+	{
 		// Did a guide refresh edit steps in place since last run? If so
 		// their ids changed (ids hash the text) — re-link saved progress
 		// and annotations BEFORE anything reads them.
@@ -399,7 +412,6 @@ public class BruhsailerPlugin extends Plugin
 		}
 		guideManifest.save(loadedGuide);
 
-		placeManager.load();
 		rebuildStepRequirements();
 		goals = GoalDetector.detect(guideFor(activeVariant));
 		itemGoalsBySub.clear();
@@ -446,7 +458,11 @@ public class BruhsailerPlugin extends Plugin
 			goals.getItemGoals().size(), goals.getQuestGoals().size());
 
 		cleanupStaleAmbientTicks();
+	}
 
+	/** Overlays, side panel and toolbar button — the once-per-startUp UI wiring. */
+	private void registerUi()
+	{
 		minigameTeleportOverlay.setTargetSupplier(() -> activeMinigameTarget);
 		overlayManager.add(minigameTeleportOverlay);
 		stepOverlay.setModelSupplier(() -> stepOverlayModel);
@@ -585,6 +601,32 @@ public class BruhsailerPlugin extends Plugin
 			|| "showCaptureButtons".equals(event.getKey()))
 		{
 			SwingUtilities.invokeLater(panel::refresh);
+		}
+		if ("activeGuide".equals(event.getKey()))
+		{
+			GuideVariant chosen = config.activeGuide();
+			if (chosen == activeVariant)
+			{
+				return;
+			}
+			// Swap on the client thread so the game-tick evaluator never
+			// sees half-rebuilt goal maps, then hand the new guide to Swing.
+			clientThread.invokeLater(() -> {
+				activeVariant = chosen;
+				acquisitionBaseline.clear();
+				stepOverlayModel = null;
+				targetTileMarker = null;
+				questStartMarker = null;
+				activeMinigameTarget = null;
+				clickedMinigameTarget = null;
+				loadGuideState();
+				SwingUtilities.invokeLater(() -> {
+					if (panel != null)
+					{
+						panel.setGuide(guideFor(chosen));
+					}
+				});
+			});
 		}
 	}
 

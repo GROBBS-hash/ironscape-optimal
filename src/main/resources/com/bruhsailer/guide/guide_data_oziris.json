@@ -23,6 +23,19 @@
                       "italic": true
                     }
                   }
+                ],
+                [
+                  {
+                    "text": "Modern alternative: The female-character requirement for Recruitment Drive was removed in November 2022 - Sir Leye can now be defeated by any character while unarmed (or with certain specific weapons). Pick whichever character you like.",
+                    "formatting": {
+                      "italic": true,
+                      "color": {
+                        "r": 0.298,
+                        "g": 0.686,
+                        "b": 0.31
+                      }
+                    }
+                  }
                 ]
               ]
             },
@@ -1112,7 +1125,9 @@
               "metadata": {
                 "location": "Port Sarim",
                 "quest": "Pandemonium",
-                "questStatus": "complete"
+                "questStatus": "complete",
+                "newQuest": "true",
+                "sailingRelated": "true"
               }
             },
             {
@@ -1171,6 +1186,19 @@
                     "text": "Note: UPDATE (Oct 2024): The Warmth Meter system has replaced HP-based damage entirely. A 10 HP player and a 99 HP player now take identical warmth damage, so there is no longer any advantage to rushing Wintertodt at low HP. Wear 4 warm clothing items for optimal warmth (Clue Hunter boots/gloves + the Rainbow scarf from Diango in Draynor; Gilbert near Barbarian Village unlocks a free Rainbow jumper). Rejuvenation potions now restore 30% Warmth per dose so no external food is needed. Supply crates have been replaced by a Reward Cart with a Big-search option. Bruma Herbs no longer grant Farming XP. Do whatever method you want; solo, mass, fletching the logs. If you want, feel free to get 99 firemaking in one go",
                     "formatting": {
                       "italic": true
+                    }
+                  }
+                ],
+                [
+                  {
+                    "text": "Modern alternative: The Warmth Meter (Oct 2024) removed the 10HP rushing advantage entirely. There is no longer any urgency to do Wintertodt before training HP. Focus on getting warm clothing (4 pieces) rather than low HP.",
+                    "formatting": {
+                      "italic": true,
+                      "color": {
+                        "r": 0.298,
+                        "g": 0.686,
+                        "b": 0.31
+                      }
                     }
                   }
                 ]
@@ -1940,7 +1968,8 @@
               "metadata": {
                 "location": "Giants' Foundry",
                 "quest": "Sleeping Giants",
-                "questStatus": "complete"
+                "questStatus": "complete",
+                "newQuest": "true"
               }
             },
             {
@@ -2378,7 +2407,8 @@
               "metadata": {
                 "location": "Varlamore",
                 "quest": "Children of the Sun",
-                "questStatus": "complete"
+                "questStatus": "complete",
+                "newQuest": "true"
               }
             },
             {
@@ -3394,6 +3424,21 @@
                   "formatting": {}
                 }
               ],
+              "additionalContent": [
+                [
+                  {
+                    "text": "Modern alternative: Goblin Diplomacy is now required before starting The Lost Tribe. Skip this step and steps 256/279 — instead, complete Goblin Diplomacy at step 278 first, then do The Lost Tribe entirely afterward (Lumbridge → Varrock → Goblin Village → Lumbridge). The extra travel is unavoidable but the guide is otherwise unaffected.",
+                    "formatting": {
+                      "italic": true,
+                      "color": {
+                        "r": 0.298,
+                        "g": 0.686,
+                        "b": 0.31
+                      }
+                    }
+                  }
+                ]
+              ],
               "metadata": {
                 "location": "Lumbridge",
                 "quest": "The Lost Tribe",
@@ -3466,7 +3511,8 @@
               "metadata": {
                 "location": "Wizard Tower",
                 "quest": "Temple of the Eye",
-                "questStatus": "complete"
+                "questStatus": "complete",
+                "newQuest": "true"
               }
             },
             {
@@ -3889,6 +3935,21 @@
                   "text": "Blackjack until 50 thieving, you can buy wines from the bar to use as food",
                   "formatting": {}
                 }
+              ],
+              "additionalContent": [
+                [
+                  {
+                    "text": "Modern alternative: Stealing Artefacts in Port Piscarilius is a viable alternative to blackjacking from 49 Thieving (~130-200k XP/hr, no favour needed since Jan 2024). Alternatively, Stealing Valuables in Varlamore is available at 50 Thieving and provides 70-105k XP/hr plus 90-150k GP/hr - less XP but great cash generation with lower click intensity.",
+                    "formatting": {
+                      "italic": true,
+                      "color": {
+                        "r": 0.298,
+                        "g": 0.686,
+                        "b": 0.31
+                      }
+                    }
+                  }
+                ]
               ],
               "metadata": {
                 "location": "Pollnivneach"
@@ -4339,6 +4400,19 @@
                     "text": "Note: 3 ticking makes this a lot faster if you can be bothered. Do medium clues if you get any from mining, might get a yew bow from reward (Comp bow works too, for temple of ikov). There are plenty of ways to get your magic up, i just like this since you get mining, smithing and later fletching xp as well. Don't smith the bars into anything yet",
                     "formatting": {
                       "italic": true
+                    }
+                  }
+                ],
+                [
+                  {
+                    "text": "Modern alternative: Consider using Giants' Foundry (from Sleeping Giants quest) for Smithing XP instead of traditional methods. It is significantly more XP/bar and provides Smithing-related rewards.",
+                    "formatting": {
+                      "italic": true,
+                      "color": {
+                        "r": 0.298,
+                        "g": 0.686,
+                        "b": 0.31
+                      }
                     }
                   }
                 ]
@@ -5286,7 +5360,8 @@
               "metadata": {
                 "location": "Varlamore",
                 "quest": "Twilight's Promise",
-                "questStatus": "complete"
+                "questStatus": "complete",
+                "newQuest": "true"
               }
             },
             {
@@ -5756,6 +5831,19 @@
                       "italic": true
                     }
                   }
+                ],
+                [
+                  {
+                    "text": "Modern alternative: Set Kingdom to 10 Hardwood (Teak or Mahogany) + 5 Herbs instead of Maples. Hardwood feeds Construction training and Sailing construction. Maples are much less useful now with many better Fletching methods available.",
+                    "formatting": {
+                      "italic": true,
+                      "color": {
+                        "r": 0.298,
+                        "g": 0.686,
+                        "b": 0.31
+                      }
+                    }
+                  }
                 ]
               ],
               "metadata": {
@@ -5998,6 +6086,19 @@
                       "italic": true
                     }
                   }
+                ],
+                [
+                  {
+                    "text": "Modern alternative: Rushing 88+ Thieving early isn't macroefficient according to the OSRS Wiki ironman money-making guide. Consider milestone Thieving instead: get the GP you need for kingdom and key unlocks (75 for hard diaries), then move on. The time saved can go toward quests and combat progression which compound more. Stealing Valuables in Varlamore provides steady cash later without the high click intensity. For the AFK melee suggestion in the note: Scurrius (Jan 2024, Varrock Sewers) now beats crabs for active mid-level melee training - crabs remain the truly AFK option.",
+                    "formatting": {
+                      "italic": true,
+                      "color": {
+                        "r": 0.298,
+                        "g": 0.686,
+                        "b": 0.31
+                      }
+                    }
+                  }
                 ]
               ],
               "metadata": {
@@ -6054,6 +6155,19 @@
                     "text": "Note: At 45% do mess hall until 100%",
                     "formatting": {
                       "italic": true
+                    }
+                  }
+                ],
+                [
+                  {
+                    "text": "Modern alternative: The Kourend favour system was removed in January 2024, so this step is no longer possible — skip it entirely. All Hosidius content (fruit stalls, farming patches, Tithe Farm, the Mess) is freely accessible now. The Mess still exists as optional Cooking training if you want it.",
+                    "formatting": {
+                      "italic": true,
+                      "color": {
+                        "r": 0.298,
+                        "g": 0.686,
+                        "b": 0.31
+                      }
                     }
                   }
                 ]
@@ -6454,6 +6568,19 @@
                       "italic": true
                     }
                   }
+                ],
+                [
+                  {
+                    "text": "Modern alternative: Mahogany Homes is available from level 1 Construction and provides ~3x more XP per plank than traditional methods. Use it if you prefer a less click-intensive approach.",
+                    "formatting": {
+                      "italic": true,
+                      "color": {
+                        "r": 0.298,
+                        "g": 0.686,
+                        "b": 0.31
+                      }
+                    }
+                  }
                 ]
               ],
               "metadata": {
@@ -6732,6 +6859,19 @@
                       "italic": true
                     }
                   }
+                ],
+                [
+                  {
+                    "text": "Modern alternative: Run energy was reworked in Jan 2025: lower-level regeneration is significantly better and energy drains slower in all scenarios. Full Graceful is less urgent now. Consider getting early Agility breakpoints for quests/diaries and collecting marks opportunistically, then coming back for full Graceful when it aligns with stamina production or long travel grinds.",
+                    "formatting": {
+                      "italic": true,
+                      "color": {
+                        "r": 0.298,
+                        "g": 0.686,
+                        "b": 0.31
+                      }
+                    }
+                  }
                 ]
               ],
               "metadata": {
@@ -6939,7 +7079,8 @@
               "metadata": {
                 "location": "Varlamore",
                 "quest": "Perilous Moons",
-                "questStatus": "complete"
+                "questStatus": "complete",
+                "newQuest": "true"
               }
             },
             {
@@ -6962,7 +7103,8 @@
               "metadata": {
                 "location": "Various",
                 "quest": "Defender of Varrock",
-                "questStatus": "complete"
+                "questStatus": "complete",
+                "newQuest": "true"
               }
             },
             {
@@ -6985,7 +7127,8 @@
               "metadata": {
                 "location": "Sophanem",
                 "quest": "Beneath Cursed Sands",
-                "questStatus": "complete"
+                "questStatus": "complete",
+                "newQuest": "true"
               }
             },
             {
@@ -7008,7 +7151,8 @@
               "metadata": {
                 "location": "Varlamore",
                 "quest": "At First Light",
-                "questStatus": "complete"
+                "questStatus": "complete",
+                "newQuest": "true"
               }
             },
             {
@@ -7188,6 +7332,19 @@
                       "italic": true
                     }
                   }
+                ],
+                [
+                  {
+                    "text": "Modern alternative: If you unlocked GOTR earlier, Runecraft no longer needs to be your lowest skill for Tears of Guthix. Redirect ToG to whichever skill you least enjoy training.",
+                    "formatting": {
+                      "italic": true,
+                      "color": {
+                        "r": 0.298,
+                        "g": 0.686,
+                        "b": 0.31
+                      }
+                    }
+                  }
                 ]
               ],
               "metadata": {
@@ -7267,6 +7424,21 @@
                   "text": "If you ever need something AFK to do, just go to ammonite crabs with either bone cbow if you want to catch less chins in the future, or melee them to speed up slayer",
                   "formatting": {}
                 }
+              ],
+              "additionalContent": [
+                [
+                  {
+                    "text": "Modern alternative: Scurrius (Jan 2024, Varrock Sewers) beats crabs for mid-level melee if you're playing actively - better XP/hr plus rat bone weapons and useful drops. Crabs remain the pick when you actually want AFK.",
+                    "formatting": {
+                      "italic": true,
+                      "color": {
+                        "r": 0.298,
+                        "g": 0.686,
+                        "b": 0.31
+                      }
+                    }
+                  }
+                ]
               ],
               "metadata": {
                 "location": "Various"
@@ -7454,7 +7626,8 @@
                 ]
               ],
               "metadata": {
-                "location": "Various"
+                "location": "Various",
+                "phase": "mid"
               }
             },
             {
@@ -7495,6 +7668,21 @@
                   "text": "Prioritize slayer points on: Superior slayer > Blocklist > Extend your favorite tasks > Slay ring > Slay helm > Garg smasher",
                   "formatting": {}
                 }
+              ],
+              "additionalContent": [
+                [
+                  {
+                    "text": "Modern alternative: Updated priority: Bigger and Badder (superiors, 150pts) is the #1 unlock. Then extend good tasks and build your block list based on your assigned Slayer master. Use per-master block lists for efficiency.",
+                    "formatting": {
+                      "italic": true,
+                      "color": {
+                        "r": 0.298,
+                        "g": 0.686,
+                        "b": 0.31
+                      }
+                    }
+                  }
+                ]
               ],
               "metadata": {
                 "location": "Various"
@@ -7692,6 +7880,19 @@
                       "italic": true
                     }
                   }
+                ],
+                [
+                  {
+                    "text": "Modern alternative: Giants' Foundry (unlocked via Sleeping Giants at step 1.1.145a) supersedes steel platebodies entirely: 85-135k Smithing XP/hr depending on level, profitable rather than break-even, and it awards the Smiths' Uniform for bonus XP. Take your bars there instead.",
+                    "formatting": {
+                      "italic": true,
+                      "color": {
+                        "r": 0.298,
+                        "g": 0.686,
+                        "b": 0.31
+                      }
+                    }
+                  }
                 ]
               ],
               "metadata": {
@@ -7828,7 +8029,8 @@
                 ]
               ],
               "metadata": {
-                "location": "Varlamore"
+                "location": "Varlamore",
+                "phase": "mid"
               }
             },
             {
@@ -7849,7 +8051,8 @@
                 ]
               ],
               "metadata": {
-                "location": "Royal Titans"
+                "location": "Royal Titans",
+                "phase": "mid"
               }
             },
             {
@@ -7881,7 +8084,8 @@
                 ]
               ],
               "metadata": {
-                "location": "Various"
+                "location": "Various",
+                "phase": "mid"
               }
             },
             {
@@ -7902,7 +8106,8 @@
                 ]
               ],
               "metadata": {
-                "location": "Various"
+                "location": "Various",
+                "phase": "mid"
               }
             },
             {
@@ -7923,7 +8128,8 @@
                 ]
               ],
               "metadata": {
-                "location": "Varlamore"
+                "location": "Varlamore",
+                "phase": "mid"
               }
             },
             {
@@ -7944,7 +8150,8 @@
                 ]
               ],
               "metadata": {
-                "location": "Tombs of Amascut"
+                "location": "Tombs of Amascut",
+                "phase": "late"
               }
             },
             {
@@ -7965,7 +8172,8 @@
                 ]
               ],
               "metadata": {
-                "location": "Tombs of Amascut"
+                "location": "Tombs of Amascut",
+                "phase": "late"
               }
             },
             {
@@ -7988,7 +8196,9 @@
               "metadata": {
                 "location": "Various",
                 "quest": "While Guthix Sleeps",
-                "questStatus": "complete"
+                "questStatus": "complete",
+                "phase": "late",
+                "newQuest": "true"
               }
             },
             {
@@ -8011,7 +8221,9 @@
               "metadata": {
                 "location": "Various",
                 "quest": "Secrets of the North",
-                "questStatus": "complete"
+                "questStatus": "complete",
+                "phase": "late",
+                "newQuest": "true"
               }
             },
             {
@@ -8032,7 +8244,8 @@
                 ]
               ],
               "metadata": {
-                "location": "Various"
+                "location": "Various",
+                "phase": "late"
               }
             },
             {
@@ -8055,7 +8268,9 @@
               "metadata": {
                 "location": "Various",
                 "quest": "Desert Treasure II",
-                "questStatus": "complete"
+                "questStatus": "complete",
+                "phase": "late",
+                "newQuest": "true"
               }
             },
             {
@@ -8076,7 +8291,8 @@
                 ]
               ],
               "metadata": {
-                "location": "Various"
+                "location": "Various",
+                "phase": "late"
               }
             },
             {
@@ -8097,7 +8313,8 @@
                 ]
               ],
               "metadata": {
-                "location": "God Wars Dungeon"
+                "location": "God Wars Dungeon",
+                "phase": "late"
               }
             },
             {
@@ -8118,7 +8335,8 @@
                 ]
               ],
               "metadata": {
-                "location": "Tormented Demons"
+                "location": "Tormented Demons",
+                "phase": "late"
               }
             },
             {
@@ -8139,7 +8357,8 @@
                 ]
               ],
               "metadata": {
-                "location": "Fortis Colosseum"
+                "location": "Fortis Colosseum",
+                "phase": "endgame"
               }
             },
             {
@@ -8160,7 +8379,8 @@
                 ]
               ],
               "metadata": {
-                "location": "Nex"
+                "location": "Nex",
+                "phase": "endgame"
               }
             },
             {
@@ -8181,7 +8401,8 @@
                 ]
               ],
               "metadata": {
-                "location": "Chambers of Xeric"
+                "location": "Chambers of Xeric",
+                "phase": "endgame"
               }
             },
             {
@@ -8202,7 +8423,8 @@
                 ]
               ],
               "metadata": {
-                "location": "Theatre of Blood"
+                "location": "Theatre of Blood",
+                "phase": "endgame"
               }
             },
             {
@@ -8223,7 +8445,8 @@
                 ]
               ],
               "metadata": {
-                "location": "Yama"
+                "location": "Yama",
+                "phase": "endgame"
               }
             },
             {
@@ -8244,7 +8467,8 @@
                 ]
               ],
               "metadata": {
-                "location": "Doom of Mokhaiotl"
+                "location": "Doom of Mokhaiotl",
+                "phase": "endgame"
               }
             },
             {
@@ -8265,7 +8489,8 @@
                 ]
               ],
               "metadata": {
-                "location": "Tombs of Amascut"
+                "location": "Tombs of Amascut",
+                "phase": "endgame"
               }
             }
           ]
@@ -8296,7 +8521,8 @@
                 ]
               ],
               "metadata": {
-                "location": "Port Sarim"
+                "location": "Port Sarim",
+                "sailingRelated": "true"
               }
             },
             {
@@ -8317,7 +8543,8 @@
                 ]
               ],
               "metadata": {
-                "location": "Port Sarim"
+                "location": "Port Sarim",
+                "sailingRelated": "true"
               }
             },
             {
@@ -8340,7 +8567,9 @@
               "metadata": {
                 "location": "Various",
                 "quest": "Prying Times",
-                "questStatus": "complete"
+                "questStatus": "complete",
+                "newQuest": "true",
+                "sailingRelated": "true"
               }
             },
             {
@@ -8361,7 +8590,8 @@
                 ]
               ],
               "metadata": {
-                "location": "Various"
+                "location": "Various",
+                "sailingRelated": "true"
               }
             },
             {
@@ -8384,7 +8614,9 @@
               "metadata": {
                 "location": "Various",
                 "quest": "Current Affairs",
-                "questStatus": "complete"
+                "questStatus": "complete",
+                "newQuest": "true",
+                "sailingRelated": "true"
               }
             },
             {
@@ -8405,7 +8637,8 @@
                 ]
               ],
               "metadata": {
-                "location": "Various"
+                "location": "Various",
+                "sailingRelated": "true"
               }
             },
             {
@@ -8428,7 +8661,9 @@
               "metadata": {
                 "location": "Various",
                 "quest": "Troubled Tortugans",
-                "questStatus": "complete"
+                "questStatus": "complete",
+                "newQuest": "true",
+                "sailingRelated": "true"
               }
             },
             {
@@ -8451,7 +8686,9 @@
               "metadata": {
                 "location": "Various",
                 "quest": "The Red Reef",
-                "questStatus": "complete"
+                "questStatus": "complete",
+                "newQuest": "true",
+                "sailingRelated": "true"
               }
             },
             {
@@ -8472,7 +8709,8 @@
                 ]
               ],
               "metadata": {
-                "location": "Various"
+                "location": "Various",
+                "sailingRelated": "true"
               }
             },
             {
@@ -8493,7 +8731,8 @@
                 ]
               ],
               "metadata": {
-                "location": "Various"
+                "location": "Various",
+                "sailingRelated": "true"
               }
             },
             {
@@ -8514,7 +8753,8 @@
                 ]
               ],
               "metadata": {
-                "location": "Various"
+                "location": "Various",
+                "sailingRelated": "true"
               }
             }
           ]

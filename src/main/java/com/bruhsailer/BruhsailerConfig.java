@@ -39,7 +39,7 @@ public interface BruhsailerConfig extends Config
 	@ConfigItem(
 		keyName = "activeGuide",
 		name = "Guide",
-		description = "Which guide to follow. Progress is kept separately per guide. Toggle the plugin off and on after changing."
+		description = "Which guide to follow. Progress is kept separately per guide; switching takes effect immediately."
 	)
 	default com.bruhsailer.guide.GuideVariant activeGuide()
 	{
