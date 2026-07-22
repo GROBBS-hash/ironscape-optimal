@@ -395,15 +395,33 @@ public final class GoalDetector
 		return goals;
 	}
 
+	/**
+	 * Clause glue that can precede the real action verb: "and do a lap...",
+	 * "then chop...". Skipped before the verb lookup.
+	 */
+	private static final java.util.Set<String> LEADING_CONNECTIVES = java.util.Set.of(
+		"and", "then", "also", "now", "next", "finally", "optionally");
+
+	/** "do a lap of the Shayzien agility course" -> an Agility XP drop. */
+	private static final Pattern AGILITY_LAP = Pattern.compile(
+		"\\blaps?\\b.*\\bagility course\\b", Pattern.CASE_INSENSITIVE);
+
 	/** "Chop down a dying tree" -> a Woodcutting XP drop completes it. */
 	private static void detectActionGoal(GuideStep step, SubStep sub, List<SkillActionGoal> out)
 	{
-		String[] words = sub.getPlainText().trim().toLowerCase(Locale.ROOT).split("[^a-z]+", 2);
-		if (words.length == 0 || words[0].isEmpty())
+		String text = sub.getPlainText().trim().toLowerCase(Locale.ROOT);
+		String[] words = text.split("[^a-z]+");
+		int first = 0;
+		while (first < words.length
+			&& (words[first].isEmpty() || LEADING_CONNECTIVES.contains(words[first])))
 		{
-			return;
+			first++;
 		}
-		Skill skill = ACTION_VERB_SKILLS.get(words[0]);
+		Skill skill = first < words.length ? ACTION_VERB_SKILLS.get(words[first]) : null;
+		if (skill == null && AGILITY_LAP.matcher(text).find())
+		{
+			skill = Skill.AGILITY;
+		}
 		if (skill != null)
 		{
 			out.add(new SkillActionGoal(step, sub, skill));

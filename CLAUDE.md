@@ -240,6 +240,15 @@ All six build-order steps are DONE, plus substantial extras. Current state:
   BundledAnnotationKeysTest fails the build if any bundled key stops
   resolving; PrintSubIdProbe (test sources, main()) prints step/sub ids
   for authoring these.
+- **Target tile marker (2026-07-22):** TargetTileOverlay highlights the
+  current sub's annotated ⌖ target tile (orange fill + floating arrow;
+  toggle showTargetMarker) — nav already routed to sub targets, now the
+  exact spot is visible too. Seeded: Clue hunter garb dig spot
+  (af7ae8942e:20 -> 1595,3628). POIs get place links by adding them to
+  places.json (seeded: shayzien agility course 1554,3630 — link + nav
+  fallback via firstPlaceIn). Action-goal detection now skips leading
+  connectives ("and do...") and maps "lap of ... agility course" to an
+  AGILITY xp-drop goal.
 - **Known limits:** interaction/arrival detection is heuristic (proxy
   signals, not quest varbits — deliberate; QH-style per-quest authoring
   for STEP FLOW still rejected — varbit checkpoints are opt-in

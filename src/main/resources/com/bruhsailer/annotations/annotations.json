@@ -7,6 +7,13 @@
         "value": 5
       }
     },
+    "af7ae8942e:20": {
+      "target": {
+        "x": 1595,
+        "y": 3628,
+        "plane": 0
+      }
+    },
     "0b04db5277": {
       "requires": {
         "skill": "FIREMAKING",
