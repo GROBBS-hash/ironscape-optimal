@@ -101,10 +101,8 @@ class StepRow extends JPanel
 		// panel) and its links ("Safespot location") actually click.
 		for (List<TextRun> paragraph : step.getAdditionalContent())
 		{
-			JEditorPane note = htmlPane(RichText.paragraphHtml(paragraph), 22);
-			note.setFont(new Font(Font.DIALOG, Font.ITALIC, 11));
-			note.setForeground(ColorScheme.LIGHT_GRAY_COLOR);
-			add(note);
+			add(htmlPane(RichText.paragraphHtml(paragraph), 22,
+				new Font(Font.DIALOG, Font.ITALIC, 11), ColorScheme.LIGHT_GRAY_COLOR));
 		}
 	}
 
@@ -169,41 +167,47 @@ class StepRow extends JPanel
 		{
 			return;
 		}
+		SubStep badgeSub = sub;
+
+		if (!needs.isEmpty())
+		{
+			// One line per item, Quest Helper-style: the item's sprite next
+			// to a colored have/need count. Vertical list = nothing to wrap.
+			JPanel list = new JPanel();
+			list.setLayout(new BoxLayout(list, BoxLayout.Y_AXIS));
+			list.setBackground(ColorScheme.DARK_GRAY_COLOR);
+			list.setAlignmentX(LEFT_ALIGNMENT);
+			list.setBorder(BorderFactory.createEmptyBorder(0, indentPx, 2, 0));
+			list.setToolTipText("<html>Counts inventory + worn + bank (bank as of your last visit)</html>");
+			for (StepAnnotation.ItemNeed need : needs)
+			{
+				JLabel line = new JLabel();
+				line.setFont(new Font(Font.DIALOG, Font.PLAIN, 11));
+				line.setIconTextGap(4);
+				line.setAlignmentX(LEFT_ALIGNMENT);
+				line.setToolTipText("Matches item name \"" + RichText.escape(need.name) + "\"");
+				ctx.getItems().attachIcon(need.name, line);
+				Runnable refresh = () -> line.setText(itemLineHtml(need, isBadgeDone(badgeSub)));
+				refresh.run();
+				badgeRefreshers.add(refresh);
+				list.add(line);
+			}
+			add(list);
+			return;
+		}
+
 		JLabel badge = new JLabel();
 		badge.setFont(new Font(Font.DIALOG, Font.PLAIN, 11));
 		badge.setBorder(BorderFactory.createEmptyBorder(0, indentPx, 2, 0));
 		badge.setAlignmentX(LEFT_ALIGNMENT);
+		badge.setToolTipText("Live progress toward this goal (your skill level, or xp drops counted so far)");
 		// indent + wrap width must stay inside the panel column, or this
 		// badge widens EVERY row and pushes the buttons off-screen
 		int wrapWidth = Math.max(80, 170 - indentPx);
-		if (!needs.isEmpty())
-		{
-			StringBuilder tip = new StringBuilder("<html>Counts inventory + worn + bank "
-				+ "(bank as of your last visit).<br>Matching item names:");
-			for (StepAnnotation.ItemNeed need : needs)
-			{
-				tip.append(" \"").append(RichText.escape(need.name)).append('"');
-			}
-			badge.setToolTipText(tip.append("</html>").toString());
-		}
-		else
-		{
-			badge.setToolTipText("Live progress toward this goal (your skill level, or xp drops counted so far)");
-		}
-		List<StepAnnotation.ItemNeed> badgeNeeds = needs;
 		String actionSubId = goalSubId;
-		SubStep badgeSub = sub;
 		Runnable refresh = () -> {
-			boolean done = badgeSub == null
-				? ctx.getProgress().isCompleted(ctx.getVariant(), step.getId())
-				: ctx.getProgress().isSubCompleted(ctx.getVariant(), step, badgeSub);
-			if (!badgeNeeds.isEmpty())
-			{
-				badge.setText(badgeHtml(badgeNeeds, wrapWidth, done));
-				return;
-			}
 			String action = ctx.getActionBadge().apply(actionSubId);
-			if (done && action != null)
+			if (isBadgeDone(badgeSub) && action != null)
 			{
 				// The supplier bakes its own colors in; on a done row they
 				// all become the completed-text grey.
@@ -217,55 +221,47 @@ class StepRow extends JPanel
 		add(badge);
 	}
 
-	private String badgeHtml(List<StepAnnotation.ItemNeed> needs, int wrapWidth, boolean done)
+	/** Is the sub (or, for header badges, the whole step) ticked off? */
+	private boolean isBadgeDone(SubStep sub)
 	{
-		// The width style makes long badges WRAP instead of widening the
-		// whole panel column (which would break text wrapping everywhere).
-		StringBuilder sb = new StringBuilder("<html><body style='width:" + wrapWidth + "px'>");
-		for (int i = 0; i < needs.size(); i++)
+		return sub == null
+			? ctx.getProgress().isCompleted(ctx.getVariant(), step.getId())
+			: ctx.getProgress().isSubCompleted(ctx.getVariant(), step, sub);
+	}
+
+	/** One item's colored "name have/need" line, greyed once its row is done. */
+	private String itemLineHtml(StepAnnotation.ItemNeed need, boolean done)
+	{
+		int required = need.quantity == null ? 1 : need.quantity;
+		int have = ctx.getItems().countOf(need.name);
+		int carried = ctx.getItems().carriedCountOf(need.name);
+
+		// green: carrying enough | orange: enough, but some is banked
+		// | red: not enough anywhere | grey: the step is already done,
+		// so the count is history, not a warning
+		String color;
+		String note = "";
+		if (done)
 		{
-			StepAnnotation.ItemNeed need = needs.get(i);
-			int required = need.quantity == null ? 1 : need.quantity;
-			int have = ctx.getItems().countOf(need.name);
-			int carried = ctx.getItems().carriedCountOf(need.name);
-
-			// green: carrying enough | orange: enough, but some is banked
-			// | red: not enough anywhere | grey: the step is already done,
-			// so the count is history, not a warning
-			String color;
-			String note = "";
-			if (done)
-			{
-				color = "#808080";
-			}
-			else if (carried >= required)
-			{
-				color = SATISFIED_HEX;
-			}
-			else if (have >= required)
-			{
-				color = IN_BANK_HEX;
-				note = " (in bank)";
-			}
-			else
-			{
-				color = MISSING_HEX;
-			}
-
-			if (i > 0)
-			{
-				sb.append(" <font color='#606060'>·</font> ");
-			}
-			// The count and "(in bank)" stay glued to the item name
-			// (non-breaking spaces), so entries wrap as whole units
-			// instead of stranding "bank)" on its own line.
-			sb.append("<b><font color='").append(color).append("'>")
-				.append(RichText.escape(need.name)).append("&nbsp;")
-				.append(have).append('/').append(required)
-				.append(note.isEmpty() ? "" : "&nbsp;(in&nbsp;bank)")
-				.append("</font></b>");
+			color = "#808080";
 		}
-		return sb.append("</body></html>").toString();
+		else if (carried >= required)
+		{
+			color = SATISFIED_HEX;
+		}
+		else if (have >= required)
+		{
+			color = IN_BANK_HEX;
+			note = " (in bank)";
+		}
+		else
+		{
+			color = MISSING_HEX;
+		}
+		return "<html><body style='width:120px'><b><font color='" + color + "'>"
+			+ RichText.escape(need.name) + "&nbsp;" + have + "/" + required
+			+ (note.isEmpty() ? "" : "&nbsp;(in&nbsp;bank)")
+			+ "</font></b></body></html>";
 	}
 
 	/** Header for multi-action steps: master checkbox + label + step-level buttons. */
@@ -460,9 +456,8 @@ class StepRow extends JPanel
 			}
 			html.append(chipHtml("📜 " + quest + (completes ? " ✓" : ""), quest));
 		}
-		JEditorPane chips = htmlPane("<html><body style='width:" + (TEXT_WIDTH + 30) + "px'>"
-			+ html + "</body></html>", 22);
-		chips.setFont(new Font(Font.DIALOG, Font.PLAIN, 11));
+		JEditorPane chips = htmlPane("<html><body>" + html + "</body></html>", 22,
+			new Font(Font.DIALOG, Font.PLAIN, 11), ColorScheme.LIGHT_GRAY_COLOR);
 		chips.setToolTipText("Show the route (needs the Shortest Path plugin)");
 		add(chips);
 	}
@@ -485,14 +480,21 @@ class StepRow extends JPanel
 	/**
 	 * A non-editable HTML pane, width-locked the same way sub-step text
 	 * is (see SubRowUi#setHtml) and wired to the shared link handler.
+	 *
+	 * Font and color are parameters because with HONOR_DISPLAY_PROPERTIES
+	 * they must be set BEFORE setText: changing them afterwards rebuilds
+	 * the HTML views, which come back laid out at the text's unwrapped
+	 * width — the "notes clip instead of wrapping" bug.
 	 */
-	private JEditorPane htmlPane(String html, int leftIndent)
+	private JEditorPane htmlPane(String html, int leftIndent, Font font, java.awt.Color foreground)
 	{
 		JEditorPane pane = new JEditorPane();
 		pane.setContentType("text/html");
 		pane.setEditable(false);
 		pane.setOpaque(false);
 		pane.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, Boolean.TRUE);
+		pane.setFont(font);
+		pane.setForeground(foreground);
 		pane.setBorder(BorderFactory.createEmptyBorder(2, leftIndent, 0, 0));
 		pane.setAlignmentX(LEFT_ALIGNMENT);
 		pane.addHyperlinkListener(this::handleLink);
