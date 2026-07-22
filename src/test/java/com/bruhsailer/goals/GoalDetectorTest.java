@@ -57,6 +57,20 @@ public class GoalDetectorTest
 	}
 
 	@Test
+	public void agilityLapAndLeadingConnectiveProduceActionGoals()
+	{
+		Guide guide = guideWithSubTexts(
+			"and do a lap of the Shayzien agility course for the diary.",
+			"then chop a regular tree");
+
+		GoalDetector.Goals goals = GoalDetector.detect(guide);
+
+		assertEquals(2, goals.getSkillActionGoals().size());
+		assertEquals(net.runelite.api.Skill.AGILITY, goals.getSkillActionGoals().get(0).getSkill());
+		assertEquals(net.runelite.api.Skill.WOODCUTTING, goals.getSkillActionGoals().get(1).getSkill());
+	}
+
+	@Test
 	public void buyIsAnAcquisitionAndBareContinuationsInheritIt()
 	{
 		Guide guide = guideWithSubTexts(

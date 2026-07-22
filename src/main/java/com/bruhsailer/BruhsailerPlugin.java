@@ -174,6 +174,9 @@ public class BruhsailerPlugin extends Plugin
 	@Inject
 	private com.bruhsailer.overlay.NpcTargetOverlay npcTargetOverlay;
 
+	@Inject
+	private com.bruhsailer.overlay.TargetTileOverlay targetTileOverlay;
+
 	/** Lowercased names of scene NPCs the current sub mentions. Written per tick. */
 	private volatile java.util.Set<String> npcTargetNames = java.util.Collections.emptySet();
 
@@ -182,6 +185,9 @@ public class BruhsailerPlugin extends Plugin
 
 	/** Where the quest-start icon floats; null = hidden. Written per tick. */
 	private volatile WorldPoint questStartMarker;
+
+	/** The current sub's annotated ⌖ target tile; null = hidden. Written per tick. */
+	private volatile WorldPoint targetTileMarker;
 
 	/** Quest whose start marker was requested by clicking its link. */
 	private Quest clickedQuest;
@@ -441,6 +447,8 @@ public class BruhsailerPlugin extends Plugin
 		npcTargetOverlay.setNamesSupplier(() -> npcTargetNames);
 		npcTargetOverlay.setQuestIconSupplier(() -> currentSubIsQuest);
 		overlayManager.add(npcTargetOverlay);
+		targetTileOverlay.setTargetSupplier(() -> targetTileMarker);
+		overlayManager.add(targetTileOverlay);
 
 		panel = panelProvider.get();
 		panel.setItemGoals(itemGoalsBySub);
@@ -516,9 +524,11 @@ public class BruhsailerPlugin extends Plugin
 		overlayManager.remove(stepOverlay);
 		overlayManager.remove(questStartMarkerOverlay);
 		overlayManager.remove(npcTargetOverlay);
+		overlayManager.remove(targetTileOverlay);
 		npcTargetNames = java.util.Collections.emptySet();
 		currentSubIsQuest = false;
 		questStartMarker = null;
+		targetTileMarker = null;
 		clickedQuest = null;
 		clickedQuestTicks = 0;
 		stepOverlayModel = null;
@@ -925,6 +935,24 @@ public class BruhsailerPlugin extends Plugin
 			}
 		}
 		questStartMarker = marker;
+
+		// Exact-spot marker: if the current sub (or its single-action
+		// step) has an annotated ⌖ target, highlight that tile in the
+		// world — dig spots, item spawns, and other precise locations.
+		WorldPoint spot = null;
+		if (config.showTargetMarker() && current != null)
+		{
+			StepAnnotation.Target target = annotationManager.getTarget(current.sub.getId());
+			if (target == null && current.step.getSubSteps().size() == 1)
+			{
+				target = annotationManager.getTarget(current.step.getId());
+			}
+			if (target != null)
+			{
+				spot = new WorldPoint(target.x, target.y, target.plane);
+			}
+		}
+		targetTileMarker = spot;
 
 		// NPC targets: outline scene NPCs whose name the current sub-step
 		// mentions ("speak with Veos" -> Veos). Names matched once per

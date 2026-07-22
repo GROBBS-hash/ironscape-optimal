@@ -67,6 +67,16 @@ public interface BruhsailerConfig extends Config
 	}
 
 	@ConfigItem(
+		keyName = "showTargetMarker",
+		name = "Mark target tile",
+		description = "Highlight the exact tile of the current step's captured ⌖ location in the world (dig spots, item spawns)"
+	)
+	default boolean showTargetMarker()
+	{
+		return true;
+	}
+
+	@ConfigItem(
 		keyName = "showTeleportHints",
 		name = "Highlight teleport UI",
 		description = "When the current step is a minigame teleport, highlight the tab, dropdown entry, and Teleport button to click, Quest Helper-style"
