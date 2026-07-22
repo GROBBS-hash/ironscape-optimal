@@ -52,8 +52,10 @@ public class BankFilterButton
 		Widget parent = client.getWidget(InterfaceID.Bankmain.UNIVERSE);
 		if (parent == null)
 		{
+			log.info("bank filter button: bank UNIVERSE widget missing — button not created");
 			return;
 		}
+		log.info("bank filter button: created on bank open");
 		active = false;
 
 		background = createGraphic(parent, "IRONSCAPE Optimal",

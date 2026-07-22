@@ -304,6 +304,18 @@ public class BruhsailerPlugin extends Plugin
 	private static final int AUTO_COMPLETE_WINDOW = 8;
 
 	/**
+	 * The in-order lookahead for auto-completion. Tuned as 8 CLAUSES for
+	 * the prose guide; on an atomic guide 8 would mean eight whole STEPS
+	 * of reach, letting one strong signal tick far ahead of the player —
+	 * a single out-of-order tick then drags the frontier (and Resume,
+	 * navigation, item detection) past everything in between.
+	 */
+	private int autoCompleteWindow()
+	{
+		return activeVariant.isAtomicSteps() ? 4 : AUTO_COMPLETE_WINDOW;
+	}
+
+	/**
 	 * Well-known bank locations, for "your items are in the bank" routing.
 	 * Includes bank CHESTS, not just booths — routing someone standing at
 	 * Port Khazard all the way to Ardougne is worse than useless. Targets
@@ -673,7 +685,7 @@ public class BruhsailerPlugin extends Plugin
 
 		if (gainedXp && config.autoCompleteSteps())
 		{
-			List<Current> window = findWindow(AUTO_COMPLETE_WINDOW);
+			List<Current> window = findWindow(autoCompleteWindow());
 			GuideStep frontierStep = window.isEmpty() ? null : window.get(0).step;
 			for (Current current : window)
 			{
@@ -691,7 +703,7 @@ public class BruhsailerPlugin extends Plugin
 				if (event.getSkill() == actionGoalBySub.get(subId))
 				{
 					// "Chop down a dying tree" + Woodcutting xp = done.
-					completeSubGoal(current.step, current.sub);
+					completeSubGoal(current.step, current.sub, event.getSkill() + " xp drop");
 					break;
 				}
 				GoalDetector.CountedSkillGoal counted = countedGoalBySub.get(subId);
@@ -701,7 +713,8 @@ public class BruhsailerPlugin extends Plugin
 					int seen = progressManager.incrementCounted(activeVariant, subId);
 					if (seen >= counted.getCount())
 					{
-						completeSubGoal(current.step, current.sub);
+						completeSubGoal(current.step, current.sub,
+							"counted " + event.getSkill() + " drops");
 					}
 					if (panel != null)
 					{
@@ -1312,7 +1325,7 @@ public class BruhsailerPlugin extends Plugin
 		for (int guard = 0; guard < 100; guard++)
 		{
 			boolean completedSomething = false;
-			List<Current> window = findWindow(AUTO_COMPLETE_WINDOW);
+			List<Current> window = findWindow(autoCompleteWindow());
 			GuideStep frontierStep = window.isEmpty() ? null : window.get(0).step;
 			for (int i = 0; i < window.size(); i++)
 			{
@@ -1321,7 +1334,7 @@ public class BruhsailerPlugin extends Plugin
 				List<StepRequirement> requirements = stepSkillRequirements.get(current.step.getId());
 				if (requirements != null && requirementsMet(requirements))
 				{
-					completeStep(current.step);
+					completeStep(current.step, "annotated requirements met");
 					completedSomething = true;
 					break; // window shifted; rebuild it
 				}
@@ -1333,7 +1346,7 @@ public class BruhsailerPlugin extends Plugin
 				List<StepRequirement> subReqs = subRequirements.get(current.sub.getId());
 				if (subReqs != null && requirementsMet(subReqs))
 				{
-					completeSubGoal(current.step, current.sub);
+					completeSubGoal(current.step, current.sub, "quest checkpoint (varbit/varp)");
 					completedSomething = true;
 					break;
 				}
@@ -1341,7 +1354,7 @@ public class BruhsailerPlugin extends Plugin
 				if (currentSubSatisfied(current.step, current.sub, i == 0,
 					current.step == frontierStep))
 				{
-					completeSubGoal(current.step, current.sub);
+					completeSubGoal(current.step, current.sub, "goal satisfied (items/quest/level/arrival)");
 					if (travelGoalSubs.contains(current.sub.getId()))
 					{
 						// one teleport completes one travel sub-step
@@ -1573,8 +1586,13 @@ public class BruhsailerPlugin extends Plugin
 	}
 
 	/** A whole step completed by its skill requirement annotation. */
-	private void completeStep(GuideStep step)
+	private void completeStep(GuideStep step, String reason)
 	{
+		// ALWAYS logged (even silent login-grace catch-ups): when a stray
+		// tick drags the frontier ahead, this line is the forensic trail.
+		log.info("auto-completed step {} ({}){}: {}", step.getId(), reason,
+			loginGraceTicks > 0 ? " [login grace]" : "",
+			step.getPlainText().trim());
 		progressManager.setCompleted(activeVariant, step, true);
 		if (loginGraceTicks == 0)
 		{
@@ -1595,8 +1613,12 @@ public class BruhsailerPlugin extends Plugin
 	}
 
 	/** Mark one goal sub-step done: persist, announce (unless just logged in), update the panel. */
-	private void completeSubGoal(GuideStep step, SubStep sub)
+	private void completeSubGoal(GuideStep step, SubStep sub, String reason)
 	{
+		// See completeStep: the permanent forensic trail for auto-ticks.
+		log.info("auto-completed sub {} ({}){}: {}", sub.getId(), reason,
+			loginGraceTicks > 0 ? " [login grace]" : "",
+			sub.getPlainText().trim());
 		progressManager.setSubCompleted(activeVariant, step, sub, true);
 
 		if (loginGraceTicks == 0)
