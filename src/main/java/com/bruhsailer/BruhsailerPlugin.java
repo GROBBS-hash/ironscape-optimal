@@ -1918,11 +1918,25 @@ public class BruhsailerPlugin extends Plugin
 			return;
 		}
 
-		WorldPoint point = placeManager.get(placeName);
-		if (point == null)
+		WorldPoint found = placeManager.get(placeName);
+		if (found == null)
 		{
+			// Oziris location tags are often directional ("North of
+			// Ardougne", "West of Lumbridge") — route to the base place;
+			// close enough to be useful.
+			String base = placeName.replaceFirst(
+				"(?i)^(?:north|south|east|west)(?:[ -](?:north|south|east|west))?\\s+of\\s+(?:the\\s+)?", "");
+			found = placeManager.get(base);
+		}
+		if (found == null)
+		{
+			// Silence reads as breakage — say why the click did nothing.
+			clientThread.invokeLater(() -> client.addChatMessage(ChatMessageType.CONSOLE, "",
+				"IRONSCAPE: no saved location for \"" + placeName
+					+ "\" — stand there and add it with the panel's + button.", null));
 			return;
 		}
+		WorldPoint point = found; // effectively final for the lambdas below
 
 		// Quest links point at the quest's START. Once the quest is under
 		// way that's the wrong place — Quest Helper (its own plugin) is the

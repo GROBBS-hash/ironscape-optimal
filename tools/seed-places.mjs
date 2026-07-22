@@ -39,28 +39,45 @@ const REQUEST_DELAY_MS = 600; // be polite to the wiki
 // 1. Collect NPC names the guide actually tells you to talk to
 // ---------------------------------------------------------------------
 
-const guide = JSON.parse(fs.readFileSync(GUIDE_FILE, 'utf8'));
+// Both bundled guides: NPC/place names in EITHER should link.
+const guides = [GUIDE_FILE, GUIDE_FILE.replace('guide_data.json', 'guide_data_oziris.json')]
+  .filter((f) => fs.existsSync(f))
+  .map((f) => JSON.parse(fs.readFileSync(f, 'utf8')));
 const runText = (runs) => (runs || []).map((r) => r.text).join('');
 
-// "Talk to Duke Horacio", "speak with Father Aereck", "return to Juliet"
+/** Runs fn over every step's combined text across all bundled guides. */
+function eachStepText(fn) {
+  for (const guide of guides) {
+    guide.chapters.forEach((ch) => ch.sections.forEach((sec) => sec.steps.forEach((step) => {
+      fn([
+        runText(step.content),
+        ...(step.nestedContent || []).map((n) => runText(n.content)),
+        ...(step.additionalContent || []).map(runText),
+      ].join('\n'));
+    })));
+  }
+}
+
+// "Talk to Duke Horacio", "speak with Father Aereck", "return to Juliet",
+// and merchants: "buy greenman's ale FROM Rasolo".
 // Name = capitalized words, allowing connectors (of, the) inside.
 // Case-insensitive verbs: "Speak with Juliet" at sentence start counts too.
-const NAME_PATTERN = /\b(?:talk|speak|return|give|bring|show|deliver|report)\s+(?:to|with|for)\s+((?:[A-Z][A-Za-z'’-]+)(?:\s+(?:of|the|[A-Z][A-Za-z'’-]+))*)/gi;
+const NAME_PATTERNS = [
+  /\b(?:talk|speak|return|give|bring|show|deliver|report)\s+(?:to|with|for)\s+((?:[A-Z][A-Za-z'’-]+)(?:\s+(?:of|the|[A-Z][A-Za-z'’-]+))*)/gi,
+  /\bfrom\s+((?:[A-Z][A-Za-z'’-]+)(?:\s+(?:of|the|[A-Z][A-Za-z'’-]+))*)/g,
+];
 
 const mentions = new Map(); // name -> count
-guide.chapters.forEach((ch) => ch.sections.forEach((sec) => sec.steps.forEach((step) => {
-  const text = [
-    runText(step.content),
-    ...(step.nestedContent || []).map((n) => runText(n.content)),
-    ...(step.additionalContent || []).map(runText),
-  ].join('\n');
-  for (const m of text.matchAll(NAME_PATTERN)) {
-    // strip trailing connectors the regex may have swallowed
-    const name = m[1].replace(/\s+(?:of|the)$/, '').trim();
-    if (name.length < 3 || name.length > 30) continue;
-    mentions.set(name, (mentions.get(name) || 0) + 1);
+eachStepText((text) => {
+  for (const pattern of NAME_PATTERNS) {
+    for (const m of text.matchAll(pattern)) {
+      // strip trailing connectors the regex may have swallowed
+      const name = m[1].replace(/\s+(?:of|the)$/, '').trim();
+      if (name.length < 3 || name.length > 30) continue;
+      mentions.set(name, (mentions.get(name) || 0) + 1);
+    }
   }
-})));
+});
 
 // ---------------------------------------------------------------------
 // 2. Look each name up on the wiki
@@ -106,12 +123,7 @@ const LEADING_VERBS = /^(?:Enter|Travel|Head|Go|Use|Take|Run|Walk|Return|Telepor
 
 function locationCandidates() {
   const found = new Map();
-  guide.chapters.forEach((ch) => ch.sections.forEach((sec) => sec.steps.forEach((step) => {
-    const text = [
-      runText(step.content),
-      ...(step.nestedContent || []).map((n) => runText(n.content)),
-      ...(step.additionalContent || []).map(runText),
-    ].join('\n');
+  eachStepText((text) => {
     // Two or more capitalized words (allowing of/the between them).
     for (const m of text.matchAll(/\b([A-Z][A-Za-z'’]+(?:\s+(?:of|the|[A-Z][A-Za-z'’]+))+)\b/g)) {
       let name = m[1].replace(LEADING_VERBS, '').replace(/\s+(?:the|of)$/, '').trim();
@@ -123,7 +135,7 @@ function locationCandidates() {
       if (name.length < 6 || name.length > 35) continue;
       found.set(name, (found.get(name) || 0) + 1);
     }
-  })));
+  });
   for (const c of CURATED_LOCATIONS) found.set(c, found.get(c) || 1);
   return [...found.keys()].sort();
 }
@@ -161,11 +173,13 @@ function linkCandidates() {
     if (/^(?:here|this|link|video|map|guide|wiki)$/i.test(text)) return;
     if (!found.has(text)) found.set(text, page);
   });
-  guide.chapters.forEach((ch) => ch.sections.forEach((sec) => sec.steps.forEach((step) => {
-    eachRun(step.content);
-    (step.nestedContent || []).forEach((n) => eachRun(n.content));
-    (step.additionalContent || []).forEach(eachRun);
-  })));
+  for (const guide of guides) {
+    guide.chapters.forEach((ch) => ch.sections.forEach((sec) => sec.steps.forEach((step) => {
+      eachRun(step.content);
+      (step.nestedContent || []).forEach((n) => eachRun(n.content));
+      (step.additionalContent || []).forEach(eachRun);
+    })));
+  }
   return found;
 }
 
@@ -184,12 +198,7 @@ function poiCandidates() {
   const suffixes = POI_SUFFIXES.join('|');
   const pattern = new RegExp(
     String.raw`\b([A-Z][A-Za-z'’]+(?:\s+[A-Za-z'’]+)?\s+(?:${suffixes}))\b`, 'g');
-  guide.chapters.forEach((ch) => ch.sections.forEach((sec) => sec.steps.forEach((step) => {
-    const text = [
-      runText(step.content),
-      ...(step.nestedContent || []).map((n) => runText(n.content)),
-      ...(step.additionalContent || []).map(runText),
-    ].join('\n');
+  eachStepText((text) => {
     for (const m of text.matchAll(pattern)) {
       const name = m[1].replace(LEADING_VERBS, '').trim();
       if (name.length < 8 || name.length > 35) continue;
@@ -200,7 +209,7 @@ function poiCandidates() {
       if (/^(?:Now|Then|Next)\s/.test(name)) continue;
       found.set(name, (found.get(name) || 0) + 1);
     }
-  })));
+  });
   return [...found.keys()].sort();
 }
 

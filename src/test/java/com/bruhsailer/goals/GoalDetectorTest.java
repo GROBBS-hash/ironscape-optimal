@@ -57,6 +57,17 @@ public class GoalDetectorTest
 	}
 
 	@Test
+	public void minigameTeleShorthandIsDetected()
+	{
+		Guide guide = guideWithSubTexts("Minigame tele to Clan wars");
+
+		GoalDetector.Goals goals = GoalDetector.detect(guide);
+
+		assertEquals(1, goals.getMinigameTeleportGoals().size());
+		assertEquals("Clan wars", goals.getMinigameTeleportGoals().get(0).getMinigame());
+	}
+
+	@Test
 	public void prosePseudoQuantitiesAreNotItems()
 	{
 		Guide guide = guideWithSubTexts(

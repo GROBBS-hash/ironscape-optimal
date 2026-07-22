@@ -242,9 +242,10 @@ public final class GoalDetector
 		List<SkillLevelGoal> skillLevelGoals;
 	}
 
-	/** "Minigame teleport to Soul Wars" — the name feeds the Grouping-UI overlay. */
+	/** "Minigame teleport to Soul Wars" / Oziris's "Minigame tele to Clan wars"
+	 *  — the name feeds the Grouping-UI overlay. */
 	private static final Pattern MINIGAME_TELEPORT = Pattern.compile(
-		"minigame teleport to ([A-Za-z][A-Za-z' -]+)", Pattern.CASE_INSENSITIVE);
+		"minigame tele(?:port)? to ([A-Za-z][A-Za-z' -]+)", Pattern.CASE_INSENSITIVE);
 
 	/**
 	 * "use your planks to train construction (6 wooden chairs, 1 rug...)"
