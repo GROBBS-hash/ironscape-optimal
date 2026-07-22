@@ -101,7 +101,10 @@ class StepRow extends JPanel
 		// panel) and its links ("Safespot location") actually click.
 		for (List<TextRun> paragraph : step.getAdditionalContent())
 		{
-			add(htmlPane(RichText.paragraphHtml(paragraph), 22,
+			// runsHtml, NOT paragraphHtml: a body width style makes
+			// JEditorPane lay text out unwrapped (JLabels honor it, panes
+			// don't) — the pane's locked component width does the wrapping.
+			add(htmlPane(RichText.runsHtml(paragraph, false, null), 22,
 				new Font(Font.DIALOG, Font.ITALIC, 11), ColorScheme.LIGHT_GRAY_COLOR));
 		}
 	}

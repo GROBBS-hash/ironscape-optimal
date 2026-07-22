@@ -865,7 +865,10 @@ public class BruhsailerPlugin extends Plugin
 	public void onScriptPostFired(ScriptPostFired event)
 	{
 		if (event.getScriptId() == net.runelite.api.ScriptID.BANKMAIN_SEARCH_TOGGLE
-			&& bankFilterButton.isActive())
+			&& bankFilterButton.isActive()
+			// our own activation relayout fires this same script — only a
+			// PLAYER-opened search should turn the filter off
+			&& !bankFilterButton.consumeSelfToggle())
 		{
 			bankFilterButton.deactivate();
 		}
