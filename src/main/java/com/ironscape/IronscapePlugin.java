@@ -336,6 +336,13 @@ public class IronscapePlugin extends Plugin
 	private volatile String clickedMinigameTarget;
 	private int clickedMinigameTicks;
 
+	/** True while the current sub says "home tele(port)" — spellbook hint. */
+	private volatile boolean homeTeleportHint;
+
+	/** "Home tele to lumby" / "Home teleport, run north..." */
+	private static final java.util.regex.Pattern HOME_TELEPORT = java.util.regex.Pattern.compile(
+		"\\bhome\\s+tele(?:port)?\\b", java.util.regex.Pattern.CASE_INSENSITIVE);
+
 	/** Ticks remaining in which a recent item consumption can complete an interaction sub. */
 	private int recentConsumeTicks;
 
@@ -630,6 +637,7 @@ public class IronscapePlugin extends Plugin
 	private void registerUi()
 	{
 		minigameTeleportOverlay.setTargetSupplier(() -> activeMinigameTarget);
+		minigameTeleportOverlay.setHomeTeleportSupplier(() -> homeTeleportHint);
 		overlayManager.add(minigameTeleportOverlay);
 		stepOverlay.setModelSupplier(() -> stepOverlayModel);
 		overlayManager.add(stepOverlay);
@@ -729,6 +737,7 @@ public class IronscapePlugin extends Plugin
 		activeMinigameTarget = null;
 		clickedMinigameTarget = null;
 		clickedMinigameTicks = 0;
+		homeTeleportHint = false;
 		levelGoalsBySub.clear();
 		realLevelBySkill.clear();
 		pendingHopWorld = null;
@@ -860,10 +869,19 @@ public class IronscapePlugin extends Plugin
 		evaluateAutoCompletion();
 	}
 
+	/** Previous game state — LOADING->LOGGED_IN is a region load, not a login. */
+	private GameState lastGameState;
+
 	@Subscribe
 	public void onGameStateChanged(GameStateChanged event)
 	{
-		if (event.getGameState() == GameState.LOGGED_IN)
+		// LOGGED_IN fires after EVERY loading screen, not just real logins.
+		// A teleport is LOADING -> LOGGED_IN: resetting the login grace
+		// there ate the very tick the position jump would be detected on —
+		// travel subs never ticked across a loading screen. Only a real
+		// (re)connect needs the grace window and fresh xp baselines.
+		if (event.getGameState() == GameState.LOGGED_IN
+			&& lastGameState != GameState.LOADING)
 		{
 			loginGraceTicks = 10;
 			lastXpBySkill.clear(); // next account/session sets fresh baselines
@@ -873,6 +891,7 @@ public class IronscapePlugin extends Plugin
 				SwingUtilities.invokeLater(panel::refreshItemCounts);
 			}
 		}
+		lastGameState = event.getGameState();
 	}
 
 	/** Fires on the client thread whenever any item container changes. */
@@ -1161,6 +1180,11 @@ public class IronscapePlugin extends Plugin
 				// A click-requested minigame hint is done once ANY teleport
 				// lands — the guided click path served its purpose.
 				clickedMinigameTicks = 0;
+				// Landing somewhere new invalidates the walking route: point
+				// Shortest Path at the current destination FROM HERE ("home
+				// tele to lumby, run north to Varrock east bank" — the
+				// route to the bank should appear the moment you land).
+				maybeNavigateToNext();
 			}
 			lastTickPosition = here;
 		}
@@ -1213,6 +1237,12 @@ public class IronscapePlugin extends Plugin
 		{
 			activeMinigameTarget = current == null ? null : minigameBySub.get(current.sub.getId());
 		}
+
+		// "Home tele to lumby": highlight the spellbook click path (spell if
+		// the book is open, else the Magic tab) while that sub is current.
+		homeTeleportHint = config.showTeleportHints() && current != null
+			&& activeMinigameTarget == null
+			&& HOME_TELEPORT.matcher(current.sub.getPlainText()).find();
 
 		// Quest-start marker: float the quest icon at the start point of
 		// the quest the player is heading to — a clicked quest link, or
@@ -1755,27 +1785,10 @@ public class IronscapePlugin extends Plugin
 		return current != null && current.step == step;
 	}
 
-	/**
-	 * The player's position, initializing it on first use (pre-position
-	 * profiles): the end of the contiguous completed prefix — the last
-	 * step with no undone step before it. Auto-ticked islands further
-	 * ahead deliberately don't count.
-	 */
+	/** The player's position (see ProgressManager#playerPosition). */
 	private int playerPosition()
 	{
-		if (progressManager.positionUnset(activeVariant))
-		{
-			List<GuideStep> steps = guideFor(activeVariant).getAllSteps();
-			int prefixEnd = -1;
-			while (prefixEnd + 1 < steps.size()
-				&& progressManager.isCompleted(activeVariant, steps.get(prefixEnd + 1).getId()))
-			{
-				prefixEnd++;
-			}
-			progressManager.setPosition(activeVariant, prefixEnd);
-			log.info("Initialized player position at step index {}", prefixEnd);
-		}
-		return progressManager.position(activeVariant);
+		return progressManager.playerPosition(guideFor(activeVariant));
 	}
 
 	/**
@@ -1946,9 +1959,13 @@ public class IronscapePlugin extends Plugin
 		}
 
 		// "Teleport using the chronicle" — a recent position jump proves it.
-		if (travelGoalSubs.contains(sub.getId()))
+		// No early false: a travel sub can ALSO complete by arriving at its
+		// destination below ("Home tele to lumby and run north to Varrock
+		// east bank" — walking the second half needs arrival detection).
+		if (travelGoalSubs.contains(sub.getId())
+			&& inFrontierStep && recentTeleportTicks > 0)
 		{
-			return inFrontierStep && recentTeleportTicks > 0;
+			return true;
 		}
 
 		// No item/quest goal: a movement step. Arriving at its target
@@ -1993,7 +2010,11 @@ public class IronscapePlugin extends Plugin
 			return here.getPlane() == precise.plane
 				&& here.distanceTo(new WorldPoint(precise.x, precise.y, precise.plane)) <= ARRIVE_RADIUS;
 		}
-		WorldPoint place = placeManager.firstPlaceIn(sub.getPlainText());
+		// Travel subs end at their LAST place mention (the destination);
+		// everything else anchors on the first ("Talk to Reldo" -> Reldo).
+		WorldPoint place = travelGoalSubs.contains(sub.getId())
+			? placeManager.lastPlaceIn(sub.getPlainText())
+			: placeManager.firstPlaceIn(sub.getPlainText());
 		return place != null
 			&& here.getPlane() == place.getPlane()
 			&& here.distanceTo(place) <= PLACE_ARRIVE_RADIUS;
@@ -2386,7 +2407,10 @@ public class IronscapePlugin extends Plugin
 		{
 			return new WorldPoint(target.x, target.y, target.plane);
 		}
-		return placeManager.firstPlaceIn(sub.getPlainText());
+		// A travel sub's destination is the LAST place it names.
+		return travelGoalSubs.contains(sub.getId())
+			? placeManager.lastPlaceIn(sub.getPlainText())
+			: placeManager.firstPlaceIn(sub.getPlainText());
 	}
 
 	private void navigateToStep(String annotationId)

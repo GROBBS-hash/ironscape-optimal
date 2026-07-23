@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import lombok.extern.slf4j.Slf4j;
 import net.runelite.client.config.ConfigManager;
 
 /**
@@ -23,6 +24,7 @@ import net.runelite.client.config.ConfigManager;
  * and cloud-synced profiles carry it between machines. This replaces the
  * website's browser localStorage.
  */
+@Slf4j
 @Singleton
 public class ProgressManager
 {
@@ -300,6 +302,32 @@ public class ProgressManager
 	{
 		positionCache.put(variant, index);
 		configManager.setConfiguration(CONFIG_GROUP, positionKey(variant), Integer.toString(index));
+	}
+
+	/**
+	 * The player's position, initializing it on first use (pre-position
+	 * profiles): the end of the contiguous completed prefix — the last
+	 * step with no undone step before it. Auto-ticked islands further
+	 * ahead deliberately don't count. Shared by the plugin's frontier
+	 * window AND the panel's Resume/auto-open, so both land on the same
+	 * step.
+	 */
+	public synchronized int playerPosition(Guide guide)
+	{
+		GuideVariant variant = guide.getVariant();
+		if (positionUnset(variant))
+		{
+			java.util.List<GuideStep> steps = guide.getAllSteps();
+			int prefixEnd = -1;
+			while (prefixEnd + 1 < steps.size()
+				&& isCompleted(variant, steps.get(prefixEnd + 1).getId()))
+			{
+				prefixEnd++;
+			}
+			setPosition(variant, prefixEnd);
+			log.info("Initialized player position at step index {}", prefixEnd);
+		}
+		return position(variant);
 	}
 
 	private static String positionKey(GuideVariant variant)

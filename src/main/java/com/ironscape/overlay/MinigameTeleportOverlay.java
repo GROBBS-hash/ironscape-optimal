@@ -74,10 +74,24 @@ public class MinigameTeleportOverlay extends Overlay
 		InterfaceID.MagicSpellbook.TELEPORT_MINIGAME_LUNAR,
 	};
 
+	/**
+	 * Each spellbook's Home Teleport spell — for "Home tele to Lumbridge"
+	 * steps: highlight the spell if the book is open, else the Magic tab.
+	 */
+	private static final int[] SPELLBOOK_HOME_TELEPORTS = {
+		InterfaceID.MagicSpellbook.TELEPORT_HOME_STANDARD,
+		InterfaceID.MagicSpellbook.TELEPORT_HOME_ZAROS,
+		InterfaceID.MagicSpellbook.TELEPORT_HOME_ARCEUUS,
+		InterfaceID.MagicSpellbook.TELEPORT_HOME_LUNAR,
+	};
+
 	private final Client client;
 
 	/** Set by the plugin: the minigame the current sub-step wants, or null. */
 	private Supplier<String> targetSupplier = () -> null;
+
+	/** Set by the plugin: true while the current sub is a home teleport. */
+	private Supplier<Boolean> homeTeleportSupplier = () -> false;
 
 	@Inject
 	public MinigameTeleportOverlay(Client client)
@@ -92,12 +106,21 @@ public class MinigameTeleportOverlay extends Overlay
 		this.targetSupplier = targetSupplier;
 	}
 
+	public void setHomeTeleportSupplier(Supplier<Boolean> homeTeleportSupplier)
+	{
+		this.homeTeleportSupplier = homeTeleportSupplier;
+	}
+
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
 		String minigame = targetSupplier.get();
 		if (minigame == null)
 		{
+			if (Boolean.TRUE.equals(homeTeleportSupplier.get()))
+			{
+				renderHomeTeleport(graphics);
+			}
 			return null;
 		}
 
@@ -157,6 +180,24 @@ public class MinigameTeleportOverlay extends Overlay
 		highlightFirstVisible(graphics, SIDE_TAB_CANDIDATES);
 		highlightFirstVisible(graphics, MAGIC_TAB_CANDIDATES);
 		return null;
+	}
+
+	/**
+	 * "Home tele to Lumbridge": one highlighted click at a time — the Home
+	 * Teleport spell if the spellbook is open, else the Magic side tab.
+	 */
+	private void renderHomeTeleport(Graphics2D graphics)
+	{
+		for (int componentId : SPELLBOOK_HOME_TELEPORTS)
+		{
+			Widget spell = client.getWidget(componentId);
+			if (spell != null && !spell.isHidden())
+			{
+				highlight(graphics, spell);
+				return;
+			}
+		}
+		highlightFirstVisible(graphics, MAGIC_TAB_CANDIDATES);
 	}
 
 	private void highlightFirstVisible(Graphics2D graphics, int[] componentIds)

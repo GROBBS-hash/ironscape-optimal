@@ -139,6 +139,43 @@ public class PlaceManager
 	}
 
 	/**
+	 * The LAST recognised place in the text — the destination of a travel
+	 * sub: "Home tele to Lumbridge and run north to Varrock east bank"
+	 * ends at Varrock east bank, not Lumbridge. Same quest-name filtering
+	 * as firstPlaceIn.
+	 */
+	public synchronized WorldPoint lastPlaceIn(String text)
+	{
+		if (namePattern == null)
+		{
+			return null;
+		}
+		String lower = text.toLowerCase(Locale.ROOT).replace('’', '\'');
+		Matcher matcher = namePattern.matcher(text);
+		WorldPoint last = null;
+		while (matcher.find())
+		{
+			String key = key(matcher.group());
+			Place place = local.containsKey(key) ? local.get(key) : bundled.get(key);
+			if (place == null)
+			{
+				continue;
+			}
+			if ("quest".equals(place.type)
+				&& !lower.contains("start " + key)
+				&& !lower.contains("begin " + key)
+				&& !lower.contains("do " + key)
+				&& !lower.contains("complete " + key)
+				&& !lower.contains("finish " + key))
+			{
+				continue;
+			}
+			last = new WorldPoint(place.x, place.y, place.plane);
+		}
+		return last;
+	}
+
+	/**
 	 * Wraps every known place name in the given ESCAPED html fragment with
 	 * a bruh:place: link. Case-insensitive, longest name wins.
 	 */

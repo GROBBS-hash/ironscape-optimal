@@ -741,17 +741,16 @@ public class IronscapePanel extends PluginPanel
 		{
 			return;
 		}
-		// "Current" = the first incomplete step AFTER the last completed
-		// one — unticked steps further back were skipped on purpose, and
-		// landing on them every time the panel opens buries real progress.
+		// "Current" = the first incomplete step AFTER the player's POSITION
+		// — the same frontier the overlays and auto-completion use. NOT
+		// "after the last completed step": a quest finished ages ago
+		// auto-ticks its step far ahead (Daddy's Home), and landing there
+		// would skip everything in between.
 		java.util.List<GuideStep> steps = guide.getAllSteps();
-		int start = 0;
-		for (int i = 0; i < steps.size(); i++)
+		int start = Math.max(0, progressManager.playerPosition(guide) + 1);
+		while (start < steps.size() && nothingLeftIn(steps.get(start)))
 		{
-			if (progressManager.isCompleted(guide.getVariant(), steps.get(i).getId()))
-			{
-				start = i + 1;
-			}
+			start++;
 		}
 		if (start >= steps.size())
 		{
@@ -764,6 +763,23 @@ public class IronscapePanel extends PluginPanel
 		{
 			progressChangedListener.run();
 		}
+	}
+
+	/** Completed, or every sub already ticked (auto-ticks ahead of the step). */
+	private boolean nothingLeftIn(GuideStep step)
+	{
+		if (progressManager.isCompleted(guide.getVariant(), step.getId()))
+		{
+			return true;
+		}
+		for (com.ironscape.guide.SubStep sub : step.getSubSteps())
+		{
+			if (!progressManager.isSubCompleted(guide.getVariant(), step, sub))
+			{
+				return false;
+			}
+		}
+		return true;
 	}
 
 	private void updateProgressBar()
