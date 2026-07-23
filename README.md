@@ -12,6 +12,27 @@ from the team at Ironman.guide.
 
 If this sees use, I'm happy to continue improving, adding and fixing bugs.
 
+## What it looks like
+
+![The guide panel, step overlay and auto-navigation in action](docs/panel-navigation.png)
+
+One moment, most of the plugin: the **side panel** tracks the guide with
+tickable steps, live requirement badges (`fletching 20/15 ·
+construction 21/20`, `cash 20549/200000`) and per-step location/note
+chips; the **step overlay** (top-left) shows the current action and its
+counts in-game; **auto-navigation** has already handed the route to the
+boat to Shortest Path (cyan trail); and the step will **tick itself**
+when the travel completes. Steps auto-complete off skill levels, quest
+state, item counts, teleports, arrivals and mid-quest checkpoints — the
+checkbox is always there when detection can't know.
+
+Also in the plugin (screenshots coming): a Quest Helper-style **bank
+view** that groups every upcoming step's items into sections with
+green/red have/need counts (the real, withdrawable bank widgets);
+**shopkeeper outlines** with the item you're buying floating overhead;
+teleport click-path highlights; and a quest handoff that stands our
+navigation down while Quest Helper guides an in-progress quest.
+
 ## Credits
 
 - **Guide content by [Oziris](https://twitter.com/ozirislol) and the
