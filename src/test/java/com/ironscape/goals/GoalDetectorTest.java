@@ -107,8 +107,9 @@ public class GoalDetectorTest
 	public void trainingStepsWithoutNumbersGetNoGoalsAtAll()
 	{
 		// "train construction with your planks" has no target number — a
-		// counted goal of 1 ticked on the FIRST xp drop. No goal at all;
-		// an annotation (CONSTRUCTION 20) or the checkbox owns it.
+		// counted goal of 1 ticked on the FIRST xp drop. The "until out of
+		// planks" clause instead becomes a DEPLETION goal: done when the
+		// planks are gone.
 		Guide guide = guideWithSubTexts(
 			"Use the housetab and train construction with your planks, make bookcases until out of planks");
 
@@ -116,6 +117,21 @@ public class GoalDetectorTest
 
 		assertTrue(goals.getItemGoals().isEmpty());
 		assertTrue(goals.getCountedSkillGoals().isEmpty());
+		assertEquals(1, goals.getDepletionGoals().size());
+		assertEquals("planks", goals.getDepletionGoals().get(0).getItemName());
+	}
+
+	@Test
+	public void inTheseSkillsIsNotAnItem()
+	{
+		Guide guide = guideWithSubTexts(
+			"Should now have 15 fletching and 20 construction as well, "
+				+ "this will increase the xp you get in these skills from wintertodt");
+
+		GoalDetector.Goals goals = GoalDetector.detect(guide);
+
+		assertTrue(goals.getItemGoals().isEmpty());
+		assertEquals(2, goals.getSkillLevelGoals().size());
 	}
 
 	@Test

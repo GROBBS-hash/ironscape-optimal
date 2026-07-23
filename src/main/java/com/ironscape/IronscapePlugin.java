@@ -305,6 +305,16 @@ public class IronscapePlugin extends Plugin
 	/** Sub-step id -> minigame name for "Minigame teleport to X" subs. */
 	private final Map<String, String> minigameBySub = new HashMap<>();
 
+	/** "make bookcases UNTIL OUT OF planks": sub id -> item that must run out. */
+	private final Map<String, String> depletionBySub = new HashMap<>();
+
+	/**
+	 * Depletion subs seen HOLDING their item while current — only those may
+	 * tick when the count hits zero, or arriving empty-handed would tick
+	 * them instantly. Session state, cleared on shutdown/profile switch.
+	 */
+	private final java.util.Set<String> depletionArmed = new java.util.HashSet<>();
+
 	/** Level goals by sub id ("burn them to level 50 firemaking"). */
 	private final Map<String, List<GoalDetector.SkillLevelGoal>> levelGoalsBySub = new HashMap<>();
 
@@ -621,6 +631,11 @@ public class IronscapePlugin extends Plugin
 		{
 			minigameBySub.put(goal.getSub().getId(), goal.getMinigame());
 		}
+		depletionBySub.clear();
+		for (GoalDetector.DepletionGoal goal : goals.getDepletionGoals())
+		{
+			depletionBySub.put(goal.getSub().getId(), goal.getItemName());
+		}
 		levelGoalsBySub.clear();
 		for (GoalDetector.SkillLevelGoal goal : goals.getSkillLevelGoals())
 		{
@@ -753,6 +768,8 @@ public class IronscapePlugin extends Plugin
 		interactionGoalSubs.clear();
 		countedGoalBySub.clear();
 		acquisitionBaseline.clear();
+		depletionBySub.clear();
+		depletionArmed.clear();
 		guideRemap = new HashMap<>();
 		lastXpBySkill.clear();
 		lastTickPosition = null;
@@ -793,6 +810,7 @@ public class IronscapePlugin extends Plugin
 		progressManager.invalidate();
 		// Baselines describe the OLD profile's inventory state.
 		acquisitionBaseline.clear();
+		depletionArmed.clear();
 		// The new profile's saved progress may still use pre-refresh step
 		// ids; apply the same remap startUp applied (no-op if none).
 		progressManager.remapIds(activeVariant, guideRemap);
@@ -1887,6 +1905,23 @@ public class IronscapePlugin extends Plugin
 				}
 			}
 			return true;
+		}
+
+		// "make bookcases until out of planks" — done when the last one is
+		// used up. Only arms after the player is SEEN holding the item.
+		String depletionItem = depletionBySub.get(sub.getId());
+		if (depletionItem != null)
+		{
+			if (!inFrontierStep)
+			{
+				return false;
+			}
+			if (itemTracker.carriedCountOf(depletionItem) > 0)
+			{
+				depletionArmed.add(sub.getId());
+				return false;
+			}
+			return depletionArmed.contains(sub.getId());
 		}
 
 		// "Give the letter to Romeo" / "Fix his house" — something must have

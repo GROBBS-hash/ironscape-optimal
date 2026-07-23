@@ -1217,12 +1217,6 @@
     "skill": "HERBLORE",
     "level": 77
    }
-  },
-  "c913d0cd89": {
-   "requires": {
-    "skill": "CONSTRUCTION",
-    "level": 20
-   }
   }
  }
 }
