@@ -954,6 +954,10 @@ public class BruhsailerPlugin extends Plugin
 	@Subscribe
 	public void onGameTick(GameTick event)
 	{
+		if (!bankFilterButton.isActive())
+		{
+			bankFilterAnnounced = false; // next activation announces again
+		}
 		if (loginGraceTicks > 0)
 		{
 			loginGraceTicks--;
@@ -1296,6 +1300,18 @@ public class BruhsailerPlugin extends Plugin
 			{
 				log.info("bank filter: pass queried {} bank items, matched {} (of {} wanted names)",
 					bankFilterQueries, bankFilterMatches, upcomingItemNames().size());
+				// Near-empty results are usually CORRECT (upcoming needs
+				// are mostly shop purchases) — say so once per BUTTON
+				// activation or it reads as breakage.
+				if (!bankFilterAnnounced && bankFilterButton.isActive())
+				{
+					bankFilterAnnounced = true;
+					client.addChatMessage(ChatMessageType.CONSOLE, "",
+						"IRONSCAPE: bank filter on — " + bankFilterMatches
+							+ " banked item(s) match what the next " + BANK_FILTER_STEPS
+							+ " steps need. Items you still have to buy or gather won't show.",
+						null);
+				}
 			}
 			bankFilterLogTick = tickCounter;
 			bankFilterQueries = 0;
@@ -1311,6 +1327,7 @@ public class BruhsailerPlugin extends Plugin
 	private int bankFilterLogTick = -1;
 	private int bankFilterQueries;
 	private int bankFilterMatches;
+	private boolean bankFilterAnnounced;
 
 	/** How many upcoming incomplete STEPS the bank filter collects items from. */
 	private static final int BANK_FILTER_STEPS = 10;

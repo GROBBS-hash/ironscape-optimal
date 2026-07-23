@@ -5,8 +5,11 @@ import javax.inject.Singleton;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
+import net.runelite.api.VarClientInt;
+import net.runelite.api.VarClientStr;
 import net.runelite.api.gameval.InterfaceID;
 import net.runelite.api.gameval.SpriteID;
+import net.runelite.api.vars.InputType;
 import net.runelite.api.widgets.JavaScriptCallback;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetType;
@@ -99,7 +102,7 @@ public class BankFilterButton
 			log.info("bank filter: deactivated by button");
 			deactivate();
 			selfToggle = true;
-			bankSearch.layoutBank();
+			bankSearch.reset(true); // clears our programmatic search
 		}
 		else
 		{
@@ -107,10 +110,14 @@ public class BankFilterButton
 			active = true;
 			background.setSpriteId(SpriteID.Miscgraphics3.UNKNOWN_BUTTON_SQUARE_SMALL_SELECTED);
 			background.revalidate();
-			// Relayout so the bank re-runs its layout script, which now
-			// asks us which items to show. layoutBank(), not reset():
-			// reset only rebuilds when a real search is active — with none,
-			// activation had no visible effect at all.
+			// Start a REAL bank search for our keyword — the same varcs
+			// typing sets, the same trick the core Bank Tags plugin uses.
+			// (Answering getSearchingTagTab alone never made the layout
+			// script call bankSearchFilter: log showed one probe, zero
+			// filter passes, bank unchanged. The typed-search path is the
+			// one proven to work.)
+			client.setVarcIntValue(VarClientInt.INPUT_TYPE, InputType.SEARCH.getType());
+			client.setVarcStrValue(VarClientStr.INPUT_TEXT, "ironman");
 			selfToggle = true;
 			bankSearch.layoutBank();
 		}
