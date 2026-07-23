@@ -6,6 +6,15 @@ import static org.junit.Assert.assertTrue;
 
 public class ItemAliasTest
 {
+	@org.junit.Test
+	public void metalArrowheadsAreArrowtipsInGame()
+	{
+		org.junit.Assert.assertEquals("bronze arrowtips", ItemTracker.aliases("bronze arrowheads")[0]);
+		org.junit.Assert.assertEquals("rune arrowtips", ItemTracker.aliases("rune arrowhead")[0]);
+		// Broad arrowheads are genuinely named arrowheads — untouched.
+		org.junit.Assert.assertEquals("broad arrowheads", ItemTracker.aliases("broad arrowheads")[0]);
+	}
+
 	private static boolean hasAlias(String guidePhrase, String realItemName)
 	{
 		return Arrays.asList(ItemTracker.aliases(guidePhrase)).contains(realItemName);
