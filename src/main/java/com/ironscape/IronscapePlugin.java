@@ -1848,6 +1848,19 @@ public class IronscapePlugin extends Plugin
 					return false;
 				}
 			}
+			// A sub can carry BOTH kinds of target — "until 200k cash, get
+			// at least 22 fletching": the gold alone must not tick it.
+			List<GoalDetector.SkillLevelGoal> itemSubLevels = levelGoalsBySub.get(sub.getId());
+			if (itemSubLevels != null)
+			{
+				for (GoalDetector.SkillLevelGoal goal : itemSubLevels)
+				{
+					if (client.getRealSkillLevel(goal.getSkill()) < goal.getLevel())
+					{
+						return false;
+					}
+				}
+			}
 			return true;
 		}
 
