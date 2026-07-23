@@ -8,6 +8,7 @@ import com.ironscape.guide.GuideLoader;
 import com.ironscape.guide.GuideStep;
 import com.ironscape.guide.GuideVariant;
 import com.ironscape.guide.SubStep;
+import com.ironscape.guide.TextRun;
 import com.ironscape.items.ItemTracker;
 import com.ironscape.panel.IronscapePanel;
 import com.ironscape.places.PlaceManager;
@@ -1332,7 +1333,19 @@ public class IronscapePlugin extends Plugin
 		java.util.Set<String> npcNames = new java.util.HashSet<>();
 		if (current != null)
 		{
-			String subText = " " + current.sub.getPlainText().toLowerCase(Locale.ROOT)
+			// The step's NOTE lines join the scan: "Note: Use phials to
+			// un-note planks" names the NPC the step is really about even
+			// though no sub clause does.
+			StringBuilder scanned = new StringBuilder(current.sub.getPlainText());
+			for (List<TextRun> noteRuns : current.step.getAdditionalContent())
+			{
+				scanned.append(' ');
+				for (TextRun run : noteRuns)
+				{
+					scanned.append(run.getText());
+				}
+			}
+			String subText = " " + scanned.toString().toLowerCase(Locale.ROOT)
 				.replace('’', '\'') + " ";
 			// Nearest ONE to each anchor point — "everyone within 4 tiles"
 			// outlined the whole gnome crowd around Gulluck's shop.
@@ -1425,6 +1438,16 @@ public class IronscapePlugin extends Plugin
 						break;
 					}
 				}
+			}
+			// Depletion subs ("bookcases until out of planks") float the
+			// item being USED UP instead — over Phials' head it reads as
+			// "bring him the planks" — until none are left and the sub
+			// ticks itself.
+			String depleting = depletionBySub.get(current.sub.getId());
+			if (wantedIcon == -1 && depleting != null
+				&& itemTracker.carriedCountOf(depleting) > 0)
+			{
+				wantedIcon = itemTracker.iconIdFor(depleting);
 			}
 		}
 		currentSubItemIcon = wantedIcon;
