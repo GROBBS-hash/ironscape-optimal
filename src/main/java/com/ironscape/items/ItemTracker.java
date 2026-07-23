@@ -331,6 +331,17 @@ public class ItemTracker
 	 */
 	public boolean bankCountable(String name, int quantity)
 	{
+		// Gold is WEALTH, not cargo: "until 200k cash" counts the bank no
+		// matter what — banked coins showing 0/200,000 after a relog read
+		// as lost progress. (Spending it later never re-opens the step;
+		// the reopen logic skips coin goals.)
+		for (String alias : aliases(name))
+		{
+			if (alias.equals("coins"))
+			{
+				return true;
+			}
+		}
 		if (quantity <= com.ironscape.goals.GoalDetector.CARRYABLE_LIMIT)
 		{
 			return false;
