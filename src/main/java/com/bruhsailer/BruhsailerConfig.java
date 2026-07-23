@@ -67,6 +67,16 @@ public interface BruhsailerConfig extends Config
 	}
 
 	@ConfigItem(
+		keyName = "showGroundItemMarkers",
+		name = "Mark ground items",
+		description = "Highlight the tiles of ground items the current step wants picked up (item spawns, dropped quest items)"
+	)
+	default boolean showGroundItemMarkers()
+	{
+		return true;
+	}
+
+	@ConfigItem(
 		keyName = "showTargetMarker",
 		name = "Mark target tile",
 		description = "Highlight the exact tile of the current step's captured ⌖ location in the world (dig spots, item spawns)"

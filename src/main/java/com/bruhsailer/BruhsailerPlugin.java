@@ -189,6 +189,57 @@ public class BruhsailerPlugin extends Plugin
 	/** The current sub's annotated ⌖ target tile; null = hidden. Written per tick. */
 	private volatile WorldPoint targetTileMarker;
 
+	/** Tiles of ground items the current sub wants picked up. Written per tick. */
+	private volatile List<WorldPoint> groundItemTargets = java.util.Collections.emptyList();
+
+	/**
+	 * Scene tiles holding a ground item that matches one of the current
+	 * sub's item goals — the "pick up 2 iron bars" / item-spawn case.
+	 * Scans the current plane's tiles once per game tick; ~11k null checks
+	 * is nothing, and it needs no spawn/despawn bookkeeping.
+	 */
+	private List<WorldPoint> findWantedGroundItems(Current current)
+	{
+		List<GoalDetector.ItemGoal> wanted = itemGoalsBySub.get(current.sub.getId());
+		if (wanted == null || wanted.isEmpty())
+		{
+			return java.util.Collections.emptyList();
+		}
+		java.util.Set<String> names = new java.util.HashSet<>();
+		for (GoalDetector.ItemGoal goal : wanted)
+		{
+			java.util.Collections.addAll(names, ItemTracker.aliases(goal.getItemName()));
+		}
+		List<WorldPoint> spots = new ArrayList<>();
+		net.runelite.api.WorldView view = client.getTopLevelWorldView();
+		net.runelite.api.Tile[][] tiles = view.getScene().getTiles()[view.getPlane()];
+		for (net.runelite.api.Tile[] column : tiles)
+		{
+			for (net.runelite.api.Tile tile : column)
+			{
+				if (tile == null || tile.getGroundItems() == null)
+				{
+					continue;
+				}
+				for (net.runelite.api.TileItem item : tile.getGroundItems())
+				{
+					String name = itemManager.getItemComposition(item.getId())
+						.getName().toLowerCase(Locale.ROOT);
+					if (names.contains(name))
+					{
+						spots.add(tile.getWorldLocation());
+						break;
+					}
+				}
+				if (spots.size() >= 50)
+				{
+					return spots; // plenty; don't paint the whole floor
+				}
+			}
+		}
+		return spots;
+	}
+
 	/** Quest whose start marker was requested by clicking its link. */
 	private Quest clickedQuest;
 	private int clickedQuestTicks;
@@ -484,6 +535,7 @@ public class BruhsailerPlugin extends Plugin
 		npcTargetOverlay.setQuestIconSupplier(() -> currentSubIsQuest);
 		overlayManager.add(npcTargetOverlay);
 		targetTileOverlay.setTargetSupplier(() -> targetTileMarker);
+		targetTileOverlay.setGroundItemsSupplier(() -> groundItemTargets);
 		overlayManager.add(targetTileOverlay);
 
 		panel = panelProvider.get();
@@ -1002,8 +1054,11 @@ public class BruhsailerPlugin extends Plugin
 			}
 			else if (current != null)
 			{
+				// Any quest goal on an UNSTARTED quest: whether the step
+				// says "start X" or "complete X", the start point is where
+				// you must go first.
 				GoalDetector.QuestGoal questGoal = questGoalBySub.get(current.sub.getId());
-				if (questGoal != null && !questGoal.isRequiresFinished()
+				if (questGoal != null
 					&& questGoal.getQuest().getState(client) == QuestState.NOT_STARTED)
 				{
 					marker = placeManager.get(questGoal.getQuest().getName());
@@ -1060,9 +1115,24 @@ public class BruhsailerPlugin extends Plugin
 				{
 					npcNames.add(clean);
 				}
+				// The quest giver is rarely NAMED by the step ("Do Waterfall
+				// quest..."), but whoever stands at the quest's start point
+				// IS the quest giver — outline them too.
+				if (marker != null
+					&& npc.getWorldLocation().getPlane() == marker.getPlane()
+					&& npc.getWorldLocation().distanceTo2D(marker) <= 4)
+				{
+					npcNames.add(clean);
+				}
 			}
 		}
 		npcTargetNames = npcNames;
+
+		// Ground items the current sub wants picked up ("Pick up 2 iron
+		// bars...", item spawns): highlight their tiles, QH-style.
+		groundItemTargets = config.showGroundItemMarkers() && current != null
+			? findWantedGroundItems(current)
+			: java.util.Collections.emptyList();
 		currentSubIsQuest = current != null && questGoalBySub.containsKey(current.sub.getId());
 
 		updateStepOverlay();

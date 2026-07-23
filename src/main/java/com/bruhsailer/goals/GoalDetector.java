@@ -315,6 +315,7 @@ public final class GoalDetector
 
 		for (GuideStep step : guide.getAllSteps())
 		{
+			int stepQuestsBefore = questGoals.size();
 			// True while we're inside a comma-list of items within this
 			// step ("Grab a bucket of milk, raw sardine, doogle leaves…").
 			boolean inItemList = false;
@@ -382,9 +383,43 @@ public final class GoalDetector
 					countedGoals.add(new CountedSkillGoal(step, sub, skill, Math.max(1, count)));
 				}
 			}
+
+			// The step's authored quest tag ("quest": "Alfred Grimhand's
+			// Barcrawl") beats text matching when the prose abbreviates
+			// ("Start Barcrawl miniquest"). Only when the text yielded no
+			// quest goal, and never for "until <part>" checkpoint steps —
+			// those complete via their varbit/varp annotation, and a
+			// started-state goal would tick them the moment the quest began.
+			if (questGoals.size() == stepQuestsBefore && !step.getSubSteps().isEmpty())
+			{
+				addMetadataQuestGoal(step, questGoals);
+			}
 		}
 		return new Goals(itemGoals, questGoals, actionGoals, travelGoals, interactionGoals,
 			countedGoals, minigameGoals, levelGoals);
+	}
+
+	private static void addMetadataQuestGoal(GuideStep step, List<QuestGoal> out)
+	{
+		String name = step.getMetadata().get("quest");
+		if (name == null)
+		{
+			return;
+		}
+		String text = step.getPlainText().toLowerCase(Locale.ROOT);
+		if (text.contains("until") || text.contains("up to"))
+		{
+			return; // mid-quest checkpoint step; annotations own completion
+		}
+		for (Quest quest : Quest.values())
+		{
+			if (quest.getName().equalsIgnoreCase(name.trim()))
+			{
+				boolean finished = "complete".equalsIgnoreCase(step.getMetadata().get("questStatus"));
+				out.add(new QuestGoal(step, step.getSubSteps().get(0), quest, finished));
+				return;
+			}
+		}
 	}
 
 	/**

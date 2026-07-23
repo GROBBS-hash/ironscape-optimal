@@ -36,9 +36,14 @@ public class TargetTileOverlay extends Overlay
 	private static final int ARROW_HALF_WIDTH = 7;
 	private static final int ARROW_LENGTH = 14;
 
+	/** Ground items to pick up render green — "loot", not "walk here". */
+	private static final Color ITEM_ACCENT = new Color(0x4c, 0xaf, 0x50);
+	private static final Color ITEM_FILL = new Color(0x4c, 0xaf, 0x50, 50);
+
 	private final Client client;
 
 	private Supplier<WorldPoint> targetSupplier = () -> null;
+	private Supplier<java.util.List<WorldPoint>> groundItemsSupplier = java.util.Collections::emptyList;
 
 	@Inject
 	public TargetTileOverlay(Client client)
@@ -53,9 +58,32 @@ public class TargetTileOverlay extends Overlay
 		this.targetSupplier = targetSupplier;
 	}
 
+	public void setGroundItemsSupplier(Supplier<java.util.List<WorldPoint>> groundItemsSupplier)
+	{
+		this.groundItemsSupplier = groundItemsSupplier;
+	}
+
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
+		for (WorldPoint itemSpot : groundItemsSupplier.get())
+		{
+			LocalPoint local = LocalPoint.fromWorld(client.getTopLevelWorldView(), itemSpot);
+			if (local == null)
+			{
+				continue;
+			}
+			Polygon poly = Perspective.getCanvasTilePoly(client, local);
+			if (poly != null)
+			{
+				graphics.setColor(ITEM_FILL);
+				graphics.fill(poly);
+				graphics.setColor(ITEM_ACCENT);
+				graphics.setStroke(new BasicStroke(2f));
+				graphics.draw(poly);
+			}
+		}
+
 		WorldPoint point = targetSupplier.get();
 		if (point == null || point.getPlane() != client.getTopLevelWorldView().getPlane())
 		{
