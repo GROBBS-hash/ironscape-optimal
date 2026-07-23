@@ -289,6 +289,16 @@ public class IronscapePanel extends PluginPanel
 		openChapter = -1;
 		openSection = -1;
 		refresh();
+		// If RuneLite reopened the sidebar from the last session, the panel
+		// was SHOWING before the guide existed — the hierarchy listener's
+		// jump silently no-opped and nothing retried. Land on the current
+		// step now that there is one.
+		SwingUtilities.invokeLater(() -> {
+			if (isShowing())
+			{
+				jumpToCurrent(false);
+			}
+		});
 	}
 
 	/** Re-read progress/config state and rebuild whatever view is showing. */

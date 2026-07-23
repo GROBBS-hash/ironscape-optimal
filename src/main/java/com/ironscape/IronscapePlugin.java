@@ -1542,7 +1542,9 @@ public class IronscapePlugin extends Plugin
 						java.awt.Color color =
 							have >= goal.getQuantity() ? OVERLAY_ORANGE : OVERLAY_RED;
 						reqs.add(new com.ironscape.overlay.StepOverlay.Requirement(
-							goal.getItemName(), have + "/" + goal.getQuantity(), color));
+							goal.getItemName(),
+							ItemTracker.formatCount(have) + "/" + ItemTracker.formatCount(goal.getQuantity()),
+							color));
 					}
 				}
 				List<GoalDetector.SkillLevelGoal> levels = levelGoalsBySub.get(sub.getId());

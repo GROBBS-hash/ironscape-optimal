@@ -227,6 +227,12 @@ public class ItemTracker
 			name.toLowerCase(Locale.ROOT).trim(), this::lookupIconId);
 	}
 
+	/** 200000 -> "200,000": item counts in badges/overlays get grouping. */
+	public static String formatCount(int n)
+	{
+		return String.format(Locale.US, "%,d", n);
+	}
+
 	/** Cached stackability by guide item name; see bankCountable. */
 	private final Map<String, Boolean> stackableByName =
 		new java.util.concurrent.ConcurrentHashMap<>();
