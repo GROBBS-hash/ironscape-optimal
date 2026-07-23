@@ -16,12 +16,12 @@ If this sees use, I'm happy to continue improving, adding and fixing bugs.
 
 ![The guide panel, step overlay and auto-navigation in action](docs/panel-navigation.png)
 
-One moment, most of the plugin: the **side panel** tracks the guide with
-tickable steps, live requirement badges (`fletching 20/15 ·
+ The **side panel** tracks the guide with
+tickable steps, live requirement badges/goals (`fletching 20/15 ·
 construction 21/20`, `cash 20549/200000`) and per-step location/note
 chips; the **step overlay** (top-left) shows the current action and its
 counts in-game; **auto-navigation** has already handed the route to the
-boat to Shortest Path (cyan trail); and the step will **tick itself**
+boat to Shortest Path and/or GPS plugin (cyan trail); and the step will **tick itself**
 when the travel completes. Steps auto-complete off skill levels, quest
 state, item counts, teleports, arrivals and mid-quest checkpoints — the
 checkbox is always there when detection can't know.
