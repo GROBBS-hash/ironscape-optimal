@@ -1217,6 +1217,13 @@ public class IronscapePlugin extends Plugin
 	@Subscribe
 	public void onGameTick(GameTick event)
 	{
+		// The account hash lags the login event; the moment it exists the
+		// persisted bank snapshot loads and banked counts stop reading 0.
+		if (client.getGameState() == GameState.LOGGED_IN
+			&& itemTracker.ensureBankLoaded() && panel != null)
+		{
+			SwingUtilities.invokeLater(panel::refreshItemCounts);
+		}
 		if (loginGraceTicks > 0)
 		{
 			loginGraceTicks--;
