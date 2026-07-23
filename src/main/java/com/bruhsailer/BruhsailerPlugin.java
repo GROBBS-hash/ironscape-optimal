@@ -195,6 +195,9 @@ public class BruhsailerPlugin extends Plugin
 	/** Tiles of ground items the current sub wants picked up. Written per tick. */
 	private volatile List<WorldPoint> groundItemTargets = java.util.Collections.emptyList();
 
+	/** Item id of the current sub's first unmet item goal; -1 = none. Written per tick. */
+	private volatile int currentSubItemIcon = -1;
+
 	/**
 	 * Scene tiles holding a ground item that matches one of the current
 	 * sub's item goals — the "pick up 2 iron bars" / item-spawn case.
@@ -538,6 +541,7 @@ public class BruhsailerPlugin extends Plugin
 		overlayManager.add(questStartMarkerOverlay);
 		npcTargetOverlay.setNamesSupplier(() -> npcTargetNames);
 		npcTargetOverlay.setQuestIconSupplier(() -> currentSubIsQuest);
+		npcTargetOverlay.setItemIconSupplier(() -> currentSubItemIcon);
 		overlayManager.add(npcTargetOverlay);
 		targetTileOverlay.setTargetSupplier(() -> targetTileMarker);
 		targetTileOverlay.setGroundItemsSupplier(() -> groundItemTargets);
@@ -1193,16 +1197,48 @@ public class BruhsailerPlugin extends Plugin
 				}
 				// The quest giver is rarely NAMED by the step ("Do Waterfall
 				// quest..."), but whoever stands at the quest's start point
-				// IS the quest giver — outline them too.
+				// IS the quest giver — outline them too. Same for a ⌖
+				// target: whoever stands at the annotated spot is who the
+				// step is about (Gulluck at his weapon shop).
 				if (marker != null
 					&& npc.getWorldLocation().getPlane() == marker.getPlane()
 					&& npc.getWorldLocation().distanceTo2D(marker) <= 4)
 				{
 					npcNames.add(clean);
 				}
+				if (spot != null
+					&& npc.getWorldLocation().getPlane() == spot.getPlane()
+					&& npc.getWorldLocation().distanceTo2D(spot) <= 4)
+				{
+					npcNames.add(clean);
+				}
 			}
 		}
 		npcTargetNames = npcNames;
+
+		// The item you're there to BUY floats over the outlined NPC's
+		// head: first still-unmet item goal of the current sub.
+		int wantedIcon = -1;
+		if (current != null)
+		{
+			List<GoalDetector.ItemGoal> wanted = itemGoalsBySub.get(current.sub.getId());
+			if (wanted != null)
+			{
+				for (GoalDetector.ItemGoal goal : wanted)
+				{
+					boolean gather = goal.getQuantity() > GoalDetector.CARRYABLE_LIMIT;
+					int count = gather
+						? itemTracker.countOf(goal.getItemName())
+						: itemTracker.carriedCountOf(goal.getItemName());
+					if (count < goal.getQuantity())
+					{
+						wantedIcon = itemTracker.iconIdFor(goal.getItemName());
+						break;
+					}
+				}
+			}
+		}
+		currentSubItemIcon = wantedIcon;
 
 		// Ground items the current sub wants picked up ("Pick up 2 iron
 		// bars...", item spawns): highlight their tiles, QH-style.
