@@ -1,4 +1,5 @@
 addy
+agility pots
 air talisman
 air/water/earth runes
 airs
@@ -7,13 +8,11 @@ all of your mind and air runes
 all the golem quest items
 ammo mould
 amulet
-another
+amulet of magic
 anti-dragon shield
 armor seeds
 arrow shafts
 ashes
-at canifis
-at least
 autoweed perk
 axe
 b gloves
@@ -70,6 +69,7 @@ cadava potion
 cakes
 camulet (equip)
 cart
+cash
 cheese
 chicken/wizards
 chinning area
@@ -85,7 +85,6 @@ cocktail shaker
 complete
 compost
 compost pack
-construction as well
 construction banked
 cooked meat
 copper
@@ -97,6 +96,7 @@ d bones
 day
 death runes
 desert disguise
+digsite pendants
 dragon defender
 dragon scim
 dramen branches
@@ -147,7 +147,6 @@ herblore boost
 holy mould
 house tab
 house teletabs
-in bank
 inv
 inv of bronze bars
 inv of gold
@@ -169,7 +168,7 @@ key imprint
 keys
 knife
 knife and teak log for 3-ticking (preferably)
-lantern lenses as well
+lantern lenses
 law rune
 laws
 leaves
@@ -190,10 +189,12 @@ melee stats
 melee stats now
 mind
 mins
+mithril grapple
 mithril platebody
 mithril platelegs
 molten glass
-ned as your captain
+nats
+ned
 needle
 needles
 nettles
@@ -216,17 +217,20 @@ pineapple
 pineapples
 pirate's message
 planks
-player-owned house
 portrait
 pot
 pot of flour
 potions
 priest robes
 quests
+rainbow scarf
 range void
+raw karambwans
 raw shark
 red
+red chins
 redberries
+redberry pie
 regular plank
 rope
 ropes
@@ -259,9 +263,11 @@ stake
 stake (vampire slayer)
 steel axe
 steel nails
+stew
 str
 swamp paste
 swamp tar
+teak logs
 teaks or mahogany
 tele
 tele runes
@@ -272,6 +278,7 @@ thread
 tinderbox
 to unlock sailing teleports
 translation notes
+unfired bowl
 varrock armor 2 (equip)
 via barracuda trials
 via sea charting
@@ -286,4 +293,3 @@ wizard mind bomb
 wizard mind bombs
 woad leaves
 yellow dye
-you about
