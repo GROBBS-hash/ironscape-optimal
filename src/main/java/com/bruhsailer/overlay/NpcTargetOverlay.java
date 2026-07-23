@@ -42,16 +42,22 @@ public class NpcTargetOverlay extends Overlay
 
 	private final Client client;
 	private final SpriteManager spriteManager;
+	private final net.runelite.client.game.ItemManager itemManager;
 
 	private Supplier<Set<String>> namesSupplier = Collections::emptySet;
 	private Supplier<Boolean> questIconSupplier = () -> false;
+	private Supplier<Integer> itemIconSupplier = () -> -1;
 	private BufferedImage icon;
+	private int cachedItemId = -1;
+	private BufferedImage cachedItemImage;
 
 	@Inject
-	public NpcTargetOverlay(Client client, SpriteManager spriteManager)
+	public NpcTargetOverlay(Client client, SpriteManager spriteManager,
+		net.runelite.client.game.ItemManager itemManager)
 	{
 		this.client = client;
 		this.spriteManager = spriteManager;
+		this.itemManager = itemManager;
 		setPosition(OverlayPosition.DYNAMIC);
 		setLayer(OverlayLayer.ABOVE_SCENE);
 	}
@@ -66,6 +72,16 @@ public class NpcTargetOverlay extends Overlay
 	public void setQuestIconSupplier(Supplier<Boolean> questIconSupplier)
 	{
 		this.questIconSupplier = questIconSupplier;
+	}
+
+	/**
+	 * Item id to float over outlined NPCs — the thing you're there to BUY
+	 * from them ("Trade Gulluck" + bronze arrowtips overhead). -1 = none;
+	 * the quest icon wins when both apply.
+	 */
+	public void setItemIconSupplier(Supplier<Integer> itemIconSupplier)
+	{
+		this.itemIconSupplier = itemIconSupplier;
 	}
 
 	@Override
@@ -96,20 +112,38 @@ public class NpcTargetOverlay extends Overlay
 				graphics.draw(hull);
 			}
 
+			BufferedImage overhead = null;
 			if (questIcon)
 			{
 				if (icon == null)
 				{
 					icon = spriteManager.getSprite(SpriteID.QUESTS_PAGE_ICON_BLUE_QUESTS, 0);
 				}
+				overhead = icon;
+			}
+			else
+			{
+				Integer itemId = itemIconSupplier.get();
+				if (itemId != null && itemId > 0)
+				{
+					if (itemId != cachedItemId)
+					{
+						cachedItemId = itemId;
+						cachedItemImage = itemManager.getImage(itemId);
+					}
+					overhead = cachedItemImage;
+				}
+			}
+			if (overhead != null)
+			{
 				LocalPoint local = npc.getLocalLocation();
-				if (icon != null && local != null)
+				if (local != null)
 				{
 					net.runelite.api.Point canvas = Perspective.getCanvasImageLocation(
-						client, local, icon, npc.getLogicalHeight() + 40);
+						client, local, overhead, npc.getLogicalHeight() + 40);
 					if (canvas != null)
 					{
-						graphics.drawImage(icon, canvas.getX(), canvas.getY(), null);
+						graphics.drawImage(overhead, canvas.getX(), canvas.getY(), null);
 					}
 				}
 			}
