@@ -1059,6 +1059,13 @@ public class IronscapePlugin extends Plugin
 			boolean missingAllBanked = true;
 			for (GoalDetector.ItemGoal goal : subGoals)
 			{
+				if (isCoins(goal.getItemName()))
+				{
+					// Money is meant to be SPENT after its step: dropping
+					// under 200k on the next purchases must not re-open
+					// the grind step behind you.
+					continue;
+				}
 				boolean gather = itemTracker.bankCountable(goal.getItemName(), goal.getQuantity());
 				if (gather)
 				{
