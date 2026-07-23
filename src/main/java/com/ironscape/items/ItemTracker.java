@@ -77,17 +77,45 @@ public class ItemTracker
 		return resolve(carriedByName, name);
 	}
 
+	/**
+	 * Items that COUNT AS another item — a Bruma torch lights braziers
+	 * and fires, so "tinderbox 0/1" must go green for the player who
+	 * upgraded. One-directional: the torch satisfies tinderbox needs,
+	 * never the other way around.
+	 */
+	private static final Map<String, String[]> SUBSTITUTES = Map.of(
+		"tinderbox", new String[]{"bruma torch"},
+		"hammer", new String[]{"imcando hammer"});
+
 	private static int resolve(Map<String, Integer> counts, String name)
 	{
+		Integer base = null;
 		for (String candidate : aliases(name))
 		{
 			Integer count = counts.get(candidate);
 			if (count != null)
 			{
-				return count;
+				base = count;
+				break;
 			}
 		}
-		return 0;
+		// Even with zero of the item itself, a substitute still counts —
+		// look substitutes up under every alias, not just the matched one.
+		int substitutes = 0;
+		for (String candidate : aliases(name))
+		{
+			String[] alternates = SUBSTITUTES.get(candidate);
+			if (alternates == null)
+			{
+				continue;
+			}
+			for (String alternate : alternates)
+			{
+				substitutes += counts.getOrDefault(alternate, 0);
+			}
+			break;
+		}
+		return (base == null ? 0 : base) + substitutes;
 	}
 
 	/** Guide slang -> the item's real in-game name. */
