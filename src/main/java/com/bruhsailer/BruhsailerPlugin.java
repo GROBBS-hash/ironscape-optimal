@@ -337,7 +337,9 @@ public class BruhsailerPlugin extends Plugin
 	private WorldPoint lastTickPosition;
 
 	/** Type this in the bank search box to filter to upcoming guide items. */
-	private static final String BANK_FILTER_KEYWORD = "bruh";
+	/** Bank-search keywords that trigger the guide-items filter. */
+	private static final java.util.Set<String> BANK_FILTER_KEYWORDS =
+		java.util.Set.of("ironman", "bruh");
 
 	/** Cached accepted item names for the bank filter (rebuilt each tick). */
 	private java.util.Set<String> bankFilterNames;
@@ -1269,7 +1271,7 @@ public class BruhsailerPlugin extends Plugin
 		Object[] objectStack = client.getObjectStack();
 		String search = (String) objectStack[client.getObjectStackSize() - 1];
 		boolean keywordSearch = search != null
-			&& BANK_FILTER_KEYWORD.equalsIgnoreCase(search.trim());
+			&& BANK_FILTER_KEYWORDS.contains(search.trim().toLowerCase(java.util.Locale.ROOT));
 		if (!keywordSearch && !bankFilterButton.isActive())
 		{
 			return;
@@ -1281,19 +1283,34 @@ public class BruhsailerPlugin extends Plugin
 
 		String itemName = itemManager.getItemComposition(itemManager.canonicalize(itemId))
 			.getName().toLowerCase(java.util.Locale.ROOT);
-		if (upcomingItemNames().contains(itemName))
+		boolean matched = upcomingItemNames().contains(itemName);
+		if (matched)
 		{
 			intStack[intStackSize - 2] = 1; // 1 = include this bank slot
 		}
-		// once per tick: proves the filter callback runs and the name set isn't empty
+		// Once per tick, report the PREVIOUS pass: with 0 matches a
+		// "working" filter shows an empty bank, which reads as broken.
 		if (bankFilterLogTick != tickCounter)
 		{
+			if (bankFilterLogTick != -1)
+			{
+				log.info("bank filter: pass queried {} bank items, matched {} (of {} wanted names)",
+					bankFilterQueries, bankFilterMatches, upcomingItemNames().size());
+			}
 			bankFilterLogTick = tickCounter;
-			log.info("bank filter: layout filtering, {} upcoming item names", upcomingItemNames().size());
+			bankFilterQueries = 0;
+			bankFilterMatches = 0;
+		}
+		bankFilterQueries++;
+		if (matched)
+		{
+			bankFilterMatches++;
 		}
 	}
 
 	private int bankFilterLogTick = -1;
+	private int bankFilterQueries;
+	private int bankFilterMatches;
 
 	/** How many upcoming incomplete STEPS the bank filter collects items from. */
 	private static final int BANK_FILTER_STEPS = 10;

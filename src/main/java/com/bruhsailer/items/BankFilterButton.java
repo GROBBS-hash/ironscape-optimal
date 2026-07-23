@@ -83,11 +83,14 @@ public class BankFilterButton
 	private void toggle()
 	{
 		// One physical click delivers TWO op events (log showed activate +
-		// deactivate in the same second, every time) — the filter switched
-		// itself off before the bank ever repainted. Same-tick repeats are
-		// the double-fire; a deliberate re-click is always ticks later.
-		if (client.getTickCount() == lastToggleTick)
+		// deactivate ~a second apart, every time) — the filter switched
+		// itself off before the player could see it. Anything within 3
+		// ticks (~1.8s) of the last accepted toggle is the double-fire; a
+		// deliberate re-click is slower than that.
+		if (client.getTickCount() - lastToggleTick < 3)
 		{
+			log.info("bank filter: swallowed duplicate op event ({} ticks after toggle)",
+				client.getTickCount() - lastToggleTick);
 			return;
 		}
 		lastToggleTick = client.getTickCount();
