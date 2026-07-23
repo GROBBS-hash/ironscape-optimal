@@ -1304,7 +1304,7 @@ public class IronscapePlugin extends Plugin
 		if (config.showTargetMarker() && current != null)
 		{
 			StepAnnotation.Target target = annotationManager.getTarget(current.sub.getId());
-			if (target == null && current.step.getSubSteps().size() == 1)
+			if (target == null)
 			{
 				target = annotationManager.getTarget(current.step.getId());
 			}
@@ -2015,7 +2015,7 @@ public class IronscapePlugin extends Plugin
 		// A ⌖ capture is a precise spot; a place name is a whole town —
 		// entering from any gate should count.
 		StepAnnotation.Target precise = annotationManager.getTarget(sub.getId());
-		if (precise == null && step.getSubSteps().size() == 1)
+		if (precise == null)
 		{
 			precise = annotationManager.getTarget(step.getId());
 		}
@@ -2413,7 +2413,7 @@ public class IronscapePlugin extends Plugin
 	private WorldPoint targetFor(GuideStep step, SubStep sub)
 	{
 		StepAnnotation.Target target = annotationManager.getTarget(sub.getId());
-		if (target == null && step.getSubSteps().size() == 1)
+		if (target == null)
 		{
 			target = annotationManager.getTarget(step.getId());
 		}
