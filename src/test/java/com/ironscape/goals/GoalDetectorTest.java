@@ -116,6 +116,20 @@ public class GoalDetectorTest
 	}
 
 	@Test
+	public void homeTeleWithDestinationIsATravelGoal()
+	{
+		// One sub, two legs: the teleport ticks it, or arriving at the
+		// destination (the LAST place mentioned) does.
+		Guide guide = guideWithSubTexts(
+			"Home tele to lumby and run north to Varrock east bank");
+
+		GoalDetector.Goals goals = GoalDetector.detect(guide);
+
+		assertTrue(goals.getItemGoals().isEmpty());
+		assertEquals(1, goals.getTravelGoals().size());
+	}
+
+	@Test
 	public void openEndedMakeLoopsAreNotProductGoals()
 	{
 		// The splitter puts this clause in its OWN sub, away from the

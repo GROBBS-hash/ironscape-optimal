@@ -34,6 +34,7 @@ public class BankFilterButton
 	private static final int BUTTON_Y = 5;
 
 	private final Client client;
+	private final net.runelite.client.callback.ClientThread clientThread;
 	private final BankSearch bankSearch;
 
 	/** True while the bank is showing only guide items. */
@@ -43,9 +44,11 @@ public class BankFilterButton
 	private Widget background;
 
 	@Inject
-	public BankFilterButton(Client client, BankSearch bankSearch)
+	public BankFilterButton(Client client,
+		net.runelite.client.callback.ClientThread clientThread, BankSearch bankSearch)
 	{
 		this.client = client;
+		this.clientThread = clientThread;
 		this.bankSearch = bankSearch;
 	}
 
@@ -116,10 +119,22 @@ public class BankFilterButton
 			// script call bankSearchFilter: log showed one probe, zero
 			// filter passes, bank unchanged. The typed-search path is the
 			// one proven to work.)
-			client.setVarcIntValue(VarClientInt.INPUT_TYPE, InputType.SEARCH.getType());
-			client.setVarcStrValue(VarClientStr.INPUT_TEXT, "ironman");
-			selfToggle = true;
-			bankSearch.layoutBank();
+			//
+			// invokeLater is LOAD-BEARING: this op listener runs INSIDE the
+			// click's clientscript, and layoutBank() runs the bank build
+			// script SYNCHRONOUSLY — re-entering the script engine from a
+			// script froze the whole client. Deferred one tick, the build
+			// runs from a clean stack. (BankSearch.reset defers internally.)
+			clientThread.invokeLater(() -> {
+				if (!active)
+				{
+					return; // deactivated in the meantime
+				}
+				client.setVarcIntValue(VarClientInt.INPUT_TYPE, InputType.SEARCH.getType());
+				client.setVarcStrValue(VarClientStr.INPUT_TEXT, "ironman");
+				selfToggle = true;
+				bankSearch.layoutBank();
+			});
 		}
 	}
 
