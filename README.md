@@ -78,3 +78,8 @@ Annotations make the plugin smarter but are always optional.
 - **Mid-quest checkpoints:** requirements like `{"varbit": 5619, "value": 5}`
   tick a step when a quest reaches a certain point ("do the quest until
   the orb"). See `PrintSubIdProbe` for finding step ids.
+
+## License
+
+BSD 2-Clause (see [LICENSE](LICENSE)). Guide content by Oziris & the
+ironman.guide community, bundled with permission.
