@@ -282,6 +282,16 @@ class StepRow extends JPanel
 		masterBox.addActionListener(e -> {
 			boolean completed = masterBox.isSelected();
 			ctx.getProgress().setCompleted(ctx.getVariant(), step, completed);
+			// A MANUAL tick is a deliberate "I'm here": move the player's
+			// position; an untick means "redo this" — move it back.
+			if (completed)
+			{
+				ctx.getProgress().advancePositionTo(ctx.getVariant(), step.getGlobalIndex());
+			}
+			else
+			{
+				ctx.getProgress().regressPositionTo(ctx.getVariant(), step.getGlobalIndex() - 1);
+			}
 			for (SubRowUi row : subRows)
 			{
 				row.setCompletedSilently(completed);
@@ -594,6 +604,15 @@ class StepRow extends JPanel
 			checkBox.addActionListener(e -> {
 				boolean nowCompleted = checkBox.isSelected();
 				ctx.getProgress().setSubCompleted(ctx.getVariant(), step, sub, nowCompleted);
+				// Manual ticks steer the player's position (see masterBox).
+				if (nowCompleted && ctx.getProgress().isCompleted(ctx.getVariant(), step.getId()))
+				{
+					ctx.getProgress().advancePositionTo(ctx.getVariant(), step.getGlobalIndex());
+				}
+				else if (!nowCompleted)
+				{
+					ctx.getProgress().regressPositionTo(ctx.getVariant(), step.getGlobalIndex() - 1);
+				}
 				setHtml(nowCompleted);
 				// Ticking the last open sub-step completes the step.
 				if (masterBox != null)

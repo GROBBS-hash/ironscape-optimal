@@ -242,11 +242,77 @@ public class ProgressManager
 		}
 	}
 
+	// ------------------------------------------------------------------
+	// Player POSITION — where the player actually is in the guide, as a
+	// global step index. Distinct from ticks on purpose: a quest step
+	// five ahead auto-ticks the moment we see the quest was done ages
+	// ago, but that must not teleport the frontier past undone steps.
+	// Only completing the frontier step itself, or a deliberate manual
+	// tick, moves position forward; unticking at/behind it moves it back.
+	// ------------------------------------------------------------------
+
+	private final Map<GuideVariant, Integer> positionCache = new EnumMap<>(GuideVariant.class);
+
+	/** Global index of the last step the player actually passed; -1 = start. */
+	public synchronized int position(GuideVariant variant)
+	{
+		return positionCache.computeIfAbsent(variant, v -> {
+			String stored = configManager.getConfiguration(CONFIG_GROUP, positionKey(v));
+			if (stored != null)
+			{
+				try
+				{
+					return Integer.parseInt(stored);
+				}
+				catch (NumberFormatException e)
+				{
+					// fall through to unset
+				}
+			}
+			return Integer.MIN_VALUE; // unset — caller initializes from ticks
+		});
+	}
+
+	/** True when no position was ever stored for this variant. */
+	public synchronized boolean positionUnset(GuideVariant variant)
+	{
+		return position(variant) == Integer.MIN_VALUE;
+	}
+
+	public synchronized void advancePositionTo(GuideVariant variant, int index)
+	{
+		if (index > position(variant))
+		{
+			setPosition(variant, index);
+		}
+	}
+
+	public synchronized void regressPositionTo(GuideVariant variant, int index)
+	{
+		int current = position(variant);
+		if (current != Integer.MIN_VALUE && index < current)
+		{
+			setPosition(variant, index);
+		}
+	}
+
+	public synchronized void setPosition(GuideVariant variant, int index)
+	{
+		positionCache.put(variant, index);
+		configManager.setConfiguration(CONFIG_GROUP, positionKey(variant), Integer.toString(index));
+	}
+
+	private static String positionKey(GuideVariant variant)
+	{
+		return "position_" + variant.name();
+	}
+
 	/** Call when the active RuneLite profile changes: cached progress belongs to the old profile. */
 	public synchronized void invalidate()
 	{
 		cache.clear();
 		countedCache.clear();
+		positionCache.clear();
 	}
 
 	private Set<String> completedIds(GuideVariant variant)
