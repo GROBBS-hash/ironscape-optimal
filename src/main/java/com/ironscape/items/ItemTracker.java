@@ -466,6 +466,35 @@ public class ItemTracker
 		// cached container was seen retaining withdrawn items ("steel axe
 		// 2/1" with one axe carried and none banked) — event-sourced state
 		// can't drift like that.
+		//
+		// DEPOSIT BOXES are the one path into the bank that fires no bank
+		// event: items that just left the player's hands while the box is
+		// open were deposited, so credit them to the snapshot ourselves —
+		// otherwise the gold dropped off at the Port Sarim box reads as
+		// vanished until the next real bank visit.
+		net.runelite.api.widgets.Widget depositBox =
+			client.getWidget(net.runelite.api.gameval.InterfaceID.BankDepositbox.UNIVERSE);
+		if (depositBox != null && !depositBox.isHidden())
+		{
+			boolean credited = false;
+			synchronized (this)
+			{
+				for (Map.Entry<String, Integer> old : carriedByName.entrySet())
+				{
+					int delta = old.getValue() - carried.getOrDefault(old.getKey(), 0);
+					if (delta > 0)
+					{
+						bankByName.merge(old.getKey(), delta, Integer::sum);
+						credited = true;
+					}
+				}
+			}
+			if (credited)
+			{
+				saveBank();
+			}
+		}
+
 		Map<String, Integer> total = new HashMap<>(bankByName);
 		carried.forEach((name, count) -> total.merge(name, count, Integer::sum));
 
