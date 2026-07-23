@@ -103,9 +103,8 @@ public class BankFilterButton
 		if (active)
 		{
 			log.info("bank filter: deactivated by button");
-			deactivate();
 			selfToggle = true;
-			bankSearch.reset(true); // clears our programmatic search
+			deactivate(true);
 		}
 		else
 		{
@@ -146,8 +145,16 @@ public class BankFilterButton
 		return was;
 	}
 
-	/** Turn the filter off (e.g. the player clicked a real bank tab). */
-	public void deactivate()
+	/**
+	 * Turn the filter off.
+	 *
+	 * @param clearSearch also close/clear the bank search — true when OUR
+	 *                    "ironman" search is what's open (button toggled
+	 *                    off, player clicked a real tab); false when the
+	 *                    player just opened their OWN search, which must
+	 *                    be left alone.
+	 */
+	public void deactivate(boolean clearSearch)
 	{
 		if (!active)
 		{
@@ -158,6 +165,12 @@ public class BankFilterButton
 		{
 			background.setSpriteId(SpriteID.Miscgraphics3.UNKNOWN_BUTTON_SQUARE_SMALL);
 			background.revalidate();
+		}
+		if (clearSearch)
+		{
+			// BankSearch.reset defers to the client thread internally, so
+			// this is safe from any event context.
+			bankSearch.reset(true);
 		}
 	}
 

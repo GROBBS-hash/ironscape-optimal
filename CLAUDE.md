@@ -193,10 +193,18 @@ All six build-order steps are DONE, plus substantial extras. Current state:
 - **Navigation:** Shortest Path PluginMessages; auto-navigate to next
   target after any progress; nearest-bank routing when frontier items are
   banked; route cleared when nothing targetable ahead.
-- **Bank filter:** button inside the bank UI (Quest Helper-style widget +
-  getSearchingTagTab callback) or type "bruh" in bank search. Shows items
-  still needed by the CURRENT SECTION (incomplete steps/subs only), not a
-  fixed sub-step lookahead.
+- **Bank filter (reworked 2026-07-23):** button inside the bank UI or
+  type "bruh"/"ironman" in bank search. While active the native grid is
+  BLANKED (bankSearchFilter answers 0 for every slot; getSearchingTagTab
+  is NOT answered — it fought real tabs) and BankMissingSection renders
+  the next 10 incomplete steps as per-step sections: header + ALL of the
+  step's items, green/red have/need text under each icon, missing ones
+  ghosted. Clicking a real tab deactivates AND clears our search
+  (deactivate(clearSearch)); a player-opened search deactivates without
+  clearing. TWO past hard freezes, both script-engine re-entrancy: the
+  op listener runs inside the click script (activation defers via
+  invokeLater) and update()'s UPDATE_SCROLLBAR runScript ran inside
+  BANKMAIN_BUILD's post-fire (now deferred one tick).
 - **Tooling** (`tools/*.mjs`, Node): extract/review annotations (review
   COMPLETE 2026-07-22: bundled annotations cover 187 steps — 48 skill
   requirements, 170 item lists; review --trust auto-applies verifier
