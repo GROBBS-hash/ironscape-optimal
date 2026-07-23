@@ -413,8 +413,15 @@ public class BruhsailerPlugin extends Plugin
 		new WorldPoint(3428, 2892, 0), // Nardah
 	};
 
-	/** How close (tiles) counts as "arrived" for a location goal. */
+	/** How close (tiles) counts as "arrived" at a PRECISE ⌖ target. */
 	private static final int ARRIVE_RADIUS = 8;
+
+	/**
+	 * Arrival radius when the target is a PLACE NAME ("walk to Ardy") —
+	 * town points sit at the market square, and entering from any gate
+	 * should count as having arrived.
+	 */
+	private static final int PLACE_ARRIVE_RADIUS = 25;
 
 	/** Text-detected "get N items" / "start quest X" goals (see GoalDetector). */
 	private GoalDetector.Goals goals;
@@ -1859,15 +1866,45 @@ public class BruhsailerPlugin extends Plugin
 		{
 			return false;
 		}
-		WorldPoint target = targetFor(step, sub);
 		Player player = client.getLocalPlayer();
-		if (target == null || player == null)
+		if (player == null)
 		{
 			return false;
 		}
+
+		// "Walk to Ardy WITH rope, dwellberries, hangover cure" — the
+		// items are part of the errand: every annotation item must be in
+		// hand before arriving can tick the step.
+		String annotationId = step.getSubSteps().size() == 1 ? step.getId() : sub.getId();
+		for (StepAnnotation.ItemNeed need : annotationManager.getItems(annotationId))
+		{
+			int required = need.quantity == null ? 1 : need.quantity;
+			int count = required > GoalDetector.CARRYABLE_LIMIT
+				? itemTracker.countOf(need.name)
+				: itemTracker.carriedCountOf(need.name);
+			if (count < required)
+			{
+				return false;
+			}
+		}
+
 		WorldPoint here = player.getWorldLocation();
-		return here.getPlane() == target.getPlane()
-			&& here.distanceTo(target) <= ARRIVE_RADIUS;
+		// A ⌖ capture is a precise spot; a place name is a whole town —
+		// entering from any gate should count.
+		StepAnnotation.Target precise = annotationManager.getTarget(sub.getId());
+		if (precise == null && step.getSubSteps().size() == 1)
+		{
+			precise = annotationManager.getTarget(step.getId());
+		}
+		if (precise != null)
+		{
+			return here.getPlane() == precise.plane
+				&& here.distanceTo(new WorldPoint(precise.x, precise.y, precise.plane)) <= ARRIVE_RADIUS;
+		}
+		WorldPoint place = placeManager.firstPlaceIn(sub.getPlainText());
+		return place != null
+			&& here.getPlane() == place.getPlane()
+			&& here.distanceTo(place) <= PLACE_ARRIVE_RADIUS;
 	}
 
 	/** A whole step completed by its skill requirement annotation. */
