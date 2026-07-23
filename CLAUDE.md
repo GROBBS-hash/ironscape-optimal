@@ -256,6 +256,17 @@ All six build-order steps are DONE, plus substantial extras. Current state:
   fallback via firstPlaceIn). Action-goal detection now skips leading
   connectives ("and do...") and maps "lap of ... agility course" to an
   AGILITY xp-drop goal.
+- **Player POSITION (2026-07-23):** the frontier anchors on a persisted
+  position index (`position_OZIRIS`), NOT on "last completed step" — a
+  pre-done quest auto-ticking its step ahead (Daddy's Home) must not
+  teleport the frontier past undone steps. Position advances when the
+  FRONTIER step completes or the user manually ticks (deliberate skip);
+  regresses on manual untick / gather-loss reopen. Initialized once
+  from the contiguous completed prefix.
+- **Wiki seeding (2026-07-23):** item_ids.json (181 wiki-verified
+  name->id entries, tools/seed-item-ids.mjs + PrintItemNamesProbe)
+  gives untradeables sprites; ItemTracker checks it before the price
+  list. Places re-seeded over the Oziris guide with widened NPC verbs.
 - **Known limits:** interaction/arrival detection is heuristic (proxy
   signals, not quest varbits — deliberate; QH-style per-quest authoring
   for STEP FLOW still rejected — varbit checkpoints are opt-in

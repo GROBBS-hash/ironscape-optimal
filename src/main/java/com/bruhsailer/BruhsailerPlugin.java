@@ -902,6 +902,9 @@ public class BruhsailerPlugin extends Plugin
 			if (gatherLost || rebanked)
 			{
 				progressManager.setSubCompleted(activeVariant, step, sub, false);
+				// Reopening a step at/behind the player's position pulls
+				// the position back so the frontier returns to it.
+				progressManager.regressPositionTo(activeVariant, step.getGlobalIndex() - 1);
 				reopened = true;
 				String text = sub.getPlainText().trim();
 				if (text.length() > 60)
@@ -1646,26 +1649,51 @@ public class BruhsailerPlugin extends Plugin
 		return window.isEmpty() ? null : window.get(0);
 	}
 
+	/** Is this step the player's current frontier step? */
+	private boolean isFrontierStep(GuideStep step)
+	{
+		Current current = findCurrent();
+		return current != null && current.step == step;
+	}
+
+	/**
+	 * The player's position, initializing it on first use (pre-position
+	 * profiles): the end of the contiguous completed prefix — the last
+	 * step with no undone step before it. Auto-ticked islands further
+	 * ahead deliberately don't count.
+	 */
+	private int playerPosition()
+	{
+		if (progressManager.positionUnset(activeVariant))
+		{
+			List<GuideStep> steps = guideFor(activeVariant).getAllSteps();
+			int prefixEnd = -1;
+			while (prefixEnd + 1 < steps.size()
+				&& progressManager.isCompleted(activeVariant, steps.get(prefixEnd + 1).getId()))
+			{
+				prefixEnd++;
+			}
+			progressManager.setPosition(activeVariant, prefixEnd);
+			log.info("Initialized player position at step index {}", prefixEnd);
+		}
+		return progressManager.position(activeVariant);
+	}
+
 	/**
 	 * The first `limit` incomplete sub-steps in guide order — starting
-	 * AFTER the last completed step. Unticked steps before that point were
-	 * skipped on purpose; anchoring the frontier (auto-ticks, overlay,
-	 * navigation, panel landing) on them would pin everything to old
-	 * content the player has moved past.
+	 * AFTER the player's POSITION (ProgressManager#position), skipping
+	 * anything already ticked. Position, not "last completed step":
+	 * a quest done ages ago auto-ticks its step far ahead, and anchoring
+	 * on that would teleport the frontier past undone steps (owner hit
+	 * exactly this with Daddy's Home). Unticked steps BEHIND position
+	 * were skipped on purpose and stay out of the window.
 	 */
 	private List<Current> findWindow(int limit)
 	{
 		List<Current> window = new ArrayList<>();
 		Guide guide = guideFor(activeVariant);
 		List<GuideStep> steps = guide.getAllSteps();
-		int start = 0;
-		for (int i = 0; i < steps.size(); i++)
-		{
-			if (progressManager.isCompleted(activeVariant, steps.get(i).getId()))
-			{
-				start = i + 1;
-			}
-		}
+		int start = Math.max(0, playerPosition() + 1);
 		for (int i = start; i < steps.size(); i++)
 		{
 			GuideStep step = steps.get(i);
@@ -1850,7 +1878,14 @@ public class BruhsailerPlugin extends Plugin
 		log.info("auto-completed step {} ({}){}: {}", step.getId(), reason,
 			loginGraceTicks > 0 ? " [login grace]" : "",
 			step.getPlainText().trim());
+		boolean atFrontier = isFrontierStep(step);
 		progressManager.setCompleted(activeVariant, step, true);
+		if (atFrontier)
+		{
+			// Only the FRONTIER step's completion moves the player's
+			// position — a pre-done quest ticking five steps ahead must not.
+			progressManager.advancePositionTo(activeVariant, step.getGlobalIndex());
+		}
 		if (loginGraceTicks == 0)
 		{
 			String text = step.getPlainText().trim();
@@ -1876,7 +1911,12 @@ public class BruhsailerPlugin extends Plugin
 		log.info("auto-completed sub {} ({}){}: {}", sub.getId(), reason,
 			loginGraceTicks > 0 ? " [login grace]" : "",
 			sub.getPlainText().trim());
+		boolean atFrontier = isFrontierStep(step);
 		progressManager.setSubCompleted(activeVariant, step, sub, true);
+		if (atFrontier && progressManager.isCompleted(activeVariant, step.getId()))
+		{
+			progressManager.advancePositionTo(activeVariant, step.getGlobalIndex());
+		}
 
 		if (loginGraceTicks == 0)
 		{
