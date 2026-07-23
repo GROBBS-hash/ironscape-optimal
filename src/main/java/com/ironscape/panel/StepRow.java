@@ -3,6 +3,7 @@ package com.ironscape.panel;
 import com.ironscape.annotations.StepAnnotation;
 import com.ironscape.goals.GoalDetector;
 import com.ironscape.guide.GuideStep;
+import com.ironscape.items.ItemTracker;
 import com.ironscape.guide.SubStep;
 import com.ironscape.guide.TextRun;
 import com.ironscape.places.PlaceManager;
@@ -266,7 +267,8 @@ class StepRow extends JPanel
 			color = MISSING_HEX;
 		}
 		return "<html><body style='width:120px'><b><font color='" + color + "'>"
-			+ RichText.escape(need.name) + "&nbsp;" + have + "/" + required
+			+ RichText.escape(need.name) + "&nbsp;"
+			+ ItemTracker.formatCount(have) + "/" + ItemTracker.formatCount(required)
 			+ (note.isEmpty() ? "" : "&nbsp;(in&nbsp;bank)")
 			+ "</font></b></body></html>";
 	}

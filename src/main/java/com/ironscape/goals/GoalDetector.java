@@ -123,8 +123,11 @@ public final class GoalDetector
 		// "make SURE you..." is not crafting an item called "sure";
 		// "get AT LEAST 22 fletching" is not an item called "at least";
 		// "the xp you get IN THESE skills" is not an item either
-		// ("these" is already rejected above)
-		"energy", "out", "drink", "drinks", "sure", "at", "least", "in");
+		// ("these" is already rejected above);
+		// "take the BOAT to Great Kourend" is travel, not an item — the
+		// vehicle nouns must fall through to the travel detector
+		"energy", "out", "drink", "drinks", "sure", "at", "least", "in",
+		"boat", "ship", "ferry", "canoe", "minecart", "glider");
 
 	/**
 	 * Fragments starting with these are actions/prose, never list items —
@@ -291,7 +294,7 @@ public final class GoalDetector
 
 	/** A sub-step about moving via teleport/transport, completed by a position jump. */
 	private static final Pattern TRAVEL_WORDS = Pattern.compile(
-		"\\b(?:teleport|tele|quetzal|travel|sail|charter|gnome glider|balloon|minecart|fairy ring)\\b",
+		"\\b(?:teleport|tele|quetzal|travel|sail|charter|gnome glider|balloon|minecart|fairy ring|boat|ship|ferry|canoe)\\b",
 		Pattern.CASE_INSENSITIVE);
 
 	/** Fragment-opening action verb -> the skill whose XP drop proves it was done. */
