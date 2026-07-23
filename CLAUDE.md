@@ -314,6 +314,17 @@ refresh when "Failed to login" appears.
   legacy-data migration; old "bruhsailer" ids survive only as the
   migration source constants.
 
+- PUBLISHED (2026-07-23): repo renamed to GROBBS-hash/ironscape-optimal
+  (public, BSD-2 LICENSE, 48x48 icon.png placeholder). Plugin Hub
+  submission OPEN: https://github.com/runelite/plugin-hub/pull/14207
+  (plugins/ironscape-optimal on the GROBBS-hash/plugin-hub fork, branch
+  "ironscape-optimal", pinned to commit 53d225c2). To ship a new hub
+  version later: push to main, then update the commit= line in that
+  fork branch. Watch the PR for reviewer feedback — hub reviewers
+  scrutinize script/widget manipulation (ours follows Quest Helper
+  patterns) and may ask about guide-content permission (verbal from
+  Oziris; consider getting it in writing).
+
 - The ONLY guide is **GuideVariant.OZIRIS** — Ironman Efficiency Guide
   v4, community "Enhanced 2026" edition from https://ironman.guide/,
   scraped by `tools/scrape-oziris.mjs` (575 steps, 7 sections). The

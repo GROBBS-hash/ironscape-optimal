@@ -244,17 +244,31 @@ public class ItemTracker
 		{
 			return false;
 		}
-		return !stackableByName.computeIfAbsent(name.toLowerCase(Locale.ROOT).trim(), n -> {
+		String key = name.toLowerCase(Locale.ROOT).trim();
+		Boolean stackable = stackableByName.get(key);
+		if (stackable == null)
+		{
+			// Item compositions may only load on the client thread — the
+			// panel's Swing badges asking first CRASHED the panel build
+			// (AssertionError truncated the step list). Off-thread, fall
+			// back to the quantity-only rule; the next game-tick
+			// evaluation caches the real answer and the badges refresh.
+			if (!client.isClientThread())
+			{
+				return true;
+			}
 			try
 			{
-				int id = iconIdFor(n);
-				return id > 0 && itemManager.getItemComposition(id).isStackable();
+				int id = iconIdFor(key);
+				stackable = id > 0 && itemManager.getItemComposition(id).isStackable();
 			}
 			catch (RuntimeException e)
 			{
-				return false; // unknown item: keep the old quantity-only rule
+				stackable = false; // unknown item: keep the quantity-only rule
 			}
-		});
+			stackableByName.put(key, stackable);
+		}
+		return !stackable;
 	}
 
 	private int lookupIconId(String name)
