@@ -3477,6 +3477,13 @@
       "y": 3569,
       "plane": 0
     },
+    "barcrawl": {
+      "display": "Barcrawl",
+      "type": "quest",
+      "x": 2544,
+      "y": 3569,
+      "plane": 0
+    },
     "architectural alliance": {
       "display": "Architectural Alliance",
       "type": "quest",

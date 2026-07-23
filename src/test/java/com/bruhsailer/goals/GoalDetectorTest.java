@@ -56,6 +56,54 @@ public class GoalDetectorTest
 		assertEquals(1, goals.getItemGoals().get(2).getQuantity());
 	}
 
+	private static Guide guideWithMetadataStep(String text, Map<String, String> metadata)
+	{
+		SubStep sub = new SubStep("parent:0", 0, 0, text,
+			Collections.singletonList(new TextRun(text, false, false, false, false, null, null)));
+		GuideStep step = new GuideStep("parent", 0, 0, 0, 0, text,
+			Collections.emptyList(), Collections.singletonList(sub), Collections.emptyList(),
+			Collections.emptyList(), metadata);
+		GuideSection section = new GuideSection("1.1: test", Collections.singletonList(step));
+		GuideChapter chapter = new GuideChapter("c1", Collections.singletonList(section), Collections.emptyList());
+		return new Guide(GuideVariant.OZIRIS, "today", "test",
+			Collections.singletonList(chapter),
+			Collections.singletonList(step),
+			Map.of(step.getId(), step));
+	}
+
+	@Test
+	public void metadataQuestTagBeatsAbbreviatedText()
+	{
+		// The text says "Barcrawl miniquest"; only the authored metadata
+		// carries the real quest name.
+		Guide guide = guideWithMetadataStep("Start Barcrawl miniquest",
+			Map.of("quest", "Alfred Grimhand's Barcrawl", "questStatus", "start"));
+
+		GoalDetector.Goals goals = GoalDetector.detect(guide);
+
+		assertEquals(1, goals.getQuestGoals().size());
+		assertEquals(Quest.ALFRED_GRIMHANDS_BARCRAWL, goals.getQuestGoals().get(0).getQuest());
+		assertFalse(goals.getQuestGoals().get(0).isRequiresFinished());
+	}
+
+	@Test
+	public void metadataQuestTagIsIgnoredOnCheckpointSteps()
+	{
+		// "until <part>" steps complete via their varbit/varp annotation; a
+		// started-state quest goal would tick them the moment the quest began.
+		Guide guide = guideWithMetadataStep(
+			"Do Waterfall quest until the part where you have to go to the gnome maze",
+			Map.of("quest", "Waterfall Quest", "questStatus", "start"));
+
+		GoalDetector.Goals goals = GoalDetector.detect(guide);
+
+		for (GoalDetector.QuestGoal goal : goals.getQuestGoals())
+		{
+			assertTrue("only a text-derived FINISHED goal is acceptable here",
+				goal.isRequiresFinished());
+		}
+	}
+
 	@Test
 	public void minigameTeleShorthandIsDetected()
 	{
