@@ -85,6 +85,23 @@ public class PlaceManager
 		return place == null ? null : new WorldPoint(place.x, place.y, place.plane);
 	}
 
+	/**
+	 * Like get(), but forgiving about directional prefixes — the guide's
+	 * authored location tags say "West of Lumbridge" or "South-west of
+	 * Castle Wars"; the base place is close enough for navigation.
+	 */
+	public synchronized WorldPoint getLoose(String name)
+	{
+		WorldPoint exact = get(name);
+		if (exact != null)
+		{
+			return exact;
+		}
+		String stripped = name.replaceFirst(
+			"(?i)^(?:north|south|east|west)(?:[ -](?:east|west))?\\s+of\\s+", "");
+		return stripped.equals(name) ? null : get(stripped);
+	}
+
 	/** Save a place under a name and start linkifying it. */
 	public synchronized void add(String name, WorldPoint point)
 	{

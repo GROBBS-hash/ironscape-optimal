@@ -2408,9 +2408,19 @@ public class IronscapePlugin extends Plugin
 			return new WorldPoint(target.x, target.y, target.plane);
 		}
 		// A travel sub's destination is the LAST place it names.
-		return travelGoalSubs.contains(sub.getId())
+		WorldPoint inText = travelGoalSubs.contains(sub.getId())
 			? placeManager.lastPlaceIn(sub.getPlainText())
 			: placeManager.firstPlaceIn(sub.getPlainText());
+		if (inText != null)
+		{
+			return inText;
+		}
+		// No recognised place in the text: fall back to the step's authored
+		// 📍 location tag ("Varrock", "West of Lumbridge"), so EVERY tagged
+		// step navigates at least to the right area instead of silently
+		// going nowhere.
+		String location = step.getMetadata().get("location");
+		return location == null ? null : placeManager.getLoose(location);
 	}
 
 	private void navigateToStep(String annotationId)
