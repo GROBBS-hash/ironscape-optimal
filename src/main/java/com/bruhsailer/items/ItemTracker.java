@@ -140,6 +140,11 @@ public class ItemTracker
 		{
 			key = "coins";
 		}
+		// the guide says "arrowheads"; smithable metal ones are named
+		// "arrowtips" in game. Metal-specific on purpose: "Broad
+		// arrowheads" really is called arrowheads.
+		key = key.replaceFirst(
+			"^(bronze|iron|steel|mithril|adamant|rune|amethyst) arrowheads?$", "$1 arrowtips");
 		String colloquial = COLLOQUIAL.get(key);
 		if (colloquial != null)
 		{
