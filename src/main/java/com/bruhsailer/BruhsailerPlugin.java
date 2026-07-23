@@ -913,6 +913,38 @@ public class BruhsailerPlugin extends Plugin
 		return reopened;
 	}
 
+	/**
+	 * Barcrawl bars hand you the drink INSIDE dialogue and you gulp it
+	 * immediately — no item ever exists to count. The reliable signal is
+	 * the game message every one of the ten pubs prints: "<bartender>
+	 * signs your card". Frontier sub only: the message names no bar, so
+	 * order is the disambiguator.
+	 */
+	@Subscribe
+	public void onChatMessage(net.runelite.api.events.ChatMessage event)
+	{
+		if (event.getType() != ChatMessageType.GAMEMESSAGE
+			&& event.getType() != ChatMessageType.SPAM)
+		{
+			return;
+		}
+		if (!config.autoCompleteSteps() || loginGraceTicks > 0
+			|| !event.getMessage().contains("signs your card"))
+		{
+			return;
+		}
+		Current current = findCurrent();
+		if (current != null
+			&& current.sub.getPlainText().toLowerCase(Locale.ROOT).contains("barcrawl"))
+		{
+			completeSubGoal(current.step, current.sub, "barcrawl card signed");
+			if (panel != null)
+			{
+				SwingUtilities.invokeLater(panel::refresh);
+			}
+		}
+	}
+
 	/** The bank interface (re)opened: (re)create our filter button in it. */
 	@Subscribe
 	public void onWidgetLoaded(WidgetLoaded event)
@@ -963,14 +995,24 @@ public class BruhsailerPlugin extends Plugin
 			boolean filterView = bankFilterButton.isActive()
 				|| (search != null && BANK_FILTER_KEYWORDS.contains(
 					search.trim().toLowerCase(java.util.Locale.ROOT)));
-			java.util.Map<String, Integer> missing = new LinkedHashMap<>();
+			List<com.bruhsailer.items.BankMissingSection.Section> missing = new ArrayList<>();
 			if (filterView)
 			{
-				for (java.util.Map.Entry<String, Integer> need : upcomingItemNeeds().entrySet())
+				refreshUpcomingNeeds();
+				for (com.bruhsailer.items.BankMissingSection.Section section : upcomingSections)
 				{
-					if (itemTracker.countOf(need.getKey()) < need.getValue())
+					com.bruhsailer.items.BankMissingSection.Section shortfall =
+						new com.bruhsailer.items.BankMissingSection.Section(section.title);
+					for (java.util.Map.Entry<String, Integer> need : section.items.entrySet())
 					{
-						missing.put(need.getKey(), need.getValue());
+						if (itemTracker.countOf(need.getKey()) < need.getValue())
+						{
+							shortfall.items.put(need.getKey(), need.getValue());
+						}
+					}
+					if (!shortfall.items.isEmpty())
+					{
+						missing.add(shortfall);
 					}
 				}
 			}
@@ -1386,6 +1428,7 @@ public class BruhsailerPlugin extends Plugin
 			return;
 		}
 		java.util.Map<String, Integer> needs = new LinkedHashMap<>();
+		List<com.bruhsailer.items.BankMissingSection.Section> sections = new ArrayList<>();
 		Current frontier = findCurrent();
 		if (frontier != null)
 		{
@@ -1401,10 +1444,15 @@ public class BruhsailerPlugin extends Plugin
 					continue;
 				}
 				included++;
+				com.bruhsailer.items.BankMissingSection.Section section =
+					new com.bruhsailer.items.BankMissingSection.Section(
+						truncate(step.getPlainText().trim(), 48));
 				for (StepAnnotation.ItemNeed need : annotationManager.getItems(step.getId()))
 				{
-					needs.merge(need.name.toLowerCase(Locale.ROOT),
-						need.quantity == null ? 1 : need.quantity, Math::max);
+					String name = need.name.toLowerCase(Locale.ROOT);
+					int quantity = need.quantity == null ? 1 : need.quantity;
+					needs.merge(name, quantity, Math::max);
+					section.items.merge(name, quantity, Math::max);
 				}
 				for (SubStep sub : step.getSubSteps())
 				{
@@ -1418,14 +1466,18 @@ public class BruhsailerPlugin extends Plugin
 						for (GoalDetector.ItemGoal goal : itemGoals)
 						{
 							needs.merge(goal.getItemName(), goal.getQuantity(), Math::max);
+							section.items.merge(goal.getItemName(), goal.getQuantity(), Math::max);
 						}
 					}
 					for (StepAnnotation.ItemNeed need : annotationManager.getItems(sub.getId()))
 					{
-						needs.merge(need.name.toLowerCase(Locale.ROOT),
-							need.quantity == null ? 1 : need.quantity, Math::max);
+						String name = need.name.toLowerCase(Locale.ROOT);
+						int quantity = need.quantity == null ? 1 : need.quantity;
+						needs.merge(name, quantity, Math::max);
+						section.items.merge(name, quantity, Math::max);
 					}
 				}
+				sections.add(section);
 			}
 		}
 		java.util.Set<String> names = new java.util.HashSet<>();
@@ -1434,11 +1486,15 @@ public class BruhsailerPlugin extends Plugin
 			java.util.Collections.addAll(names, ItemTracker.aliases(name));
 		}
 		upcomingNeeds = needs;
+		upcomingSections = sections;
 		bankFilterNames = names;
 		bankFilterCacheTick = tickCounter;
 	}
 
 	private java.util.Map<String, Integer> upcomingNeeds = new LinkedHashMap<>();
+
+	/** Per-step needs of the next steps, for the bank's ghost sections. */
+	private List<com.bruhsailer.items.BankMissingSection.Section> upcomingSections = new ArrayList<>();
 
 	/**
 	 * The heart of auto-completion, and deliberately IN ORDER: only the
