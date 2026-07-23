@@ -153,17 +153,30 @@ class StepRow extends JPanel
 	private void addItemBadge(String annotationId, SubStep sub, int indentPx)
 	{
 		String goalSubId = sub == null ? null : sub.getId();
-		List<StepAnnotation.ItemNeed> needs = ctx.getAnnotations().getItems(annotationId);
-		if (needs.isEmpty() && goalSubId != null)
+		// MERGE detected goals with annotation items, requirements first —
+		// annotating tool lines onto Wintertodt must not evict the step's
+		// actual "cash 200,000" completion goal from the panel.
+		List<StepAnnotation.ItemNeed> needs = new ArrayList<>();
+		java.util.Set<String> seenNames = new java.util.HashSet<>();
+		if (goalSubId != null)
 		{
-			needs = new ArrayList<>();
 			for (GoalDetector.ItemGoal goal : ctx.getItemGoals()
 				.getOrDefault(goalSubId, Collections.emptyList()))
 			{
-				StepAnnotation.ItemNeed need = new StepAnnotation.ItemNeed();
-				need.name = goal.getItemName();
-				need.quantity = goal.getQuantity();
-				needs.add(need);
+				if (seenNames.add(goal.getItemName().toLowerCase(java.util.Locale.ROOT)))
+				{
+					StepAnnotation.ItemNeed need = new StepAnnotation.ItemNeed();
+					need.name = goal.getItemName();
+					need.quantity = goal.getQuantity();
+					needs.add(need);
+				}
+			}
+		}
+		for (StepAnnotation.ItemNeed annotated : ctx.getAnnotations().getItems(annotationId))
+		{
+			if (seenNames.add(annotated.name.toLowerCase(java.util.Locale.ROOT)))
+			{
+				needs.add(annotated);
 			}
 		}
 		boolean hasActionBadge = goalSubId != null && ctx.getActionBadge() != null
