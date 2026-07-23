@@ -175,16 +175,18 @@ public class ItemTracker
 	 */
 	public void attachIcon(String name, javax.swing.JLabel label)
 	{
-		int id;
-		synchronized (this)
-		{
-			id = iconIdByName.computeIfAbsent(
-				name.toLowerCase(Locale.ROOT).trim(), this::lookupIconId);
-		}
+		int id = iconIdFor(name);
 		if (id > 0)
 		{
 			itemManager.getImage(id).addTo(label);
 		}
+	}
+
+	/** The item id whose sprite represents this guide item name; -1 = none found. */
+	public synchronized int iconIdFor(String name)
+	{
+		return iconIdByName.computeIfAbsent(
+			name.toLowerCase(Locale.ROOT).trim(), this::lookupIconId);
 	}
 
 	private int lookupIconId(String name)
