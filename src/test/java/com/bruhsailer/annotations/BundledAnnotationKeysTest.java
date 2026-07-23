@@ -25,12 +25,6 @@ import static org.junit.Assert.assertTrue;
 public class BundledAnnotationKeysTest
 {
 	@Test
-	public void bruhsailerAnnotationKeysResolve() throws Exception
-	{
-		assertKeysResolve("annotations.json", GuideVariant.MAIN);
-	}
-
-	@Test
 	public void ozirisAnnotationKeysResolve() throws Exception
 	{
 		assertKeysResolve("annotations_oziris.json", GuideVariant.OZIRIS);

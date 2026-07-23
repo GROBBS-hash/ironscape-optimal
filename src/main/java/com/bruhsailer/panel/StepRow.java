@@ -434,8 +434,8 @@ class StepRow extends JPanel
 	 * Clicking one routes there (locations via places.json, quest names
 	 * via the quest-start/Quest Helper handoff). One width-locked HTML
 	 * pane, so a long location + quest pair WRAPS instead of widening
-	 * every row in the panel. Steps without these metadata keys (all of
-	 * BRUHsailer's) simply show nothing.
+	 * every row in the panel. Steps without these metadata keys simply
+	 * show nothing.
 	 */
 	private void addMetadataChips()
 	{

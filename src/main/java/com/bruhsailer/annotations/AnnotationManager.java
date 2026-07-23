@@ -189,12 +189,10 @@ public class AnnotationManager
 	}
 
 	/**
-	 * One bundled file per guide corpus: the hand-reviewed BRUHsailer
-	 * annotations plus the scraper-generated Oziris ones. Step ids are
-	 * content hashes, so the key spaces can't collide and a flat merge
-	 * is safe.
+	 * One bundled file per guide corpus. Step ids are content hashes, so
+	 * the key spaces can't collide and a flat merge is safe.
 	 */
-	private static final String[] BUNDLED_FILES = {"annotations.json", "annotations_oziris.json"};
+	private static final String[] BUNDLED_FILES = {"annotations_oziris.json"};
 
 	private Map<String, StepAnnotation> readBundled()
 	{

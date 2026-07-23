@@ -37,16 +37,6 @@ public interface BruhsailerConfig extends Config
 	}
 
 	@ConfigItem(
-		keyName = "activeGuide",
-		name = "Guide",
-		description = "Which guide to follow. Progress is kept separately per guide; switching takes effect immediately."
-	)
-	default com.bruhsailer.guide.GuideVariant activeGuide()
-	{
-		return com.bruhsailer.guide.GuideVariant.OZIRIS;
-	}
-
-	@ConfigItem(
 		keyName = "autoCompleteSteps",
 		name = "Auto-complete steps",
 		description = "Automatically tick off steps whose annotated requirement (e.g. a skill level) you have met"

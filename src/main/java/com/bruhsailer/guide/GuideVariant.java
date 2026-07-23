@@ -8,16 +8,17 @@ import lombok.RequiredArgsConstructor;
  * the loader, the manifest) is keyed by variant, so adding one is a new
  * enum entry plus its bundled JSON.
  *
- * MAIN is the BRUHsailer guide (upstream also publishes "Landlubber",
- * not shipped). OZIRIS is the Ironman Efficiency Guide v4 in the
- * community "Enhanced 2026" edition, scraped from ironman.guide by
- * tools/scrape-oziris.mjs.
+ * OZIRIS is the Ironman Efficiency Guide v4 in the community "Enhanced
+ * 2026" edition from https://ironman.guide/, scraped by
+ * tools/scrape-oziris.mjs and bundled WITH the authors' permission
+ * (Oziris and the ironman.guide maintainers, 2026-07-23). A BRUHsailer
+ * variant existed during development; its authors declined, so all of
+ * its content was removed.
  */
 @Getter
 @RequiredArgsConstructor // Lombok: generates the constructor taking the two fields below
 public enum GuideVariant
 {
-	MAIN("BRUHsailer", "guide_data.json", false),
 	OZIRIS("Ironman Efficiency (Oziris)", "guide_data_oziris.json", true);
 
 	/** Name shown to the user in the panel. */

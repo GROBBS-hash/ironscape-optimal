@@ -18,7 +18,7 @@ public final class PrintSubIdProbe
 	public static void main(String[] args) throws Exception
 	{
 		String needle = args.length > 0 ? args[0] : "Client of Kourend quest up to";
-		Guide guide = new GuideLoader(new Gson()).load(GuideVariant.MAIN);
+		Guide guide = new GuideLoader(new Gson()).load(GuideVariant.OZIRIS);
 		for (GuideStep step : guide.getAllSteps())
 		{
 			if (!step.getPlainText().contains(needle))

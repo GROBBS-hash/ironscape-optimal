@@ -360,6 +360,15 @@ public class BruhsailerPanel extends PluginPanel
 				content.add(sectionRow(ci, si, chapter.getSections().get(si)), c);
 			}
 		}
+
+		// Guide content credit — a permission condition of shipping it.
+		JLabel credit = new JLabel("<html><body style='width:180px'><i>"
+			+ "Guide content by Oziris &amp; the ironman.guide community, "
+			+ "used with permission. ironman.guide</i></body></html>");
+		credit.setFont(FontManager.getRunescapeSmallFont());
+		credit.setForeground(ColorScheme.LIGHT_GRAY_COLOR);
+		credit.setBorder(BorderFactory.createEmptyBorder(14, 0, 6, 0));
+		content.add(credit, c);
 	}
 
 	private JPanel sectionRow(int ci, int si, GuideSection section)

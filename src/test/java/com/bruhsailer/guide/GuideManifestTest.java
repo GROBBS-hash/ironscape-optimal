@@ -35,7 +35,7 @@ public class GuideManifestTest
 			sections.add(new GuideSection("1." + (si + 1) + ": test", steps));
 		}
 		GuideChapter chapter = new GuideChapter("c1", sections, Collections.emptyList());
-		return new Guide(GuideVariant.MAIN, "today", "test",
+		return new Guide(GuideVariant.OZIRIS, "today", "test",
 			Collections.singletonList(chapter), allSteps, byId);
 	}
 
@@ -136,7 +136,7 @@ public class GuideManifestTest
 		GuideChapter chapter = new GuideChapter("c1",
 			Collections.singletonList(new GuideSection("1.1: test", Collections.singletonList(step))),
 			Collections.emptyList());
-		return new Guide(GuideVariant.MAIN, "today", "test",
+		return new Guide(GuideVariant.OZIRIS, "today", "test",
 			Collections.singletonList(chapter), Collections.singletonList(step),
 			Collections.singletonMap(id, step));
 	}

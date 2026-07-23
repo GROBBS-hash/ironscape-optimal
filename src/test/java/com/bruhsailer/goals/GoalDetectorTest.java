@@ -31,7 +31,7 @@ public class GoalDetectorTest
 			Collections.emptyList(), Collections.emptyMap());
 		GuideSection section = new GuideSection("1.1: test", Collections.singletonList(step));
 		GuideChapter chapter = new GuideChapter("c1", Collections.singletonList(section), Collections.emptyList());
-		return new Guide(GuideVariant.MAIN, "today", "test",
+		return new Guide(GuideVariant.OZIRIS, "today", "test",
 			Collections.singletonList(chapter),
 			Collections.singletonList(step),
 			Map.of(step.getId(), step));
