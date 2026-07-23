@@ -221,6 +221,10 @@ public class IronscapePlugin extends Plugin
 		java.util.Set<String> names = new java.util.HashSet<>();
 		for (GoalDetector.ItemGoal goal : wanted)
 		{
+			if (isCoins(goal.getItemName()))
+			{
+				continue; // stray dropped gp is not "your step's items"
+			}
 			java.util.Collections.addAll(names, ItemTracker.aliases(goal.getItemName()));
 		}
 		List<WorldPoint> spots = new ArrayList<>();
@@ -251,6 +255,38 @@ public class IronscapePlugin extends Plugin
 			}
 		}
 		return spots;
+	}
+
+	/** Any acquisition ("buy X") goal on this sub — the shop-anchor gate. */
+	private boolean hasPurchaseGoal(SubStep sub)
+	{
+		List<GoalDetector.ItemGoal> subGoals = itemGoalsBySub.get(sub.getId());
+		if (subGoals == null)
+		{
+			return false;
+		}
+		for (GoalDetector.ItemGoal goal : subGoals)
+		{
+			if (goal.isAcquisition())
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/** Gold is a grind target, never something an NPC hands you — no coin
+	 *  icons over heads, no ground-coin tile markers. */
+	private static boolean isCoins(String itemName)
+	{
+		for (String alias : ItemTracker.aliases(itemName))
+		{
+			if (alias.equals("coins"))
+			{
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/** Quest whose start marker was requested by clicking its link. */
@@ -1336,12 +1372,13 @@ public class IronscapePlugin extends Plugin
 		// priority; the ≤4-tile rule below keeps town-center points from
 		// outlining random passers-by.
 		WorldPoint shopAnchor = spot;
-		if (shopAnchor == null && current != null
-			&& itemGoalsBySub.containsKey(current.sub.getId()))
+		if (shopAnchor == null && current != null && hasPurchaseGoal(current.sub))
 		{
 			// Text places only — the step's 📍 town tag is far too coarse
 			// to nominate a shopkeeper (it outlined random passers-by at
-			// the town center).
+			// the town center). And only for PURCHASE subs: "do Wintertodt
+			// until 200k cash" has an item goal too, and its camp pin was
+			// nominating pyromancers (who then wore coin stacks).
 			shopAnchor = placeManager.firstPlaceIn(current.sub.getPlainText());
 		}
 
@@ -1447,6 +1484,10 @@ public class IronscapePlugin extends Plugin
 			{
 				for (GoalDetector.ItemGoal goal : wanted)
 				{
+					if (isCoins(goal.getItemName()))
+					{
+						continue; // "until 200k cash" put coin stacks on pyromancers
+					}
 					boolean gather = itemTracker.bankCountable(goal.getItemName(), goal.getQuantity());
 					int count = gather
 						? itemTracker.countOf(goal.getItemName())
