@@ -1381,6 +1381,26 @@
     "y": 3499,
     "plane": 0
    }
+  },
+  "8a9b304848": {
+   "gearCheck": {
+    "set": "warm clothing",
+    "need": 4
+   },
+   "items": [
+    {
+     "name": "steel axe"
+    },
+    {
+     "name": "tinderbox"
+    },
+    {
+     "name": "knife"
+    },
+    {
+     "name": "hammer"
+    }
+   ]
   }
  }
 }

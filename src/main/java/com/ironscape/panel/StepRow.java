@@ -94,6 +94,7 @@ class StepRow extends JPanel
 				22 + sub.getIndentLevel() * INDENT_PER_LEVEL);
 		}
 
+		addGearBadge();
 		addMetadataChips();
 
 		// Trailing commentary paragraphs — informational, not tickable.
@@ -271,6 +272,37 @@ class StepRow extends JPanel
 			+ ItemTracker.formatCount(have) + "/" + ItemTracker.formatCount(required)
 			+ (note.isEmpty() ? "" : "&nbsp;(in&nbsp;bank)")
 			+ "</font></b></body></html>";
+	}
+
+	/**
+	 * "warm clothing 3/4" — a live count of DISTINCT set items carried or
+	 * worn (annotation gearCheck). Informational only: it colors green
+	 * when met but never blocks the step's completion.
+	 */
+	private void addGearBadge()
+	{
+		StepAnnotation.GearCheck check = ctx.getAnnotations().getGearCheck(step.getId());
+		if (check == null)
+		{
+			return;
+		}
+		JLabel badge = new JLabel();
+		badge.setFont(new Font(Font.DIALOG, Font.PLAIN, 11));
+		badge.setBorder(BorderFactory.createEmptyBorder(0, 22, 2, 0));
+		badge.setAlignmentX(LEFT_ALIGNMENT);
+		badge.setToolTipText("<html>Distinct \"" + RichText.escape(check.set)
+			+ "\" items you carry or wear right now (bank doesn't count).<br>"
+			+ "Informational only — it never blocks the step.</html>");
+		Runnable refresh = () -> {
+			int have = ctx.getItems().distinctCarried(check.set);
+			String color = have >= check.need ? SATISFIED_HEX : MISSING_HEX;
+			badge.setText("<html><b><font color='" + color + "'>"
+				+ RichText.escape(check.set) + " " + have + "/" + check.need
+				+ "</font></b></html>");
+		};
+		refresh.run();
+		badgeRefreshers.add(refresh);
+		add(badge);
 	}
 
 	/** Header for multi-action steps: master checkbox + label + step-level buttons. */

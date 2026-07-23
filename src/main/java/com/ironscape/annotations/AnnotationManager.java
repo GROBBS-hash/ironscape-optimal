@@ -101,6 +101,18 @@ public class AnnotationManager
 		return b == null || b.items == null ? Collections.emptyList() : b.items;
 	}
 
+	/** "N of any item from a set" check (warm clothing); null = none. */
+	public synchronized StepAnnotation.GearCheck getGearCheck(String annotationId)
+	{
+		StepAnnotation l = local.get(annotationId);
+		if (l != null && l.gearCheck != null)
+		{
+			return l.gearCheck;
+		}
+		StepAnnotation b = bundled.get(annotationId);
+		return b == null ? null : b.gearCheck;
+	}
+
 	/**
 	 * Every step id with completion requirements — ALL entries of a step's
 	 * list must be met. A step's `requiresAll` wins over its single
