@@ -65,6 +65,10 @@ function eachStepText(fn) {
 const NAME_PATTERNS = [
   /\b(?:talk|speak|return|give|bring|show|deliver|report)\s+(?:to|with|for)\s+((?:[A-Z][A-Za-z'’-]+)(?:\s+(?:of|the|[A-Z][A-Za-z'’-]+))*)/gi,
   /\bfrom\s+((?:[A-Z][A-Za-z'’-]+)(?:\s+(?:of|the|[A-Z][A-Za-z'’-]+))*)/g,
+  // "visit Jennifer", "meet Hazelmere", "find Golrie", "kill Sand Snake",
+  // "trade Gulluck", "at Aggie" — the wiki lookup weeds out non-NPCs.
+  /\b(?:visit|meet|find|kill|trade|see)\s+((?:[A-Z][A-Za-z'’-]+)(?:\s+(?:of|the|[A-Z][A-Za-z'’-]+))*)/g,
+  /\bat\s+((?:[A-Z][A-Za-z'’-]+)(?:\s+(?:of|the|[A-Z][A-Za-z'’-]+))*)/g,
 ];
 
 const mentions = new Map(); // name -> count

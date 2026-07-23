@@ -656,8 +656,22 @@ class StepRow extends JPanel
 
 		private void setHtml(boolean completed)
 		{
-			text.setText(RichText.runsHtml(sub.getContent(), completed,
-				ctx.getPlaces() == null ? null : ctx.getPlaces()::linkify));
+			String html = RichText.runsHtml(sub.getContent(), completed,
+				ctx.getPlaces() == null ? null : ctx.getPlaces()::linkify);
+			// Item goals link to their wiki page — "hangover cure" opens
+			// the page that explains how to make one.
+			List<GoalDetector.ItemGoal> goals = ctx.getItemGoals()
+				.getOrDefault(sub.getId(), Collections.emptyList());
+			if (!goals.isEmpty() && !completed)
+			{
+				List<String> names = new ArrayList<>(goals.size());
+				for (GoalDetector.ItemGoal goal : goals)
+				{
+					names.add(goal.getItemName());
+				}
+				html = RichText.linkifyWikiItems(html, names);
+			}
+			text.setText(html);
 			// JEditorPane's preferred width is the longest UNWRAPPED line,
 			// which would push the row off the panel's right edge. Force
 			// the pane to our width first, then ask how tall the wrapped

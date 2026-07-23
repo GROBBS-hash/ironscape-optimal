@@ -87,6 +87,35 @@ public class GoalDetectorTest
 	}
 
 	@Test
+	public void makeStepsProduceProductItemGoalsNotQuestGoals()
+	{
+		// "Make the hangover cure for plague city quest" is a PREP step:
+		// completion = holding the cure, never Plague City's quest state
+		// (the site tags it with the quest anyway).
+		Guide guide = guideWithMetadataStep(
+			"Make the hangover cure for plague city quest",
+			Map.of("quest", "Plague City", "questStatus", "start"));
+
+		GoalDetector.Goals goals = GoalDetector.detect(guide);
+
+		assertTrue(goals.getQuestGoals().isEmpty());
+		assertEquals(1, goals.getItemGoals().size());
+		assertEquals("hangover cure", goals.getItemGoals().get(0).getItemName());
+	}
+
+	@Test
+	public void trainingStepsKeepCountedGoalsDespiteMakePhrasing()
+	{
+		Guide guide = guideWithSubTexts(
+			"Use the housetab and train construction with your planks, make bookcases until out of planks");
+
+		GoalDetector.Goals goals = GoalDetector.detect(guide);
+
+		assertTrue(goals.getItemGoals().isEmpty());
+		assertEquals(1, goals.getCountedSkillGoals().size());
+	}
+
+	@Test
 	public void metadataQuestTagIsIgnoredOnCheckpointSteps()
 	{
 		// "until <part>" steps complete via their varbit/varp annotation; a

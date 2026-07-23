@@ -109,6 +109,48 @@ final class RichText
 		}
 	}
 
+	/**
+	 * Wraps the given item names (the sub's detected item goals) in OSRS
+	 * Wiki links — "make the hangover cure" links straight to the page
+	 * that explains HOW. Applied after place linkification, so regions
+	 * already inside an anchor are skipped; first occurrence per name.
+	 */
+	static String linkifyWikiItems(String html, java.util.Collection<String> names)
+	{
+		if (names == null || names.isEmpty())
+		{
+			return html;
+		}
+		// Split into anchor and non-anchor segments; only the latter get links.
+		String[] segments = html.split("(?=<a )|(?<=</a>)");
+		java.util.Set<String> remaining = new java.util.LinkedHashSet<>(names);
+		StringBuilder out = new StringBuilder();
+		for (String segment : segments)
+		{
+			if (!segment.startsWith("<a "))
+			{
+				for (java.util.Iterator<String> it = remaining.iterator(); it.hasNext(); )
+				{
+					String name = it.next();
+					Matcher m = Pattern.compile("(?i)(?<![\\w>])"
+						+ Pattern.quote(name) + "(?![\\w<])").matcher(segment);
+					if (m.find())
+					{
+						String page = (Character.toUpperCase(name.charAt(0)) + name.substring(1))
+							.replace(' ', '_');
+						segment = segment.substring(0, m.start())
+							+ "<a href='https://oldschool.runescape.wiki/w/" + page + "'>"
+							+ m.group() + "</a>"
+							+ segment.substring(m.end());
+						it.remove();
+					}
+				}
+			}
+			out.append(segment);
+		}
+		return out.toString();
+	}
+
 	/** Wraps "world NNN" mentions in bruh:world: links (escaped HTML in/out). */
 	static String linkifyWorlds(String escapedHtml)
 	{

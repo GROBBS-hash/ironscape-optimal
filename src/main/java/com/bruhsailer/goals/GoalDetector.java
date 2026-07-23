@@ -119,8 +119,9 @@ public final class GoalDetector
 		"is", "are", "was", "if", "as", "so",
 		// "at least 15 energy" is not 15 of an item called energy;
 		// "take OUT gp" is a phrasal verb, not an item called "out gp";
-		// "buy a drink from Blurberry" hands you no countable item at all
-		"energy", "out", "drink", "drinks");
+		// "buy a drink from Blurberry" hands you no countable item at all;
+		// "make SURE you..." is not crafting an item called "sure"
+		"energy", "out", "drink", "drinks", "sure");
 
 	/**
 	 * Fragments starting with these are actions/prose, never list items —
@@ -299,6 +300,11 @@ public final class GoalDetector
 	private static final Pattern PURCHASE_VERB = Pattern.compile(
 		"\\b(?:buy|purchase)\\b", Pattern.CASE_INSENSITIVE);
 
+	/** "Make the hangover cure" — completing means holding the product. */
+	private static final Pattern MAKE_PRODUCT = Pattern.compile(
+		"\\bmake\\s+(?:(?:a|an|some|the)\\s+)?([a-z][a-z'/ -]+)",
+		Pattern.CASE_INSENSITIVE);
+
 	private GoalDetector()
 	{
 	}
@@ -412,6 +418,14 @@ public final class GoalDetector
 		{
 			return; // mid-quest checkpoint step; annotations own completion
 		}
+		// The tag also decorates PREP steps ("Make the hangover cure for
+		// plague city quest") — quest state says nothing about those. Only
+		// steps whose text actually acts on the quest get the goal.
+		if (!Pattern.compile("\\b(?:start|begin|do|complete|finish|continue)\\b")
+			.matcher(text).find())
+		{
+			return;
+		}
 		for (Quest quest : Quest.values())
 		{
 			if (quest.getName().equalsIgnoreCase(name.trim()))
@@ -517,6 +531,23 @@ public final class GoalDetector
 		{
 			addIfValid(out, step, sub, "1", product.group(1), seen, false);
 			return false;
+		}
+
+		// "Make the hangover cure" — done when you hold the product. Not
+		// on training steps ("train construction ... make bookcases"): the
+		// built things never enter the inventory, and an item goal here
+		// would shadow the counted xp-drop goal.
+		if (!text.toLowerCase(Locale.ROOT).contains("train"))
+		{
+			Matcher made = MAKE_PRODUCT.matcher(text);
+			if (made.find())
+			{
+				addIfValid(out, step, sub, "1", made.group(1), seen, false);
+				if (!out.isEmpty() && out.size() > before)
+				{
+					return false;
+				}
+			}
 		}
 
 		// "Grab a bucket of milk" — acquisition verb, no number: one of it.
