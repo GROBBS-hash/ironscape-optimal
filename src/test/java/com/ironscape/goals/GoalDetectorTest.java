@@ -116,6 +116,44 @@ public class GoalDetectorTest
 	}
 
 	@Test
+	public void openEndedMakeLoopsAreNotProductGoals()
+	{
+		// The splitter puts this clause in its OWN sub, away from the
+		// "train construction" clause — "until" alone must veto the
+		// product goal (bookcases never enter the inventory).
+		Guide guide = guideWithSubTexts("make bookcases until out of planks");
+
+		GoalDetector.Goals goals = GoalDetector.detect(guide);
+
+		assertTrue(goals.getItemGoals().isEmpty());
+	}
+
+	@Test
+	public void plentyOfIsStrippedFromProductNames()
+	{
+		Guide guide = guideWithSubTexts(
+			"Go Edgeville furnace and make plenty of digsite pendants");
+
+		GoalDetector.Goals goals = GoalDetector.detect(guide);
+
+		assertEquals(1, goals.getItemGoals().size());
+		assertEquals("digsite pendants", goals.getItemGoals().get(0).getItemName());
+	}
+
+	@Test
+	public void spellNamesContainingMakeAreNotItems()
+	{
+		// "Superglass Make lunar spell" — the spell's NAME contains
+		// "make"; a spell is never an inventory item.
+		Guide guide = guideWithSubTexts(
+			"Train crafting using the superglass make lunar spell");
+
+		GoalDetector.Goals goals = GoalDetector.detect(guide);
+
+		assertTrue(goals.getItemGoals().isEmpty());
+	}
+
+	@Test
 	public void metadataQuestTagIsIgnoredOnCheckpointSteps()
 	{
 		// "until <part>" steps complete via their varbit/varp annotation; a

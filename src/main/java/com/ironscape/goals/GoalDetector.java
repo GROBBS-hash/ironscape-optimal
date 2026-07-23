@@ -534,10 +534,12 @@ public final class GoalDetector
 		}
 
 		// "Make the hangover cure" — done when you hold the product. Not
-		// on training steps ("train construction ... make bookcases"): the
-		// built things never enter the inventory, and an item goal here
-		// would shadow the counted xp-drop goal.
-		if (!text.toLowerCase(Locale.ROOT).contains("train"))
+		// on training steps ("train construction ... make bookcases"), and
+		// not on open-ended loops ("make bookcases UNTIL out of planks"):
+		// the built things never enter the inventory, and an item goal
+		// here would shadow the counted xp-drop goal.
+		String lower = text.toLowerCase(Locale.ROOT);
+		if (!lower.contains("train") && !lower.contains("until"))
 		{
 			Matcher made = MAKE_PRODUCT.matcher(text);
 			if (made.find())
@@ -608,10 +610,11 @@ public final class GoalDetector
 			}
 		}
 
-		// "a few cakes" is cakes, not an item called "few cakes". The
-		// vague quantity stays 1 — owning any satisfies "a few" poorly
-		// but predictably, and the badge counts the REAL item.
-		if (name.startsWith("few ") || name.startsWith("couple "))
+		// "a few cakes" is cakes, not an item called "few cakes", and
+		// "plenty of digsite pendants" is digsite pendants. The vague
+		// quantity stays 1 — owning any satisfies it poorly but
+		// predictably, and the badge counts the REAL item.
+		while (name.matches("(?:few|couple|plenty|of)\\s.*"))
 		{
 			name = name.substring(name.indexOf(' ') + 1);
 		}
@@ -629,6 +632,12 @@ public final class GoalDetector
 		// "get 43 prayer" / "5 attack" are levels, not items
 		String singular = name.endsWith("s") ? name.substring(0, name.length() - 1) : name;
 		if (SKILL_WORDS.contains(name) || SKILL_WORDS.contains(singular))
+		{
+			return;
+		}
+		// "the Superglass Make lunar spell" — MAKE_PRODUCT sees "make
+		// lunar spell" inside the spell's NAME. Spells are never items.
+		if (name.endsWith(" spell") || name.endsWith(" spells") || name.equals("spell"))
 		{
 			return;
 		}
