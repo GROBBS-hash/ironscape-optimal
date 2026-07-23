@@ -65,13 +65,17 @@ public class BankMissingSection
 	private final List<Widget> textPool = new ArrayList<>();
 	private final List<Widget> iconPool = new ArrayList<>();
 
+	private final net.runelite.client.game.ItemManager itemManager;
+
 	@Inject
 	public BankMissingSection(Client client,
-		net.runelite.client.callback.ClientThread clientThread, ItemTracker itemTracker)
+		net.runelite.client.callback.ClientThread clientThread, ItemTracker itemTracker,
+		net.runelite.client.game.ItemManager itemManager)
 	{
 		this.client = client;
 		this.clientThread = clientThread;
 		this.itemTracker = itemTracker;
+		this.itemManager = itemManager;
 	}
 
 	/**
@@ -97,20 +101,19 @@ public class BankMissingSection
 			return;
 		}
 
-		// Take the container over completely: hide everything the native
-		// layout just drew — items AND tab separators. Whatever bank tab
-		// is selected, the filter view looks the same. The next build
-		// redraws the native children, and this pass runs again after it,
-		// so nothing is permanently lost.
-		java.util.Set<Widget> ours = new java.util.HashSet<>(textPool);
-		ours.addAll(iconPool);
+		// Index the REAL bank item widgets by canonical item id — including
+		// currently hidden ones (items on other tabs). Owned items are laid
+		// out by MOVING these into our sections, so their withdraw menu
+		// keeps working; only items you don't have are drawn as ghosts.
+		Map<Integer, Widget> nativeById = new LinkedHashMap<>();
 		for (Widget child : container.getDynamicChildren())
 		{
-			if (!ours.contains(child) && !child.isHidden())
+			if (child.getItemId() > 0 && child.getItemQuantity() > 0)
 			{
-				child.setHidden(true);
+				nativeById.putIfAbsent(itemManager.canonicalize(child.getItemId()), child);
 			}
 		}
+		java.util.Set<Widget> kept = new java.util.HashSet<>();
 
 		int y = 10;
 
@@ -149,18 +152,34 @@ public class BankMissingSection
 				boolean met = have >= need;
 				int x = FIRST_COLUMN_X + column * COLUMN_SPACING;
 
-				Widget icon = reuse(container, iconPool, iconsUsed++, WidgetType.GRAPHIC);
-				icon.setItemId(itemId);
-				icon.setItemQuantity(need);
-				icon.setItemQuantityMode(0); // the have/need line says it all
-				icon.setOriginalX(x);
-				icon.setOriginalY(y);
-				icon.setOriginalWidth(36);
-				icon.setOriginalHeight(32);
-				icon.setOpacity(met ? 0 : 120); // ghosted while still missing
-				icon.setName("<col=ff9040>" + entry.getKey() + "</col>");
-				icon.setHidden(false);
-				icon.revalidate();
+				// Banked? MOVE the real widget here — it stays clickable
+				// (Withdraw-1/5/10/X/All), even for items from other tabs.
+				// A section further down needing the same item falls back
+				// to a ghost copy; the real one can only sit in one place.
+				Widget banked = nativeById.get(itemManager.canonicalize(itemId));
+				if (banked != null && !kept.contains(banked))
+				{
+					kept.add(banked);
+					banked.setOriginalX(x);
+					banked.setOriginalY(y);
+					banked.setHidden(false);
+					banked.revalidate();
+				}
+				else
+				{
+					Widget icon = reuse(container, iconPool, iconsUsed++, WidgetType.GRAPHIC);
+					icon.setItemId(itemId);
+					icon.setItemQuantity(need);
+					icon.setItemQuantityMode(0); // the have/need line says it all
+					icon.setOriginalX(x);
+					icon.setOriginalY(y);
+					icon.setOriginalWidth(36);
+					icon.setOriginalHeight(32);
+					icon.setOpacity(met ? 0 : 120); // ghosted while still missing
+					icon.setName("<col=ff9040>" + entry.getKey() + "</col>");
+					icon.setHidden(false);
+					icon.revalidate();
+				}
 
 				// Quest Helper-style count under the icon: "have/need".
 				Widget count = reuse(container, textPool, textsUsed++, WidgetType.TEXT);
@@ -187,6 +206,22 @@ public class BankMissingSection
 				y += column > 0 ? ROW_SPACING : 0;
 			}
 			y += 6; // breathing room between sections
+		}
+
+		// NOW take the rest of the container over: hide everything the
+		// native layout drew that we didn't move into a section — leftover
+		// items and tab separators. Whatever bank tab is selected, the
+		// filter view looks the same. The next build redraws the native
+		// children, and this pass runs again after it, so nothing is
+		// permanently lost.
+		java.util.Set<Widget> ours = new java.util.HashSet<>(textPool);
+		ours.addAll(iconPool);
+		for (Widget child : container.getDynamicChildren())
+		{
+			if (!ours.contains(child) && !kept.contains(child) && !child.isHidden())
+			{
+				child.setHidden(true);
+			}
 		}
 
 		// Fit the scroll area to OUR content (grow or shrink — a 946-item
