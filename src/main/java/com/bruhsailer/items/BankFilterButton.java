@@ -77,8 +77,20 @@ public class BankFilterButton
 	 */
 	private boolean selfToggle;
 
+	/** Game tick of the last accepted toggle — the op event double-fires. */
+	private int lastToggleTick = -1;
+
 	private void toggle()
 	{
+		// One physical click delivers TWO op events (log showed activate +
+		// deactivate in the same second, every time) — the filter switched
+		// itself off before the bank ever repainted. Same-tick repeats are
+		// the double-fire; a deliberate re-click is always ticks later.
+		if (client.getTickCount() == lastToggleTick)
+		{
+			return;
+		}
+		lastToggleTick = client.getTickCount();
 		if (active)
 		{
 			log.info("bank filter: deactivated by button");
