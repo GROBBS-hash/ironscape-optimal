@@ -36,13 +36,13 @@ public final class GoalDetector
 	 * their quantity and may chain more with "and".
 	 */
 	private static final Pattern QUANTITY_NAME = Pattern.compile(
-		"(\\d[\\d,]*)\\s+([a-z][a-z'/ -]+)", Pattern.CASE_INSENSITIVE);
+		"(\\d[\\d,]*)([km])?\\s+([a-z][a-z'/ -]+)", Pattern.CASE_INSENSITIVE);
 
 	/** Words that end an item name ("110 logs AND bank them" -> "logs",
 	 *  "5 swamp tar AROUND the cave entrance" -> "swamp tar",
 	 *  "130 planks NORTH of the Barb agility course" -> "planks"). */
 	private static final Pattern NAME_TERMINATOR = Pattern.compile(
-		"\\s+(?:and|from|at|in|to|for|so|until|then|with|on|off|per"
+		"\\s+(?:and|from|at|in|to|for|so|until|then|with|on|off|per|as"
 			+ "|around|near|along|inside|outside|behind|beside|under|by"
 			+ "|north|south|east|west|northwest|northeast|southwest|southeast)\\b.*|[(.,].*");
 
@@ -120,8 +120,9 @@ public final class GoalDetector
 		// "at least 15 energy" is not 15 of an item called energy;
 		// "take OUT gp" is a phrasal verb, not an item called "out gp";
 		// "buy a drink from Blurberry" hands you no countable item at all;
-		// "make SURE you..." is not crafting an item called "sure"
-		"energy", "out", "drink", "drinks", "sure");
+		// "make SURE you..." is not crafting an item called "sure";
+		// "get AT LEAST 22 fletching" is not an item called "at least"
+		"energy", "out", "drink", "drinks", "sure", "at", "least");
 
 	/**
 	 * Fragments starting with these are actions/prose, never list items —
@@ -387,7 +388,13 @@ public final class GoalDetector
 					{
 						count += Integer.parseInt(quantities.group(1));
 					}
-					countedGoals.add(new CountedSkillGoal(step, sub, skill, Math.max(1, count)));
+					// No numbers = no target: "train construction with your
+					// planks" must not tick off the FIRST xp drop. Leave it
+					// to an annotation or the manual checkbox.
+					if (count > 0)
+					{
+						countedGoals.add(new CountedSkillGoal(step, sub, skill, count));
+					}
 				}
 			}
 
@@ -517,7 +524,15 @@ public final class GoalDetector
 		Matcher pairs = QUANTITY_NAME.matcher(text);
 		while (pairs.find())
 		{
-			addIfValid(out, step, sub, pairs.group(1), pairs.group(2), seen, ownPurchase);
+			// "200k cash" / "1m gp": expand the k/m suffix into the number.
+			String quantity = pairs.group(1);
+			if (pairs.group(2) != null)
+			{
+				long value = Long.parseLong(quantity.replace(",", ""))
+					* ("k".equalsIgnoreCase(pairs.group(2)) ? 1_000L : 1_000_000L);
+				quantity = Long.toString(value);
+			}
+			addIfValid(out, step, sub, quantity, pairs.group(3), seen, ownPurchase);
 		}
 
 		if (out.size() > before)
@@ -592,9 +607,9 @@ public final class GoalDetector
 		{
 			return;
 		}
-		if (quantity < 1 || quantity > 100_000)
+		if (quantity < 1 || quantity > 50_000_000)
 		{
-			return;
+			return; // junk pair ("world 444" survives elsewhere; sanity cap)
 		}
 		String name = NAME_TERMINATOR.matcher(rawName).replaceFirst("").trim().toLowerCase(Locale.ROOT);
 

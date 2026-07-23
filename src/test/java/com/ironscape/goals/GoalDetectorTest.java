@@ -104,15 +104,49 @@ public class GoalDetectorTest
 	}
 
 	@Test
-	public void trainingStepsKeepCountedGoalsDespiteMakePhrasing()
+	public void trainingStepsWithoutNumbersGetNoGoalsAtAll()
 	{
+		// "train construction with your planks" has no target number — a
+		// counted goal of 1 ticked on the FIRST xp drop. No goal at all;
+		// an annotation (CONSTRUCTION 20) or the checkbox owns it.
 		Guide guide = guideWithSubTexts(
 			"Use the housetab and train construction with your planks, make bookcases until out of planks");
 
 		GoalDetector.Goals goals = GoalDetector.detect(guide);
 
 		assertTrue(goals.getItemGoals().isEmpty());
-		assertEquals(1, goals.getCountedSkillGoals().size());
+		assertTrue(goals.getCountedSkillGoals().isEmpty());
+	}
+
+	@Test
+	public void skillPhrasesWithTrailersAreLevelsNotItems()
+	{
+		// "20 construction AS WELL" became an item called "construction as
+		// well", shadowing the level goals in evaluation.
+		Guide guide = guideWithSubTexts(
+			"Should now have 15 fletching and 20 construction as well, this will increase the xp");
+
+		GoalDetector.Goals goals = GoalDetector.detect(guide);
+
+		assertTrue(goals.getItemGoals().isEmpty());
+		assertEquals(2, goals.getSkillLevelGoals().size());
+	}
+
+	@Test
+	public void kSuffixGoldAndAtLeastLevels()
+	{
+		Guide guide = guideWithSubTexts(
+			"Do Wintertodt until 200k cash, get at least 22 fletching at wintertodt as well");
+
+		GoalDetector.Goals goals = GoalDetector.detect(guide);
+
+		// "200k cash" -> 200,000 coins; "at least" must NOT be an item.
+		assertEquals(1, goals.getItemGoals().size());
+		assertEquals("cash", goals.getItemGoals().get(0).getItemName());
+		assertEquals(200_000, goals.getItemGoals().get(0).getQuantity());
+		boolean fletching22 = goals.getSkillLevelGoals().stream().anyMatch(
+			g -> g.getSkill() == net.runelite.api.Skill.FLETCHING && g.getLevel() == 22);
+		assertTrue(fletching22);
 	}
 
 	@Test
