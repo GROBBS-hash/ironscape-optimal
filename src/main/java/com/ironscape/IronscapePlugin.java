@@ -717,6 +717,12 @@ public class IronscapePlugin extends Plugin
 			{
 				itemTracker.onLoggedIn();
 			}
+			// Warm the stackability cache for every detected item goal:
+			// the panel's Swing badges can't compute it off-thread.
+			for (GoalDetector.ItemGoal goal : goals.getItemGoals())
+			{
+				itemTracker.bankCountable(goal.getItemName(), goal.getQuantity());
+			}
 		});
 
 		navButton = NavigationButton.builder()
