@@ -208,7 +208,7 @@ All six build-order steps are DONE, plus substantial extras. Current state:
   scan, --quests incl. miniquests, --locations), tag-quest-places.
 - **Guide-refresh safety:** GuideManifest persists each load's step
   ids+positions+sub-clause fingerprints (v2,
-  ~/.runelite/bruhsailer/guide_manifest.json). On load, steps EDITED IN
+  ~/.runelite/ironscape/guide_manifest.json). On load, steps EDITED IN
   PLACE upstream (same section, same index, both ids changed) get their
   old ids remapped onto the new ones — progress (incl. sub ids + counted
   keys, re-applied per profile on switch) and local annotations survive
@@ -281,10 +281,15 @@ refresh when "Failed to login" appears.
 ## Scope notes
 
 - Owner decision (2026-07-21): the plugin's display name is **IRONSCAPE
-  Optimal**. Internal ids (package `com.bruhsailer`, config group
-  `bruhsailer`, `~/.runelite/bruhsailer/`) keep the old name on purpose —
-  renaming them would orphan saved progress and annotations. BRUHsailer
-  guide credits stay prominent.
+  Optimal**. REPACKAGE DONE (2026-07-23): package `com.ironscape`,
+  IronscapePlugin/Config/Panel(+PluginTest), config group `ironscape`,
+  data dir `~/.runelite/ironscape/`, runelite-plugin.properties updated.
+  One-time migration in IronscapePlugin: migrateLegacyFiles() copies
+  (never moves/overwrites) old data-dir files each startUp;
+  migrateLegacyConfig() copies ALL `bruhsailer.*` config keys per
+  profile (startUp + onProfileChanged, guarded by
+  `ironscape.migratedFromBruhsailer`). Legacy keys/files left in place.
+  Stale BRUH guide-refresh workflow (.github) deleted.
 
 - Guide has two variants upstream: **Main** and **Landlubber**. Owner
   decision (2026-07-21): ship **Main only**. Everything stays keyed by
@@ -296,17 +301,10 @@ refresh when "Failed to login" appears.
   derived), extract/review/verify annotation tools, GuideVariant.MAIN,
   the activeGuide config item, all BRUH credits. The plugin is the
   owner's; Oziris credited in the plugin descriptor, panel overview
-  footer, README and runelite-plugin.properties. Internal ids (package
-  com.bruhsailer, config group "bruhsailer", ~/.runelite/bruhsailer/)
-  remain as HISTORICAL names for now. **AGREED NEXT (owner will ask):
-  the ironscape repackage** — package com.ironscape; IronscapePlugin/
-  Config/Panel; config group "ironscape"; data dir ~/.runelite/
-  ironscape/; runelite-plugin.properties plugins= entry; WITH one-time
-  startup migration copying config keys (progress_OZIRIS, counted_*,
-  position_*, cleanup flags, bank keyword prefs) from group
-  "bruhsailer" and the old data dir's files (annotations.json,
-  guide_manifest.json, bank-*.json) so the owner's test progress
-  survives. Do it as ONE commit while no client is running.
+  footer, README and runelite-plugin.properties. The ironscape
+  repackage (see scope note above) shipped 2026-07-23 with the
+  legacy-data migration; old "bruhsailer" ids survive only as the
+  migration source constants.
 
 - The ONLY guide is **GuideVariant.OZIRIS** — Ironman Efficiency Guide
   v4, community "Enhanced 2026" edition from https://ironman.guide/,

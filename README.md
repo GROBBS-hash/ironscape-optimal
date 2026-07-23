@@ -47,8 +47,8 @@ compiles and runs tests.
 
 | Path | What |
 | --- | --- |
-| `src/main/java/com/bruhsailer/` | The plugin (internal package name is historical) |
-| `src/test/java/.../BruhsailerPluginTest.java` | Dev launcher (boots a real client) |
+| `src/main/java/com/ironscape/` | The plugin |
+| `src/test/java/.../IronscapePluginTest.java` | Dev launcher (boots a real client) |
 | `src/main/resources/.../guide/guide_data_oziris.json` | Bundled guide data (scraped, see tools) |
 | `src/main/resources/.../annotations/annotations_oziris.json` | Bundled step annotations |
 | `tools/` | Node scripts: guide scraper, place seeding |
@@ -74,7 +74,7 @@ compiles and runs tests.
 Annotations make the plugin smarter but are always optional.
 
 - **Locations:** click the ⌖ button on any step while standing at the
-  right spot in game. Saved to `~/.runelite/bruhsailer/annotations.json`.
+  right spot in game. Saved to `~/.runelite/ironscape/annotations.json`.
 - **Mid-quest checkpoints:** requirements like `{"varbit": 5619, "value": 5}`
   tick a step when a quest reaches a certain point ("do the quest until
   the orb"). See `PrintSubIdProbe` for finding step ids.

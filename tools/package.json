@@ -1,5 +1,5 @@
 {
-  "name": "bruhsailer-tools",
+  "name": "ironscape-tools",
   "private": true,
   "type": "module",
   "description": "Annotation tooling for the IRONSCAPE Optimal plugin (extract, verify, review, seed-places)",

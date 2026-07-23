@@ -10,7 +10,7 @@
 //
 // Usage:
 //   1. gradlew compileTestJava
-//   2. java -cp <classes+gson+api+resources> com.bruhsailer.guide.PrintItemNamesProbe > tools/item-names.txt
+//   2. java -cp <classes+gson+api+resources> com.ironscape.guide.PrintItemNamesProbe > tools/item-names.txt
 //   3. node tools/seed-item-ids.mjs [--dry-run]
 //
 // (Or use the one-liner in the README. Existing entries are kept; only
@@ -22,7 +22,7 @@ import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const NAMES_FILE = path.join(__dirname, 'item-names.txt');
-const OUT_FILE = path.join(__dirname, '../src/main/resources/com/bruhsailer/items/item_ids.json');
+const OUT_FILE = path.join(__dirname, '../src/main/resources/com/ironscape/items/item_ids.json');
 
 const USER_AGENT = 'IRONSCAPE-Optimal RuneLite plugin dev tooling';
 const REQUEST_DELAY_MS = 700;

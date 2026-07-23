@@ -17,9 +17,9 @@
 // We keep EVERY step (original + "enhanced": the 2026 edition is a
 // superset) and emit two files:
 //
-//   src/main/resources/com/bruhsailer/guide/guide_data_oziris.json
+//   src/main/resources/com/ironscape/guide/guide_data_oziris.json
 //       — the RawGuide shape GuideLoader parses (same as BRUHsailer's)
-//   src/main/resources/com/bruhsailer/annotations/annotations_oziris.json
+//   src/main/resources/com/ironscape/annotations/annotations_oziris.json
 //       — skill requirements + item lists straight from the author data,
 //         keyed by the same content-hash step ids GuideLoader computes
 //
@@ -35,8 +35,8 @@ import crypto from 'crypto';
 import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const GUIDE_OUT = path.join(__dirname, '../src/main/resources/com/bruhsailer/guide/guide_data_oziris.json');
-const ANNOTATIONS_OUT = path.join(__dirname, '../src/main/resources/com/bruhsailer/annotations/annotations_oziris.json');
+const GUIDE_OUT = path.join(__dirname, '../src/main/resources/com/ironscape/guide/guide_data_oziris.json');
+const ANNOTATIONS_OUT = path.join(__dirname, '../src/main/resources/com/ironscape/annotations/annotations_oziris.json');
 
 const USER_AGENT = 'IRONSCAPE-Optimal RuneLite plugin dev tooling (contact: see repo)';
 const REQUEST_DELAY_MS = 800;
