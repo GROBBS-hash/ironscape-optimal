@@ -298,8 +298,15 @@ refresh when "Failed to login" appears.
   owner's; Oziris credited in the plugin descriptor, panel overview
   footer, README and runelite-plugin.properties. Internal ids (package
   com.bruhsailer, config group "bruhsailer", ~/.runelite/bruhsailer/)
-  remain as HISTORICAL names — renaming would orphan progress; owner
-  hasn't asked for it (consider migration before Plugin Hub release).
+  remain as HISTORICAL names for now. **AGREED NEXT (owner will ask):
+  the ironscape repackage** — package com.ironscape; IronscapePlugin/
+  Config/Panel; config group "ironscape"; data dir ~/.runelite/
+  ironscape/; runelite-plugin.properties plugins= entry; WITH one-time
+  startup migration copying config keys (progress_OZIRIS, counted_*,
+  position_*, cleanup flags, bank keyword prefs) from group
+  "bruhsailer" and the old data dir's files (annotations.json,
+  guide_manifest.json, bank-*.json) so the owner's test progress
+  survives. Do it as ONE commit while no client is running.
 
 - The ONLY guide is **GuideVariant.OZIRIS** — Ironman Efficiency Guide
   v4, community "Enhanced 2026" edition from https://ironman.guide/,
