@@ -1,26 +1,25 @@
 # IRONSCAPE Optimal — RuneLite plugin
 
-The [BRUHsailer](https://osrsper.github.io/BRUHsailer/) efficient ironman
-guide as a step-by-step side panel inside RuneLite, with automatic step
-completion, an on-screen step overlay with live item/level counts,
-teleport click-path highlights, click-to-hop world links, a bank filter
-for upcoming items, and Shortest Path navigation.
-
-**Every step of guide content in this plugin is the work of the
-BRUHsailer authors** — this plugin is only a different way to read and
-follow it. If you find it useful, the credit belongs to them.
+The [Ironman Efficiency Guide](https://ironman.guide/) as a step-by-step
+side panel inside RuneLite: tick-off steps with automatic completion
+detection (skill levels, quest progress, mid-quest checkpoints, item
+counts), an on-screen step overlay with live item/level counts, item
+sprites and have/need badges against your bank, location and quest chips
+per step, click-to-navigate place links (via the Shortest Path plugin),
+click-to-hop world links, and a bank filter for upcoming items.
 
 ## Credits
 
-- **Guide written by So Iron BRUH & ParasailerOSRS** — the
-  [BRUHsailer efficient ironman guide](https://docs.google.com/document/d/1CBkFM70SnrW4hJXvHM2F1fYCuBF_fRnEXnTYgRnRkAE/),
-  ~1000 steps of routing that this plugin merely displays.
-- **Web adaptation by kyyznn** ([umkyzn/BRUHsailer](https://github.com/umkyzn/BRUHsailer)),
-  **improved and maintained by Jesper** ([osrsper](https://github.com/osrsper)) —
-  the structured guide data this plugin ingests comes from their site,
-  <https://osrsper.github.io/BRUHsailer/>.
+- **Guide content by [Oziris](https://twitter.com/ozirislol) and the
+  [ironman.guide](https://ironman.guide/) community** (the v4 "Enhanced
+  2026" edition) — used with their permission. Every step this plugin
+  displays is their routing work; if the guide helps you, the credit is
+  theirs.
 - Navigation integrates with [Shortest Path](https://github.com/Skretzo/shortest-path)
   by Skretzo (separate plugin, install it from the Plugin Hub).
+- Mid-quest checkpoint values were cross-checked against
+  [Quest Helper](https://github.com/Zoinkwiz/quest-helper)'s open-source
+  quest data.
 
 ## Development
 
@@ -36,7 +35,7 @@ and enable **IRONSCAPE Optimal** in the plugin list (wrench icon) if it
 isn't already on.
 
 Tip: the button in the bank UI (or typing `bruh` in bank search) filters
-the bank to items your current guide section still needs.
+the bank to items your upcoming guide steps still need.
 
 ```
 gradlew build
@@ -48,20 +47,30 @@ compiles and runs tests.
 
 | Path | What |
 | --- | --- |
-| `src/main/java/com/bruhsailer/` | The plugin itself |
+| `src/main/java/com/bruhsailer/` | The plugin (internal package name is historical) |
 | `src/test/java/.../BruhsailerPluginTest.java` | Dev launcher (boots a real client) |
-| `src/main/resources/.../annotations/annotations.json` | Bundled step annotations (community defaults) |
-| `tools/` | Node scripts for drafting annotations |
+| `src/main/resources/.../guide/guide_data_oziris.json` | Bundled guide data (scraped, see tools) |
+| `src/main/resources/.../annotations/annotations_oziris.json` | Bundled step annotations |
+| `tools/` | Node scripts: guide scraper, place seeding |
 | `runelite-plugin.properties` | Plugin Hub metadata |
+
+## Tools
+
+- `node tools/scrape-oziris.mjs` — refreshes the bundled guide from
+  ironman.guide (their pages embed author-structured step data: text,
+  locations, quests, skill goals, item lists, notes). Hand-authored
+  annotation keys (quest checkpoints, captured targets) survive the
+  refresh.
+- `node tools/seed-places.mjs [--quests|--locations|--links|--pois]` —
+  seeds `places.json` (the clickable place-name links) from the OSRS
+  Wiki.
 
 ## Annotating steps
 
 Annotations make the plugin smarter but are always optional.
 
-- **Locations:** click the ⌖ button on any step while standing at the right
-  spot in game. Saved to `~/.runelite/bruhsailer/annotations.json`.
-- **Skill requirements:** `node tools/extract-annotations.mjs` drafts
-  candidates from the guide text, then `node tools/review-annotations.mjs`
-  walks you through approving them (y/n per step). Approved requirements go
-  into the bundled annotations file — rebuild to pick them up. Steps whose
-  requirement you meet get ticked off automatically in game.
+- **Locations:** click the ⌖ button on any step while standing at the
+  right spot in game. Saved to `~/.runelite/bruhsailer/annotations.json`.
+- **Mid-quest checkpoints:** requirements like `{"varbit": 5619, "value": 5}`
+  tick a step when a quest reaches a certain point ("do the quest until
+  the orb"). See `PrintSubIdProbe` for finding step ids.

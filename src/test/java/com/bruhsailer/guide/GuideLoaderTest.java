@@ -51,7 +51,7 @@ public class GuideLoaderTest
 	@Test
 	public void stepIdsAreUniqueAndStable() throws Exception
 	{
-		Guide guide = loader.load(GuideVariant.MAIN);
+		Guide guide = loader.load(GuideVariant.OZIRIS);
 
 		Set<String> ids = new HashSet<>();
 		for (GuideStep step : guide.getAllSteps())
@@ -87,18 +87,24 @@ public class GuideLoaderTest
 	@Test
 	public void keepsMeaningfulFormatting() throws Exception
 	{
-		Guide guide = loader.load(GuideVariant.MAIN);
+		// Oziris step bodies are plain text; the formatting that matters
+		// lives in additionalContent — green "Modern alternative" callouts
+		// (color) and clickable map/safespot links (url).
+		Guide guide = loader.load(GuideVariant.OZIRIS);
 
-		boolean sawBold = false, sawColor = false;
+		boolean sawColor = false, sawLink = false;
 		for (GuideStep step : guide.getAllSteps())
 		{
-			for (TextRun run : step.getContent())
+			for (java.util.List<TextRun> paragraph : step.getAdditionalContent())
 			{
-				sawBold |= run.isBold();
-				sawColor |= run.getColorHex() != null;
+				for (TextRun run : paragraph)
+				{
+					sawColor |= run.getColorHex() != null;
+					sawLink |= run.getUrl() != null;
+				}
 			}
 		}
-		assertTrue("guide uses bold somewhere", sawBold);
-		assertTrue("guide uses colored text somewhere", sawColor);
+		assertTrue("notes use colored callouts somewhere", sawColor);
+		assertTrue("notes carry clickable links somewhere", sawLink);
 	}
 }

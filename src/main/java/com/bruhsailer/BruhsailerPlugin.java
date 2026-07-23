@@ -63,14 +63,14 @@ import net.runelite.client.ui.ClientToolbar;
 import net.runelite.client.ui.NavigationButton;
 
 /**
- * IRONSCAPE Optimal — the BRUHsailer ironman guide as a RuneLite plugin.
+ * IRONSCAPE Optimal — the Ironman Efficiency Guide as a RuneLite plugin.
  *
- * Guide by So Iron BRUH and ParasailerOSRS. Web adaptation by kyyznn,
- * improved by Jesper (osrsper). https://osrsper.github.io/BRUHsailer/
+ * Guide content by Oziris and the ironman.guide community (v4, Enhanced
+ * 2026 edition), bundled with their permission. https://ironman.guide/
  *
- * Internal ids (config group, package, data directory) deliberately keep
- * the "bruhsailer" name so existing progress and annotations survive the
- * rebrand.
+ * Internal ids (config group, package, data directory) keep a historical
+ * "bruhsailer" name from an earlier development phase; renaming them
+ * would orphan saved progress and annotations.
  *
  * How RuneLite finds and runs this class:
  * - The @PluginDescriptor annotation marks it as a plugin and provides the
@@ -83,8 +83,8 @@ import net.runelite.client.ui.NavigationButton;
 @Slf4j // Lombok: generates a `log` field so we can write log.info(...)
 @PluginDescriptor(
 	name = "IRONSCAPE Optimal",
-	description = "Step-by-step ironman guide (BRUHsailer, by So Iron BRUH & ParasailerOSRS) with auto-completion and navigation",
-	tags = {"ironman", "guide", "bruhsailer", "ironscape", "efficient"}
+	description = "The Ironman Efficiency Guide (by Oziris & the ironman.guide community, used with permission) as an in-game step-by-step panel with auto-completion and navigation",
+	tags = {"ironman", "guide", "oziris", "ironscape", "efficient"}
 )
 public class BruhsailerPlugin extends Plugin
 {
@@ -208,9 +208,8 @@ public class BruhsailerPlugin extends Plugin
 	private final Map<GuideVariant, Guide> guides = new EnumMap<>(GuideVariant.class);
 
 	/**
-	 * The guide being followed. Set at startUp and swapped live when the
-	 * config changes: onConfigChanged rebuilds all guide-derived state via
-	 * loadGuideState() on the client thread, then re-feeds the panel.
+	 * The guide being followed — one bundled guide today, but everything
+	 * stays keyed by variant so adding another is an enum entry + JSON.
 	 */
 	private GuideVariant activeVariant = GuideVariant.OZIRIS;
 
@@ -390,7 +389,7 @@ public class BruhsailerPlugin extends Plugin
 	@Override
 	protected void startUp() throws Exception
 	{
-		activeVariant = config.activeGuide();
+		activeVariant = GuideVariant.OZIRIS;
 		annotationManager.load();
 		placeManager.load();
 		loadGuideState();
@@ -613,32 +612,6 @@ public class BruhsailerPlugin extends Plugin
 			|| "showCaptureButtons".equals(event.getKey()))
 		{
 			SwingUtilities.invokeLater(panel::refresh);
-		}
-		if ("activeGuide".equals(event.getKey()))
-		{
-			GuideVariant chosen = config.activeGuide();
-			if (chosen == activeVariant)
-			{
-				return;
-			}
-			// Swap on the client thread so the game-tick evaluator never
-			// sees half-rebuilt goal maps, then hand the new guide to Swing.
-			clientThread.invokeLater(() -> {
-				activeVariant = chosen;
-				acquisitionBaseline.clear();
-				stepOverlayModel = null;
-				targetTileMarker = null;
-				questStartMarker = null;
-				activeMinigameTarget = null;
-				clickedMinigameTarget = null;
-				loadGuideState();
-				SwingUtilities.invokeLater(() -> {
-					if (panel != null)
-					{
-						panel.setGuide(guideFor(chosen));
-					}
-				});
-			});
 		}
 	}
 
@@ -1215,6 +1188,7 @@ public class BruhsailerPlugin extends Plugin
 			if (bankFilterButton.isActive())
 			{
 				client.getIntStack()[client.getIntStackSize() - 1] = 1;
+				log.info("bank filter: layout asked getSearchingTagTab — answered active");
 			}
 			return;
 		}
@@ -1241,7 +1215,15 @@ public class BruhsailerPlugin extends Plugin
 		{
 			intStack[intStackSize - 2] = 1; // 1 = include this bank slot
 		}
+		// once per tick: proves the filter callback runs and the name set isn't empty
+		if (bankFilterLogTick != tickCounter)
+		{
+			bankFilterLogTick = tickCounter;
+			log.info("bank filter: layout filtering, {} upcoming item names", upcomingItemNames().size());
+		}
 	}
+
+	private int bankFilterLogTick = -1;
 
 	/** How many upcoming incomplete STEPS the bank filter collects items from. */
 	private static final int BANK_FILTER_STEPS = 10;

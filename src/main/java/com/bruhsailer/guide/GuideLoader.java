@@ -19,14 +19,13 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 /**
- * Parses the upstream BRUHsailer JSON (bundled as a resource) into our
- * internal model. This is the ONLY class that knows the upstream format —
- * if the guide's JSON shape ever changes, this file is the only one to fix.
+ * Parses bundled guide JSON (produced by tools/scrape-oziris.mjs) into
+ * our internal model. This is the ONLY class that knows the file format —
+ * if the shape ever changes, this file is the only one to fix.
  *
- * The upstream data is regenerated from the authors' Google Doc, which is
- * why it carries word-processor noise like fontSize and fontFamily; we keep
- * the formatting that matters for reading (bold, color, links) and drop the
- * rest.
+ * The format tolerates word-processor noise (fontSize, fontFamily); we
+ * keep the formatting that matters for reading (bold, color, links) and
+ * drop the rest.
  */
 @Singleton // one shared instance; guides are immutable so this is safe
 public class GuideLoader
