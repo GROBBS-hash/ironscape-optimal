@@ -12,6 +12,10 @@ from the team at Ironman.guide.
 
 If this sees use, I'm happy to continue improving, adding and fixing bugs.
 
+**New here? Read the [illustrated user guide](docs/GUIDE.md)** — every
+feature explained with screenshots, from the clickable step links to
+the bank filter.
+
 ## What it looks like
 
 ![The guide panel, step overlay and auto-navigation in action](docs/panel-navigation.png)
