@@ -97,16 +97,22 @@ public class BankMissingSection
 			return;
 		}
 
-		// Start below the last visible native item.
-		int y = 0;
+		// Take the container over completely: hide everything the native
+		// layout just drew — items AND tab separators. Whatever bank tab
+		// is selected, the filter view looks the same. The next build
+		// redraws the native children, and this pass runs again after it,
+		// so nothing is permanently lost.
+		java.util.Set<Widget> ours = new java.util.HashSet<>(textPool);
+		ours.addAll(iconPool);
 		for (Widget child : container.getDynamicChildren())
 		{
-			if (!child.isHidden() && child.getItemId() > 0)
+			if (!ours.contains(child) && !child.isHidden())
 			{
-				y = Math.max(y, child.getOriginalY() + child.getOriginalHeight());
+				child.setHidden(true);
 			}
 		}
-		y += 10;
+
+		int y = 10;
 
 		int textsUsed = 0;
 		int iconsUsed = 0;
@@ -183,22 +189,21 @@ public class BankMissingSection
 			y += 6; // breathing room between sections
 		}
 
-		// Grow the scroll area so the sections are reachable. DEFERRED:
-		// update() runs from onScriptPostFired — still inside the bank
-		// build script's interpreter — and calling client.runScript from
-		// there re-enters the script engine and hard-freezes the client
-		// (both observed freezes: the filter button, and typing "bruh" in
-		// the search; plain searches were safe only because this block
-		// never ran with no ghost sections). One tick later the stack is
-		// clean.
-		if (container.getScrollHeight() < y + 8)
+		// Fit the scroll area to OUR content (grow or shrink — a 946-item
+		// tab leaves a huge stale scroll range behind). DEFERRED: update()
+		// runs from onScriptPostFired — still inside the bank build
+		// script's interpreter — and calling client.runScript from there
+		// re-enters the script engine and hard-freezes the client (both
+		// observed freezes: the filter button, and typing "bruh" in the
+		// search). One tick later the stack is clean.
+		int newScrollHeight = y + 8;
+		if (container.getScrollHeight() != newScrollHeight)
 		{
-			int newScrollHeight = y + 8;
 			clientThread.invokeLater(() -> {
 				Widget items = client.getWidget(InterfaceID.Bankmain.ITEMS);
-				if (items == null || items.getScrollHeight() >= newScrollHeight)
+				if (items == null || items.getScrollHeight() == newScrollHeight)
 				{
-					return; // bank closed or rebuilt taller in the meantime
+					return; // bank closed or already right in the meantime
 				}
 				items.setScrollHeight(newScrollHeight);
 				client.runScript(ScriptID.UPDATE_SCROLLBAR,

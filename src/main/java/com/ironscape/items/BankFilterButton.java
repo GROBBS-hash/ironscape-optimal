@@ -5,11 +5,8 @@ import javax.inject.Singleton;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
-import net.runelite.api.VarClientInt;
-import net.runelite.api.VarClientStr;
 import net.runelite.api.gameval.InterfaceID;
 import net.runelite.api.gameval.SpriteID;
-import net.runelite.api.vars.InputType;
 import net.runelite.api.widgets.JavaScriptCallback;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetType;
@@ -17,10 +14,10 @@ import net.runelite.client.plugins.bank.BankSearch;
 
 /**
  * The clickable button inside the bank interface that toggles the
- * "guide items only" view — same approach as Quest Helper's bank tab:
- * a child widget on the bank root, and while active the plugin answers
- * the bank layout script's getSearchingTagTab/bankSearchFilter callbacks
- * so the bank lays itself out as if a search matched our items.
+ * guide-items view. The button only flips a flag and relayouts: while
+ * active, BankMissingSection hides the native layout's children after
+ * every bank build and draws per-step sections instead — no search or
+ * tab state is touched, so the view is identical from any tab.
  *
  * Everything here must run on the client thread.
  */
@@ -75,14 +72,6 @@ public class BankFilterButton
 			BUTTON_SIZE - 6, BUTTON_SIZE - 6, BUTTON_X + 3, BUTTON_Y + 3);
 	}
 
-	/**
-	 * True right after our own toggle triggered a bank relayout — the
-	 * relayout fires the same search-toggle script the plugin watches to
-	 * turn the filter off when the PLAYER opens a real search. Without
-	 * this the button switches itself straight back off.
-	 */
-	private boolean selfToggle;
-
 	/** Game tick of the last accepted toggle — the op event double-fires. */
 	private int lastToggleTick = -1;
 
@@ -103,7 +92,6 @@ public class BankFilterButton
 		if (active)
 		{
 			log.info("bank filter: deactivated by button");
-			selfToggle = true;
 			deactivate(true);
 		}
 		else
@@ -112,47 +100,33 @@ public class BankFilterButton
 			active = true;
 			background.setSpriteId(SpriteID.Miscgraphics3.UNKNOWN_BUTTON_SQUARE_SMALL_SELECTED);
 			background.revalidate();
-			// Start a REAL bank search for our keyword — the same varcs
-			// typing sets, the same trick the core Bank Tags plugin uses.
-			// (Answering getSearchingTagTab alone never made the layout
-			// script call bankSearchFilter: log showed one probe, zero
-			// filter passes, bank unchanged. The typed-search path is the
-			// one proven to work.)
+			// No search state is touched — the filter view simply hides the
+			// native layout's children after each build (BankMissingSection)
+			// and draws its own sections, so it works the same from any tab.
 			//
 			// invokeLater is LOAD-BEARING: this op listener runs INSIDE the
 			// click's clientscript, and layoutBank() runs the bank build
 			// script SYNCHRONOUSLY — re-entering the script engine from a
 			// script froze the whole client. Deferred one tick, the build
-			// runs from a clean stack. (BankSearch.reset defers internally.)
+			// runs from a clean stack.
 			clientThread.invokeLater(() -> {
-				if (!active)
+				if (active)
 				{
-					return; // deactivated in the meantime
+					bankSearch.layoutBank();
 				}
-				client.setVarcIntValue(VarClientInt.INPUT_TYPE, InputType.SEARCH.getType());
-				client.setVarcStrValue(VarClientStr.INPUT_TEXT, "ironman");
-				selfToggle = true;
-				bankSearch.layoutBank();
 			});
 		}
-	}
-
-	/** Consume the "that was us" marker; true = ignore this search-toggle event. */
-	public boolean consumeSelfToggle()
-	{
-		boolean was = selfToggle;
-		selfToggle = false;
-		return was;
 	}
 
 	/**
 	 * Turn the filter off.
 	 *
-	 * @param clearSearch also close/clear the bank search — true when OUR
-	 *                    "ironman" search is what's open (button toggled
-	 *                    off, player clicked a real tab); false when the
-	 *                    player just opened their OWN search, which must
-	 *                    be left alone.
+	 * @param clearSearch also reset the bank search and relayout — true
+	 *                    when the bank should snap back to its normal view
+	 *                    (button toggled off, player clicked a real tab);
+	 *                    false when the player just opened their OWN
+	 *                    search, which must be left alone (their search
+	 *                    interaction already relayouts).
 	 */
 	public void deactivate(boolean clearSearch)
 	{

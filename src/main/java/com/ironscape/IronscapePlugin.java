@@ -1105,12 +1105,11 @@ public class IronscapePlugin extends Plugin
 	public void onScriptPostFired(ScriptPostFired event)
 	{
 		if (event.getScriptId() == net.runelite.api.ScriptID.BANKMAIN_SEARCH_TOGGLE
-			&& bankFilterButton.isActive()
-			// our own activation relayout fires this same script — only a
-			// PLAYER-opened search should turn the filter off
-			&& !bankFilterButton.consumeSelfToggle())
+			&& bankFilterButton.isActive())
 		{
 			// The player opened their own search — keep it, just step aside.
+			// (Our filter no longer touches search state, so this event can
+			// only be the player's.)
 			bankFilterButton.deactivate(false);
 		}
 
