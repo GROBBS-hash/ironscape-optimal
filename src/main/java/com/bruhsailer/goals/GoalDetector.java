@@ -118,8 +118,9 @@ public final class GoalDetector
 		"those", "these", "them", "that", "this", "it", "its", "each", "per",
 		"is", "are", "was", "if", "as", "so",
 		// "at least 15 energy" is not 15 of an item called energy;
-		// "take OUT gp" is a phrasal verb, not an item called "out gp"
-		"energy", "out");
+		// "take OUT gp" is a phrasal verb, not an item called "out gp";
+		// "buy a drink from Blurberry" hands you no countable item at all
+		"energy", "out", "drink", "drinks");
 
 	/**
 	 * Fragments starting with these are actions/prose, never list items —
