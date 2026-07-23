@@ -64,6 +64,10 @@ compiles and runs tests.
 - `node tools/seed-places.mjs [--quests|--locations|--links|--pois]` —
   seeds `places.json` (the clickable place-name links) from the OSRS
   Wiki.
+- `node tools/seed-item-ids.mjs` — seeds `item_ids.json` (item sprites
+  for untradeables) from the OSRS Wiki. Regenerate the input list
+  first: compile tests, then run `PrintItemNamesProbe` redirecting its
+  output to `tools/item-names.txt`.
 
 ## Annotating steps
 

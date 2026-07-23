@@ -3997,6 +3997,138 @@
       "x": 3011,
       "y": 3501,
       "plane": 0
+    },
+    "aggie": {
+      "display": "Aggie",
+      "x": 3086,
+      "y": 3259,
+      "plane": 0
+    },
+    "sailing": {
+      "display": "Sailing",
+      "x": 3040,
+      "y": 2990,
+      "plane": 0
+    },
+    "tempoross cove": {
+      "display": "Tempoross Cove",
+      "x": 3035,
+      "y": 2850,
+      "plane": 0
+    },
+    "zanaris": {
+      "display": "Zanaris",
+      "x": 2430,
+      "y": 4428,
+      "plane": 0
+    },
+    "barb village": {
+      "display": "Barb Village",
+      "x": 3080,
+      "y": 3427,
+      "plane": 0
+    },
+    "chambers of xeric": {
+      "display": "Chambers of Xeric",
+      "x": 1245,
+      "y": 3557,
+      "plane": 0
+    },
+    "father aereck": {
+      "display": "Father Aereck",
+      "x": 3243,
+      "y": 3210,
+      "plane": 0
+    },
+    "fortis colosseum": {
+      "display": "Fortis Colosseum",
+      "x": 1824,
+      "y": 3107,
+      "plane": 0
+    },
+    "giants' foundry": {
+      "display": "Giants' Foundry",
+      "x": 3360,
+      "y": 3151,
+      "plane": 0
+    },
+    "great kourend": {
+      "display": "Great Kourend",
+      "x": 1630,
+      "y": 3730,
+      "plane": 0
+    },
+    "mastering mixology": {
+      "display": "Mastering Mixology",
+      "x": 1389,
+      "y": 2918,
+      "plane": 0
+    },
+    "reward cart": {
+      "display": "Reward Cart",
+      "x": 1636,
+      "y": 3942,
+      "plane": 0
+    },
+    "river lum": {
+      "display": "River Lum",
+      "x": 3171,
+      "y": 3350,
+      "plane": 0
+    },
+    "song of": {
+      "display": "Song of",
+      "x": 2569,
+      "y": 3333,
+      "plane": 0
+    },
+    "the gwenith glide": {
+      "display": "The Gwenith Glide",
+      "x": 2183,
+      "y": 3370,
+      "plane": 0
+    },
+    "theatre of blood": {
+      "display": "Theatre of Blood",
+      "x": 3663,
+      "y": 3219,
+      "plane": 0
+    },
+    "tithe farm": {
+      "display": "Tithe Farm",
+      "x": 1796,
+      "y": 3505,
+      "plane": 0
+    },
+    "tombs of amascut": {
+      "display": "Tombs of Amascut",
+      "x": 3345,
+      "y": 2725,
+      "plane": 0
+    },
+    "zemouregal's base": {
+      "display": "Zemouregal's Base",
+      "x": 3578,
+      "y": 4582,
+      "plane": 0
+    },
+    "cam torum mine": {
+      "display": "Cam Torum mine",
+      "x": 1508,
+      "y": 9541,
+      "plane": 1
+    },
+    "zmi bank": {
+      "display": "ZMI bank",
+      "x": 3013,
+      "y": 5625,
+      "plane": 0
+    },
+    "zanaris bank": {
+      "display": "Zanaris bank",
+      "x": 2383,
+      "y": 4459,
+      "plane": 0
     }
   }
 }

@@ -173,6 +173,39 @@ public class ItemTracker
 	private final Map<String, Integer> iconIdByName = new HashMap<>();
 
 	/**
+	 * Bundled name -> item id map seeded from the OSRS Wiki
+	 * (tools/seed-item-ids.mjs). The price-list search below only knows
+	 * TRADEABLE items; this covers quest items and other untradeables so
+	 * they get sprites too. Loaded lazily on first icon lookup.
+	 */
+	private Map<String, Integer> bundledItemIds;
+
+	private Map<String, Integer> bundledItemIds()
+	{
+		if (bundledItemIds == null)
+		{
+			bundledItemIds = new HashMap<>();
+			try (java.io.InputStream in = ItemTracker.class.getResourceAsStream("item_ids.json"))
+			{
+				if (in != null)
+				{
+					Map<String, Double> parsed = gson.fromJson(
+						new java.io.InputStreamReader(in, java.nio.charset.StandardCharsets.UTF_8),
+						new TypeToken<Map<String, Double>>()
+						{
+						}.getType());
+					parsed.forEach((name, id) -> bundledItemIds.put(name, id.intValue()));
+				}
+			}
+			catch (IOException | RuntimeException e)
+			{
+				log.warn("Could not read bundled item ids", e);
+			}
+		}
+		return bundledItemIds;
+	}
+
+	/**
 	 * Puts the item's sprite on a Swing label (async — RuneLite fills the
 	 * image in when loaded). Names resolve through the same alias chain
 	 * the counters use, against the client's item price list; quest-only
@@ -198,6 +231,13 @@ public class ItemTracker
 	{
 		for (String alias : aliases(name))
 		{
+			// Wiki-seeded map first: it covers untradeables the price
+			// list can't resolve.
+			Integer bundled = bundledItemIds().get(alias);
+			if (bundled != null)
+			{
+				return bundled;
+			}
 			// Coins aren't tradeable, so the price-list search misses them.
 			if (alias.equals("coins"))
 			{

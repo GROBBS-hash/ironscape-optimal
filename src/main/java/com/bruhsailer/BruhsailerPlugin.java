@@ -1174,6 +1174,12 @@ public class BruhsailerPlugin extends Plugin
 		{
 			String subText = " " + current.sub.getPlainText().toLowerCase(Locale.ROOT)
 				.replace('’', '\'') + " ";
+			// Nearest ONE to each anchor point — "everyone within 4 tiles"
+			// outlined the whole gnome crowd around Gulluck's shop.
+			String nearestToMarker = null;
+			String nearestToSpot = null;
+			int markerBest = Integer.MAX_VALUE;
+			int spotBest = Integer.MAX_VALUE;
 			for (net.runelite.api.NPC npc : client.getTopLevelWorldView().npcs())
 			{
 				String name = npc.getName();
@@ -1196,22 +1202,37 @@ public class BruhsailerPlugin extends Plugin
 					npcNames.add(clean);
 				}
 				// The quest giver is rarely NAMED by the step ("Do Waterfall
-				// quest..."), but whoever stands at the quest's start point
-				// IS the quest giver — outline them too. Same for a ⌖
-				// target: whoever stands at the annotated spot is who the
-				// step is about (Gulluck at his weapon shop).
+				// quest..."), but whoever stands NEAREST the quest's start
+				// point is the quest giver — same for a ⌖ target and its
+				// shopkeeper (Gulluck at his weapon shop).
 				if (marker != null
-					&& npc.getWorldLocation().getPlane() == marker.getPlane()
-					&& npc.getWorldLocation().distanceTo2D(marker) <= 4)
+					&& npc.getWorldLocation().getPlane() == marker.getPlane())
 				{
-					npcNames.add(clean);
+					int distance = npc.getWorldLocation().distanceTo2D(marker);
+					if (distance <= 4 && distance < markerBest)
+					{
+						markerBest = distance;
+						nearestToMarker = clean;
+					}
 				}
 				if (spot != null
-					&& npc.getWorldLocation().getPlane() == spot.getPlane()
-					&& npc.getWorldLocation().distanceTo2D(spot) <= 4)
+					&& npc.getWorldLocation().getPlane() == spot.getPlane())
 				{
-					npcNames.add(clean);
+					int distance = npc.getWorldLocation().distanceTo2D(spot);
+					if (distance <= 4 && distance < spotBest)
+					{
+						spotBest = distance;
+						nearestToSpot = clean;
+					}
 				}
+			}
+			if (nearestToMarker != null)
+			{
+				npcNames.add(nearestToMarker);
+			}
+			if (nearestToSpot != null)
+			{
+				npcNames.add(nearestToSpot);
 			}
 		}
 		npcTargetNames = npcNames;
