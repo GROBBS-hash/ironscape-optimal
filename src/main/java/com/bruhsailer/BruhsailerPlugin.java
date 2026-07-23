@@ -120,6 +120,9 @@ public class BruhsailerPlugin extends Plugin
 	private BankFilterButton bankFilterButton;
 
 	@Inject
+	private com.bruhsailer.items.BankMissingSection bankMissingSection;
+
+	@Inject
 	private PlaceManager placeManager;
 
 	/**
@@ -916,6 +919,9 @@ public class BruhsailerPlugin extends Plugin
 	{
 		if (event.getGroupId() == net.runelite.api.gameval.InterfaceID.BANKMAIN)
 		{
+			// A fresh bank interface: any widgets we created in the old one
+			// are gone with it.
+			bankMissingSection.invalidate();
 			bankFilterButton.init();
 		}
 	}
@@ -947,6 +953,28 @@ public class BruhsailerPlugin extends Plugin
 			&& !bankFilterButton.consumeSelfToggle())
 		{
 			bankFilterButton.deactivate();
+		}
+
+		if (event.getScriptId() == net.runelite.api.ScriptID.BANKMAIN_BUILD)
+		{
+			// Filter view active (button, or a keyword typed by hand):
+			// append the ghost "still needed" section under the real items.
+			String search = client.getVarcStrValue(net.runelite.api.VarClientStr.INPUT_TEXT);
+			boolean filterView = bankFilterButton.isActive()
+				|| (search != null && BANK_FILTER_KEYWORDS.contains(
+					search.trim().toLowerCase(java.util.Locale.ROOT)));
+			java.util.Map<String, Integer> missing = new LinkedHashMap<>();
+			if (filterView)
+			{
+				for (java.util.Map.Entry<String, Integer> need : upcomingItemNeeds().entrySet())
+				{
+					if (itemTracker.countOf(need.getKey()) < need.getValue())
+					{
+						missing.put(need.getKey(), need.getValue());
+					}
+				}
+			}
+			bankMissingSection.update(filterView, missing);
 		}
 	}
 
@@ -1340,11 +1368,24 @@ public class BruhsailerPlugin extends Plugin
 	 */
 	private java.util.Set<String> upcomingItemNames()
 	{
+		refreshUpcomingNeeds();
+		return bankFilterNames;
+	}
+
+	/** Display name -> quantity the next steps still need, in guide order. */
+	private java.util.Map<String, Integer> upcomingItemNeeds()
+	{
+		refreshUpcomingNeeds();
+		return upcomingNeeds;
+	}
+
+	private void refreshUpcomingNeeds()
+	{
 		if (bankFilterCacheTick == tickCounter && bankFilterNames != null)
 		{
-			return bankFilterNames;
+			return;
 		}
-		java.util.Set<String> names = new java.util.HashSet<>();
+		java.util.Map<String, Integer> needs = new LinkedHashMap<>();
 		Current frontier = findCurrent();
 		if (frontier != null)
 		{
@@ -1362,7 +1403,8 @@ public class BruhsailerPlugin extends Plugin
 				included++;
 				for (StepAnnotation.ItemNeed need : annotationManager.getItems(step.getId()))
 				{
-					java.util.Collections.addAll(names, ItemTracker.aliases(need.name));
+					needs.merge(need.name.toLowerCase(Locale.ROOT),
+						need.quantity == null ? 1 : need.quantity, Math::max);
 				}
 				for (SubStep sub : step.getSubSteps())
 				{
@@ -1375,20 +1417,28 @@ public class BruhsailerPlugin extends Plugin
 					{
 						for (GoalDetector.ItemGoal goal : itemGoals)
 						{
-							java.util.Collections.addAll(names, ItemTracker.aliases(goal.getItemName()));
+							needs.merge(goal.getItemName(), goal.getQuantity(), Math::max);
 						}
 					}
 					for (StepAnnotation.ItemNeed need : annotationManager.getItems(sub.getId()))
 					{
-						java.util.Collections.addAll(names, ItemTracker.aliases(need.name));
+						needs.merge(need.name.toLowerCase(Locale.ROOT),
+							need.quantity == null ? 1 : need.quantity, Math::max);
 					}
 				}
 			}
 		}
+		java.util.Set<String> names = new java.util.HashSet<>();
+		for (String name : needs.keySet())
+		{
+			java.util.Collections.addAll(names, ItemTracker.aliases(name));
+		}
+		upcomingNeeds = needs;
 		bankFilterNames = names;
 		bankFilterCacheTick = tickCounter;
-		return names;
 	}
+
+	private java.util.Map<String, Integer> upcomingNeeds = new LinkedHashMap<>();
 
 	/**
 	 * The heart of auto-completion, and deliberately IN ORDER: only the
