@@ -205,6 +205,16 @@ All six build-order steps are DONE, plus substantial extras. Current state:
   op listener runs inside the click script (activation defers via
   invokeLater) and update()'s UPDATE_SCROLLBAR runScript ran inside
   BANKMAIN_BUILD's post-fire (now deferred one tick).
+- **Wiki seeding passes (2026-07-23, pre-publish):** seed-shops.mjs
+  (buy-step shop phrase + 📍 tag -> wiki search -> {{Map}} coords ->
+  reviewable draft -> --apply writes step-keyed ⌖ targets; 22 shops
+  seeded, 5 hand-corrected). seed-facilities.mjs (facility word + town
+  -> nearest surface pin on the facility's wiki page within 80 tiles —
+  proximity IS the review; 2 furnaces seeded, "range"-the-skill steps
+  correctly rejected). seed-item-ids re-run: 193 names mapped
+  (191/295 tracked names covered; the rest are junk detector names).
+  Step-level ⌖ targets now apply to EVERY sub of their step (nav, tile
+  marker, arrival, shop-NPC anchor) — not just single-sub steps.
 - **Tooling** (`tools/*.mjs`, Node): extract/review annotations (review
   COMPLETE 2026-07-22: bundled annotations cover 187 steps — 48 skill
   requirements, 170 item lists; review --trust auto-applies verifier
