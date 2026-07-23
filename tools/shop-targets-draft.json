@@ -1,0 +1,338 @@
+[
+ {
+  "stepId": "086a369518",
+  "text": "Walk to yanille, buy a pie dish at Yanille cooking shop",
+  "location": "Yanille",
+  "phrase": "Yanille cooking shop",
+  "query": "Yanille Yanille cooking shop",
+  "page": "Yanille (hand-corrected)",
+  "coords": {
+   "x": 2564,
+   "y": 3097,
+   "plane": 0
+  },
+  "ok": true
+ },
+ {
+  "stepId": "c53534815d",
+  "text": "Walk to port Khazard, buy 1 swamp paste from the general store",
+  "location": "Port Khazard",
+  "phrase": "general store",
+  "query": "Port Khazard general store",
+  "page": "Khazard General Store",
+  "coords": {
+   "x": 2656,
+   "y": 3152,
+   "plane": 0
+  },
+  "ok": true
+ },
+ {
+  "stepId": "7f8d1aed5b",
+  "text": "After the quest, buy however many sardine you can fit in your inventory from the fish shop",
+  "location": "Witchaven",
+  "phrase": "your inventory from the fish shop",
+  "query": "Witchaven your inventory from the fish shop",
+  "page": "Tiadeche's Karambwan Stall (hand-corrected)",
+  "coords": {
+   "x": 2721,
+   "y": 3287,
+   "plane": 0
+  },
+  "ok": true
+ },
+ {
+  "stepId": "39381b9bca",
+  "text": "Buy 2 ropes, 5 vials, 30 balls of wool and 7 papyrus from ardy general store",
+  "location": "Ardougne",
+  "phrase": "ardy general store",
+  "query": "Ardougne ardy general store",
+  "page": "East Ardougne",
+  "coords": {
+   "x": 2624,
+   "y": 3300,
+   "plane": 0
+  },
+  "ok": true
+ },
+ {
+  "stepId": "39b666da5f",
+  "text": "Walk to port sarim, buy 1000 feathers from the fishing store",
+  "location": "Port Sarim",
+  "phrase": "fishing store",
+  "query": "Port Sarim fishing store",
+  "page": "Port Sarim (hand-corrected)",
+  "coords": {
+   "x": 3014,
+   "y": 3224,
+   "plane": 0
+  },
+  "ok": true
+ },
+ {
+  "stepId": "3d7310c1e0",
+  "text": "Buy 3 buckets and 1 bucket pack from the general store",
+  "location": "Lumbridge",
+  "phrase": "general store",
+  "query": "Lumbridge general store",
+  "page": "Lumbridge General Store",
+  "coords": {
+   "x": 3210,
+   "y": 3252,
+   "plane": 0
+  },
+  "ok": true
+ },
+ {
+  "stepId": "fe6c7ce9d1",
+  "text": "Buy gloves and pink skirt from clothes shop",
+  "location": "Varrock",
+  "phrase": "clothes shop",
+  "query": "Varrock clothes shop",
+  "page": "Thessalia's Fine Clothes.",
+  "coords": {
+   "x": 3201,
+   "y": 3417,
+   "plane": 0
+  },
+  "ok": true
+ },
+ {
+  "stepId": "0814e2bfa1",
+  "text": "Buy 4 beers from the same bar",
+  "location": "Varrock",
+  "phrase": "same bar",
+  "query": "Varrock same bar",
+  "page": "Anvil (hand-corrected)",
+  "coords": {
+   "x": 3226,
+   "y": 3399,
+   "plane": 0
+  },
+  "ok": true
+ },
+ {
+  "stepId": "8e404dae98",
+  "text": "Buy 5 wizard mind bombs from the bar",
+  "location": "Falador",
+  "phrase": "the bar",
+  "query": "Falador the bar",
+  "page": "Rising Sun Inn",
+  "coords": {
+   "x": 2955,
+   "y": 3379,
+   "plane": 0
+  },
+  "ok": true
+ },
+ {
+  "stepId": "7618eea2aa",
+  "text": "Buy 50 thread, 3 needles and all of the moulds from the crafting shop",
+  "location": "Al Kharid",
+  "phrase": "crafting shop",
+  "query": "Al Kharid crafting shop",
+  "page": "Dommik's Crafting Store.",
+  "coords": {
+   "x": 3321,
+   "y": 3194,
+   "plane": 0
+  },
+  "ok": true
+ },
+ {
+  "stepId": "364c88b257",
+  "text": "Buy 10 flour from general store",
+  "location": "Port Khazard",
+  "phrase": "general store",
+  "query": "Port Khazard general store",
+  "page": "Khazard General Store",
+  "coords": {
+   "x": 2656,
+   "y": 3152,
+   "plane": 0
+  },
+  "ok": true
+ },
+ {
+  "stepId": "7676874ffb",
+  "text": "Buy 4 compost pack from the Ardy farming shop",
+  "location": "Ardougne",
+  "phrase": "Ardy farming shop",
+  "query": "Ardougne Ardy farming shop",
+  "page": "East Ardougne",
+  "coords": {
+   "x": 2624,
+   "y": 3300,
+   "plane": 0
+  },
+  "ok": true
+ },
+ {
+  "stepId": "1846e0c4dc",
+  "text": "Buy 2 bird snares, 2 butterfly jars and a butterfly net from the hunter shop",
+  "location": "Yanille",
+  "phrase": "hunter shop",
+  "query": "Yanille hunter shop",
+  "page": "Aleck's Hunter Emporium.",
+  "coords": {
+   "x": 2567,
+   "y": 3082,
+   "plane": 0
+  },
+  "ok": true
+ },
+ {
+  "stepId": "3fe3ab95d6",
+  "text": "Buy a black wizards hat from Betty at port sarim magic store",
+  "location": "Port Sarim",
+  "phrase": "from Betty at port sarim magic store",
+  "query": "Port Sarim from Betty at port sarim magic store",
+  "page": "Port Sarim (hand-corrected)",
+  "coords": {
+   "x": 3013,
+   "y": 3259,
+   "plane": 0
+  },
+  "ok": true
+ },
+ {
+  "stepId": "5e820a7596",
+  "text": "Buy 1 inv of stew from the Seers bar",
+  "location": "Seers Village",
+  "phrase": "Seers bar",
+  "query": "Seers Village Seers bar",
+  "page": "Seers' Village",
+  "coords": {
+   "x": 2710,
+   "y": 3485,
+   "plane": 0
+  },
+  "ok": true
+ },
+ {
+  "stepId": "0f1c3c3c58",
+  "text": "Blackjack until 50 thieving, you can buy wines from the bar to use as food",
+  "location": "Pollnivneach",
+  "phrase": "the bar",
+  "query": "Pollnivneach the bar",
+  "page": "The Asp & Snake Bar.",
+  "coords": {
+   "x": 3359,
+   "y": 2957,
+   "plane": 0
+  },
+  "ok": true
+ },
+ {
+  "stepId": "b6ed006cf7",
+  "text": "Buy 20k feathers from shilo village fishing shop",
+  "location": "Shilo Village",
+  "phrase": "shilo village fishing shop",
+  "query": "Shilo Village shilo village fishing shop",
+  "page": "Shilo Village (location)",
+  "coords": {
+   "x": 2849,
+   "y": 2972,
+   "plane": 0
+  },
+  "ok": true
+ },
+ {
+  "stepId": "b2951d28e5",
+  "text": "Buy addy and rune picks from the pickaxe shop in the mines",
+  "location": "Falador",
+  "phrase": "pickaxe shop",
+  "query": "Falador pickaxe shop",
+  "page": "Cassie's Shield Shop.",
+  "coords": {
+   "x": 2972,
+   "y": 3387,
+   "plane": 0
+  },
+  "ok": false
+ },
+ {
+  "stepId": "864ba13b05",
+  "text": "Buy a Celestial Ring from Dusuri's Star Shop in Falador (2,000 stardust) for a +4 invisibl",
+  "location": "Various",
+  "phrase": "Dusuri's Star Shop",
+  "query": "Various Dusuri's Star Shop",
+  "page": "Shooting Stars",
+  "coords": {
+   "x": 3290,
+   "y": 3353,
+   "plane": 0
+  },
+  "ok": false
+ },
+ {
+  "stepId": "c695521f0c",
+  "text": "Buy a bronze sword from Varrock sword shop (for Horror from the deep quest)",
+  "location": "Varrock",
+  "phrase": "Varrock sword shop",
+  "query": "Varrock Varrock sword shop",
+  "page": "Varrock Swordshop",
+  "coords": {
+   "x": 3202,
+   "y": 3404,
+   "plane": 0
+  },
+  "ok": true
+ },
+ {
+  "stepId": "9453cd3524",
+  "text": "Buy 1 raw shark from Canifis food shop",
+  "location": "Canifis",
+  "phrase": "Canifis food shop",
+  "query": "Canifis Canifis food shop",
+  "page": "Rufus' Meat Emporium",
+  "coords": {
+   "x": 3505,
+   "y": 3499,
+   "plane": 0
+  },
+  "ok": true
+ },
+ {
+  "stepId": "c7df380d64",
+  "text": "Buy 2 inventories of gold ore from the blast furnace shop",
+  "location": "Keldagrim",
+  "phrase": "blast furnace shop",
+  "query": "Keldagrim blast furnace shop",
+  "page": "Blast Furnace",
+  "coords": {
+   "x": 2930,
+   "y": 10197,
+   "plane": 0
+  },
+  "ok": true
+ },
+ {
+  "stepId": "b59810d9bc",
+  "text": "Buy ~200 chocolate from the grand tree food shop, don't buy too much since it's faster lat",
+  "location": "Gnome Stronghold",
+  "phrase": "grand tree food shop",
+  "query": "Gnome Stronghold grand tree food shop",
+  "page": "Grand Tree Groceries",
+  "coords": {
+   "x": 2448,
+   "y": 3508,
+   "plane": 1
+  },
+  "ok": true
+ },
+ {
+  "stepId": "efc67d8d99",
+  "text": "Buy 2800 gold ore from blast furnace ore shop, 1 inv per world",
+  "location": "Keldagrim",
+  "phrase": "blast furnace ore shop",
+  "query": "Keldagrim blast furnace ore shop",
+  "page": "Blast Furnace",
+  "coords": {
+   "x": 2930,
+   "y": 10197,
+   "plane": 0
+  },
+  "ok": true
+ }
+]
