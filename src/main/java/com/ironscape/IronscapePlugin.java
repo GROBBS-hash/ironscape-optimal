@@ -377,6 +377,9 @@ public class IronscapePlugin extends Plugin
 	/** Ticks remaining in which a recent teleport can complete a travel sub-step. */
 	private int recentTeleportTicks;
 
+	/** Last poll of questHelperOwnsGuidance, to react to the handoff edges. */
+	private boolean lastQuestOwnsGuidance;
+
 	/**
 	 * Auto-completion applies to the first few incomplete sub-steps, not
 	 * just the very first — one un-tickable prose fragment must not freeze
@@ -1212,6 +1215,16 @@ public class IronscapePlugin extends Plugin
 		if (++tickCounter % 2 == 0)
 		{
 			evaluateAutoCompletion();
+
+			// Starting a quest fires no progress event, so the route to
+			// its start point would linger under Quest Helper's guidance.
+			// React to the handoff transition in both directions.
+			boolean questOwns = questHelperOwnsGuidance();
+			if (questOwns != lastQuestOwnsGuidance)
+			{
+				lastQuestOwnsGuidance = questOwns;
+				maybeNavigateToNext();
+			}
 		}
 
 		// A "world 444" link was clicked: in game, hopToWorld only works
@@ -2325,6 +2338,15 @@ public class IronscapePlugin extends Plugin
 			return;
 		}
 		clientThread.invokeLater(() -> {
+			// Quest in progress = Quest Helper's show. Two guidance systems
+			// pointing different ways is worse than one: clear our route
+			// and stand down until the quest completes and the step ticks
+			// (the same handoff the quest-start marker already does).
+			if (questHelperOwnsGuidance())
+			{
+				eventBus.post(new PluginMessage("shortestpath", "clear"));
+				return;
+			}
 			WorldPoint target = findNextTarget();
 			if (target != null)
 			{
@@ -2338,6 +2360,42 @@ public class IronscapePlugin extends Plugin
 				eventBus.post(new PluginMessage("shortestpath", "clear"));
 			}
 		});
+	}
+
+	/**
+	 * True while the frontier step's quest is IN PROGRESS — started but
+	 * not finished. From "quest accepted" to "quest complete" the player
+	 * is following Quest Helper's own guidance; our navigation stands
+	 * down rather than fight it. Covers both text/metadata quest goals
+	 * ("complete the Pandemonium quest") and varbit-checkpoint steps
+	 * ("do X up to the orb"), whose step metadata names the quest even
+	 * when no quest goal was detected. Client thread only.
+	 */
+	private boolean questHelperOwnsGuidance()
+	{
+		Current current = findCurrent();
+		if (current == null)
+		{
+			return false;
+		}
+		GoalDetector.QuestGoal goal = questGoalBySub.get(current.sub.getId());
+		if (goal != null)
+		{
+			return goal.getQuest().getState(client) == QuestState.IN_PROGRESS;
+		}
+		String questName = current.step.getMetadata().get("quest");
+		if (questName == null)
+		{
+			return false;
+		}
+		for (Quest quest : Quest.values())
+		{
+			if (quest.getName().equalsIgnoreCase(questName.trim()))
+			{
+				return quest.getState(client) == QuestState.IN_PROGRESS;
+			}
+		}
+		return false;
 	}
 
 	/** The target of the first incomplete sub-step, scanning at most a few ahead. */
