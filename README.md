@@ -1,20 +1,22 @@
 # IRONSCAPE Optimal — RuneLite plugin
 
-The [Ironman Efficiency Guide](https://ironman.guide/) as a step-by-step
+This plugin is based on the [Ironman Efficiency Guide](https://ironman.guide/) as a step-by-step
 side panel inside RuneLite: tick-off steps with automatic completion
 detection (skill levels, quest progress, mid-quest checkpoints, item
 counts), an on-screen step overlay with live item/level counts, item
 sprites and have/need badges against your bank, location and quest chips
 per step, click-to-navigate place links (via the Shortest Path plugin),
-click-to-hop world links, and a bank filter for upcoming items.
+click-to-hop world links, and a bank filter for upcoming items. Contrary to other plugins, 
+This one also has a built in auto update feature, meaning it will be upto date with the latest findings
+from the team at Ironman.guide.
+
+If this sees use, I'm happy to continue improving, adding and fixing bugs.
 
 ## Credits
 
 - **Guide content by [Oziris](https://twitter.com/ozirislol) and the
   [ironman.guide](https://ironman.guide/) community** (the v4 "Enhanced
-  2026" edition) — used with their permission. Every step this plugin
-  displays is their routing work; if the guide helps you, the credit is
-  theirs.
+  2026" edition) — used with their permission. Thanks to them for maintaining the guide!
 - Navigation integrates with [Shortest Path](https://github.com/Skretzo/shortest-path)
   by Skretzo (separate plugin, install it from the Plugin Hub).
 - Mid-quest checkpoint values were cross-checked against
