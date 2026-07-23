@@ -15,12 +15,12 @@ import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetType;
 
 /**
- * The Quest Helper-style twist on the bank filter: below the (native,
- * filtered) grid of items you DO have, append per-step sections of ghost
- * icons for the items upcoming steps need that are NOT in your bank —
- * the things you still have to buy, gather or quest for, grouped under
- * the step that needs them. Rebuilt after every bank layout pass while
- * the filter is active; hidden otherwise.
+ * The Quest Helper-style bank view: while the filter is active the
+ * native grid is blanked (see the plugin's bankSearchFilter callback)
+ * and every upcoming step renders as its own section — a step-title
+ * header, then ALL of that step's items with a green/red "have/need"
+ * count under each icon; items still missing are ghosted. Rebuilt after
+ * every bank layout pass while the filter is active; hidden otherwise.
  *
  * All of it must run on the client thread (the plugin calls update()
  * from the BANKMAIN_BUILD script post-fire).
@@ -44,10 +44,13 @@ public class BankMissingSection
 	/** Native bank grid geometry: 8 columns of 36x32 icons. */
 	private static final int FIRST_COLUMN_X = 51;
 	private static final int COLUMN_SPACING = 48;
-	private static final int ROW_SPACING = 40;
+	/** Icon (32) + have/need line (12) + breathing room. */
+	private static final int ROW_SPACING = 52;
 	private static final int COLUMNS = 8;
 
 	private static final int HEADER_COLOR = 0xff981f; // RuneScape orange
+	private static final int COUNT_MET_COLOR = 0x2ecc40; // green: have >= need
+	private static final int COUNT_SHORT_COLOR = 0xff6060; // red: still missing
 
 	private final Client client;
 	private final net.runelite.client.callback.ClientThread clientThread;
@@ -135,18 +138,37 @@ public class BankMissingSection
 				{
 					continue; // untradeable/unknown name: no icon to show
 				}
+				int need = entry.getValue();
+				int have = itemTracker.countOf(entry.getKey());
+				boolean met = have >= need;
+				int x = FIRST_COLUMN_X + column * COLUMN_SPACING;
+
 				Widget icon = reuse(container, iconPool, iconsUsed++, WidgetType.GRAPHIC);
 				icon.setItemId(itemId);
-				icon.setItemQuantity(entry.getValue());
-				icon.setItemQuantityMode(1); // always show the needed count
-				icon.setOriginalX(FIRST_COLUMN_X + column * COLUMN_SPACING);
+				icon.setItemQuantity(need);
+				icon.setItemQuantityMode(0); // the have/need line says it all
+				icon.setOriginalX(x);
 				icon.setOriginalY(y);
 				icon.setOriginalWidth(36);
 				icon.setOriginalHeight(32);
-				icon.setOpacity(120); // ghosted: you don't have it yet
+				icon.setOpacity(met ? 0 : 120); // ghosted while still missing
 				icon.setName("<col=ff9040>" + entry.getKey() + "</col>");
 				icon.setHidden(false);
 				icon.revalidate();
+
+				// Quest Helper-style count under the icon: "have/need".
+				Widget count = reuse(container, textPool, textsUsed++, WidgetType.TEXT);
+				count.setText(compact(have) + "/" + compact(need));
+				count.setTextColor(met ? COUNT_MET_COLOR : COUNT_SHORT_COLOR);
+				count.setFontId(FontID.PLAIN_11);
+				count.setTextShadowed(true);
+				count.setOriginalX(x - 4);
+				count.setOriginalY(y + 33);
+				count.setOriginalWidth(COLUMN_SPACING - 2);
+				count.setOriginalHeight(12);
+				count.setHidden(false);
+				count.revalidate();
+
 				anyIcon = true;
 				if (++column == COLUMNS)
 				{
@@ -185,6 +207,20 @@ public class BankMissingSection
 				items.revalidateScroll();
 			});
 		}
+	}
+
+	/** 25321 -> "25.3k": the counts must fit under a 36px icon. */
+	private static String compact(int n)
+	{
+		if (n < 10_000)
+		{
+			return Integer.toString(n);
+		}
+		if (n < 1_000_000)
+		{
+			return (n / 100) / 10.0 + "k";
+		}
+		return (n / 100_000) / 10.0 + "m";
 	}
 
 	/** Reuse the pool's n-th widget, or create it on first need. */

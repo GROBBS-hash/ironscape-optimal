@@ -360,8 +360,7 @@ public class IronscapePlugin extends Plugin
 	private static final java.util.Set<String> BANK_FILTER_KEYWORDS =
 		java.util.Set.of("ironman", "bruh");
 
-	/** Cached accepted item names for the bank filter (rebuilt each tick). */
-	private java.util.Set<String> bankFilterNames;
+	/** Tick the upcoming-needs sections were last rebuilt on. */
 	private int bankFilterCacheTick = -1;
 
 	/** Ticks remaining in which a recent teleport can complete a travel sub-step. */
@@ -1096,7 +1095,9 @@ public class IronscapePlugin extends Plugin
 			&& (option.startsWith("View tab") || option.equals("View all items")
 				|| option.startsWith("View tag tab") || option.startsWith("Potion store")))
 		{
-			bankFilterButton.deactivate();
+			// Clear our search too — leaving "ironman" typed made the tab
+			// view show a weird intersection instead of the tab's items.
+			bankFilterButton.deactivate(true);
 		}
 	}
 
@@ -1109,50 +1110,43 @@ public class IronscapePlugin extends Plugin
 			// PLAYER-opened search should turn the filter off
 			&& !bankFilterButton.consumeSelfToggle())
 		{
-			bankFilterButton.deactivate();
+			// The player opened their own search — keep it, just step aside.
+			bankFilterButton.deactivate(false);
 		}
 
 		if (event.getScriptId() == net.runelite.api.ScriptID.BANKMAIN_BUILD)
 		{
-			// Filter view active (button, or a keyword typed by hand):
-			// append the ghost "still needed" section under the real items.
-			String search = client.getVarcStrValue(net.runelite.api.VarClientStr.INPUT_TEXT);
-			boolean filterView = bankFilterButton.isActive()
-				|| (search != null && BANK_FILTER_KEYWORDS.contains(
-					search.trim().toLowerCase(java.util.Locale.ROOT)));
-			List<com.ironscape.items.BankMissingSection.Section> missing = new ArrayList<>();
+			// Filter view active (button, or a keyword typed by hand): the
+			// native grid is blanked (see bankSearchFilter) and EVERY
+			// upcoming step renders as its own section — all of its items,
+			// have/need counts, Quest Helper-style.
+			boolean filterView = bankFilterActive();
+			List<com.ironscape.items.BankMissingSection.Section> sections = new ArrayList<>();
 			if (filterView)
 			{
 				refreshUpcomingNeeds();
-				for (com.ironscape.items.BankMissingSection.Section section : upcomingSections)
-				{
-					com.ironscape.items.BankMissingSection.Section shortfall =
-						new com.ironscape.items.BankMissingSection.Section(section.title);
-					for (java.util.Map.Entry<String, Integer> need : section.items.entrySet())
-					{
-						if (itemTracker.countOf(need.getKey()) < need.getValue())
-						{
-							shortfall.items.put(need.getKey(), need.getValue());
-						}
-					}
-					if (!shortfall.items.isEmpty())
-					{
-						missing.add(shortfall);
-					}
-				}
+				sections = upcomingSections;
 			}
-			bankMissingSection.update(filterView, missing);
+			bankMissingSection.update(filterView, sections);
 		}
+	}
+
+	/** Button toggled on, or the filter keyword typed into the bank search. */
+	private boolean bankFilterActive()
+	{
+		if (bankFilterButton.isActive())
+		{
+			return true;
+		}
+		String search = client.getVarcStrValue(net.runelite.api.VarClientStr.INPUT_TEXT);
+		return search != null && BANK_FILTER_KEYWORDS.contains(
+			search.trim().toLowerCase(java.util.Locale.ROOT));
 	}
 
 	/** Once per game tick (0.6s) on the client thread. */
 	@Subscribe
 	public void onGameTick(GameTick event)
 	{
-		if (!bankFilterButton.isActive())
-		{
-			bankFilterAnnounced = false; // next activation announces again
-		}
 		if (loginGraceTicks > 0)
 		{
 			loginGraceTicks--;
@@ -1297,6 +1291,20 @@ public class IronscapePlugin extends Plugin
 		}
 		targetTileMarker = spot;
 
+		// Shop-keeper anchor: for a sub that still needs items ("From
+		// sawmill buy 500 bronze nails"), the sub's resolved nav target
+		// (⌖ capture, place name, or the step's 📍 tag) marks the shop —
+		// the nearest NPC to it gets the outline and the wanted item
+		// floats over their head, Quest Helper-style. ⌖ captures keep
+		// priority; the ≤4-tile rule below keeps town-center points from
+		// outlining random passers-by.
+		WorldPoint shopAnchor = spot;
+		if (shopAnchor == null && current != null
+			&& itemGoalsBySub.containsKey(current.sub.getId()))
+		{
+			shopAnchor = targetFor(current.step, current.sub);
+		}
+
 		// NPC targets: outline scene NPCs whose name the current sub-step
 		// mentions ("speak with Veos" -> Veos). Names matched once per
 		// tick; the overlay re-reads the live hulls per frame, which is
@@ -1347,10 +1355,10 @@ public class IronscapePlugin extends Plugin
 						nearestToMarker = clean;
 					}
 				}
-				if (spot != null
-					&& npc.getWorldLocation().getPlane() == spot.getPlane())
+				if (shopAnchor != null
+					&& npc.getWorldLocation().getPlane() == shopAnchor.getPlane())
 				{
-					int distance = npc.getWorldLocation().distanceTo2D(spot);
+					int distance = npc.getWorldLocation().distanceTo2D(shopAnchor);
 					if (distance <= 4 && distance < spotBest)
 					{
 						spotBest = distance;
@@ -1516,25 +1524,15 @@ public class IronscapePlugin extends Plugin
 
 	/**
 	 * The bank's layout script asks every plugin about every bank slot
-	 * whenever a bank search is active. When the search text is our
-	 * keyword, we answer "show it" for items the guide needs soon — the
-	 * same trick Quest Helper's bank tab uses, minus the custom widgets.
+	 * whenever a bank search is active. While our filter is on, the answer
+	 * is "hide it" for EVERYTHING: the native grid scattered matches under
+	 * their tab separators (and fought the selected tab), so the whole
+	 * grid is blanked and BankMissingSection draws the per-step sections
+	 * instead — the full Quest Helper look.
 	 */
 	@Subscribe
 	public void onScriptCallbackEvent(ScriptCallbackEvent event)
 	{
-		// The bank layout script asks whether a "tag tab" search is active;
-		// answering 1 while our button is toggled makes it lay the bank out
-		// through bankSearchFilter below with an empty search string.
-		if ("getSearchingTagTab".equals(event.getEventName()))
-		{
-			if (bankFilterButton.isActive())
-			{
-				client.getIntStack()[client.getIntStackSize() - 1] = 1;
-				log.info("bank filter: layout asked getSearchingTagTab — answered active");
-			}
-			return;
-		}
 		if (!"bankSearchFilter".equals(event.getEventName()))
 		{
 			return;
@@ -1547,84 +1545,25 @@ public class IronscapePlugin extends Plugin
 		{
 			return;
 		}
-
 		int[] intStack = client.getIntStack();
-		int intStackSize = client.getIntStackSize();
-		int itemId = intStack[intStackSize - 1];
-
-		String itemName = itemManager.getItemComposition(itemManager.canonicalize(itemId))
-			.getName().toLowerCase(java.util.Locale.ROOT);
-		boolean matched = upcomingItemNames().contains(itemName);
-		if (matched)
-		{
-			intStack[intStackSize - 2] = 1; // 1 = include this bank slot
-		}
-		// Once per tick, report the PREVIOUS pass: with 0 matches a
-		// "working" filter shows an empty bank, which reads as broken.
-		if (bankFilterLogTick != tickCounter)
-		{
-			if (bankFilterLogTick != -1)
-			{
-				log.info("bank filter: pass queried {} bank items, matched {} (of {} wanted names)",
-					bankFilterQueries, bankFilterMatches, upcomingItemNames().size());
-				// Near-empty results are usually CORRECT (upcoming needs
-				// are mostly shop purchases) — say so once per BUTTON
-				// activation or it reads as breakage.
-				if (!bankFilterAnnounced && bankFilterButton.isActive())
-				{
-					bankFilterAnnounced = true;
-					client.addChatMessage(ChatMessageType.CONSOLE, "",
-						"IRONSCAPE: bank filter on — " + bankFilterMatches
-							+ " banked item(s) match what the next " + BANK_FILTER_STEPS
-							+ " steps need. Items you still have to buy or gather won't show.",
-						null);
-				}
-			}
-			bankFilterLogTick = tickCounter;
-			bankFilterQueries = 0;
-			bankFilterMatches = 0;
-		}
-		bankFilterQueries++;
-		if (matched)
-		{
-			bankFilterMatches++;
-		}
+		intStack[client.getIntStackSize() - 2] = 0; // 0 = hide this bank slot
 	}
-
-	private int bankFilterLogTick = -1;
-	private int bankFilterQueries;
-	private int bankFilterMatches;
-	private boolean bankFilterAnnounced;
 
 	/** How many upcoming incomplete STEPS the bank filter collects items from. */
 	private static final int BANK_FILTER_STEPS = 10;
 
 	/**
-	 * Item names the next few steps still need (alias-expanded), starting
-	 * at the frontier. Step-count scoped: a fixed sub-step window reached
-	 * too far, and section scoping collected almost nothing near a section
-	 * boundary. Ten steps of shopping ahead is predictable.
+	 * Rebuilds the per-step item sections the bank filter renders — the
+	 * next few steps' needs, starting at the frontier. Step-count scoped:
+	 * a fixed sub-step window reached too far, and section scoping
+	 * collected almost nothing near a section boundary. Cached per tick.
 	 */
-	private java.util.Set<String> upcomingItemNames()
-	{
-		refreshUpcomingNeeds();
-		return bankFilterNames;
-	}
-
-	/** Display name -> quantity the next steps still need, in guide order. */
-	private java.util.Map<String, Integer> upcomingItemNeeds()
-	{
-		refreshUpcomingNeeds();
-		return upcomingNeeds;
-	}
-
 	private void refreshUpcomingNeeds()
 	{
-		if (bankFilterCacheTick == tickCounter && bankFilterNames != null)
+		if (bankFilterCacheTick == tickCounter)
 		{
 			return;
 		}
-		java.util.Map<String, Integer> needs = new LinkedHashMap<>();
 		List<com.ironscape.items.BankMissingSection.Section> sections = new ArrayList<>();
 		Current frontier = findCurrent();
 		if (frontier != null)
@@ -1648,7 +1587,6 @@ public class IronscapePlugin extends Plugin
 				{
 					String name = need.name.toLowerCase(Locale.ROOT);
 					int quantity = need.quantity == null ? 1 : need.quantity;
-					needs.merge(name, quantity, Math::max);
 					section.items.merge(name, quantity, Math::max);
 				}
 				for (SubStep sub : step.getSubSteps())
@@ -1662,7 +1600,6 @@ public class IronscapePlugin extends Plugin
 					{
 						for (GoalDetector.ItemGoal goal : itemGoals)
 						{
-							needs.merge(goal.getItemName(), goal.getQuantity(), Math::max);
 							section.items.merge(goal.getItemName(), goal.getQuantity(), Math::max);
 						}
 					}
@@ -1670,27 +1607,17 @@ public class IronscapePlugin extends Plugin
 					{
 						String name = need.name.toLowerCase(Locale.ROOT);
 						int quantity = need.quantity == null ? 1 : need.quantity;
-						needs.merge(name, quantity, Math::max);
 						section.items.merge(name, quantity, Math::max);
 					}
 				}
 				sections.add(section);
 			}
 		}
-		java.util.Set<String> names = new java.util.HashSet<>();
-		for (String name : needs.keySet())
-		{
-			java.util.Collections.addAll(names, ItemTracker.aliases(name));
-		}
-		upcomingNeeds = needs;
 		upcomingSections = sections;
-		bankFilterNames = names;
 		bankFilterCacheTick = tickCounter;
 	}
 
-	private java.util.Map<String, Integer> upcomingNeeds = new LinkedHashMap<>();
-
-	/** Per-step needs of the next steps, for the bank's ghost sections. */
+	/** Per-step needs of the next steps, for the bank's filter sections. */
 	private List<com.ironscape.items.BankMissingSection.Section> upcomingSections = new ArrayList<>();
 
 	/**
