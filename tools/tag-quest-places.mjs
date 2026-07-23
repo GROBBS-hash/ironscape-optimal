@@ -8,8 +8,8 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const PLACES_FILE = path.join(__dirname, '../src/main/resources/com/bruhsailer/places/places.json');
-const USER_AGENT = 'BRUHsailer-runelite-plugin dev tooling (one-off tagging script)';
+const PLACES_FILE = path.join(__dirname, '../src/main/resources/com/ironscape/places/places.json');
+const USER_AGENT = 'ironscape-runelite-plugin dev tooling (one-off tagging script)';
 
 const titles = [];
 let cmcontinue;

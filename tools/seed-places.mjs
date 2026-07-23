@@ -4,7 +4,7 @@
 // 1. Scans the guide text for "talk to / speak to <Name>" patterns.
 // 2. Fetches each name's wiki page and reads the {{Map|x,y|...|plane=N}}
 //    coordinates out of its infobox.
-// 3. Merges hits into src/main/resources/com/bruhsailer/places/places.json
+// 3. Merges hits into src/main/resources/com/ironscape/places/places.json
 //    (existing entries are never overwritten — your in-game captures win).
 //
 // Usage: node tools/seed-places.mjs [--dry-run] [--quests] [--locations] [--links] [--pois]
@@ -29,10 +29,10 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const GUIDE_FILE = path.join(__dirname, '../src/main/resources/com/bruhsailer/guide/guide_data.json');
-const PLACES_FILE = path.join(__dirname, '../src/main/resources/com/bruhsailer/places/places.json');
+const GUIDE_FILE = path.join(__dirname, '../src/main/resources/com/ironscape/guide/guide_data.json');
+const PLACES_FILE = path.join(__dirname, '../src/main/resources/com/ironscape/places/places.json');
 
-const USER_AGENT = 'BRUHsailer-runelite-plugin dev tooling (one-off seeding script)';
+const USER_AGENT = 'ironscape-runelite-plugin dev tooling (one-off seeding script)';
 const REQUEST_DELAY_MS = 600; // be polite to the wiki
 
 // ---------------------------------------------------------------------
