@@ -420,12 +420,38 @@ public class ItemTracker
 	public void onLoggedIn()
 	{
 		long hash = client.getAccountHash();
-		if (hash != accountHash)
+		if (hash != -1 && hash != accountHash)
 		{
 			accountHash = hash;
 			bankByName = loadBank();
 		}
 		rebuild();
+	}
+
+	/**
+	 * The account hash is often still -1 on the LOGIN event itself — the
+	 * persisted bank snapshot silently never loaded, and every banked
+	 * count read 0 until the player physically opened a bank. Called each
+	 * game tick; loads the snapshot the moment the hash exists.
+	 *
+	 * @return true when the snapshot was just loaded (refresh the panel)
+	 */
+	public boolean ensureBankLoaded()
+	{
+		if (accountHash != -1)
+		{
+			return false;
+		}
+		long hash = client.getAccountHash();
+		if (hash == -1)
+		{
+			return false;
+		}
+		accountHash = hash;
+		bankByName = loadBank();
+		rebuild();
+		log.info("Loaded persisted bank snapshot ({} item names) for account", bankByName.size());
+		return true;
 	}
 
 	private void rebuild()
