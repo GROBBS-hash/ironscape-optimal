@@ -1621,6 +1621,15 @@ public class IronscapePlugin extends Plugin
 			stepOverlayModel = null;
 			return;
 		}
+		// "warm clothing 3/4" — the step's gear check, live on screen.
+		StepAnnotation.GearCheck gear = annotationManager.getGearCheck(step.getId());
+		if (gear != null)
+		{
+			int have = itemTracker.distinctCarried(gear.set);
+			reqs.add(new com.ironscape.overlay.StepOverlay.Requirement(
+				gear.set, have + "/" + gear.need,
+				have >= gear.need ? OVERLAY_GREEN : OVERLAY_RED));
+		}
 		int moreCount = openSubs - 1 - upNext.size();
 		stepOverlayModel = new com.ironscape.overlay.StepOverlay.Model(
 			"Step " + (step.getStepIndex() + 1), current, upNext, moreCount, reqs);

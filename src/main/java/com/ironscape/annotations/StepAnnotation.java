@@ -29,6 +29,22 @@ public class StepAnnotation
 	/** Items this step needs — the panel shows a live have/need count for each. */
 	public List<ItemNeed> items;
 
+	/**
+	 * "Have N of ANY item from a named set" — e.g. 4 pieces of warm
+	 * clothing for Wintertodt. Purely informational: the badge shows
+	 * have/need but never gates the step's completion. Sets live in
+	 * items/gear_sets.json (seeded from the wiki).
+	 */
+	public GearCheck gearCheck;
+
+	public static class GearCheck
+	{
+		/** Set name in gear_sets.json, e.g. "warm clothing". */
+		public String set;
+		/** How many DISTINCT items from the set must be carried/worn. */
+		public int need;
+	}
+
 	public static class ItemNeed
 	{
 		/** In-game item name, matched case-insensitively against what you own. */

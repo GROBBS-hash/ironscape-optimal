@@ -8,7 +8,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import javax.inject.Inject;
@@ -225,6 +227,61 @@ public class ItemTracker
 	{
 		return iconIdByName.computeIfAbsent(
 			name.toLowerCase(Locale.ROOT).trim(), this::lookupIconId);
+	}
+
+	/**
+	 * Named item sets bundled from the wiki (items/gear_sets.json) —
+	 * "warm clothing" is the Wintertodt list. Loaded lazily.
+	 */
+	private Map<String, List<String>> gearSets;
+
+	private Map<String, List<String>> gearSets()
+	{
+		if (gearSets == null)
+		{
+			gearSets = new HashMap<>();
+			try (java.io.InputStream in = ItemTracker.class.getResourceAsStream("gear_sets.json"))
+			{
+				if (in != null)
+				{
+					GearSetsFile parsed = gson.fromJson(
+						new java.io.InputStreamReader(in, java.nio.charset.StandardCharsets.UTF_8),
+						GearSetsFile.class);
+					if (parsed != null && parsed.sets != null)
+					{
+						gearSets = parsed.sets;
+					}
+				}
+			}
+			catch (IOException | RuntimeException e)
+			{
+				log.warn("Could not read bundled gear sets", e);
+			}
+		}
+		return gearSets;
+	}
+
+	private static class GearSetsFile
+	{
+		int version;
+		Map<String, List<String>> sets;
+	}
+
+	/**
+	 * How many DISTINCT items of the named set the player carries or wears
+	 * (bank excluded — the check is "am I equipped for this right now").
+	 */
+	public int distinctCarried(String setName)
+	{
+		int have = 0;
+		for (String name : gearSets().getOrDefault(setName, Collections.emptyList()))
+		{
+			if (carriedCountOf(name) > 0)
+			{
+				have++;
+			}
+		}
+		return have;
 	}
 
 	/** 200000 -> "200,000": item counts in badges/overlays get grouping. */
