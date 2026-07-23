@@ -227,6 +227,36 @@ public class ItemTracker
 			name.toLowerCase(Locale.ROOT).trim(), this::lookupIconId);
 	}
 
+	/** Cached stackability by guide item name; see bankCountable. */
+	private final Map<String, Boolean> stackableByName =
+		new java.util.concurrent.ConcurrentHashMap<>();
+
+	/**
+	 * Should this goal count the BANK as well as carried items? Only when
+	 * the quantity physically can't be carried: more than an inventory of
+	 * a NON-stackable item ("gather 130 planks"). 1000 arrow shafts is one
+	 * stack — the step means "holding them", so banking them again must
+	 * re-open it, exactly like any other carried goal.
+	 */
+	public boolean bankCountable(String name, int quantity)
+	{
+		if (quantity <= com.ironscape.goals.GoalDetector.CARRYABLE_LIMIT)
+		{
+			return false;
+		}
+		return !stackableByName.computeIfAbsent(name.toLowerCase(Locale.ROOT).trim(), n -> {
+			try
+			{
+				int id = iconIdFor(n);
+				return id > 0 && itemManager.getItemComposition(id).isStackable();
+			}
+			catch (RuntimeException e)
+			{
+				return false; // unknown item: keep the old quantity-only rule
+			}
+		});
+	}
+
 	private int lookupIconId(String name)
 	{
 		for (String alias : aliases(name))

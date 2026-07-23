@@ -995,7 +995,7 @@ public class IronscapePlugin extends Plugin
 			boolean missingAllBanked = true;
 			for (GoalDetector.ItemGoal goal : subGoals)
 			{
-				boolean gather = goal.getQuantity() > GoalDetector.CARRYABLE_LIMIT;
+				boolean gather = itemTracker.bankCountable(goal.getItemName(), goal.getQuantity());
 				if (gather)
 				{
 					if (itemTracker.countOf(goal.getItemName()) < goal.getQuantity())
@@ -1301,7 +1301,10 @@ public class IronscapePlugin extends Plugin
 		if (shopAnchor == null && current != null
 			&& itemGoalsBySub.containsKey(current.sub.getId()))
 		{
-			shopAnchor = targetFor(current.step, current.sub);
+			// Text places only — the step's 📍 town tag is far too coarse
+			// to nominate a shopkeeper (it outlined random passers-by at
+			// the town center).
+			shopAnchor = placeManager.firstPlaceIn(current.sub.getPlainText());
 		}
 
 		// NPC targets: outline scene NPCs whose name the current sub-step
@@ -1365,13 +1368,21 @@ public class IronscapePlugin extends Plugin
 					}
 				}
 			}
-			if (nearestToMarker != null)
+			// A name the step TEXT matched wins outright: "buy 2 teleport
+			// cards from Diango" must outline only Diango — the nearest-NPC
+			// fallback exists for steps that DON'T name their NPC, and with
+			// NPCs wandering it happily picked a villager standing closer
+			// to the anchor than the actual seller.
+			if (npcNames.isEmpty())
 			{
-				npcNames.add(nearestToMarker);
-			}
-			if (nearestToSpot != null)
-			{
-				npcNames.add(nearestToSpot);
+				if (nearestToMarker != null)
+				{
+					npcNames.add(nearestToMarker);
+				}
+				if (nearestToSpot != null)
+				{
+					npcNames.add(nearestToSpot);
+				}
 			}
 		}
 		npcTargetNames = npcNames;
@@ -1386,7 +1397,7 @@ public class IronscapePlugin extends Plugin
 			{
 				for (GoalDetector.ItemGoal goal : wanted)
 				{
-					boolean gather = goal.getQuantity() > GoalDetector.CARRYABLE_LIMIT;
+					boolean gather = itemTracker.bankCountable(goal.getItemName(), goal.getQuantity());
 					int count = gather
 						? itemTracker.countOf(goal.getItemName())
 						: itemTracker.carriedCountOf(goal.getItemName());
@@ -1456,9 +1467,9 @@ public class IronscapePlugin extends Plugin
 					{
 						int carried = itemTracker.carriedCountOf(goal.getItemName());
 						int have = itemTracker.countOf(goal.getItemName());
-						// gather goals (>28) are green on TOTAL, like the panel
+						// unstackable gathers are green on TOTAL, like the panel
 						boolean enough = carried >= goal.getQuantity()
-							|| (goal.getQuantity() > GoalDetector.CARRYABLE_LIMIT
+							|| (itemTracker.bankCountable(goal.getItemName(), goal.getQuantity())
 								&& have >= goal.getQuantity());
 						if (enough)
 						{
@@ -1806,7 +1817,7 @@ public class IronscapePlugin extends Plugin
 				// gather goals bigger than an inventory ("pick up 130
 				// planks"): those count the bank too, because banking
 				// batches is how the gather happens.
-				boolean gather = goal.getQuantity() > GoalDetector.CARRYABLE_LIMIT;
+				boolean gather = itemTracker.bankCountable(goal.getItemName(), goal.getQuantity());
 				int count = gather
 					? itemTracker.countOf(goal.getItemName())
 					: itemTracker.carriedCountOf(goal.getItemName());
@@ -1914,7 +1925,7 @@ public class IronscapePlugin extends Plugin
 		for (StepAnnotation.ItemNeed need : annotationManager.getItems(annotationId))
 		{
 			int required = need.quantity == null ? 1 : need.quantity;
-			int count = required > GoalDetector.CARRYABLE_LIMIT
+			int count = itemTracker.bankCountable(need.name, required)
 				? itemTracker.countOf(need.name)
 				: itemTracker.carriedCountOf(need.name);
 			if (count < required)

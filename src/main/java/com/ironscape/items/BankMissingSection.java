@@ -65,6 +65,9 @@ public class BankMissingSection
 	private final List<Widget> textPool = new ArrayList<>();
 	private final List<Widget> iconPool = new ArrayList<>();
 
+	/** Real bank widgets we moved/restyled last pass, to restore on the next. */
+	private final java.util.Set<Widget> movedWidgets = new java.util.HashSet<>();
+
 	private final net.runelite.client.game.ItemManager itemManager;
 
 	@Inject
@@ -91,6 +94,14 @@ public class BankMissingSection
 		{
 			widget.setHidden(true);
 		}
+		// Undo last pass's cosmetic change to the REAL widgets we moved, in
+		// case the native build doesn't reset it — a coin stack with no
+		// number in the normal bank view would look like a bug.
+		for (Widget widget : movedWidgets)
+		{
+			widget.setItemQuantityMode(1);
+		}
+		movedWidgets.clear();
 		if (!show || sections.isEmpty())
 		{
 			return;
@@ -101,16 +112,21 @@ public class BankMissingSection
 			return;
 		}
 
-		// Index the REAL bank item widgets by canonical item id — including
+		// Index the REAL bank item widgets by their item NAME — including
 		// currently hidden ones (items on other tabs). Owned items are laid
 		// out by MOVING these into our sections, so their withdraw menu
 		// keeps working; only items you don't have are drawn as ghosts.
-		Map<Integer, Widget> nativeById = new LinkedHashMap<>();
+		// Name (not icon id) is the join key because the guide's names run
+		// through the alias chain — "gp" must find the "Coins" stack, whose
+		// id never matches the coin ICON id.
+		Map<String, Widget> nativeByName = new LinkedHashMap<>();
 		for (Widget child : container.getDynamicChildren())
 		{
 			if (child.getItemId() > 0 && child.getItemQuantity() > 0)
 			{
-				nativeById.putIfAbsent(itemManager.canonicalize(child.getItemId()), child);
+				String name = itemManager.getItemComposition(itemManager.canonicalize(child.getItemId()))
+					.getName().toLowerCase(java.util.Locale.ROOT);
+				nativeByName.putIfAbsent(name, child);
 			}
 		}
 		java.util.Set<Widget> kept = new java.util.HashSet<>();
@@ -148,7 +164,14 @@ public class BankMissingSection
 					continue; // untradeable/unknown name: no icon to show
 				}
 				int need = entry.getValue();
-				int have = itemTracker.countOf(entry.getKey());
+				// Carried count for anything you're meant to WITHDRAW — the
+				// line goes green as items land in your inventory and red
+				// again if you bank them back. Unstackable gathers (130
+				// planks) still count the bank; holding them all at once
+				// was never the goal.
+				int have = itemTracker.bankCountable(entry.getKey(), need)
+					? itemTracker.countOf(entry.getKey())
+					: itemTracker.carriedCountOf(entry.getKey());
 				boolean met = have >= need;
 				int x = FIRST_COLUMN_X + column * COLUMN_SPACING;
 
@@ -156,12 +179,27 @@ public class BankMissingSection
 				// (Withdraw-1/5/10/X/All), even for items from other tabs.
 				// A section further down needing the same item falls back
 				// to a ghost copy; the real one can only sit in one place.
-				Widget banked = nativeById.get(itemManager.canonicalize(itemId));
+				Widget banked = null;
+				for (String alias : ItemTracker.aliases(entry.getKey()))
+				{
+					banked = nativeByName.get(alias);
+					if (banked != null)
+					{
+						break;
+					}
+				}
 				if (banked != null && !kept.contains(banked))
 				{
 					kept.add(banked);
+					movedWidgets.add(banked);
 					banked.setOriginalX(x);
 					banked.setOriginalY(y);
+					// The native stack number draws over the icon's top —
+					// cramped next to our have/need line, so hide it (the
+					// line already shows how many you own). Display only;
+					// the withdraw menu is untouched. The next bank build
+					// resets the mode, and so does this pass.
+					banked.setItemQuantityMode(0);
 					banked.setHidden(false);
 					banked.revalidate();
 				}
