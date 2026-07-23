@@ -50,6 +50,7 @@ public class BankMissingSection
 	private static final int HEADER_COLOR = 0xff981f; // RuneScape orange
 
 	private final Client client;
+	private final net.runelite.client.callback.ClientThread clientThread;
 	private final ItemTracker itemTracker;
 
 	/**
@@ -62,9 +63,11 @@ public class BankMissingSection
 	private final List<Widget> iconPool = new ArrayList<>();
 
 	@Inject
-	public BankMissingSection(Client client, ItemTracker itemTracker)
+	public BankMissingSection(Client client,
+		net.runelite.client.callback.ClientThread clientThread, ItemTracker itemTracker)
 	{
 		this.client = client;
+		this.clientThread = clientThread;
 		this.itemTracker = itemTracker;
 	}
 
@@ -158,14 +161,29 @@ public class BankMissingSection
 			y += 6; // breathing room between sections
 		}
 
-		// Grow the scroll area so the sections are reachable.
+		// Grow the scroll area so the sections are reachable. DEFERRED:
+		// update() runs from onScriptPostFired — still inside the bank
+		// build script's interpreter — and calling client.runScript from
+		// there re-enters the script engine and hard-freezes the client
+		// (both observed freezes: the filter button, and typing "bruh" in
+		// the search; plain searches were safe only because this block
+		// never ran with no ghost sections). One tick later the stack is
+		// clean.
 		if (container.getScrollHeight() < y + 8)
 		{
-			container.setScrollHeight(y + 8);
-			client.runScript(ScriptID.UPDATE_SCROLLBAR,
-				InterfaceID.Bankmain.SCROLLBAR, InterfaceID.Bankmain.ITEMS,
-				container.getScrollY());
-			container.revalidateScroll();
+			int newScrollHeight = y + 8;
+			clientThread.invokeLater(() -> {
+				Widget items = client.getWidget(InterfaceID.Bankmain.ITEMS);
+				if (items == null || items.getScrollHeight() >= newScrollHeight)
+				{
+					return; // bank closed or rebuilt taller in the meantime
+				}
+				items.setScrollHeight(newScrollHeight);
+				client.runScript(ScriptID.UPDATE_SCROLLBAR,
+					InterfaceID.Bankmain.SCROLLBAR, InterfaceID.Bankmain.ITEMS,
+					items.getScrollY());
+				items.revalidateScroll();
+			});
 		}
 	}
 
