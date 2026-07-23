@@ -241,9 +241,10 @@ class StepRow extends JPanel
 
 		// green: carrying enough | orange: enough, but some is banked
 		// | red: not enough anywhere | grey: the step is already done,
-		// so the count is history, not a warning. Gather goals bigger
-		// than an inventory (130 planks) are green on TOTAL — carrying
-		// them all unnoted is impossible.
+		// so the count is history, not a warning. UNSTACKABLE gathers
+		// bigger than an inventory (130 planks) are green on TOTAL —
+		// carrying them all unnoted is impossible. Stackables (1000 arrow
+		// shafts) fit in one slot, so they count carried like anything else.
 		String color;
 		String note = "";
 		if (done)
@@ -251,7 +252,7 @@ class StepRow extends JPanel
 			color = "#808080";
 		}
 		else if (carried >= required
-			|| (required > GoalDetector.CARRYABLE_LIMIT && have >= required))
+			|| (ctx.getItems().bankCountable(need.name, required) && have >= required))
 		{
 			color = SATISFIED_HEX;
 		}
