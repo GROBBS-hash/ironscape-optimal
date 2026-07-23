@@ -121,8 +121,10 @@ public final class GoalDetector
 		// "take OUT gp" is a phrasal verb, not an item called "out gp";
 		// "buy a drink from Blurberry" hands you no countable item at all;
 		// "make SURE you..." is not crafting an item called "sure";
-		// "get AT LEAST 22 fletching" is not an item called "at least"
-		"energy", "out", "drink", "drinks", "sure", "at", "least");
+		// "get AT LEAST 22 fletching" is not an item called "at least";
+		// "the xp you get IN THESE skills" is not an item either
+		// ("these" is already rejected above)
+		"energy", "out", "drink", "drinks", "sure", "at", "least", "in");
 
 	/**
 	 * Fragments starting with these are actions/prose, never list items —
@@ -242,6 +244,19 @@ public final class GoalDetector
 		int count;
 	}
 
+	/**
+	 * "make bookcases UNTIL OUT OF planks" — done when the named item is
+	 * GONE from the inventory. Armed only after the player is seen holding
+	 * some (else an empty inventory ticks it on arrival).
+	 */
+	@Value
+	public static class DepletionGoal
+	{
+		GuideStep step;
+		SubStep sub;
+		String itemName;
+	}
+
 	@Value
 	public static class Goals
 	{
@@ -253,7 +268,12 @@ public final class GoalDetector
 		List<CountedSkillGoal> countedSkillGoals;
 		List<MinigameTeleportGoal> minigameTeleportGoals;
 		List<SkillLevelGoal> skillLevelGoals;
+		List<DepletionGoal> depletionGoals;
 	}
+
+	/** "until (you're) out of planks" — completion = the item running out. */
+	private static final Pattern UNTIL_OUT_OF = Pattern.compile(
+		"\\buntil (?:you(?:'re| are)? )?out of ([a-z][a-z' -]+)", Pattern.CASE_INSENSITIVE);
 
 	/** "Minigame teleport to Soul Wars" / Oziris's "Minigame tele to Clan wars"
 	 *  — the name feeds the Grouping-UI overlay. */
@@ -320,6 +340,7 @@ public final class GoalDetector
 		List<CountedSkillGoal> countedGoals = new ArrayList<>();
 		List<MinigameTeleportGoal> minigameGoals = new ArrayList<>();
 		List<SkillLevelGoal> levelGoals = new ArrayList<>();
+		List<DepletionGoal> depletionGoals = new ArrayList<>();
 
 		for (GuideStep step : guide.getAllSteps())
 		{
@@ -367,6 +388,19 @@ public final class GoalDetector
 					travelGoals.add(new TravelGoal(step, sub));
 				}
 
+				// "make bookcases until out of planks" — done when the item
+				// runs out, regardless of any level reached on the way.
+				Matcher depletion = UNTIL_OUT_OF.matcher(sub.getPlainText());
+				if (depletion.find())
+				{
+					String depleted = NAME_TERMINATOR.matcher(depletion.group(1))
+						.replaceFirst("").trim().toLowerCase(Locale.ROOT);
+					if (depleted.length() >= 3)
+					{
+						depletionGoals.add(new DepletionGoal(step, sub, depleted));
+					}
+				}
+
 				// "Minigame teleport to X" — remember which minigame, so the
 				// overlay can point at the Grouping UI while this sub is next.
 				Matcher minigame = MINIGAME_TELEPORT.matcher(sub.getPlainText());
@@ -410,7 +444,7 @@ public final class GoalDetector
 			}
 		}
 		return new Goals(itemGoals, questGoals, actionGoals, travelGoals, interactionGoals,
-			countedGoals, minigameGoals, levelGoals);
+			countedGoals, minigameGoals, levelGoals, depletionGoals);
 	}
 
 	private static void addMetadataQuestGoal(GuideStep step, List<QuestGoal> out)
