@@ -1,6 +1,13 @@
 {
   "version": 1,
   "annotations": {
+    "62593ad63e:0": {
+      "target": {
+        "x": 2469,
+        "y": 3488,
+        "plane": 2
+      }
+    },
     "55333783ab:0": {
       "requires": {
         "varp": 0,

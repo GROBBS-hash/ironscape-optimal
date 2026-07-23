@@ -1264,8 +1264,16 @@ public class BruhsailerPlugin extends Plugin
 						boolean enough = carried >= goal.getQuantity()
 							|| (goal.getQuantity() > GoalDetector.CARRYABLE_LIMIT
 								&& have >= goal.getQuantity());
-						java.awt.Color color = enough ? OVERLAY_GREEN
-							: have >= goal.getQuantity() ? OVERLAY_ORANGE : OVERLAY_RED;
+						if (enough)
+						{
+							// Owner request: satisfied items drop OFF the
+							// overlay ("bought the pineapple, stop showing
+							// it") — what's left is the live shopping list.
+							// The panel badges still show everything.
+							continue;
+						}
+						java.awt.Color color =
+							have >= goal.getQuantity() ? OVERLAY_ORANGE : OVERLAY_RED;
 						reqs.add(new com.bruhsailer.overlay.StepOverlay.Requirement(
 							goal.getItemName(), have + "/" + goal.getQuantity(), color));
 					}
