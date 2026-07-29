@@ -362,12 +362,6 @@ public class IronscapePlugin extends Plugin
 	 */
 	private final Map<Skill, Integer> realLevelBySkill = new java.util.concurrent.ConcurrentHashMap<>();
 
-	/** World the user asked to hop to (clicked "world 444"); consumed on game ticks. */
-	private net.runelite.api.World pendingHopWorld;
-
-	/** Ticks spent waiting for the world switcher to open before giving up. */
-	private int hopAttempts;
-
 	/**
 	 * The minigame the CURRENT sub-step wants to teleport to, or null.
 	 * Written on the game thread each tick, read by the overlay at render
@@ -800,7 +794,6 @@ public class IronscapePlugin extends Plugin
 		homeTeleportHint = false;
 		levelGoalsBySub.clear();
 		realLevelBySkill.clear();
-		pendingHopWorld = null;
 		clientToolbar.removeNavigation(navButton);
 		navButton = null;
 		panel = null;
@@ -1274,26 +1267,6 @@ public class IronscapePlugin extends Plugin
 			{
 				lastQuestOwnsGuidance = questOwns;
 				maybeNavigateToNext();
-			}
-		}
-
-		// A "world 444" link was clicked: in game, hopToWorld only works
-		// while the world switcher panel is open (same dance as RuneLite's
-		// own world hopper) — open it, then hop once its list exists.
-		if (pendingHopWorld != null)
-		{
-			if (client.getWidget(net.runelite.api.gameval.InterfaceID.Worldswitcher.LIST) == null)
-			{
-				client.openWorldHopper();
-				if (++hopAttempts > 10)
-				{
-					pendingHopWorld = null; // switcher never opened; give up quietly
-				}
-			}
-			else
-			{
-				client.hopToWorld(pendingHopWorld);
-				pendingHopWorld = null;
 			}
 		}
 
@@ -2629,14 +2602,11 @@ public class IronscapePlugin extends Plugin
 					client.addChatMessage(ChatMessageType.CONSOLE, "",
 						"IRONSCAPE: " + quest.getName() + " is already finished.", null);
 				}
-				else if (tryQuestHelperSelect(quest.getName()))
-				{
-					client.addChatMessage(ChatMessageType.CONSOLE, "",
-						"IRONSCAPE: " + quest.getName()
-							+ " is in progress — opened it in Quest Helper.", null);
-				}
 				else
 				{
+					// No programmatic Quest Helper handoff: QH exposes no
+					// public API, and the Plugin Hub forbids reflection —
+					// pointing the player at it is the compliant version.
 					client.addChatMessage(ChatMessageType.CONSOLE, "",
 						"IRONSCAPE: " + quest.getName()
 							+ " is in progress — its start point isn't where you need to go. "
@@ -2695,43 +2665,6 @@ public class IronscapePlugin extends Plugin
 			eventBus.post(new PluginMessage("shortestpath", "clear")));
 	}
 
-	/**
-	 * Best-effort handoff to the Quest Helper plugin: select the quest in
-	 * its panel so its step-by-step overlays activate. QH exposes no
-	 * public API, so this reaches its QuestMenuHandler#startUpQuest(String)
-	 * — a public method on a private field — via reflection on the live
-	 * plugin instance (works across plugin classloaders). Any version
-	 * drift or missing plugin just returns false and the caller falls
-	 * back to a chat message. Client thread.
-	 */
-	private boolean tryQuestHelperSelect(String questName)
-	{
-		try
-		{
-			for (net.runelite.client.plugins.Plugin plugin : pluginManager.getPlugins())
-			{
-				if (!"Quest Helper".equals(plugin.getName()))
-				{
-					continue;
-				}
-				if (!pluginManager.isPluginEnabled(plugin))
-				{
-					return false;
-				}
-				java.lang.reflect.Field field = plugin.getClass().getDeclaredField("questMenuHandler");
-				field.setAccessible(true);
-				Object handler = field.get(plugin);
-				handler.getClass().getMethod("startUpQuest", String.class).invoke(handler, questName);
-				return true;
-			}
-		}
-		catch (Throwable t)
-		{
-			log.debug("Quest Helper handoff failed (its internals may have changed)", t);
-		}
-		return false;
-	}
-
 	/** The guide's minigame-teleport name matching this place name, or null. */
 	private String minigameByName(String placeName)
 	{
@@ -2746,9 +2679,11 @@ public class IronscapePlugin extends Plugin
 	}
 
 	/**
-	 * A "world 444" link in the guide text was clicked. Look the world up
-	 * in RuneLite's world list and switch to it — directly on the login
-	 * screen, via the world switcher when logged in (see onGameTick).
+	 * A "world 444" link in the guide text was clicked. On the login
+	 * screen this switches the world directly (like the Default World
+	 * plugin). In game, automated hopping (client.hopToWorld) is not
+	 * permitted on the Plugin Hub — we open the world switcher and let
+	 * the player click the world themselves.
 	 */
 	private void hopToWorld(int worldNumber)
 	{
@@ -2771,23 +2706,24 @@ public class IronscapePlugin extends Plugin
 				return; // already there
 			}
 
-			// The api World is a client-side struct we fill from the
-			// downloaded world list entry.
-			net.runelite.api.World rsWorld = client.createWorld();
-			rsWorld.setActivity(world.getActivity());
-			rsWorld.setAddress(world.getAddress());
-			rsWorld.setId(world.getId());
-			rsWorld.setPlayerCount(world.getPlayers());
-			rsWorld.setLocation(world.getLocation());
-			rsWorld.setTypes(net.runelite.client.util.WorldUtil.toWorldTypes(world.getTypes()));
-
 			if (client.getGameState() == GameState.LOGIN_SCREEN)
 			{
+				// The api World is a client-side struct we fill from the
+				// downloaded world list entry.
+				net.runelite.api.World rsWorld = client.createWorld();
+				rsWorld.setActivity(world.getActivity());
+				rsWorld.setAddress(world.getAddress());
+				rsWorld.setId(world.getId());
+				rsWorld.setPlayerCount(world.getPlayers());
+				rsWorld.setLocation(world.getLocation());
+				rsWorld.setTypes(net.runelite.client.util.WorldUtil.toWorldTypes(world.getTypes()));
 				client.changeWorld(rsWorld);
 				return;
 			}
-			pendingHopWorld = rsWorld;
-			hopAttempts = 0;
+
+			client.openWorldHopper();
+			client.addChatMessage(ChatMessageType.CONSOLE, "",
+				"IRONSCAPE: pick world " + worldNumber + " in the world switcher.", null);
 		});
 	}
 

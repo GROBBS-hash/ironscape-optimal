@@ -169,8 +169,8 @@ All six build-order steps are DONE, plus substantial extras. Current state:
   (HierarchyListener — RuneLite never calls Activatable.onActivate for
   plain PluginPanels, only via MultiplexingPluginPanel).
 - **World links:** "world 444" in step text is clickable -> hops there
-  (WorldService lookup; changeWorld on login screen, openWorldHopper +
-  hopToWorld dance in game, see onGameTick).
+  (WorldService lookup; changeWorld on login screen; in game
+  it opens the world switcher (hub forbids client.hopToWorld)).
 - **In-game test session findings (2026-07-22):** frontier = first
   incomplete step AFTER the last completed one, and panel scroll lands
   top-aligned on the first unticked SUB (giant steps are taller than the
@@ -184,8 +184,8 @@ All six build-order steps are DONE, plus substantial extras. Current state:
   QuestStartMarkerOverlay (blue quest icon at start point until quest
   begins), NpcTargetOverlay (outlines scene NPCs named in the current
   sub; icon when quest sub), StepOverlay shows ONE current action + its
-  counts + dimmed "then:" previews. Quest Helper handoff via reflection
-  (QuestMenuHandler#startUpQuest, falls back to chat message).
+  counts + dimmed "then:" previews. Quest Helper handoff REMOVED (hub forbids reflection) — chat message
+  points at QH instead.
 - **Items:** ItemTracker counts inventory+worn live + bank (live container
   when cached, else persisted snapshot per account); badges show have/need
   with green/orange "(in bank)"/red; alias chain handles plurals,
