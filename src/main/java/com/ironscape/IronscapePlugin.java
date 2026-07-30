@@ -1628,7 +1628,9 @@ public class IronscapePlugin extends Plugin
 
 	private static String truncate(String text, int maxLength)
 	{
-		return text.length() <= maxLength ? text : text.substring(0, maxLength - 1) + "…";
+		// ASCII dots, not "…": the in-game font has no ellipsis glyph and
+		// renders it as a broken rune (owner spotted it on bank headers).
+		return text.length() <= maxLength ? text : text.substring(0, maxLength - 3) + "...";
 	}
 
 	/**
