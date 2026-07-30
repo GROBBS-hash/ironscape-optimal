@@ -1693,7 +1693,7 @@ public class IronscapePlugin extends Plugin
 				included++;
 				com.ironscape.items.BankMissingSection.Section section =
 					new com.ironscape.items.BankMissingSection.Section(
-						truncate(step.getPlainText().trim(), 48));
+						truncate(step.getPlainText().trim(), 200));
 				for (StepAnnotation.ItemNeed need : annotationManager.getItems(step.getId()))
 				{
 					String name = need.name.toLowerCase(Locale.ROOT);

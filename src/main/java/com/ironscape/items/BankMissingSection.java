@@ -141,18 +141,24 @@ public class BankMissingSection
 			{
 				continue;
 			}
-			Widget header = reuse(container, textPool, textsUsed++, WidgetType.TEXT);
-			header.setText(section.title);
-			header.setTextColor(HEADER_COLOR);
-			header.setFontId(FontID.PLAIN_11);
-			header.setTextShadowed(true);
-			header.setOriginalX(FIRST_COLUMN_X);
-			header.setOriginalY(y);
-			header.setOriginalWidth(380);
-			header.setOriginalHeight(14);
-			header.setHidden(false);
-			header.revalidate();
-			y += 17;
+			// Full step text, word-wrapped — a cut-off "Buy 3 buckets and 1
+			// bucket pack from the gene..." leaves the player guessing.
+			for (String line : wrapTitle(section.title))
+			{
+				Widget header = reuse(container, textPool, textsUsed++, WidgetType.TEXT);
+				header.setText(line);
+				header.setTextColor(HEADER_COLOR);
+				header.setFontId(FontID.PLAIN_11);
+				header.setTextShadowed(true);
+				header.setOriginalX(FIRST_COLUMN_X);
+				header.setOriginalY(y);
+				header.setOriginalWidth(380);
+				header.setOriginalHeight(14);
+				header.setHidden(false);
+				header.revalidate();
+				y += 15;
+			}
+			y += 2;
 
 			int column = 0;
 			boolean anyIcon = false;
@@ -285,6 +291,38 @@ public class BankMissingSection
 				items.revalidateScroll();
 			});
 		}
+	}
+
+	/** Chars per header line at PLAIN_11 across the item area's width. */
+	private static final int HEADER_WRAP_CHARS = 52;
+	private static final int HEADER_MAX_LINES = 3;
+
+	/** Greedy word-wrap; the (rare) overflow past 3 lines gets "...". */
+	private static java.util.List<String> wrapTitle(String title)
+	{
+		java.util.List<String> lines = new ArrayList<>();
+		String rest = title.trim();
+		while (!rest.isEmpty() && lines.size() < HEADER_MAX_LINES)
+		{
+			if (rest.length() <= HEADER_WRAP_CHARS)
+			{
+				lines.add(rest);
+				return lines;
+			}
+			int cut = rest.lastIndexOf(' ', HEADER_WRAP_CHARS);
+			if (cut <= 0)
+			{
+				cut = HEADER_WRAP_CHARS; // one giant word; hard-split it
+			}
+			if (lines.size() == HEADER_MAX_LINES - 1)
+			{
+				lines.add(rest.substring(0, Math.min(rest.length(), HEADER_WRAP_CHARS - 3)) + "...");
+				return lines;
+			}
+			lines.add(rest.substring(0, cut).trim());
+			rest = rest.substring(cut).trim();
+		}
+		return lines;
 	}
 
 	/** 25321 -> "25.3k": the counts must fit under a 36px icon. */
