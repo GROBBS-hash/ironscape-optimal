@@ -30,12 +30,14 @@ when the travel completes. Steps auto-complete off skill levels, quest
 state, item counts, teleports, arrivals and mid-quest checkpoints — the
 checkbox is always there when detection can't know.
 
-Also in the plugin (screenshots coming): a Quest Helper-style **bank
-view** that groups every upcoming step's items into sections with
-green/red have/need counts (the real, withdrawable bank widgets);
-**shopkeeper outlines** with the item you're buying floating overhead;
-teleport click-path highlights; and a quest handoff that stands our
-navigation down while Quest Helper guides an in-progress quest.
+![The bank filter: every upcoming step as a shopping-list section](docs/bank-filter.png)
+
+The Quest Helper-style **bank view**: every upcoming step becomes its
+own section with green/red have/need counts — and owned items are the
+real, withdrawable bank widgets. Also in the plugin: **shopkeeper
+outlines** with the item you're buying floating overhead, teleport
+click-path highlights, and a quest handoff that stands our navigation
+down while Quest Helper guides an in-progress quest.
 
 ## Credits
 

@@ -99,13 +99,21 @@ With Shortest Path installed, the plugin drives it for you:
 
 ## The bank filter
 
+<img src="bank-filter.png" width="420" align="right">
+
 Click the **IRONSCAPE button inside the bank** (or type `bruh` in the
 bank search). The bank redraws as your shopping list: every upcoming
 step becomes its own section — the step's text as a header, all of its
 items below with green/red `have/need` counts. Items you own are the
 **real bank widgets**, so you withdraw straight from the filtered view
 (even items from other tabs); items you still need to buy or gather
-show as ghosts. Click any real tab to go back to your normal bank.
+show as ghosts. In the shot: the axe is already in hand (green), the
+other tools are still banked (red — withdraw them), and the gold
+tracks the step's 200k target. Click any real tab to go back to your
+normal bank.
+
+<br clear="right">
+
 
 ## When detection is wrong
 
