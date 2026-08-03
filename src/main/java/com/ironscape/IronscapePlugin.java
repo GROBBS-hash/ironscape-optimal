@@ -506,6 +506,13 @@ public class IronscapePlugin extends Plugin
 		"\\b(?:go|walk|run|head|return|travel|enter|exit|climb|cross|move|proceed|sail|ride|fly|swim|tele|teleport)\\b",
 		java.util.regex.Pattern.CASE_INSENSITIVE);
 
+	/**
+	 * Frontier step id whose manual ⌖ capture is holding auto-navigation:
+	 * while the frontier stays on this step, the captured route is not
+	 * recomputed away. Null = no hold.
+	 */
+	private volatile String navHoldStepId;
+
 	/** Text-detected "get N items" / "start quest X" goals (see GoalDetector). */
 	private GoalDetector.Goals goals;
 
@@ -1986,7 +1993,10 @@ public class IronscapePlugin extends Plugin
 				// sub became current; only gaining one after that counts.
 				// This runs BEFORE the quantity check so the baseline is
 				// captured while you still have too few.
-				if (goal.isAcquisition())
+				// Small quantities only: nobody carries 4000 mind runes by
+				// accident, and the session-only baseline left bulk buys
+				// stuck green-but-unticked after a client restart.
+				if (goal.isAcquisition() && goal.getQuantity() < 3)
 				{
 					String key = sub.getId() + "|" + goal.getItemName();
 					Integer baseline = acquisitionBaseline.get(key);
@@ -2443,6 +2453,12 @@ public class IronscapePlugin extends Plugin
 
 			WorldPoint where = player.getWorldLocation();
 			annotationManager.setTarget(annotationId, where);
+			// A manual capture also OVERRIDES auto-navigation: the player
+			// is doing this step HERE, so route to the captured spot and
+			// hold until the frontier moves on (owner request).
+			Current current = findCurrent();
+			navHoldStepId = current == null ? null : current.step.getId();
+			navigateTo(where);
 			// Confirm in the chatbox so you don't have to look at the panel.
 			client.addChatMessage(ChatMessageType.CONSOLE, "",
 				"IRONSCAPE: location (" + where.getX() + ", " + where.getY()
@@ -2472,6 +2488,17 @@ public class IronscapePlugin extends Plugin
 			return;
 		}
 		clientThread.invokeLater(() -> {
+			// A manual ⌖ capture pinned the route to where the player is
+			// working — leave it alone until the frontier step changes.
+			if (navHoldStepId != null)
+			{
+				Current heldCurrent = findCurrent();
+				if (heldCurrent != null && navHoldStepId.equals(heldCurrent.step.getId()))
+				{
+					return;
+				}
+				navHoldStepId = null;
+			}
 			// Quest in progress = Quest Helper's show. Two guidance systems
 			// pointing different ways is worse than one: clear our route
 			// and stand down until the quest completes and the step ticks

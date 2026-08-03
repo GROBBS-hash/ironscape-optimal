@@ -598,6 +598,11 @@ public final class GoalDetector
 		"\\bfill\\s+(?:a|an|the)?\\s*(\\d+)?\\s*(buckets?|jugs?|vials?|bowls?|cups?|waterskins?)\\s+with\\s+([a-z]+)",
 		Pattern.CASE_INSENSITIVE);
 
+	/** "Fill 1 inventory of buckets with water" — 28 slots' worth. */
+	private static final Pattern INVENTORY_FILL = Pattern.compile(
+		"\\bfill\\s+(?:a|an|1|one)?\\s*(?:inv|inventory)\\s+of\\s+(buckets?|jugs?|vials?|bowls?|cups?)\\s+with\\s+([a-z]+)",
+		Pattern.CASE_INSENSITIVE);
+
 	/**
 	 * Returns the acquisition flag a bare continuation of this step's item
 	 * list should inherit: a sub with its own verb (re)defines the list
@@ -628,6 +633,15 @@ public final class GoalDetector
 				addIfValid(out, step, sub, kill.group(1) == null ? "1" : kill.group(1),
 					meat, seen, false);
 			}
+			return false;
+		}
+
+		Matcher invFill = INVENTORY_FILL.matcher(text);
+		if (invFill.find())
+		{
+			addIfValid(out, step, sub, "28",
+				invFill.group(1).toLowerCase(Locale.ROOT) + " of "
+					+ invFill.group(2).toLowerCase(Locale.ROOT), seen, false);
 			return false;
 		}
 
@@ -813,7 +827,7 @@ public final class GoalDetector
 		// straight apostrophes: the guide writes "Witch’s Potion" (curly),
 		// the Quest enum says "Witch's Potion"
 		String text = sub.getPlainText().toLowerCase(Locale.ROOT).replace('’', '\'');
-		if (!text.contains("start") && !text.contains("begin")
+		if (!text.contains("start") && !text.contains("begin") && !text.contains("continue")
 			&& !text.contains("complete") && !text.contains("finish") && !text.contains("do "))
 		{
 			return; // cheap pre-filter before the quest-name scan

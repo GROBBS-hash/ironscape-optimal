@@ -83,15 +83,32 @@ public class ItemTracker
 	 * upgraded. One-directional: the torch satisfies tinderbox needs,
 	 * never the other way around.
 	 */
-	private static final Map<String, String[]> SUBSTITUTES = Map.of(
-		"tinderbox", new String[]{"bruma torch"},
-		"hammer", new String[]{"imcando hammer"},
+	/** Every metal tier of a tool: bare "pickaxe" means ANY pickaxe. */
+	private static String[] tiers(String tool)
+	{
+		String[] metals = {"bronze", "iron", "steel", "black", "mithril", "adamant", "rune", "dragon"};
+		String[] out = new String[metals.length];
+		for (int i = 0; i < metals.length; i++)
+		{
+			out[i] = metals[i] + " " + tool;
+		}
+		return out;
+	}
+
+	private static final Map<String, String[]> SUBSTITUTES = Map.ofEntries(
+		Map.entry("tinderbox", new String[]{"bruma torch"}),
+		Map.entry("hammer", new String[]{"imcando hammer"}),
 		// Bare "gloves"/"boots" in the guide mean the basic leather ones
 		// the clothes shops sell.
-		"glove", new String[]{"leather gloves"},
-		"gloves", new String[]{"leather gloves"},
-		"boot", new String[]{"leather boots"},
-		"boots", new String[]{"leather boots"});
+		Map.entry("glove", new String[]{"leather gloves"}),
+		Map.entry("gloves", new String[]{"leather gloves"}),
+		Map.entry("boot", new String[]{"leather boots"}),
+		Map.entry("boots", new String[]{"leather boots"}),
+		// An unqualified tool means any tier you own ("take out pickaxe").
+		Map.entry("pickaxe", tiers("pickaxe")),
+		Map.entry("pickaxes", tiers("pickaxe")),
+		Map.entry("axe", tiers("axe")),
+		Map.entry("axes", tiers("axe")));
 
 	private static int resolve(Map<String, Integer> counts, String name)
 	{
@@ -153,7 +170,10 @@ public class ItemTracker
 		Map.entry("yanille tab", "yanille teleport"),
 		Map.entry("trollheim tab", "trollheim teleport"),
 		Map.entry("prifddinas tab", "prifddinas teleport"),
-		Map.entry("catherby tab", "catherby teleport"));
+		Map.entry("catherby tab", "catherby teleport"),
+		// The sawmill's "regular plank" is the item just called "Plank".
+		Map.entry("regular plank", "plank"),
+		Map.entry("regular planks", "plank"));
 
 	/**
 	 * The in-game item names a guide phrase might refer to, most literal
