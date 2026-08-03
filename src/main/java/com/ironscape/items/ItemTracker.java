@@ -531,7 +531,10 @@ public class ItemTracker
 				return true;
 			}
 		}
-		if (quantity <= com.ironscape.goals.GoalDetector.CARRYABLE_LIMIT)
+		// A FULL inventory's worth ("buy 1 inv of bronze bars" = 28) is
+		// bought to be banked — count the bank for it, like over-inventory
+		// gathers. Below that, carried-only rules apply.
+		if (quantity < com.ironscape.goals.GoalDetector.CARRYABLE_LIMIT)
 		{
 			return false;
 		}

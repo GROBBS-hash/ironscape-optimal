@@ -52,7 +52,8 @@ const SPECIAL = new Set(['gloves', 'glove', 'boots', 'boot', 'pickaxe', 'pickaxe
   'ugthanki dung', 'guthix rest', 'pigeon cage', 'karamjan rum', 'picture',
   "captain's log", 'fishbowl', 'cat', 'ogre bellows', 'ogre bow',
   "m'speak amulet", 'gorilla greegree', 'strip of cloth', 'silverlight',
-  'strange implement', 'black dye', 'phoenix crossbow', 'torch', 'flowers']);
+  'strange implement', 'black dye', 'phoenix crossbow', 'torch', 'flowers',
+  'dramen branch', 'ninja greegree', 'zombie greegree', 'priest gown bottom']);
 
 // Mirror of ItemTracker.COLLOQUIAL additions the audit must not re-flag.
 const COLLOQUIAL = {

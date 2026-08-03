@@ -48,7 +48,7 @@ console.log(`${firstStepByQuest.size} quests tagged in the guide, `
 const DROP = new Set(['magic', 'ranged', 'woodcutting', 'combat', 'combat style',
   'combat equipment', 'weapon', 'food', 'light source', 'water', 'sword', 'arrow',
   'dye', 'tai bwo wannai village', 'ancient magicks', 'blood burst', 'fire wave',
-  'tool leprechaun', 'poison (item)', 'draynor skull', 'pvm', 'stab weapon', 'slash weapon', 'bow', 'arrows', 'combat classes', 'boat', 'cannon (facility)', 'ring', 'telekinetic grab', 'ores', 'astral contact', 'snare', 'prayer points', 'mourner gear', 'crush weapon']);
+  'tool leprechaun', 'poison (item)', 'draynor skull', 'pvm', 'stab weapon', 'slash weapon', 'bow', 'arrows', 'combat classes', 'boat', 'cannon (facility)', 'ring', 'telekinetic grab', 'ores', 'astral contact', 'snare', 'prayer points', 'mourner gear', 'crush weapon', 'desert amulet 2', 'teleport tablet', 'teleport tablets', 'fairy rings', "pharaoh's sceptre", 'ice burst', 'smoke burst', 'shadow burst', 'slayer helmet']);
 
 async function fetchQuestItems(quest) {
   await sleep(REQUEST_DELAY_MS);
@@ -65,12 +65,25 @@ async function fetchQuestItems(quest) {
     if (!entry.startsWith('*') || /^\*\s*none/i.test(entry)) continue;
     if (entry.startsWith('**')) continue; // sub-notes ("**or [[X]]")
     const qty = entry.match(/^\*+\s*(\d[\d,]*)\s*(?:x\s*)?/);
-    const link = entry.match(/\[\[([^\]|#]+)/) || entry.match(/\{\{plink\|([^}|]+)/i);
-    if (!link) continue;
-    const name = link[1].trim().toLowerCase();
-    if (name.length < 3 || name.length > 40) continue;
-    if (DROP.has(name) || name === quest.toLowerCase() || name.includes('_')) continue;
-    out.push({ name, quantity: qty ? +qty[1].replace(/,/g, '') : 1 });
+    // "[[Desert shirt]], [[desert robe]] and [[desert boots]]" is THREE
+    // items — but ONLY links chained by ,/and count: prose links ("to
+    // cut through with 10 [[Fletching]]") must not ride along.
+    // Alternatives ("X or Y") keep only the first side.
+    const scope = entry.includes(' or ') ? entry.split(' or ')[0] : entry;
+    const chain = scope.match(
+      /(?:\[\[[^\]]+\]\]|\{\{plink\|[^}]+\}\})(?:\s*(?:,\s*(?:and\s+)?|and\s+|&\s*)(?:\[\[[^\]]+\]\]|\{\{plink\|[^}]+\}\}))*/i);
+    if (!chain) continue;
+    const links = [...chain[0].matchAll(/\[\[([^\]|#]+)/g),
+      ...chain[0].matchAll(/\{\{plink\|([^}|]+)/gi)];
+    let first = true;
+    for (const link of links) {
+      const name = link[1].trim().toLowerCase();
+      if (name.length < 3 || name.length > 40) continue;
+      if (DROP.has(name) || name === quest.toLowerCase() || name.includes('_')) continue;
+      // the leading quantity belongs to the FIRST item on the line only
+      out.push({ name, quantity: first && qty ? +qty[1].replace(/,/g, '') : 1 });
+      first = false;
+    }
   }
   return out.length ? out : null;
 }

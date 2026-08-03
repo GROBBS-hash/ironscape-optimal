@@ -2360,6 +2360,10 @@
     {
      "name": "lockpick",
      "quantity": 20
+    },
+    {
+     "name": "chocolate cake",
+     "quantity": 1
     }
    ]
   },
@@ -3599,6 +3603,10 @@
     {
      "name": "lyre",
      "quantity": 1
+    },
+    {
+     "name": "raw manta ray",
+     "quantity": 1
     }
    ]
   },
@@ -3626,6 +3634,14 @@
     },
     {
      "name": "shantay pass (item)",
+     "quantity": 1
+    },
+    {
+     "name": "desert robe",
+     "quantity": 1
+    },
+    {
+     "name": "desert boots",
      "quantity": 1
     }
    ]
@@ -3837,6 +3853,34 @@
     {
      "name": "air rune",
      "quantity": 1
+    },
+    {
+     "name": "charcoal",
+     "quantity": 1
+    },
+    {
+     "name": "water rune",
+     "quantity": 1
+    },
+    {
+     "name": "earth rune",
+     "quantity": 1
+    },
+    {
+     "name": "fire rune",
+     "quantity": 1
+    },
+    {
+     "name": "mind rune",
+     "quantity": 1
+    },
+    {
+     "name": "law rune",
+     "quantity": 1
+    },
+    {
+     "name": "death rune",
+     "quantity": 1
     }
    ]
   },
@@ -3881,6 +3925,10 @@
     },
     {
      "name": "gas mask",
+     "quantity": 1
+    },
+    {
+     "name": "priest gown bottom",
      "quantity": 1
     }
    ]
@@ -4041,6 +4089,10 @@
     },
     {
      "name": "nettle tea",
+     "quantity": 1
+    },
+    {
+     "name": "thread",
      "quantity": 1
     }
    ]
@@ -4354,6 +4406,18 @@
     {
      "name": "rope",
      "quantity": 1
+    },
+    {
+     "name": "dramen branch",
+     "quantity": 1
+    },
+    {
+     "name": "ninja greegree",
+     "quantity": 1
+    },
+    {
+     "name": "zombie greegree",
+     "quantity": 1
     }
    ]
   },
@@ -4437,6 +4501,10 @@
     },
     {
      "name": "redberry pie",
+     "quantity": 1
+    },
+    {
+     "name": "bar",
      "quantity": 1
     }
    ]
