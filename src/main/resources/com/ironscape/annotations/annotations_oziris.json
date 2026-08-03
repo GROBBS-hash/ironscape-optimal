@@ -1908,6 +1908,19 @@
      "quantity": 1
     }
    ]
+  },
+  "8b9242bc3c": {
+   "target": {
+    "x": 3001,
+    "y": 3144,
+    "plane": 0
+   },
+   "items": [
+    {
+     "name": "blurite sword",
+     "quantity": 1
+    }
+   ]
   }
  }
 }

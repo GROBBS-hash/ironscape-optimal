@@ -553,6 +553,12 @@ public class IronscapePlugin extends Plugin
 	 */
 	private volatile String navHoldStepId;
 
+	/**
+	 * Sub ids seen OUTSIDE their place-name arrival radius while current —
+	 * only then may arriving tick them (session-only, like baselines).
+	 */
+	private final java.util.Set<String> arrivalArmed = new java.util.HashSet<>();
+
 	/** Text-detected "get N items" / "start quest X" goals (see GoalDetector). */
 	private GoalDetector.Goals goals;
 
@@ -887,6 +893,7 @@ public class IronscapePlugin extends Plugin
 		interactionGoalSubs.clear();
 		countedGoalBySub.clear();
 		acquisitionBaseline.clear();
+		arrivalArmed.clear();
 		depletionBySub.clear();
 		depletionArmed.clear();
 		guideRemap = new HashMap<>();
@@ -929,6 +936,7 @@ public class IronscapePlugin extends Plugin
 		progressManager.invalidate();
 		// Baselines describe the OLD profile's inventory state.
 		acquisitionBaseline.clear();
+		arrivalArmed.clear();
 		depletionArmed.clear();
 		// The new profile's saved progress may still use pre-refresh step
 		// ids; apply the same remap startUp applied (no-op if none).
@@ -2226,9 +2234,22 @@ public class IronscapePlugin extends Plugin
 		WorldPoint place = travelGoalSubs.contains(sub.getId())
 			? placeManager.lastPlaceIn(sub.getPlainText())
 			: placeManager.firstPlaceIn(sub.getPlainText());
-		return place != null
-			&& here.getPlane() == place.getPlane()
+		if (place == null)
+		{
+			return false;
+		}
+		boolean within = here.getPlane() == place.getPlane()
 			&& here.distanceTo(place) <= PLACE_ARRIVE_RADIUS;
+		// ARMING: already standing at the destination when the sub became
+		// current proves nothing — "run to Thurgo for the sword, run back
+		// to Falador" ticked at the START point. Arrival only counts after
+		// the player has been seen OUTSIDE the radius while it's current.
+		if (!within)
+		{
+			arrivalArmed.add(sub.getId());
+			return false;
+		}
+		return arrivalArmed.contains(sub.getId());
 	}
 
 	/**
