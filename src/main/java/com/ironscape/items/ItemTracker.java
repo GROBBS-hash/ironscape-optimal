@@ -110,17 +110,27 @@ public class ItemTracker
 		Map.entry("axe", tiers("axe")),
 		Map.entry("axes", tiers("axe")));
 
+	/**
+	 * Bare family words: "runes" means the runes you bought, "bars" the
+	 * bars you smelted, "beads" the four imp bead colours — no single
+	 * item can match, so anything in the family counts.
+	 */
+	private static final Map<String, String> FAMILY_SUFFIX = Map.of(
+		"runes", " rune",
+		"all runes", " rune",
+		"all of your runes", " rune",
+		"bars", " bar",
+		"beads", " beads");
+
 	private static int resolve(Map<String, Integer> counts, String name)
 	{
-		// Bare "runes" in the guide means "the runes you bought earlier" —
-		// no single item can ever match, so ANY carried rune counts.
-		String bare = name.toLowerCase(Locale.ROOT).trim();
-		if (bare.equals("runes") || bare.equals("all runes") || bare.equals("all of your runes"))
+		String suffix = FAMILY_SUFFIX.get(name.toLowerCase(Locale.ROOT).trim());
+		if (suffix != null)
 		{
 			int total = 0;
 			for (Map.Entry<String, Integer> entry : counts.entrySet())
 			{
-				if (entry.getKey().endsWith(" rune"))
+				if (entry.getKey().endsWith(suffix))
 				{
 					total += entry.getValue();
 				}
@@ -188,7 +198,17 @@ public class ItemTracker
 		Map.entry("catherby tab", "catherby teleport"),
 		// The sawmill's "regular plank" is the item just called "Plank".
 		Map.entry("regular plank", "plank"),
-		Map.entry("regular planks", "plank"));
+		Map.entry("regular planks", "plank"),
+		// Guide shorthand the full-guide audit flagged (tools/audit-goals.mjs).
+		Map.entry("wine", "jug of wine"),
+		Map.entry("wines", "jug of wine"),
+		Map.entry("teleports", "teleport card"),
+		Map.entry("chocolate", "chocolate bar"),
+		Map.entry("dueling ring", "ring of dueling(8)"),
+		Map.entry("dueling rings", "ring of dueling(8)"),
+		Map.entry("soft leather", "leather"),
+		Map.entry("priest robes", "priest gown (top)"),
+		Map.entry("silver", "silver bar"));
 
 	/**
 	 * The in-game item names a guide phrase might refer to, most literal
@@ -259,6 +279,24 @@ public class ItemTracker
 		if (stem != null && java.util.Set.of("fire", "water", "air", "earth").contains(stem))
 		{
 			out.add("staff of " + stem);
+		}
+		// "rune pick" is a rune pickaxe; "varrock armor" is spelt armour.
+		if (singular.endsWith(" pick"))
+		{
+			out.add(singular + "axe");
+		}
+		if (key.contains("armor"))
+		{
+			out.add(key.replace("armor", "armour"));
+		}
+		// Last resort: drop a trailing parenthetical — annotation authors
+		// write "bones (kill goblins south of the jail)". Runs after the
+		// literal candidates so real parens ("super antipoison(1)") win.
+		String noParen = key.replaceFirst("\\s*\\([^)]*\\)$", "").trim();
+		if (!noParen.equals(key) && !noParen.isEmpty())
+		{
+			out.add(noParen);
+			out.add(noParen.endsWith("s") ? noParen.substring(0, noParen.length() - 1) : noParen + "s");
 		}
 		return out.toArray(new String[0]);
 	}

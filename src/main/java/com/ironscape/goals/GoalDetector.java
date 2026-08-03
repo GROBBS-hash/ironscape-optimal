@@ -50,12 +50,17 @@ public final class GoalDetector
 	private static final Pattern COMPOUND_NAME = Pattern.compile(
 		"([a-z]+)/([a-z]+)\\s+([a-z' ]+)");
 
+	/** "inv of bronze bars", "inventories of gold ore" — 28 slots each. */
+	private static final Pattern INV_OF = Pattern.compile(
+		"^(?:inv|invs|inventory|inventories)\\s+of\\s+(.+)$");
+
 	/** "get 43 prayer" is a skill goal (handled by annotations), not an item. */
 	private static final java.util.Set<String> SKILL_WORDS = java.util.Set.of(
 		"attack", "strength", "defence", "defense", "hitpoints", "hp", "ranged", "range",
 		"prayer", "magic", "cooking", "woodcutting", "fletching", "fishing", "firemaking",
 		"crafting", "smithing", "mining", "herblore", "herb", "agility", "thieving", "slayer",
-		"farming", "runecraft", "runecrafting", "hunter", "construction", "combat");
+		"farming", "runecraft", "runecrafting", "hunter", "construction", "combat",
+		"str", "att", "def", "sailing");
 
 	/**
 	 * Guide word -> Skill enum, including the guide's abbreviations.
@@ -70,6 +75,9 @@ public final class GoalDetector
 		java.util.Map.entry("hp", Skill.HITPOINTS),
 		java.util.Map.entry("ranged", Skill.RANGED),
 		java.util.Map.entry("range", Skill.RANGED),
+		java.util.Map.entry("str", Skill.STRENGTH),
+		java.util.Map.entry("att", Skill.ATTACK),
+		java.util.Map.entry("def", Skill.DEFENCE),
 		java.util.Map.entry("prayer", Skill.PRAYER),
 		java.util.Map.entry("magic", Skill.MAGIC),
 		java.util.Map.entry("cooking", Skill.COOKING),
@@ -127,7 +135,23 @@ public final class GoalDetector
 		// "take the BOAT to Great Kourend" is travel, not an item — the
 		// vehicle nouns must fall through to the travel detector
 		"energy", "out", "drink", "drinks", "sure", "at", "least", "in",
-		"boat", "ship", "ferry", "canoe", "minecart", "glider");
+		"boat", "ship", "ferry", "canoe", "minecart", "glider",
+		// prose numbers the audit flagged: "12 VIA sea charting",
+		// "every 50 MINS", "1 or 2 quests", "+4 INVISIBLE mining boost"
+		"via", "on", "while", "every", "like", "complete", "day", "days",
+		"min", "mins", "low", "full", "some", "new", "invisible", "melee",
+		"from", "to", "back", "tele", "inv", "addy");
+
+	/**
+	 * Whole names the pair scan produces from prose that are NEVER items —
+	 * flagged by tools/audit-goals.mjs, kept here so the badge (and the
+	 * completion gate it implies) never appears for them.
+	 */
+	private static final java.util.Set<String> NAME_REJECT_EXACT = java.util.Set.of(
+		"cart", "ned", "cloak", "amulet", "gems", "quests", "bosses",
+		"invocations", "mediums", "boost", "potions", "pots", "magic words",
+		"chinning area", "herblore boost", "crafting level", "autoweed perk",
+		"teaks or mahogany", "levels before switching", "birdhouse seeds");
 
 	/**
 	 * Fragments starting with these are actions/prose, never list items —
@@ -761,6 +785,33 @@ public final class GoalDetector
 		}
 		String name = NAME_TERMINATOR.matcher(rawName).replaceFirst("").trim().toLowerCase(Locale.ROOT);
 
+		// "iron bars JUST northwest", "garlic UPSTAIRS", "50 construction
+		// BANKED" — trailing adverbs are prose, not part of a name.
+		name = name.replaceFirst(
+			"\\s+(?:just|now|upstairs|banked|nearby|later|again|first|today)$", "");
+
+		// "1 inv of bronze bars" is 28 of them; "2 inventories of gold
+		// ore" is 56.
+		Matcher inventories = INV_OF.matcher(name);
+		if (inventories.matches())
+		{
+			name = inventories.group(1);
+			quantity = quantity * 28;
+		}
+
+		// "4 red, 4 blue, 5 yellow dye" / "1 soft, 1 hard leather": the
+		// shared noun sits on the LAST list entry only.
+		String subLower = sub.getPlainText().toLowerCase(Locale.ROOT);
+		if (java.util.Set.of("red", "blue", "yellow", "green", "orange", "purple").contains(name)
+			&& subLower.contains("dye"))
+		{
+			name = name + " dye";
+		}
+		else if ((name.equals("soft") || name.equals("hard")) && subLower.contains("leather"))
+		{
+			name = name + " leather";
+		}
+
 		// "one POH tab" -> quantity 1 of "poh tab"
 		String[] numberSplit = name.split(" ", 2);
 		Integer numberWord = NUMBER_WORDS.get(numberSplit[0]);
@@ -788,7 +839,8 @@ public final class GoalDetector
 		{
 			return;
 		}
-		if (NAME_REJECT_FIRST_WORD.contains(name.split(" ")[0]))
+		if (NAME_REJECT_FIRST_WORD.contains(name.split(" ")[0])
+			|| NAME_REJECT_EXACT.contains(name))
 		{
 			return;
 		}
@@ -816,6 +868,19 @@ public final class GoalDetector
 		{
 			out.add(new ItemGoal(step, sub, compound.group(1) + " " + compound.group(3), quantity, acquisition));
 			out.add(new ItemGoal(step, sub, compound.group(2) + " " + compound.group(3), quantity, acquisition));
+			return;
+		}
+		// "bat bones/black candle" — full names either side of the slash.
+		if (name.contains("/"))
+		{
+			for (String part : name.split("/"))
+			{
+				part = part.trim();
+				if (part.length() >= 3)
+				{
+					out.add(new ItemGoal(step, sub, part, quantity, acquisition));
+				}
+			}
 			return;
 		}
 
