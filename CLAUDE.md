@@ -328,12 +328,17 @@ refresh when "Failed to login" appears.
   (public, BSD-2 LICENSE, 48x48 icon.png placeholder). Plugin Hub
   submission OPEN: https://github.com/runelite/plugin-hub/pull/14207
   (plugins/ironscape-optimal on the GROBBS-hash/plugin-hub fork, branch
-  "ironscape-optimal", pinned to commit 53d225c2). To ship a new hub
+  "ironscape-optimal", pin moves with review rounds — check the fork branch for the current sha). To ship a new hub
   version later: push to main, then update the commit= line in that
-  fork branch. Watch the PR for reviewer feedback — hub reviewers
-  scrutinize script/widget manipulation (ours follows Quest Helper
-  patterns) and may ask about guide-content permission (verbal from
-  Oziris; consider getting it in writing).
+  fork branch. REVIEW ROUND 1 (2026-07-28, Alexsuperfly) ADDRESSED: no reflection
+  (QH handoff removed -> chat message), no client.hopToWorld (world
+  links open the switcher in game; changeWorld login-screen only),
+  LICENSE verbatim BSD-2. History was REWRITTEN 2026-07-28 to strip
+  Claude co-author trailers (owner request — NEVER add them; see
+  memory) and force-pushed. Awaiting re-review; if silent ~5 days a
+  polite nudge comment is fine. Newer main commits (ellipsis fix,
+  header wrap, docs, teleport item-gate) are NOT yet pinned — bump the
+  pin when it next matters.
 
 - The ONLY guide is **GuideVariant.OZIRIS** — Ironman Efficiency Guide
   v4, community "Enhanced 2026" edition from https://ironman.guide/,
