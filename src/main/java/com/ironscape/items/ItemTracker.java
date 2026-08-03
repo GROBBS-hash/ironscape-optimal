@@ -735,8 +735,15 @@ public class ItemTracker
 		Map<String, Integer> counts = new HashMap<>();
 		for (Item item : container.getItems())
 		{
-			// -1 = empty slot; quantity 0 = bank placeholder
+			// -1 = empty slot; quantity 0 = defensive
 			if (item.getId() < 0 || item.getQuantity() <= 0)
+			{
+				continue;
+			}
+			// A bank PLACEHOLDER is its own item id with quantity 1 —
+			// canonicalize() would map it onto the real item and count a
+			// phantom copy ("pickaxe 2/1" after withdrawing the only one).
+			if (itemManager.getItemComposition(item.getId()).getPlaceholderTemplateId() != -1)
 			{
 				continue;
 			}
