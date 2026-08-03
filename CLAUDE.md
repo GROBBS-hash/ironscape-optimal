@@ -336,8 +336,9 @@ refresh when "Failed to login" appears.
   LICENSE verbatim BSD-2. History was REWRITTEN 2026-07-28 to strip
   Claude co-author trailers (owner request — NEVER add them; see
   memory) and force-pushed. Awaiting re-review; PIN BUMPED 2026-08-03
-  to 0e4dc5d (the big play-test hardening session). A polite nudge
-  comment is drafted but NOT yet posted — owner never gave the go.
+  twice, now cf9be08 (both play-test hardening waves). Nudge comment
+  POSTED 2026-08-03 with owner's go
+  (issuecomment-5163102844).
 
 - PLAY-TEST SESSION (2026-08-03) — huge hardening pass, all pushed:
   goal-audit pipeline (GoalAuditDumpTest -> build/goal-audit.tsv ->
@@ -362,7 +363,33 @@ refresh when "Failed to login" appears.
   moves; 'house tab to X' is a travel sub; shop packs ('empty X
   pack'), elemental staves, teletab->tab, gloves/boots/pickaxe/axe
   substitutes, 'pestle and mortar' scanned whole, 'pack of X'->'X
-  pack', bare runes/bars/beads family sums.
+  pack', bare runes/bars/beads/nails family sums.
+
+- SESSION WAVE 2 (2026-08-03 evening): quest ITEM requirements seeded
+  from wiki {{Quest details|items}} onto each quest's first step (104
+  quests, tools/seed-quest-items.mjs, junk-filtered, audit 0/812);
+  quest GIVERS seeded from infobox start text (109,
+  tools/seed-quest-givers.mjs -> places/quest_givers.json,
+  PlaceManager.questGiver) — quest subs outline the actual giver,
+  nearest-to-pin only as fallback; minigame teleport hint rewritten as
+  live PRESENCE (near pin | confirmed region learned from teleport
+  landings | contiguous walking; any teleport breaks the chain — after
+  THREE failed one-way-flag patches, and NOT gated on quest-in-progress
+  since started-then-left-to-gather is normal); NPC outlines stand down
+  mid-quest (questHelperOwnsGuidance) and mid-quest nav routes to the
+  step's 📍 area instead of clearing; green Quest Helper tip line on
+  every quest step ('select \"X\" for click-by-click guidance' — the
+  reflection handoff is hub-forbidden); '(N Skill required)' prose
+  parses to level badges; annotation skill requirements badge like
+  levels; InventoryItemHintOverlay outlines ALL carried step items
+  (config showInventoryHints); recipe ingredients on 16 make-steps
+  (tools/seed-recipes.mjs); gather-tool badges (tools/seed-tools.mjs);
+  bank placeholders no longer count as owned (the REAL 'steel axe 2/1'
+  root cause); canonical matching collapses potion doses; place-name
+  arrival requires being seen OUTSIDE the radius first (arrivalArmed);
+  blurite sword id bundled (untradeables skip the items-in-hand gate
+  when unresolvable — bundle ids to make gates real); GROUPING_MINIGAMES
+  set lets any minigame place/chip light the teleport click path.
 
 - The ONLY guide is **GuideVariant.OZIRIS** — Ironman Efficiency Guide
   v4, community "Enhanced 2026" edition from https://ironman.guide/,
