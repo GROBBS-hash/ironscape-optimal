@@ -112,6 +112,21 @@ public class ItemTracker
 
 	private static int resolve(Map<String, Integer> counts, String name)
 	{
+		// Bare "runes" in the guide means "the runes you bought earlier" —
+		// no single item can ever match, so ANY carried rune counts.
+		String bare = name.toLowerCase(Locale.ROOT).trim();
+		if (bare.equals("runes") || bare.equals("all runes") || bare.equals("all of your runes"))
+		{
+			int total = 0;
+			for (Map.Entry<String, Integer> entry : counts.entrySet())
+			{
+				if (entry.getKey().endsWith(" rune"))
+				{
+					total += entry.getValue();
+				}
+			}
+			return total;
+		}
 		Integer base = null;
 		for (String candidate : aliases(name))
 		{
@@ -185,6 +200,9 @@ public class ItemTracker
 	public static String[] aliases(String name)
 	{
 		String key = name.toLowerCase(Locale.ROOT).trim();
+		// "fire staff (equip)" — the parenthetical is an instruction to
+		// wear it, not part of the item name. Doses like "(1)" stay.
+		key = key.replaceFirst("\\s*\\((?:equip(?:ped)?|wear|worn)\\)$", "");
 		// noted items canonicalize to the real item when counting, so
 		// "noted planks" is just "planks"
 		if (key.startsWith("noted "))
