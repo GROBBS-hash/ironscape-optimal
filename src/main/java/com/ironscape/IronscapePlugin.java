@@ -1424,6 +1424,29 @@ public class IronscapePlugin extends Plugin
 		else
 		{
 			activeMinigameTarget = current == null ? null : minigameBySub.get(current.sub.getId());
+			// No explicit "minigame teleport to X" sub, but the frontier
+			// step's own 📍 area IS a Grouping destination and the player
+			// is far from it: the minigame teleport is how you get there,
+			// so show the click path unprompted (Giants' Foundry steps
+			// gave no hint until the chip was clicked). Arriving — or
+			// getting anywhere near — drops the hint.
+			if (activeMinigameTarget == null && current != null)
+			{
+				String location = current.step.getMetadata().get("location");
+				if (location != null
+					&& GROUPING_MINIGAMES.contains(
+						location.toLowerCase(Locale.ROOT).replace('’', '\'')))
+				{
+					WorldPoint area = placeManager.getLoose(location);
+					Player me = client.getLocalPlayer();
+					if (area != null && me != null
+						&& (me.getWorldLocation().getPlane() != area.getPlane()
+							|| me.getWorldLocation().distanceTo2D(area) > 100))
+					{
+						activeMinigameTarget = location;
+					}
+				}
+			}
 		}
 
 		// "Home tele to lumby": highlight the spellbook click path (spell if

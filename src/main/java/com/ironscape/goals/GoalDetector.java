@@ -535,6 +535,19 @@ public final class GoalDetector
 				targets.merge(skill, level, Math::max);
 			}
 		}
+		// "(15 Smithing required)": requirement notes hide in the
+		// parentheticals stripped above — scan the RAW text for them.
+		Matcher required = REQUIRED_LEVEL.matcher(sub.getPlainText());
+		while (required.find())
+		{
+			Skill skill = SKILL_BY_WORD.get(required.group(2).toLowerCase(Locale.ROOT));
+			int level = Integer.parseInt(required.group(1));
+			if (skill != null && level >= 2 && level <= 99)
+			{
+				targets.merge(skill, level, Math::max);
+			}
+		}
+
 		// "9 Hunter and Slayer": the number distributes over BOTH skills —
 		// the pair scan above only credits the first.
 		Matcher shared = SHARED_LEVEL.matcher(text);
@@ -568,6 +581,14 @@ public final class GoalDetector
 	/** "9 Hunter and Slayer" — one number shared by two skill words. */
 	private static final Pattern SHARED_LEVEL = Pattern.compile(
 		"\\b(\\d{1,2})\\s+([a-z]+)\\s+and\\s+([a-z]+)", Pattern.CASE_INSENSITIVE);
+
+	/**
+	 * "(15 Smithing required)" — requirement notes live in parentheticals,
+	 * which the main level scan strips as commentary. The word "required"
+	 * makes this one safe to read.
+	 */
+	private static final Pattern REQUIRED_LEVEL = Pattern.compile(
+		"\\b(\\d{1,2})\\s+([a-z]+)\\s+(?:required|req\\b)", Pattern.CASE_INSENSITIVE);
 
 	private static final String RUNE_WORD =
 		"fire|water|air|earth|mind|body|chaos|law|nature|cosmic|death|blood|soul|wrath|astral";
