@@ -72,7 +72,45 @@ public class PlaceManager
 		});
 		local = read(() -> localFile.exists() ? new FileReader(localFile) : null);
 		rebuildPattern();
-		log.debug("Places loaded: {} bundled, {} local", bundled.size(), local.size());
+		loadQuestGivers();
+		log.debug("Places loaded: {} bundled, {} local, {} quest givers",
+			bundled.size(), local.size(), questGivers.size());
+	}
+
+	/** Quest name (lowercase) -> the NPC who starts it (wiki-seeded, bundled). */
+	private Map<String, String> questGivers = new HashMap<>();
+
+	/** The NPC who starts this quest, or null when unknown. */
+	public synchronized String questGiver(String questName)
+	{
+		return questGivers.get(questName.toLowerCase(Locale.ROOT));
+	}
+
+	private void loadQuestGivers()
+	{
+		try (InputStream in = PlaceManager.class.getResourceAsStream("quest_givers.json"))
+		{
+			if (in == null)
+			{
+				return;
+			}
+			GiversFile file = gson.fromJson(
+				new InputStreamReader(in, StandardCharsets.UTF_8), GiversFile.class);
+			if (file != null && file.givers != null)
+			{
+				questGivers = file.givers;
+			}
+		}
+		catch (Exception e)
+		{
+			log.warn("Could not read bundled quest givers", e);
+		}
+	}
+
+	private static class GiversFile
+	{
+		int version;
+		Map<String, String> givers;
 	}
 
 	public synchronized WorldPoint get(String name)

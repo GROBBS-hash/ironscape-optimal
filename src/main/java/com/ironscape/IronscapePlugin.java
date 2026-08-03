@@ -1607,6 +1607,23 @@ public class IronscapePlugin extends Plugin
 					}
 				}
 			}
+			// The quest's ACTUAL giver (wiki-seeded from the quest infobox)
+			// beats guessing whoever stands nearest the start pin — a
+			// decorative giant at the Foundry wore Kovac's quest icon.
+			for (SubStep questSub : current.step.getSubSteps())
+			{
+				GoalDetector.QuestGoal questGoal = questGoalBySub.get(questSub.getId());
+				if (questGoal == null)
+				{
+					continue;
+				}
+				String giver = placeManager.questGiver(questGoal.getQuest().getName());
+				if (giver != null)
+				{
+					npcNames.add(giver.toLowerCase(Locale.ROOT));
+				}
+				break;
+			}
 			// A specific name shadows a generic one it contains: "milk the
 			// dairy cow" matches the NPCs "Dairy cow" AND "Cow", but the
 			// guide means the specific one — without this every regular cow
