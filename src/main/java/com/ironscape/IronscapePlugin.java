@@ -569,6 +569,12 @@ public class IronscapePlugin extends Plugin
 	 */
 	private final java.util.Set<String> arrivalArmed = new java.util.HashSet<>();
 
+	/**
+	 * Step ids whose location-tag minigame hint already served its purpose
+	 * (a teleport landed while it showed). Session-only.
+	 */
+	private final java.util.Set<String> minigameHintSuppressed = new java.util.HashSet<>();
+
 	/** Text-detected "get N items" / "start quest X" goals (see GoalDetector). */
 	private GoalDetector.Goals goals;
 
@@ -983,6 +989,7 @@ public class IronscapePlugin extends Plugin
 		// Baselines describe the OLD profile's inventory state.
 		acquisitionBaseline.clear();
 		arrivalArmed.clear();
+		minigameHintSuppressed.clear();
 		depletionArmed.clear();
 		// The new profile's saved progress may still use pre-refresh step
 		// ids; apply the same remap startUp applied (no-op if none).
@@ -1378,6 +1385,18 @@ public class IronscapePlugin extends Plugin
 				// A click-requested minigame hint is done once ANY teleport
 				// lands — the guided click path served its purpose.
 				clickedMinigameTicks = 0;
+				// Same for the location-tag hint: the distance gate can't
+				// see that a minigame's INTERIOR is its own map region
+				// ("still >100 tiles from the surface pin" while standing
+				// inside the Foundry) — the teleport landing is proof.
+				if (activeMinigameTarget != null)
+				{
+					Current landed = findCurrent();
+					if (landed != null)
+					{
+						minigameHintSuppressed.add(landed.step.getId());
+					}
+				}
 				// Landing somewhere new invalidates the walking route: point
 				// Shortest Path at the current destination FROM HERE ("home
 				// tele to lumby, run north to Varrock east bank" — the
@@ -1430,7 +1449,8 @@ public class IronscapePlugin extends Plugin
 			// so show the click path unprompted (Giants' Foundry steps
 			// gave no hint until the chip was clicked). Arriving — or
 			// getting anywhere near — drops the hint.
-			if (activeMinigameTarget == null && current != null)
+			if (activeMinigameTarget == null && current != null
+				&& !minigameHintSuppressed.contains(current.step.getId()))
 			{
 				String location = current.step.getMetadata().get("location");
 				if (location != null
