@@ -584,6 +584,17 @@ public class IronscapePlugin extends Plugin
 	 */
 	private final Map<String, java.util.Set<Integer>> minigameRegions = new HashMap<>();
 
+	/**
+	 * Presence survives a client restart: "minigame|region" saved whenever
+	 * present, restored on login IF the player is still in that region —
+	 * logging in inside the Foundry must not re-show the teleport hint.
+	 */
+	private String pendingPresenceRestore;
+	private String lastSavedPresenceState;
+
+	/** Game tick of the last GAME OBJECT click (ladder, cave, portal). */
+	private int lastObjectClickTick = -10;
+
 	/** Text-detected "get N items" / "start quest X" goals (see GoalDetector). */
 	private GoalDetector.Goals goals;
 
@@ -623,6 +634,9 @@ public class IronscapePlugin extends Plugin
 		annotationManager.load();
 		placeManager.load();
 		loadGuideState();
+		// "minigame|region" from the previous session — restored on the
+		// first evaluation if the player is still standing in that region.
+		pendingPresenceRestore = configManager.getConfiguration(CONFIG_GROUP, "minigamePresence");
 		registerUi();
 	}
 
@@ -1301,6 +1315,21 @@ public class IronscapePlugin extends Plugin
 	@Subscribe
 	public void onMenuOptionClicked(MenuOptionClicked event)
 	{
+		// Scene-transition tracking for minigame presence: a coordinate
+		// jump right after clicking a GAME OBJECT is a ladder/cave/portal
+		// (stay present), not a teleport item/spell (presence breaks).
+		switch (event.getMenuAction())
+		{
+			case GAME_OBJECT_FIRST_OPTION:
+			case GAME_OBJECT_SECOND_OPTION:
+			case GAME_OBJECT_THIRD_OPTION:
+			case GAME_OBJECT_FOURTH_OPTION:
+			case GAME_OBJECT_FIFTH_OPTION:
+				lastObjectClickTick = client.getTickCount();
+				break;
+			default:
+				break;
+		}
 		if (!bankFilterButton.isActive())
 		{
 			return;
@@ -1407,6 +1436,16 @@ public class IronscapePlugin extends Plugin
 						.add(here.getRegionID());
 					minigamePresence = landedKey;
 				}
+				// A jump right after clicking a GAME OBJECT while present is
+				// the minigame's own ladder/cave/portal — walking "inside
+				// the cave" jumps coordinates but must NOT break presence.
+				// Teleport items/spells aren't object clicks and still do.
+				else if (minigamePresence != null
+					&& client.getTickCount() - lastObjectClickTick <= 3)
+				{
+					minigameRegions.computeIfAbsent(minigamePresence, k -> new java.util.HashSet<>())
+						.add(here.getRegionID());
+				}
 				// Landing somewhere new invalidates the walking route: point
 				// Shortest Path at the current destination FROM HERE ("home
 				// tele to lumby, run north to Varrock east bank" — the
@@ -1474,6 +1513,20 @@ public class IronscapePlugin extends Plugin
 					if (area != null && me != null)
 					{
 						int region = me.getWorldLocation().getRegionID();
+						// Restore saved presence: logged in still standing
+						// in the region we were AT when the client closed.
+						if (pendingPresenceRestore != null)
+						{
+							String[] saved = pendingPresenceRestore.split("\\|");
+							pendingPresenceRestore = null;
+							if (saved.length == 2 && saved[0].equals(key)
+								&& saved[1].equals(Integer.toString(region)))
+							{
+								minigamePresence = key;
+								minigameRegions.computeIfAbsent(key, k -> new java.util.HashSet<>())
+									.add(region);
+							}
+						}
 						boolean near = me.getWorldLocation().getPlane() == area.getPlane()
 							&& me.getWorldLocation().distanceTo2D(area) <= 100;
 						java.util.Set<Integer> confirmed = minigameRegions.get(key);
@@ -1493,12 +1546,24 @@ public class IronscapePlugin extends Plugin
 						if (present)
 						{
 							minigamePresence = key;
+							String state = key + "|" + region;
+							if (!state.equals(lastSavedPresenceState))
+							{
+								configManager.setConfiguration(CONFIG_GROUP,
+									"minigamePresence", state);
+								lastSavedPresenceState = state;
+							}
 						}
 						else
 						{
 							if (key.equals(minigamePresence))
 							{
 								minigamePresence = null;
+							}
+							if (lastSavedPresenceState != null)
+							{
+								configManager.unsetConfiguration(CONFIG_GROUP, "minigamePresence");
+								lastSavedPresenceState = null;
 							}
 							activeMinigameTarget = location;
 						}
