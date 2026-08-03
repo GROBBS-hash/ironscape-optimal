@@ -270,6 +270,26 @@ public class PlaceManager
 		return sb.toString();
 	}
 
+	/**
+	 * [start, end) span of every place name occurring in the text — lets
+	 * the NPC matcher ignore an NPC name that's really part of a place
+	 * ("Barbarian" inside "Barbarian Village").
+	 */
+	public synchronized List<int[]> placeSpans(String text)
+	{
+		List<int[]> spans = new ArrayList<>();
+		if (namePattern == null)
+		{
+			return spans;
+		}
+		Matcher matcher = namePattern.matcher(text);
+		while (matcher.find())
+		{
+			spans.add(new int[]{matcher.start(), matcher.end()});
+		}
+		return spans;
+	}
+
 	/** Normalized lookup key: lowercase, straight apostrophes, raw ampersand. */
 	private static String key(String name)
 	{

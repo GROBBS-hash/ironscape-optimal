@@ -193,6 +193,13 @@ public class IronscapePlugin extends Plugin
 	/** Live scene objects (ore rocks) the current sub is about; overlay-outlined. */
 	private volatile List<net.runelite.api.GameObject> objectTargets = java.util.Collections.emptyList();
 
+	/**
+	 * Anchor-nominated NPCs by INDEX — the one shopkeeper nearest a ⌖
+	 * target. Index, not name: a "Barbarian" nominee must not light up
+	 * every barbarian in the building.
+	 */
+	private volatile java.util.Set<Integer> npcTargetIndexes = java.util.Collections.emptySet();
+
 	/** Ore/stone item goal -> the LIVE rock object that yields it. */
 	private static final Map<String, String> ROCK_BY_ORE = Map.ofEntries(
 		Map.entry("copper ore", "copper rocks"),
@@ -302,6 +309,19 @@ public class IronscapePlugin extends Plugin
 		for (String alias : ItemTracker.aliases(itemName))
 		{
 			if (alias.equals("coins"))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/** True when [start, end) sits strictly inside a LONGER span. */
+	private static boolean insideLongerSpan(List<int[]> spans, int start, int end)
+	{
+		for (int[] span : spans)
+		{
+			if (span[0] <= start && end <= span[1] && span[1] - span[0] > end - start)
 			{
 				return true;
 			}
@@ -746,6 +766,7 @@ public class IronscapePlugin extends Plugin
 		questStartMarkerOverlay.setTargetSupplier(() -> questStartMarker);
 		overlayManager.add(questStartMarkerOverlay);
 		npcTargetOverlay.setNamesSupplier(() -> npcTargetNames);
+		npcTargetOverlay.setIndexesSupplier(() -> npcTargetIndexes);
 		npcTargetOverlay.setQuestIconSupplier(() -> currentSubIsQuest);
 		npcTargetOverlay.setItemIconSupplier(() -> currentSubItemIcon);
 		overlayManager.add(npcTargetOverlay);
@@ -838,6 +859,8 @@ public class IronscapePlugin extends Plugin
 		overlayManager.remove(targetTileOverlay);
 		overlayManager.remove(objectTargetOverlay);
 		npcTargetNames = java.util.Collections.emptySet();
+		npcTargetIndexes = java.util.Collections.emptySet();
+		objectTargets = java.util.Collections.emptyList();
 		currentSubIsQuest = false;
 		questStartMarker = null;
 		targetTileMarker = null;
@@ -1447,10 +1470,17 @@ public class IronscapePlugin extends Plugin
 			}
 			String subText = " " + scanned.toString().toLowerCase(Locale.ROOT)
 				.replace('’', '\'') + " ";
+			// Place-name spans in the same text: an NPC name inside a LONGER
+			// place name is the place talking, not the NPC — "Walk to
+			// Barbarian Village" must not outline every Barbarian (an
+			// equal-length span is the NPC itself, e.g. "Romeo", and stays).
+			List<int[]> placeSpans = placeManager.placeSpans(subText);
 			// Nearest ONE to each anchor point — "everyone within 4 tiles"
-			// outlined the whole gnome crowd around Gulluck's shop.
-			String nearestToMarker = null;
-			String nearestToSpot = null;
+			// outlined the whole gnome crowd around Gulluck's shop. Tracked
+			// by NPC INDEX, not name: nominating "Barbarian" by name put
+			// the wanted item over every barbarian in the longhouse.
+			int nearestToMarker = -1;
+			int nearestToSpot = -1;
 			int markerBest = Integer.MAX_VALUE;
 			int spotBest = Integer.MAX_VALUE;
 			for (net.runelite.api.NPC npc : client.getTopLevelWorldView().npcs())
@@ -1470,7 +1500,8 @@ public class IronscapePlugin extends Plugin
 				int at = subText.indexOf(clean);
 				if (at > 0
 					&& !Character.isLetter(subText.charAt(at - 1))
-					&& !Character.isLetter(subText.charAt(at + clean.length())))
+					&& !Character.isLetter(subText.charAt(at + clean.length()))
+					&& !insideLongerSpan(placeSpans, at, at + clean.length()))
 				{
 					npcNames.add(clean);
 				}
@@ -1485,7 +1516,7 @@ public class IronscapePlugin extends Plugin
 					if (distance <= 4 && distance < markerBest)
 					{
 						markerBest = distance;
-						nearestToMarker = clean;
+						nearestToMarker = npc.getIndex();
 					}
 				}
 				if (shopAnchor != null
@@ -1495,7 +1526,7 @@ public class IronscapePlugin extends Plugin
 					if (distance <= 4 && distance < spotBest)
 					{
 						spotBest = distance;
-						nearestToSpot = clean;
+						nearestToSpot = npc.getIndex();
 					}
 				}
 			}
@@ -1523,15 +1554,25 @@ public class IronscapePlugin extends Plugin
 			// to the anchor than the actual seller.
 			if (npcNames.isEmpty())
 			{
-				if (nearestToMarker != null)
+				java.util.Set<Integer> indexes = new java.util.HashSet<>();
+				if (nearestToMarker != -1)
 				{
-					npcNames.add(nearestToMarker);
+					indexes.add(nearestToMarker);
 				}
-				if (nearestToSpot != null)
+				if (nearestToSpot != -1)
 				{
-					npcNames.add(nearestToSpot);
+					indexes.add(nearestToSpot);
 				}
+				npcTargetIndexes = indexes;
 			}
+			else
+			{
+				npcTargetIndexes = java.util.Collections.emptySet();
+			}
+		}
+		else
+		{
+			npcTargetIndexes = java.util.Collections.emptySet();
 		}
 		npcTargetNames = npcNames;
 

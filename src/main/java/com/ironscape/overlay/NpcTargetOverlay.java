@@ -45,6 +45,7 @@ public class NpcTargetOverlay extends Overlay
 	private final net.runelite.client.game.ItemManager itemManager;
 
 	private Supplier<Set<String>> namesSupplier = Collections::emptySet;
+	private Supplier<Set<Integer>> indexesSupplier = Collections::emptySet;
 	private Supplier<Boolean> questIconSupplier = () -> false;
 	private Supplier<Integer> itemIconSupplier = () -> -1;
 	private BufferedImage icon;
@@ -68,6 +69,15 @@ public class NpcTargetOverlay extends Overlay
 		this.namesSupplier = namesSupplier;
 	}
 
+	/**
+	 * SPECIFIC NPCs by index — the anchor-nominated shopkeeper. Unlike a
+	 * name, an index never spreads to lookalikes.
+	 */
+	public void setIndexesSupplier(Supplier<Set<Integer>> indexesSupplier)
+	{
+		this.indexesSupplier = indexesSupplier;
+	}
+
 	/** Whether the current sub is a quest goal (adds the quest icon). */
 	public void setQuestIconSupplier(Supplier<Boolean> questIconSupplier)
 	{
@@ -88,7 +98,10 @@ public class NpcTargetOverlay extends Overlay
 	public Dimension render(Graphics2D graphics)
 	{
 		Set<String> names = namesSupplier.get();
-		if (names == null || names.isEmpty())
+		Set<Integer> indexes = indexesSupplier.get();
+		boolean anyNames = names != null && !names.isEmpty();
+		boolean anyIndexes = indexes != null && !indexes.isEmpty();
+		if (!anyNames && !anyIndexes)
 		{
 			return null;
 		}
@@ -97,7 +110,10 @@ public class NpcTargetOverlay extends Overlay
 		for (NPC npc : client.getTopLevelWorldView().npcs())
 		{
 			String name = npc.getName();
-			if (name == null || !names.contains(Text.removeTags(name).toLowerCase()))
+			boolean byName = anyNames && name != null
+				&& names.contains(Text.removeTags(name).toLowerCase());
+			boolean byIndex = anyIndexes && indexes.contains(npc.getIndex());
+			if (!byName && !byIndex)
 			{
 				continue;
 			}
