@@ -335,10 +335,34 @@ refresh when "Failed to login" appears.
   links open the switcher in game; changeWorld login-screen only),
   LICENSE verbatim BSD-2. History was REWRITTEN 2026-07-28 to strip
   Claude co-author trailers (owner request — NEVER add them; see
-  memory) and force-pushed. Awaiting re-review; if silent ~5 days a
-  polite nudge comment is fine. Newer main commits (ellipsis fix,
-  header wrap, docs, teleport item-gate) are NOT yet pinned — bump the
-  pin when it next matters.
+  memory) and force-pushed. Awaiting re-review; PIN BUMPED 2026-08-03
+  to 0e4dc5d (the big play-test hardening session). A polite nudge
+  comment is drafted but NOT yet posted — owner never gave the go.
+
+- PLAY-TEST SESSION (2026-08-03) — huge hardening pass, all pushed:
+  goal-audit pipeline (GoalAuditDumpTest -> build/goal-audit.tsv ->
+  tools/audit-goals.mjs; 0 unresolvable item goals/annotation items
+  guide-wide, plus a NOGOAL section for buy-subs with no goal);
+  canonical item matching (apostrophes/possessives/plurals incl. -ves:
+  woad leaves->Woad leaf, wizard mind bombs->Wizard's mind bomb);
+  recipe ingredient lists on 16 make-steps (tools/seed-recipes.mjs,
+  wiki {{Recipe}}, recursive intermediate expansion); nav coverage
+  pass (tools/audit-nav.mjs + seed-uncovered.mjs: mage tutor, Lumby,
+  Fally, Aubury, Toby=achievement diary guy, dairy cow, barcrawl bars
+  x10, Nulodion, Peksa); kill/fill goals ('kill 1 cow calf for meat'
+  -> raw beef via MEAT_BY_NPC; 'fill 3 buckets with milk' -> buckets
+  of milk; 'safespot X for meat' too); place-name arrival gated to
+  movement-word subs; FINISHED quest subsumes every sub of its step;
+  'continue' added to quest-goal pre-filter (Continue Gertrude's cat);
+  acquisition gate only for qty<3 (bulk buys tick on having);
+  ObjectTargetOverlay outlines live ore rocks (impostor-resolved);
+  NPC fixes (specific name shadows generic 'dairy cow'>'cow'; names
+  inside place names ignored 'Barbarian Village'; anchor nominee by
+  INDEX not name); manual ⌖ capture pins auto-nav until frontier
+  moves; 'house tab to X' is a travel sub; shop packs ('empty X
+  pack'), elemental staves, teletab->tab, gloves/boots/pickaxe/axe
+  substitutes, 'pestle and mortar' scanned whole, 'pack of X'->'X
+  pack', bare runes/bars/beads family sums.
 
 - The ONLY guide is **GuideVariant.OZIRIS** — Ironman Efficiency Guide
   v4, community "Enhanced 2026" edition from https://ironman.guide/,
