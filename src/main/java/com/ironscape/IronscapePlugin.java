@@ -289,6 +289,24 @@ public class IronscapePlugin extends Plugin
 		return false;
 	}
 
+	/** Whether {@code word} appears in {@code text} as a whole word. */
+	private static boolean containsWord(String text, String word)
+	{
+		int at = text.indexOf(word);
+		while (at >= 0)
+		{
+			boolean startOk = at == 0 || !Character.isLetter(text.charAt(at - 1));
+			int end = at + word.length();
+			boolean endOk = end == text.length() || !Character.isLetter(text.charAt(end));
+			if (startOk && endOk)
+			{
+				return true;
+			}
+			at = text.indexOf(word, at + 1);
+		}
+		return false;
+	}
+
 	/** Quest whose start marker was requested by clicking its link. */
 	private Quest clickedQuest;
 	private int clickedQuestTicks;
@@ -478,6 +496,15 @@ public class IronscapePlugin extends Plugin
 	 * should count as having arrived.
 	 */
 	private static final int PLACE_ARRIVE_RADIUS = 25;
+
+	/**
+	 * A sub reads as a movement instruction — anywhere in the text, since
+	 * travel is often compound ("Use the spirit tree and go to the
+	 * battlefield"). Gates place-name arrival ticks.
+	 */
+	private static final java.util.regex.Pattern MOVEMENT_WORD = java.util.regex.Pattern.compile(
+		"\\b(?:go|walk|run|head|return|travel|enter|exit|climb|cross|move|proceed|sail|ride|fly|swim|tele|teleport)\\b",
+		java.util.regex.Pattern.CASE_INSENSITIVE);
 
 	/** Text-detected "get N items" / "start quest X" goals (see GoalDetector). */
 	private GoalDetector.Goals goals;
@@ -1442,6 +1469,23 @@ public class IronscapePlugin extends Plugin
 					}
 				}
 			}
+			// A specific name shadows a generic one it contains: "milk the
+			// dairy cow" matches the NPCs "Dairy cow" AND "Cow", but the
+			// guide means the specific one — without this every regular cow
+			// in the field wears the bucket icon. Word-boundary containment
+			// so "Woman" never shadows "Man".
+			java.util.Set<String> shadowed = new java.util.HashSet<>();
+			for (String a : npcNames)
+			{
+				for (String b : npcNames)
+				{
+					if (!a.equals(b) && containsWord(b, a))
+					{
+						shadowed.add(a);
+					}
+				}
+			}
+			npcNames.removeAll(shadowed);
 			// A name the step TEXT matched wins outright: "buy 2 teleport
 			// cards from Diango" must outline only Diango — the nearest-NPC
 			// fallback exists for steps that DON'T name their NPC, and with
@@ -2073,6 +2117,16 @@ public class IronscapePlugin extends Plugin
 		{
 			return here.getPlane() == precise.plane
 				&& here.distanceTo(new WorldPoint(precise.x, precise.y, precise.plane)) <= ARRIVE_RADIUS;
+		}
+		// Place-name arrival (a whole-town radius) only PROVES subs that
+		// are themselves movement instructions ("Walk north to Fred's
+		// farm"). An action that merely happens somewhere ("Kill a
+		// chicken ... at Fred's farm") must not tick just because the
+		// player showed up (owner hit this at Fred's farm).
+		if (!travelGoalSubs.contains(sub.getId())
+			&& !MOVEMENT_WORD.matcher(sub.getPlainText()).find())
+		{
+			return false;
 		}
 		// Travel subs end at their LAST place mention (the destination);
 		// everything else anchors on the first ("Talk to Reldo" -> Reldo).

@@ -193,14 +193,21 @@ public class ItemTracker
 			? words[0].substring(0, words[0].length() - 1) + (words.length > 1 ? " " + words[1] : "")
 			: key;
 
-		return new String[]{
+		java.util.List<String> out = new java.util.ArrayList<>(java.util.List.of(
 			key,             // exact:      "mind rune"
 			singular,        // deplural:   "buckets" -> "bucket"
 			firstSingular,   // of-phrase:  "bolts of cloth" -> "bolt of cloth"
 			key + "s",       // plural:     "log" -> "logs"
 			key + " rune",   // elemental:  "mind" -> "mind rune"
-			singular + " rune", // "minds" -> "mind rune"
-		};
+			singular + " rune")); // "minds" -> "mind rune"
+		// Shop packs: the guide says "bucket pack", the item is "Empty
+		// bucket pack". (Feather/bait packs really are named "X pack",
+		// so the un-prefixed key stays first.)
+		if (key.endsWith(" pack"))
+		{
+			out.add("empty " + key);
+		}
+		return out.toArray(new String[0]);
 	}
 
 	/** Resolved icon item ids by guide item name; -1 = no icon found. */
