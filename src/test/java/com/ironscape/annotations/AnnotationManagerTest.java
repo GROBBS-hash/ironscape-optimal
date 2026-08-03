@@ -58,6 +58,32 @@ public class AnnotationManagerTest
 	}
 
 	@Test
+	public void compoundRuneNamesSplitPerType() throws Exception
+	{
+		File dir = Files.createTempDirectory("ironscape-test").toFile();
+		File file = new File(dir, "annotations.json");
+		Files.write(file.toPath(), (
+			"{\"version\":1,\"annotations\":{"
+				+ "\"tele\":{\"items\":["
+				+ "{\"name\":\"chronicle\"},"
+				+ "{\"name\":\"all of your mind and air runes\"}]},"
+				+ "\"quest\":{\"items\":[{\"name\":\"lost tribe brooch and book\"}]}"
+				+ "}}").getBytes(java.nio.charset.StandardCharsets.UTF_8));
+
+		AnnotationManager manager = new AnnotationManager(new Gson(), file);
+		manager.load();
+
+		java.util.List<StepAnnotation.ItemNeed> items = manager.getItems("tele");
+		assertEquals(3, items.size());
+		assertEquals("chronicle", items.get(0).name);
+		assertEquals("mind runes", items.get(1).name);
+		assertEquals("air runes", items.get(2).name);
+		// prose "and" that isn't a rune list stays one entry
+		assertEquals("lost tribe brooch and book", manager.getItems("quest").get(0).name);
+		assertEquals(1, manager.getItems("quest").size());
+	}
+
+	@Test
 	public void recaptureOverwrites() throws Exception
 	{
 		File dir = Files.createTempDirectory("ironscape-test").toFile();

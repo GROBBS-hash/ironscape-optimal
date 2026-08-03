@@ -10,10 +10,14 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
@@ -249,7 +253,50 @@ public class AnnotationManager
 	private Map<String, StepAnnotation> parse(Reader reader)
 	{
 		AnnotationFile file = gson.fromJson(reader, AnnotationFile.class);
-		return file == null || file.annotations == null ? new HashMap<>() : file.annotations;
+		Map<String, StepAnnotation> annotations =
+			file == null || file.annotations == null ? new HashMap<>() : file.annotations;
+		for (StepAnnotation annotation : annotations.values())
+		{
+			annotation.items = splitCompoundRunes(annotation.items);
+		}
+		return annotations;
+	}
+
+	/**
+	 * The guide writes "all of your mind and air runes" as ONE item, but
+	 * it's two — each rune type needs its own have/need check or the name
+	 * never matches anything you own. Only single-word types sharing a
+	 * trailing "runes" split; prose like "lost tribe brooch and book"
+	 * stays one entry.
+	 */
+	private static final Pattern COMPOUND_RUNES = Pattern.compile(
+		"^(?:all (?:of )?(?:your )?)?(\\w+(?:, ?\\w+)*,? and \\w+) runes?$");
+
+	static List<StepAnnotation.ItemNeed> splitCompoundRunes(List<StepAnnotation.ItemNeed> items)
+	{
+		if (items == null)
+		{
+			return null;
+		}
+		List<StepAnnotation.ItemNeed> out = new ArrayList<>(items.size());
+		for (StepAnnotation.ItemNeed item : items)
+		{
+			Matcher m = item.name == null ? null
+				: COMPOUND_RUNES.matcher(item.name.toLowerCase(Locale.ROOT).trim());
+			if (m == null || !m.matches())
+			{
+				out.add(item);
+				continue;
+			}
+			for (String type : m.group(1).split(",? and |, ?"))
+			{
+				StepAnnotation.ItemNeed rune = new StepAnnotation.ItemNeed();
+				rune.name = type + " runes";
+				rune.quantity = item.quantity;
+				out.add(rune);
+			}
+		}
+		return out;
 	}
 
 	private void saveLocal()
