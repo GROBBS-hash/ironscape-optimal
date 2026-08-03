@@ -535,6 +535,18 @@ public final class GoalDetector
 	private static final Pattern SHARED_LEVEL = Pattern.compile(
 		"\\b(\\d{1,2})\\s+([a-z]+)\\s+and\\s+([a-z]+)", Pattern.CASE_INSENSITIVE);
 
+	private static final String RUNE_WORD =
+		"fire|water|air|earth|mind|body|chaos|law|nature|cosmic|death|blood|soul|wrath|astral";
+
+	/**
+	 * "300 earth and water" — one number, two rune types: the pair scan
+	 * credits only the first, so the second needs the same quantity.
+	 * Rune words only; "3 buckets and 1 bucket pack" has its own numbers.
+	 */
+	private static final Pattern SHARED_RUNE_QUANTITY = Pattern.compile(
+		"\\b(\\d[\\d,]*)\\s+(?:" + RUNE_WORD + ")s?(?:\\s+runes?)?\\s+and\\s+((?:" + RUNE_WORD + ")s?)\\b",
+		Pattern.CASE_INSENSITIVE);
+
 	/** "Chop down a dying tree" -> a Woodcutting XP drop completes it. */
 	private static void detectActionGoal(GuideStep step, SubStep sub, List<SkillActionGoal> out)
 	{
@@ -647,6 +659,14 @@ public final class GoalDetector
 				quantity = Long.toString(value);
 			}
 			addIfValid(out, step, sub, quantity, pairs.group(3), seen, ownPurchase);
+		}
+
+		// "300 earth and water": give the second rune type the shared number.
+		Matcher sharedRunes = SHARED_RUNE_QUANTITY.matcher(text);
+		while (sharedRunes.find())
+		{
+			addIfValid(out, step, sub, sharedRunes.group(1).replace(",", ""),
+				sharedRunes.group(2), seen, ownPurchase);
 		}
 
 		if (out.size() > before)
