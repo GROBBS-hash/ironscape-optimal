@@ -1936,6 +1936,20 @@ public class IronscapePlugin extends Plugin
 	private boolean currentSubSatisfied(GuideStep step, SubStep sub, boolean frontier,
 		boolean inFrontierStep)
 	{
+		// A FINISHED quest subsumes EVERY sub of a step that carries its
+		// goal: "Continue Gertrude's cat, talk to the kids" cannot have
+		// unfinished errands once the quest itself is done — the kids sub
+		// has no signal of its own and stayed unticked (owner hit this).
+		for (SubStep other : step.getSubSteps())
+		{
+			GoalDetector.QuestGoal stepQuest = questGoalBySub.get(other.getId());
+			if (stepQuest != null
+				&& stepQuest.getQuest().getState(client) == QuestState.FINISHED)
+			{
+				return true;
+			}
+		}
+
 		// Quest state FIRST: atomic guide steps combine errands with the
 		// quest action ("Buy a spade, start X marks the spot quest") — the
 		// quest's own state is the authoritative "done" signal, and it's

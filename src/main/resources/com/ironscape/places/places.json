@@ -4342,8 +4342,8 @@
     },
     "achievement diary guy": {
       "display": "achievement diary guy",
-      "x": 3096,
-      "y": 3227,
+      "x": 3225,
+      "y": 3415,
       "plane": 0
     },
     "glarial's tomb": {
@@ -4374,6 +4374,18 @@
       "display": "tea stall",
       "x": 3271,
       "y": 3411,
+      "plane": 0
+    },
+    "dairy cow": {
+      "display": "dairy cow",
+      "x": 3172,
+      "y": 3317,
+      "plane": 0
+    },
+    "toby": {
+      "display": "Toby",
+      "x": 3225,
+      "y": 3415,
       "plane": 0
     }
   }

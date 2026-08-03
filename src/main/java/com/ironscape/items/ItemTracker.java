@@ -85,7 +85,13 @@ public class ItemTracker
 	 */
 	private static final Map<String, String[]> SUBSTITUTES = Map.of(
 		"tinderbox", new String[]{"bruma torch"},
-		"hammer", new String[]{"imcando hammer"});
+		"hammer", new String[]{"imcando hammer"},
+		// Bare "gloves"/"boots" in the guide mean the basic leather ones
+		// the clothes shops sell.
+		"glove", new String[]{"leather gloves"},
+		"gloves", new String[]{"leather gloves"},
+		"boot", new String[]{"leather boots"},
+		"boots", new String[]{"leather boots"});
 
 	private static int resolve(Map<String, Integer> counts, String name)
 	{
@@ -206,6 +212,15 @@ public class ItemTracker
 		if (key.endsWith(" pack"))
 		{
 			out.add("empty " + key);
+		}
+		// Elemental staves: the guide says "fire staff", the item is
+		// "Staff of fire". (Battlestaves really are "Fire battlestaff",
+		// caught by the exact key.)
+		String stem = singular.endsWith(" staff")
+			? singular.substring(0, singular.length() - " staff".length()) : null;
+		if (stem != null && java.util.Set.of("fire", "water", "air", "earth").contains(stem))
+		{
+			out.add("staff of " + stem);
 		}
 		return out.toArray(new String[0]);
 	}

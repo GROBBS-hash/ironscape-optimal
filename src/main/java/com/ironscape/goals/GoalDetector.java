@@ -540,6 +540,35 @@ public final class GoalDetector
 	}
 
 	/**
+	 * "Kill 1 cow calf for meat" — the goal is the LOOT in your
+	 * inventory (Quest Helper-style item requirement), never an "item"
+	 * named after the NPC. Only mapped early-game meat drops; an
+	 * unmapped kill stays a manual checkbox.
+	 */
+	private static final Pattern KILL_FOR_MEAT = Pattern.compile(
+		"\\bkill\\s+(?:a|an|the)?\\s*(\\d+)?\\s*([a-z' ]+?)(?:\\s+with\\b[^,.]*?)?\\s+for\\s+(?:it'?s\\s+|its\\s+|their\\s+|the\\s+)?meat\\b",
+		Pattern.CASE_INSENSITIVE);
+
+	private static final java.util.Map<String, String> MEAT_BY_NPC = java.util.Map.of(
+		"chicken", "raw chicken",
+		"cow", "raw beef",
+		"cow calf", "raw beef",
+		"calf", "raw beef",
+		"rat", "raw rat meat",
+		"giant rat", "raw rat meat",
+		"bear", "raw bear meat",
+		"yak", "raw yak meat");
+
+	/**
+	 * "Fill 3 buckets with milk" -> 3 buckets OF milk: the empty
+	 * containers must not tick it. Known fillable containers only, so
+	 * "fill 1 inventory of buckets with water" falls through unchanged.
+	 */
+	private static final Pattern FILL_WITH = Pattern.compile(
+		"\\bfill\\s+(?:a|an|the)?\\s*(\\d+)?\\s*(buckets?|jugs?|vials?|bowls?|cups?|waterskins?)\\s+with\\s+([a-z]+)",
+		Pattern.CASE_INSENSITIVE);
+
+	/**
 	 * Returns the acquisition flag a bare continuation of this step's item
 	 * list should inherit: a sub with its own verb (re)defines the list
 	 * ("buy 5 X" -> purchases), a bare continuation carries it unchanged,
@@ -554,6 +583,36 @@ public final class GoalDetector
 		boolean ownPurchase = PURCHASE_VERB.matcher(text).find();
 		int before = out.size();
 		java.util.Set<String> seen = new java.util.HashSet<>();
+
+		Matcher kill = KILL_FOR_MEAT.matcher(text);
+		if (kill.find())
+		{
+			String npc = kill.group(2).trim().toLowerCase(Locale.ROOT);
+			String meat = MEAT_BY_NPC.get(npc);
+			if (meat == null && npc.endsWith("s"))
+			{
+				meat = MEAT_BY_NPC.get(npc.substring(0, npc.length() - 1));
+			}
+			if (meat != null)
+			{
+				addIfValid(out, step, sub, kill.group(1) == null ? "1" : kill.group(1),
+					meat, seen, false);
+			}
+			return false;
+		}
+
+		Matcher fillWith = FILL_WITH.matcher(text);
+		if (fillWith.find())
+		{
+			addIfValid(out, step, sub, fillWith.group(1) == null ? "1" : fillWith.group(1),
+				fillWith.group(2).toLowerCase(Locale.ROOT) + " of "
+					+ fillWith.group(3).toLowerCase(Locale.ROOT), seen, false);
+			return false;
+		}
+
+		// "Kill 5 hill giants": the number counts kills, not items — strip
+		// it so the pair scan below can't invent a "hill giants" goal.
+		text = text.replaceAll("(?i)\\b(kill|fight|defeat|slay)\\s+(?:a|an|the)?\\s*\\d+\\s+", "$1 ");
 
 		// Every "number + name" pair anywhere in the fragment, so "buy 5
 		// bolts of cloth and 100 steel nails" yields BOTH goals. Junk pairs
