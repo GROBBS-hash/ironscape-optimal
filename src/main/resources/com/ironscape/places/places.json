@@ -4297,6 +4297,84 @@
       "x": 2866,
       "y": 3546,
       "plane": 0
+    },
+    "mage tutor": {
+      "display": "mage tutor",
+      "x": 3218,
+      "y": 3238,
+      "plane": 0
+    },
+    "magic tutor": {
+      "display": "magic tutor",
+      "x": 3218,
+      "y": 3238,
+      "plane": 0
+    },
+    "lumby": {
+      "display": "lumby",
+      "x": 3188,
+      "y": 3220,
+      "plane": 0
+    },
+    "fally": {
+      "display": "fally",
+      "x": 3000,
+      "y": 3360,
+      "plane": 0
+    },
+    "burthrope": {
+      "display": "burthrope",
+      "x": 2870,
+      "y": 3544,
+      "plane": 0
+    },
+    "al-kharid": {
+      "display": "al-kharid",
+      "x": 3290,
+      "y": 3185,
+      "plane": 0
+    },
+    "zeah": {
+      "display": "zeah",
+      "x": 1630,
+      "y": 3730,
+      "plane": 0
+    },
+    "achievement diary guy": {
+      "display": "achievement diary guy",
+      "x": 3096,
+      "y": 3227,
+      "plane": 0
+    },
+    "glarial's tomb": {
+      "display": "glarial's tomb",
+      "x": 2556,
+      "y": 3445,
+      "plane": 0
+    },
+    "chemist": {
+      "display": "chemist",
+      "x": 2932,
+      "y": 3210,
+      "plane": 0
+    },
+    "aubury": {
+      "display": "aubury",
+      "x": 3250,
+      "y": 3403,
+      "plane": 0
+    },
+    "barb agility course": {
+      "display": "barb agility course",
+      "x": 2549,
+      "y": 3558,
+      "plane": 0
+    },
+    "tea stall": {
+      "display": "tea stall",
+      "x": 3271,
+      "y": 3411,
+      "plane": 0
     }
   }
 }
