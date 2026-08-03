@@ -35,6 +35,12 @@ guide.chapters.forEach((ch) => ch.sections.forEach((sec) => sec.steps.forEach((s
 })));
 console.log(`${firstStepByQuest.size} quests tagged in the guide`);
 
+// Infobox entries that are skills, categories or prose — never items.
+const DROP = new Set(['magic', 'ranged', 'woodcutting', 'combat', 'combat style',
+  'combat equipment', 'weapon', 'food', 'light source', 'water', 'sword', 'arrow',
+  'dye', 'tai bwo wannai village', 'ancient magicks', 'blood burst', 'fire wave',
+  'tool leprechaun', 'poison (item)', 'draynor skull', 'pvm', 'stab weapon', 'slash weapon', 'bow', 'arrows', 'combat classes', 'boat', 'cannon (facility)', 'ring', 'telekinetic grab', 'ores', 'astral contact', 'snare', 'prayer points', 'mourner gear', 'crush weapon']);
+
 async function fetchQuestItems(quest) {
   await sleep(REQUEST_DELAY_MS);
   const url = 'https://oldschool.runescape.wiki/api.php?action=parse&prop=wikitext&format=json&redirects=1&page='
@@ -54,6 +60,7 @@ async function fetchQuestItems(quest) {
     if (!link) continue;
     const name = link[1].trim().toLowerCase();
     if (name.length < 3 || name.length > 40) continue;
+    if (DROP.has(name) || name === quest.toLowerCase() || name.includes('_')) continue;
     out.push({ name, quantity: qty ? +qty[1].replace(/,/g, '') : 1 });
   }
   return out.length ? out : null;

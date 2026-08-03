@@ -40,7 +40,19 @@ const SPECIAL = new Set(['gloves', 'glove', 'boots', 'boot', 'pickaxe', 'pickaxe
   // Real UNTRADEABLE items the prices mapping can't know — the tracker
   // counts them by name at runtime just fine.
   'message', 'plague sample', 'touch paper', 'celestial ring', 'camulet',
-  'graceful', 'brooch', 'varrock armor 2', 'rune pick', 'bucket of slime', 'eye of newt pack', 'compost pack']);
+  'graceful', 'brooch', 'varrock armor 2', 'rune pick', 'bucket of slime', 'eye of newt pack', 'compost pack',
+  'priest gown top', 'gas mask', 'dramen staff', 'ecto-token', 'ecto-tokens',
+  'h.a.m. robes', 'chaos core', 'barronite deposit', 'ring of visibility',
+  'catspeak amulet', 'goutweed', 'seal of passage', 'elemental metal',
+  'battered key', "nuff's certificate", 'red vine worm', 'ring of charos',
+  'ring of charos(a)', 'nettle tea', 'ice gloves', 'dusty key', 'antidote++',
+  'stamina potion', 'restore potion', 'sapphire lantern', 'pink dye',
+  'specimen brush', 'specimen jar', 'panning tray', 'trowel', 'snake charm',
+  'snake basket', 'lyre', 'phoenix feather', "rat's tail", 'nails', 'nail',
+  'ugthanki dung', 'guthix rest', 'pigeon cage', 'karamjan rum', 'picture',
+  "captain's log", 'fishbowl', 'cat', 'ogre bellows', 'ogre bow',
+  "m'speak amulet", 'gorilla greegree', 'strip of cloth', 'silverlight',
+  'strange implement', 'black dye', 'phoenix crossbow', 'torch', 'flowers']);
 
 // Mirror of ItemTracker.COLLOQUIAL additions the audit must not re-flag.
 const COLLOQUIAL = {

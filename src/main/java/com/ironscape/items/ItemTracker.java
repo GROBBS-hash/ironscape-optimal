@@ -120,7 +120,9 @@ public class ItemTracker
 		"all runes", " rune",
 		"all of your runes", " rune",
 		"bars", " bar",
-		"beads", " beads");
+		"beads", " beads",
+		"nails", " nails",
+		"nail", " nails");
 
 	private static int resolve(Map<String, Integer> counts, String name)
 	{
@@ -204,7 +206,10 @@ public class ItemTracker
 	static String canonical(String name)
 	{
 		StringBuilder sb = new StringBuilder();
-		for (String word : name.toLowerCase(Locale.ROOT)
+		// Numeric potion doses collapse: "Restore potion(3)" and the
+		// guide's "restore potion" are the same thing, any dose counts.
+		// Non-numeric parens ("(unf)") are DIFFERENT items and stay.
+		for (String word : name.toLowerCase(Locale.ROOT).replaceAll("\\(\\d+\\)", "")
 			.replaceAll("[^a-z0-9 ]", "").split("\\s+"))
 		{
 			if (word.isEmpty())
