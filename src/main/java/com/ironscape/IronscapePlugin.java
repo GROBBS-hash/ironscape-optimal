@@ -2769,13 +2769,25 @@ public class IronscapePlugin extends Plugin
 				}
 				navHoldStepId = null;
 			}
-			// Quest in progress = Quest Helper's show. Two guidance systems
-			// pointing different ways is worse than one: clear our route
-			// and stand down until the quest completes and the step ticks
-			// (the same handoff the quest-start marker already does).
+			// Quest in progress = Quest Helper's show for the DETAILS. But
+			// standing down completely left players without QH pointing
+			// nowhere ("run back to Falador" gave no route) — so still
+			// route to the step's own 📍 area: QH users get a route to the
+			// same area QH is guiding them through, no conflict.
 			if (questHelperOwnsGuidance())
 			{
-				eventBus.post(new PluginMessage("shortestpath", "clear"));
+				Current questCurrent = findCurrent();
+				String location = questCurrent == null
+					? null : questCurrent.step.getMetadata().get("location");
+				WorldPoint area = location == null ? null : placeManager.getLoose(location);
+				if (area != null)
+				{
+					eventBus.post(new PluginMessage("shortestpath", "path", Map.of("target", area)));
+				}
+				else
+				{
+					eventBus.post(new PluginMessage("shortestpath", "clear"));
+				}
 				return;
 			}
 			WorldPoint target = findNextTarget();
