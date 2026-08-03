@@ -105,6 +105,18 @@ public class AnnotationManager
 		return b == null || b.items == null ? Collections.emptyList() : b.items;
 	}
 
+	/** External reference link for a step; null = none. */
+	public synchronized StepAnnotation.Link getLink(String annotationId)
+	{
+		StepAnnotation l = local.get(annotationId);
+		if (l != null && l.link != null)
+		{
+			return l.link;
+		}
+		StepAnnotation b = bundled.get(annotationId);
+		return b == null ? null : b.link;
+	}
+
 	/** "N of any item from a set" check (warm clothing); null = none. */
 	public synchronized StepAnnotation.GearCheck getGearCheck(String annotationId)
 	{

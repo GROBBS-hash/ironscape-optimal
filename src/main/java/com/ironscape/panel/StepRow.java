@@ -95,6 +95,7 @@ class StepRow extends JPanel
 		}
 
 		addGearBadge();
+		addAnnotationLink();
 		addMetadataChips();
 
 		// Trailing commentary paragraphs — informational, not tickable.
@@ -484,6 +485,24 @@ class StepRow extends JPanel
 		{
 			navigate.setVisible(target != null);
 		}
+	}
+
+	/**
+	 * Annotated external reference ("Do museum..." -> the Natural History
+	 * quiz wiki page): a 🔗 line whose real URL handleLink opens in the
+	 * browser via LinkBrowser.
+	 */
+	private void addAnnotationLink()
+	{
+		StepAnnotation.Link link = ctx.getAnnotations().getLink(step.getId());
+		if (link == null || link.url == null || link.label == null)
+		{
+			return;
+		}
+		add(htmlPane("<html><body><a style='color:#8ab4f8;text-decoration:none' href='"
+				+ RichText.escape(link.url) + "'>" + RichText.escape("🔗 " + link.label)
+				+ "</a></body></html>",
+			22, new Font(Font.DIALOG, Font.PLAIN, 11), ColorScheme.LIGHT_GRAY_COLOR));
 	}
 
 	/**

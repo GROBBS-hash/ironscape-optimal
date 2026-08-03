@@ -223,6 +223,10 @@
    "requires": {
     "skill": "HUNTER",
     "level": 9
+   },
+   "link": {
+    "label": "Natural History Quiz (wiki)",
+    "url": "https://oldschool.runescape.wiki/w/Natural_history_quiz"
    }
   },
   "d892b076aa": {

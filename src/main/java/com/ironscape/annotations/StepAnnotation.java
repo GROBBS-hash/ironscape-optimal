@@ -37,6 +37,20 @@ public class StepAnnotation
 	 */
 	public GearCheck gearCheck;
 
+	/**
+	 * External reference for steps whose prose is too terse ("Do museum
+	 * for 9 Hunter and Slayer" = the Natural History quiz) — rendered as
+	 * a clickable 🔗 line under the step that opens the browser.
+	 */
+	public Link link;
+
+	public static class Link
+	{
+		/** Text shown in the panel, e.g. "Natural History Quiz (wiki)". */
+		public String label;
+		public String url;
+	}
+
 	public static class GearCheck
 	{
 		/** Set name in gear_sets.json, e.g. "warm clothing". */

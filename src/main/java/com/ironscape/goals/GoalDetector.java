@@ -501,6 +501,20 @@ public final class GoalDetector
 				targets.merge(skill, level, Math::max);
 			}
 		}
+		// "9 Hunter and Slayer": the number distributes over BOTH skills —
+		// the pair scan above only credits the first.
+		Matcher shared = SHARED_LEVEL.matcher(text);
+		while (shared.find())
+		{
+			Skill second = SKILL_BY_WORD.get(shared.group(3).toLowerCase(Locale.ROOT));
+			int level = Integer.parseInt(shared.group(1));
+			if (second != null
+				&& SKILL_BY_WORD.containsKey(shared.group(2).toLowerCase(Locale.ROOT))
+				&& level >= 2 && level <= 99)
+			{
+				targets.merge(second, level, Math::max);
+			}
+		}
 		List<SkillLevelGoal> goals = new ArrayList<>(targets.size());
 		targets.forEach((skill, level) -> goals.add(new SkillLevelGoal(step, sub, skill, level)));
 		return goals;
@@ -516,6 +530,10 @@ public final class GoalDetector
 	/** "do a lap of the Shayzien agility course" -> an Agility XP drop. */
 	private static final Pattern AGILITY_LAP = Pattern.compile(
 		"\\blaps?\\b.*\\bagility course\\b", Pattern.CASE_INSENSITIVE);
+
+	/** "9 Hunter and Slayer" — one number shared by two skill words. */
+	private static final Pattern SHARED_LEVEL = Pattern.compile(
+		"\\b(\\d{1,2})\\s+([a-z]+)\\s+and\\s+([a-z]+)", Pattern.CASE_INSENSITIVE);
 
 	/** "Chop down a dying tree" -> a Woodcutting XP drop completes it. */
 	private static void detectActionGoal(GuideStep step, SubStep sub, List<SkillActionGoal> out)
