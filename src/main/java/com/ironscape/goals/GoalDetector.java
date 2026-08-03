@@ -708,6 +708,22 @@ public final class GoalDetector
 				sharedRunes.group(2), seen, ownPurchase);
 		}
 
+		// "Buy 8 woad leaves, offer 20gp to get 2 leaves": the bare word
+		// re-mentions the SAME item. A goal whose name is the word-suffix
+		// of another goal in this sub is a duplicate, not a second item.
+		for (int i = out.size() - 1; i >= before; i--)
+		{
+			String shortName = out.get(i).getItemName();
+			for (int j = before; j < out.size(); j++)
+			{
+				if (i != j && out.get(j).getItemName().endsWith(" " + shortName))
+				{
+					out.remove(i);
+					break;
+				}
+			}
+		}
+
 		if (out.size() > before)
 		{
 			return ownPurchase; // numbered goals found; done
