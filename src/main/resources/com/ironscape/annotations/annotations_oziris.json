@@ -1228,7 +1228,21 @@
    "requires": {
     "skill": "AGILITY",
     "level": 70
-   }
+   },
+   "items": [
+    {
+     "name": "vial of water",
+     "quantity": 1
+    },
+    {
+     "name": "toadflax",
+     "quantity": 1
+    },
+    {
+     "name": "toad's legs",
+     "quantity": 1
+    }
+   ]
   },
   "052270c199": {
    "requires": {
@@ -1429,14 +1443,34 @@
     "x": 3110,
     "y": 3499,
     "plane": 0
-   }
+   },
+   "items": [
+    {
+     "name": "ruby necklace",
+     "quantity": 1
+    },
+    {
+     "name": "cosmic rune",
+     "quantity": 1
+    }
+   ]
   },
   "6c2213b929": {
    "target": {
     "x": 3110,
     "y": 3499,
     "plane": 0
-   }
+   },
+   "items": [
+    {
+     "name": "bucket of sand",
+     "quantity": 1
+    },
+    {
+     "name": "soda ash",
+     "quantity": 1
+    }
+   ]
   },
   "8a9b304848": {
    "gearCheck": {
@@ -1555,6 +1589,186 @@
     "y": 3430,
     "plane": 0
    }
+  },
+  "fa497e8b66": {
+   "items": [
+    {
+     "name": "snape grass",
+     "quantity": 1
+    },
+    {
+     "name": "chocolate dust",
+     "quantity": 1
+    },
+    {
+     "name": "bucket of milk",
+     "quantity": 1
+    }
+   ]
+  },
+  "e0cf374a7d": {
+   "items": [
+    {
+     "name": "logs",
+     "quantity": 1
+    },
+    {
+     "name": "coins",
+     "quantity": 100
+    }
+   ]
+  },
+  "6d95f6a51c": {
+   "items": [
+    {
+     "name": "redberries",
+     "quantity": 1
+    },
+    {
+     "name": "pot of flour",
+     "quantity": 1
+    },
+    {
+     "name": "bucket of water",
+     "quantity": 1
+    },
+    {
+     "name": "pie dish",
+     "quantity": 1
+    }
+   ]
+  },
+  "fed4e27cd1": {
+   "items": [
+    {
+     "name": "clay",
+     "quantity": 5
+    },
+    {
+     "name": "bucket of water",
+     "quantity": 5
+    }
+   ]
+  },
+  "35144e9afb": {
+   "items": [
+    {
+     "name": "redberries",
+     "quantity": 12
+    },
+    {
+     "name": "coins",
+     "quantity": 20
+    }
+   ]
+  },
+  "1874f7b692": {
+   "items": [
+    {
+     "name": "bucket of sand",
+     "quantity": 5
+    },
+    {
+     "name": "soda ash",
+     "quantity": 5
+    }
+   ]
+  },
+  "9594bb2c0e": {
+   "items": [
+    {
+     "name": "emerald ring",
+     "quantity": 2
+    },
+    {
+     "name": "cosmic rune",
+     "quantity": 2
+    }
+   ]
+  },
+  "c296768132": {
+   "items": [
+    {
+     "name": "cowhide",
+     "quantity": 1
+    },
+    {
+     "name": "coins",
+     "quantity": 1
+    }
+   ]
+  },
+  "a6c22a24cb": {
+   "items": [
+    {
+     "name": "cooked meat",
+     "quantity": 1
+    },
+    {
+     "name": "potato",
+     "quantity": 1
+    },
+    {
+     "name": "bowl of water",
+     "quantity": 1
+    }
+   ]
+  },
+  "c141c97e3c": {
+   "items": [
+    {
+     "name": "sapphire amulet",
+     "quantity": 1
+    },
+    {
+     "name": "cosmic rune",
+     "quantity": 1
+    }
+   ]
+  },
+  "b1e5f2f318": {
+   "items": [
+    {
+     "name": "molten glass",
+     "quantity": 2
+    }
+   ]
+  },
+  "e5a15dcfca": {
+   "items": [
+    {
+     "name": "mith grapple tip",
+     "quantity": 1
+    },
+    {
+     "name": "mithril bolts",
+     "quantity": 1
+    },
+    {
+     "name": "rope",
+     "quantity": 1
+    }
+   ]
+  },
+  "6dd58a829e": {
+   "items": [
+    {
+     "name": "golovanova fruit top",
+     "quantity": 1
+    },
+    {
+     "name": "pot of flour",
+     "quantity": 1
+    },
+    {
+     "name": "bucket of water",
+     "quantity": 1
+    },
+    {
+     "name": "pie dish",
+     "quantity": 1
+    }
+   ]
   }
  }
 }
