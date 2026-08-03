@@ -1459,9 +1459,10 @@ public class IronscapePlugin extends Plugin
 			// so show the click path unprompted (Giants' Foundry steps
 			// gave no hint until the chip was clicked). Arriving — or
 			// getting anywhere near — drops the hint.
-			// Mid-quest you're already there working it — defer to QH.
-			if (activeMinigameTarget == null && current != null
-				&& !questHelperOwnsGuidance())
+			// NOT gated on quest-in-progress: starting the quest and then
+			// teleporting away to gather items is normal — presence alone
+			// decides whether the way back needs showing.
+			if (activeMinigameTarget == null && current != null)
 			{
 				String location = current.step.getMetadata().get("location");
 				String key = location == null ? null
