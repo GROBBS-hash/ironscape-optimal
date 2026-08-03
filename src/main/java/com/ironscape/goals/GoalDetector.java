@@ -857,8 +857,12 @@ public final class GoalDetector
 			{
 				// "buy chocolate dust ... and MAKE energy pots": an action
 				// verb opens a new clause, not another purchased item.
+				// ("make" is absent from NOT_AN_ITEM_FIRST_WORD because
+				// MAKE_PRODUCT wants it — list it here explicitly.)
 				String firstWord = parts[i].trim().split("[^a-z]+", 2)[0];
-				if (NOT_AN_ITEM_FIRST_WORD.contains(firstWord))
+				if (NOT_AN_ITEM_FIRST_WORD.contains(firstWord)
+					|| java.util.Set.of("make", "craft", "smith", "cook", "mix", "brew")
+						.contains(firstWord))
 				{
 					break;
 				}
