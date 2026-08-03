@@ -1551,7 +1551,11 @@ public class IronscapePlugin extends Plugin
 		// tick; the overlay re-reads the live hulls per frame, which is
 		// what keeps the outline glued to wandering NPCs.
 		java.util.Set<String> npcNames = new java.util.HashSet<>();
-		if (current != null)
+		// Mid-quest, Quest Helper's show: our NPC outlines stand down (the
+		// giver's outline served its purpose getting the quest STARTED) and
+		// resume when the quest finishes and the step ticks — otherwise we
+		// keep pointing at Kovac while QH points at the actual objective.
+		if (current != null && !questHelperOwnsGuidance())
 		{
 			// The step's NOTE lines join the scan: "Note: Use phials to
 			// un-note planks" names the NPC the step is really about even
