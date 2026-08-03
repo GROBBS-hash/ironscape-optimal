@@ -190,6 +190,16 @@ public class IronscapePlugin extends Plugin
 	@Inject
 	private com.ironscape.overlay.ObjectTargetOverlay objectTargetOverlay;
 
+	@Inject
+	private com.ironscape.overlay.InventoryItemHintOverlay inventoryItemHintOverlay;
+
+	/** Inventory item the current sub says to USE ("house tab"); -1 = none. */
+	private volatile int inventoryHintItemId = -1;
+
+	/** "use the house tab", "fally teletab to..." — the tab phrase in a travel sub. */
+	private static final java.util.regex.Pattern TAB_PHRASE = java.util.regex.Pattern.compile(
+		"\\b([a-z]+(?:\\s+[a-z]+)?\\s+(?:tele)?tab)s?\\b", java.util.regex.Pattern.CASE_INSENSITIVE);
+
 	/** Live scene objects (ore rocks) the current sub is about; overlay-outlined. */
 	private volatile List<net.runelite.api.GameObject> objectTargets = java.util.Collections.emptyList();
 
@@ -781,6 +791,8 @@ public class IronscapePlugin extends Plugin
 		overlayManager.add(targetTileOverlay);
 		objectTargetOverlay.setObjectsSupplier(() -> objectTargets);
 		overlayManager.add(objectTargetOverlay);
+		inventoryItemHintOverlay.setItemIdSupplier(() -> inventoryHintItemId);
+		overlayManager.add(inventoryItemHintOverlay);
 
 		panel = panelProvider.get();
 		panel.setItemGoals(itemGoalsBySub);
@@ -864,6 +876,7 @@ public class IronscapePlugin extends Plugin
 		overlayManager.remove(npcTargetOverlay);
 		overlayManager.remove(targetTileOverlay);
 		overlayManager.remove(objectTargetOverlay);
+		overlayManager.remove(inventoryItemHintOverlay);
 		npcTargetNames = java.util.Collections.emptySet();
 		npcTargetIndexes = java.util.Collections.emptySet();
 		objectTargets = java.util.Collections.emptyList();
@@ -1632,6 +1645,31 @@ public class IronscapePlugin extends Plugin
 		objectTargets = current != null
 			? findWantedRocks(current)
 			: java.util.Collections.emptyList();
+
+		// "Use house tab and run back to Thurgo": outline the carried tab
+		// in the inventory so the first leg is obvious.
+		int tabHint = -1;
+		if (current != null && travelGoalSubs.contains(current.sub.getId()))
+		{
+			java.util.regex.Matcher tab = TAB_PHRASE.matcher(current.sub.getPlainText());
+			if (tab.find())
+			{
+				// The capture may swallow a verb ("USE house tab") — try
+				// the shorter word suffix too.
+				String full = tab.group(1).toLowerCase(Locale.ROOT);
+				String[] candidates = {full, full.contains(" ")
+					? full.substring(full.indexOf(' ') + 1) : full};
+				for (String candidate : candidates)
+				{
+					if (itemTracker.carriedCountOf(candidate) > 0)
+					{
+						tabHint = itemTracker.iconIdFor(candidate);
+						break;
+					}
+				}
+			}
+		}
+		inventoryHintItemId = tabHint;
 		currentSubIsQuest = current != null && questGoalBySub.containsKey(current.sub.getId());
 
 		updateStepOverlay();
