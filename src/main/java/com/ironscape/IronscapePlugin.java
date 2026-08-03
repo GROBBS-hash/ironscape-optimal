@@ -818,6 +818,39 @@ public class IronscapePlugin extends Plugin
 				}
 				return sb.toString();
 			}
+			// Reviewed annotation skill requirements get the SAME badge
+			// row as items and level goals ("smithing 29/15") instead of
+			// living only in the step's prose — uniform look (owner ask).
+			List<StepRequirement> requirements = subRequirements.get(subId);
+			if (requirements == null)
+			{
+				requirements = stepSkillRequirements.get(subId);
+			}
+			if (requirements != null)
+			{
+				StringBuilder sb = new StringBuilder();
+				for (StepRequirement requirement : requirements)
+				{
+					if (requirement.skill == null)
+					{
+						continue; // varbit/combat checkpoints have no badge form
+					}
+					int have = realLevelBySkill.getOrDefault(requirement.skill, 1);
+					String reqColor = have >= requirement.threshold ? "#4caf50" : "#ffa000";
+					if (sb.length() > 0)
+					{
+						sb.append(" <font color='#606060'>·</font> ");
+					}
+					sb.append("<font color='").append(reqColor).append("'>")
+						.append(requirement.skill.getName().toLowerCase())
+						.append(' ').append(have).append('/').append(requirement.threshold)
+						.append("</font>");
+				}
+				if (sb.length() > 0)
+				{
+					return sb.toString();
+				}
+			}
 			GoalDetector.CountedSkillGoal counted = countedGoalBySub.get(subId);
 			if (counted == null)
 			{
@@ -3069,7 +3102,20 @@ public class IronscapePlugin extends Plugin
 			eventBus.post(new PluginMessage("shortestpath", "clear")));
 	}
 
-	/** The guide's minigame-teleport name matching this place name, or null. */
+	/**
+	 * Every Grouping-UI minigame destination — clicking any of these as a
+	 * place (📍 chip or link) lights the teleport click path even when no
+	 * guide sub literally says "minigame teleport to X" (Giants' Foundry
+	 * was reached via its location chip and got a walking route).
+	 */
+	private static final java.util.Set<String> GROUPING_MINIGAMES = java.util.Set.of(
+		"barbarian assault", "burthorpe games room", "castle wars", "clan wars",
+		"fishing trawler", "giants' foundry", "guardians of the rift",
+		"last man standing", "nightmare zone", "pest control", "rat pits",
+		"shades of mort'ton", "soul wars", "tithe farm", "trouble brewing",
+		"tzhaar fight pit");
+
+	/** The minigame-teleport name matching this place name, or null. */
 	private String minigameByName(String placeName)
 	{
 		for (String minigame : minigameBySub.values())
@@ -3079,7 +3125,8 @@ public class IronscapePlugin extends Plugin
 				return minigame;
 			}
 		}
-		return null;
+		String key = placeName.toLowerCase(Locale.ROOT).replace('’', '\'');
+		return GROUPING_MINIGAMES.contains(key) ? placeName : null;
 	}
 
 	/**
