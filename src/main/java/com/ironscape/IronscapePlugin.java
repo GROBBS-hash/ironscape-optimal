@@ -1450,7 +1450,12 @@ public class IronscapePlugin extends Plugin
 			// gave no hint until the chip was clicked). Arriving — or
 			// getting anywhere near — drops the hint.
 			if (activeMinigameTarget == null && current != null
-				&& !minigameHintSuppressed.contains(current.step.getId()))
+				&& !minigameHintSuppressed.contains(current.step.getId())
+				// Mid-quest you're already THERE (the foundry interior is
+				// its own region, so the distance gate can't tell) — and if
+				// the client starts while inside, no teleport ever lands to
+				// trigger the suppression either.
+				&& !questHelperOwnsGuidance())
 			{
 				String location = current.step.getMetadata().get("location");
 				if (location != null

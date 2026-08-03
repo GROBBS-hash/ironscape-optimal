@@ -551,7 +551,7 @@ class StepRow extends JPanel
 		{
 			add(htmlPane("<html><body><i>Quest Helper: select “" + RichText.escape(quest)
 					+ "” for click-by-click quest guidance</i></body></html>", 22,
-				new Font(Font.DIALOG, Font.ITALIC, 10), ColorScheme.MEDIUM_GRAY_COLOR));
+				new Font(Font.DIALOG, Font.ITALIC, 11), ColorScheme.PROGRESS_COMPLETE_COLOR));
 		}
 	}
 
