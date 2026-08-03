@@ -543,6 +543,16 @@ class StepRow extends JPanel
 			new Font(Font.DIALOG, Font.PLAIN, 11), ColorScheme.LIGHT_GRAY_COLOR);
 		chips.setToolTipText("Show the route (needs the Shortest Path plugin)");
 		add(chips);
+
+		// The Plugin Hub forbids starting Quest Helper FOR the player (the
+		// old reflection handoff), so each quest step says how to do it
+		// themselves instead.
+		if (quest != null)
+		{
+			add(htmlPane("<html><body><i>Quest Helper: select “" + RichText.escape(quest)
+					+ "” for click-by-click quest guidance</i></body></html>", 22,
+				new Font(Font.DIALOG, Font.ITALIC, 10), ColorScheme.MEDIUM_GRAY_COLOR));
+		}
 	}
 
 	/** One chip as a place link — clicks land in the shared hyperlink handler. */
