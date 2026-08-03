@@ -61,7 +61,7 @@ const COLLOQUIAL = {
   'chocolate': 'chocolate bar', 'dueling ring': 'ring of dueling(8)',
   'dueling rings': 'ring of dueling(8)', 'soft leather': 'leather',
   'priest robes': 'priest gown (top)', 'silver': 'silver bar',
-  'regular plank': 'plank', 'regular planks': 'plank', 'normal compost pack': 'compost pack',
+  'regular plank': 'plank', 'regular planks': 'plank', 'normal compost pack': 'compost pack', 'flour': 'pot of flour', 'flours': 'pot of flour',
 };
 
 const resolves = (name, aliases) => {

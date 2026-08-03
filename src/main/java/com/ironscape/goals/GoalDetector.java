@@ -3,6 +3,7 @@ package com.ironscape.goals;
 import com.ironscape.guide.Guide;
 import com.ironscape.guide.GuideStep;
 import com.ironscape.guide.SubStep;
+import com.ironscape.guide.TextRun;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -382,6 +383,7 @@ public final class GoalDetector
 		for (GuideStep step : guide.getAllSteps())
 		{
 			int stepQuestsBefore = questGoals.size();
+			int stepItemsBefore = itemGoals.size();
 			// True while we're inside a comma-list of items within this
 			// step ("Grab a bucket of milk, raw sardine, doogle leaves…").
 			boolean inItemList = false;
@@ -465,6 +467,45 @@ public final class GoalDetector
 					if (count > 0)
 					{
 						countedGoals.add(new CountedSkillGoal(step, sub, skill, count));
+					}
+				}
+			}
+
+			// NOTE-carried quantities: "Buy buckets of sand and soda ash"
+			// with "Note: ...around 600 buckets of sand and 600 soda ash"
+			// — the note holds the real target, so an unnumbered goal
+			// (quantity 1) adopts the note's number for its name.
+			if (!step.getAdditionalContent().isEmpty() && itemGoals.size() > stepItemsBefore)
+			{
+				StringBuilder noteText = new StringBuilder();
+				for (List<TextRun> paragraph : step.getAdditionalContent())
+				{
+					for (TextRun run : paragraph)
+					{
+						noteText.append(run.getText());
+					}
+					noteText.append(' ');
+				}
+				String note = noteText.toString().toLowerCase(Locale.ROOT);
+				for (int i = stepItemsBefore; i < itemGoals.size(); i++)
+				{
+					ItemGoal goal = itemGoals.get(i);
+					if (goal.getQuantity() != 1)
+					{
+						continue;
+					}
+					Matcher noted = Pattern.compile(
+						"(\\d[\\d,]*)(k?)\\s+(?:x\\s*)?(?:of\\s+)?"
+							+ Pattern.quote(goal.getItemName())).matcher(note);
+					if (noted.find())
+					{
+						long quantity = Long.parseLong(noted.group(1).replace(",", ""))
+							* ("k".equalsIgnoreCase(noted.group(2)) ? 1000L : 1L);
+						if (quantity > 1 && quantity <= 50_000_000)
+						{
+							itemGoals.set(i, new ItemGoal(goal.getStep(), goal.getSub(),
+								goal.getItemName(), (int) quantity, goal.isAcquisition()));
+						}
 					}
 				}
 			}
@@ -806,7 +847,23 @@ public final class GoalDetector
 		Matcher verbOnly = VERB_NO_QUANTITY.matcher(text);
 		if (verbOnly.find())
 		{
-			addIfValid(out, step, sub, "1", verbOnly.group(1), seen, ownPurchase);
+			// "Buy buckets of sand AND soda ash": in a purchase, every
+			// and-separated part of the unnumbered list is its own item.
+			// (Non-purchases keep just the first part — "get the touch
+			// paper and give the potions" must not invent a 'give' item.)
+			String[] parts = verbOnly.group(1).split("\\s+and\\s+");
+			addIfValid(out, step, sub, "1", parts[0], seen, ownPurchase);
+			for (int i = 1; ownPurchase && i < parts.length; i++)
+			{
+				// "buy chocolate dust ... and MAKE energy pots": an action
+				// verb opens a new clause, not another purchased item.
+				String firstWord = parts[i].trim().split("[^a-z]+", 2)[0];
+				if (NOT_AN_ITEM_FIRST_WORD.contains(firstWord))
+				{
+					break;
+				}
+				addIfValid(out, step, sub, "1", parts[i], seen, true);
+			}
 			return ownPurchase;
 		}
 

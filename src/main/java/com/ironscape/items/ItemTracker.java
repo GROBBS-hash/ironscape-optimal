@@ -284,7 +284,11 @@ public class ItemTracker
 		Map.entry("priest robes", "priest gown (top)"),
 		Map.entry("silver", "silver bar"),
 		// The farming shop's pack of normal compost is just "Compost pack".
-		Map.entry("normal compost pack", "compost pack"));
+		Map.entry("normal compost pack", "compost pack"),
+		// Shops sell "Pot of flour"; the bare item "Flour" exists but is
+		// unobtainable — which is why the existence audit passed it.
+		Map.entry("flour", "pot of flour"),
+		Map.entry("flours", "pot of flour"));
 
 	/**
 	 * The in-game item names a guide phrase might refer to, most literal
