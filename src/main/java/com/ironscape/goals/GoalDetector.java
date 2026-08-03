@@ -328,7 +328,7 @@ public final class GoalDetector
 
 	/** A sub-step about moving via teleport/transport, completed by a position jump. */
 	private static final Pattern TRAVEL_WORDS = Pattern.compile(
-		"\\b(?:teleport|tele|quetzal|travel|sail|charter|gnome glider|balloon|minecart|fairy ring|boat|ship|ferry|canoe)\\b",
+		"\\b(?:teleport|tele|tabs?|quetzal|travel|sail|charter|gnome glider|balloon|minecart|fairy ring|boat|ship|ferry|canoe)\\b",
 		Pattern.CASE_INSENSITIVE);
 
 	/** Fragment-opening action verb -> the skill whose XP drop proves it was done. */

@@ -543,7 +543,7 @@ public class IronscapePlugin extends Plugin
 	 * battlefield"). Gates place-name arrival ticks.
 	 */
 	private static final java.util.regex.Pattern MOVEMENT_WORD = java.util.regex.Pattern.compile(
-		"\\b(?:go|walk|run|head|return|travel|enter|exit|climb|cross|move|proceed|sail|ride|fly|swim|tele|teleport)\\b",
+		"\\b(?:go|walk|run|head|return|travel|enter|exit|climb|cross|move|proceed|sail|ride|fly|swim|tele|teleport|tabs?)\\b",
 		java.util.regex.Pattern.CASE_INSENSITIVE);
 
 	/**
