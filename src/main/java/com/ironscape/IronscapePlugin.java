@@ -570,10 +570,19 @@ public class IronscapePlugin extends Plugin
 	private final java.util.Set<String> arrivalArmed = new java.util.HashSet<>();
 
 	/**
-	 * Step ids whose location-tag minigame hint already served its purpose
-	 * (a teleport landed while it showed). Session-only.
+	 * The minigame the player is AT right now, if any — presence carries
+	 * across region borders while movement stays contiguous (walking from
+	 * the Foundry entrance down into its interior region), and breaks on
+	 * any teleport, so leaving brings the hint back. No one-way flags.
 	 */
-	private final java.util.Set<String> minigameHintSuppressed = new java.util.HashSet<>();
+	private String minigamePresence;
+
+	/**
+	 * Regions CONFIRMED to be each minigame: recorded on teleport landings
+	 * (the grouping teleport puts you there) and near-pin sightings.
+	 * Session-only; makes teleporting back recognisable instantly.
+	 */
+	private final Map<String, java.util.Set<Integer>> minigameRegions = new HashMap<>();
 
 	/** Text-detected "get N items" / "start quest X" goals (see GoalDetector). */
 	private GoalDetector.Goals goals;
@@ -989,7 +998,8 @@ public class IronscapePlugin extends Plugin
 		// Baselines describe the OLD profile's inventory state.
 		acquisitionBaseline.clear();
 		arrivalArmed.clear();
-		minigameHintSuppressed.clear();
+		minigameRegions.clear();
+		minigamePresence = null;
 		depletionArmed.clear();
 		// The new profile's saved progress may still use pre-refresh step
 		// ids; apply the same remap startUp applied (no-op if none).
@@ -1385,17 +1395,17 @@ public class IronscapePlugin extends Plugin
 				// A click-requested minigame hint is done once ANY teleport
 				// lands — the guided click path served its purpose.
 				clickedMinigameTicks = 0;
-				// Same for the location-tag hint: the distance gate can't
-				// see that a minigame's INTERIOR is its own map region
-				// ("still >100 tiles from the surface pin" while standing
-				// inside the Foundry) — the teleport landing is proof.
+				// A teleport landing while the minigame hint shows means the
+				// grouping teleport was used: wherever we landed IS that
+				// minigame — confirm the region so returning later is
+				// recognised instantly.
 				if (activeMinigameTarget != null)
 				{
-					Current landed = findCurrent();
-					if (landed != null)
-					{
-						minigameHintSuppressed.add(landed.step.getId());
-					}
+					String landedKey = activeMinigameTarget.toLowerCase(Locale.ROOT)
+						.replace('’', '\'');
+					minigameRegions.computeIfAbsent(landedKey, k -> new java.util.HashSet<>())
+						.add(here.getRegionID());
+					minigamePresence = landedKey;
 				}
 				// Landing somewhere new invalidates the walking route: point
 				// Shortest Path at the current destination FROM HERE ("home
@@ -1449,35 +1459,46 @@ public class IronscapePlugin extends Plugin
 			// so show the click path unprompted (Giants' Foundry steps
 			// gave no hint until the chip was clicked). Arriving — or
 			// getting anywhere near — drops the hint.
+			// Mid-quest you're already there working it — defer to QH.
 			if (activeMinigameTarget == null && current != null
-				&& !minigameHintSuppressed.contains(current.step.getId())
-				// Mid-quest you're already THERE (the foundry interior is
-				// its own region, so the distance gate can't tell) — and if
-				// the client starts while inside, no teleport ever lands to
-				// trigger the suppression either.
 				&& !questHelperOwnsGuidance())
 			{
 				String location = current.step.getMetadata().get("location");
-				if (location != null
-					&& GROUPING_MINIGAMES.contains(
-						location.toLowerCase(Locale.ROOT).replace('’', '\'')))
+				String key = location == null ? null
+					: location.toLowerCase(Locale.ROOT).replace('’', '\'');
+				if (key != null && GROUPING_MINIGAMES.contains(key))
 				{
 					WorldPoint area = placeManager.getLoose(location);
 					Player me = client.getLocalPlayer();
 					if (area != null && me != null)
 					{
+						int region = me.getWorldLocation().getRegionID();
 						boolean near = me.getWorldLocation().getPlane() == area.getPlane()
 							&& me.getWorldLocation().distanceTo2D(area) <= 100;
+						java.util.Set<Integer> confirmed = minigameRegions.get(key);
+						// AT the minigame = near its pin, in a region
+						// confirmed to be it, or contiguous walking since
+						// last tick's presence (entrance -> interior). A
+						// teleport breaks the walking chain, so leaving
+						// brings the hint straight back.
+						boolean present = near
+							|| (confirmed != null && confirmed.contains(region))
+							|| (key.equals(minigamePresence) && recentTeleportTicks == 0);
 						if (near)
 						{
-							// STICKY: walking in passes the surface pin, and
-							// once inside the interior region the pin reads
-							// as "far" again — one near sighting means the
-							// hint has served its purpose for this step.
-							minigameHintSuppressed.add(current.step.getId());
+							minigameRegions.computeIfAbsent(key, k -> new java.util.HashSet<>())
+								.add(region);
+						}
+						if (present)
+						{
+							minigamePresence = key;
 						}
 						else
 						{
+							if (key.equals(minigamePresence))
+							{
+								minigamePresence = null;
+							}
 							activeMinigameTarget = location;
 						}
 					}
