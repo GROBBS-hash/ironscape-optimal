@@ -200,8 +200,18 @@ public class ItemTracker
 			{
 				continue;
 			}
+			// Irregular -ves plurals fold to their -f singular: leaves ->
+			// leaf; knives and knife both land on "knif".
+			if (word.length() > 4 && word.endsWith("ves"))
+			{
+				word = word.substring(0, word.length() - 3) + "f";
+			}
+			else if (word.length() > 3 && word.endsWith("fe"))
+			{
+				word = word.substring(0, word.length() - 1);
+			}
 			// "glass"/"grass" keep their s; short words like "gp" too.
-			if (word.length() > 3 && word.endsWith("s") && !word.endsWith("ss"))
+			else if (word.length() > 3 && word.endsWith("s") && !word.endsWith("ss"))
 			{
 				word = word.substring(0, word.length() - 1);
 			}
@@ -327,6 +337,14 @@ public class ItemTracker
 		if (stem != null && java.util.Set.of("fire", "water", "air", "earth").contains(stem))
 		{
 			out.add("staff of " + stem);
+		}
+		// Irregular -ves plurals: "woad leaves" is the item "Woad leaf",
+		// "knives" is "Knife".
+		if (key.endsWith("ves"))
+		{
+			String base = key.substring(0, key.length() - 3);
+			out.add(base + "f");
+			out.add(base + "fe");
 		}
 		// "rune pick" is a rune pickaxe; "varrock armor" is spelt armour.
 		if (singular.endsWith(" pick"))
