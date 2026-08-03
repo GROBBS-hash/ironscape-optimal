@@ -187,6 +187,26 @@ public class IronscapePlugin extends Plugin
 	@Inject
 	private com.ironscape.overlay.TargetTileOverlay targetTileOverlay;
 
+	@Inject
+	private com.ironscape.overlay.ObjectTargetOverlay objectTargetOverlay;
+
+	/** Live scene objects (ore rocks) the current sub is about; overlay-outlined. */
+	private volatile List<net.runelite.api.GameObject> objectTargets = java.util.Collections.emptyList();
+
+	/** Ore/stone item goal -> the LIVE rock object that yields it. */
+	private static final Map<String, String> ROCK_BY_ORE = Map.ofEntries(
+		Map.entry("copper ore", "copper rocks"),
+		Map.entry("tin ore", "tin rocks"),
+		Map.entry("iron ore", "iron rocks"),
+		Map.entry("coal", "coal rocks"),
+		Map.entry("silver ore", "silver rocks"),
+		Map.entry("gold ore", "gold rocks"),
+		Map.entry("clay", "clay rocks"),
+		Map.entry("sandstone", "sandstone rocks"),
+		Map.entry("mithril ore", "mithril rocks"),
+		Map.entry("adamantite ore", "adamantite rocks"),
+		Map.entry("runite ore", "runite rocks"));
+
 	/** Lowercased names of scene NPCs the current sub mentions. Written per tick. */
 	private volatile java.util.Set<String> npcTargetNames = java.util.Collections.emptySet();
 
@@ -732,6 +752,8 @@ public class IronscapePlugin extends Plugin
 		targetTileOverlay.setTargetSupplier(() -> targetTileMarker);
 		targetTileOverlay.setGroundItemsSupplier(() -> groundItemTargets);
 		overlayManager.add(targetTileOverlay);
+		objectTargetOverlay.setObjectsSupplier(() -> objectTargets);
+		overlayManager.add(objectTargetOverlay);
 
 		panel = panelProvider.get();
 		panel.setItemGoals(itemGoalsBySub);
@@ -814,6 +836,7 @@ public class IronscapePlugin extends Plugin
 		overlayManager.remove(questStartMarkerOverlay);
 		overlayManager.remove(npcTargetOverlay);
 		overlayManager.remove(targetTileOverlay);
+		overlayManager.remove(objectTargetOverlay);
 		npcTargetNames = java.util.Collections.emptySet();
 		currentSubIsQuest = false;
 		questStartMarker = null;
@@ -1554,6 +1577,11 @@ public class IronscapePlugin extends Plugin
 		// bars...", item spawns): highlight their tiles, QH-style.
 		groundItemTargets = config.showGroundItemMarkers() && current != null
 			? findWantedGroundItems(current)
+			: java.util.Collections.emptyList();
+		// Mining subs: outline the live rocks for every still-unmet ore
+		// goal ("Mine 4 copper ore and 1 iron ore" lights up both).
+		objectTargets = current != null
+			? findWantedRocks(current)
 			: java.util.Collections.emptyList();
 		currentSubIsQuest = current != null && questGoalBySub.containsKey(current.sub.getId());
 
@@ -2441,6 +2469,95 @@ public class IronscapePlugin extends Plugin
 	 * client thread to read the player's position, save it, then hop back
 	 * to Swing to update the button.
 	 */
+	/**
+	 * Scene scan for the rocks the current sub still needs ore from.
+	 * Impostor-resolved names, so a mined-out rock (plain "Rocks") drops
+	 * out of the highlight until it respawns. Runs once per game tick and
+	 * only while an ore goal is current. Client thread.
+	 */
+	private List<net.runelite.api.GameObject> findWantedRocks(Current current)
+	{
+		List<GoalDetector.ItemGoal> wanted = itemGoalsBySub.get(current.sub.getId());
+		if (wanted == null)
+		{
+			return java.util.Collections.emptyList();
+		}
+		java.util.Set<String> rockNames = new java.util.HashSet<>();
+		for (GoalDetector.ItemGoal goal : wanted)
+		{
+			String rock = ROCK_BY_ORE.get(goal.getItemName().toLowerCase(Locale.ROOT));
+			if (rock == null)
+			{
+				continue;
+			}
+			boolean gather = itemTracker.bankCountable(goal.getItemName(), goal.getQuantity());
+			int count = gather
+				? itemTracker.countOf(goal.getItemName())
+				: itemTracker.carriedCountOf(goal.getItemName());
+			if (count < goal.getQuantity())
+			{
+				rockNames.add(rock);
+			}
+		}
+		if (rockNames.isEmpty())
+		{
+			return java.util.Collections.emptyList();
+		}
+		java.util.LinkedHashSet<net.runelite.api.GameObject> found = new java.util.LinkedHashSet<>();
+		net.runelite.api.Tile[][][] tiles = client.getTopLevelWorldView().getScene().getTiles();
+		int plane = client.getTopLevelWorldView().getPlane();
+		for (net.runelite.api.Tile[] row : tiles[plane])
+		{
+			for (net.runelite.api.Tile tile : row)
+			{
+				if (tile == null)
+				{
+					continue;
+				}
+				for (net.runelite.api.GameObject object : tile.getGameObjects())
+				{
+					if (object == null)
+					{
+						continue;
+					}
+					String name = liveObjectName(object.getId());
+					if (name != null && rockNames.contains(name))
+					{
+						found.add(object);
+					}
+				}
+			}
+		}
+		return new java.util.ArrayList<>(found);
+	}
+
+	/** The object's CURRENT (impostor-resolved) name, lowercased; null if none. */
+	private String liveObjectName(int id)
+	{
+		net.runelite.api.ObjectComposition composition = client.getObjectDefinition(id);
+		if (composition == null)
+		{
+			return null;
+		}
+		if (composition.getImpostorIds() != null)
+		{
+			try
+			{
+				composition = composition.getImpostor();
+			}
+			catch (Exception e)
+			{
+				return null; // no active impostor for this varbit state
+			}
+			if (composition == null)
+			{
+				return null;
+			}
+		}
+		String name = composition.getName();
+		return name == null || name.equals("null") ? null : name.toLowerCase(Locale.ROOT);
+	}
+
 	private void captureLocation(String annotationId, Consumer<Boolean> onDone)
 	{
 		clientThread.invoke(() -> {
