@@ -600,7 +600,7 @@ public final class GoalDetector
 	 * unmapped kill stays a manual checkbox.
 	 */
 	private static final Pattern KILL_FOR_MEAT = Pattern.compile(
-		"\\bkill\\s+(?:a|an|the)?\\s*(\\d+)?\\s*([a-z' ]+?)(?:\\s+with\\b[^,.]*?)?\\s+for\\s+(?:it'?s\\s+|its\\s+|their\\s+|the\\s+)?meat\\b",
+		"\\b(?:kill|safespot|slay|fight|defeat)\\s+(?:a|an|the)?\\s*(\\d+)?\\s*([a-z' ]+?)(?:\\s+with\\b[^,.]*?)?\\s+for\\s+(?:it'?s\\s+|its\\s+|their\\s+|the\\s+)?meat\\b",
 		Pattern.CASE_INSENSITIVE);
 
 	private static final java.util.Map<String, String> MEAT_BY_NPC = java.util.Map.of(
@@ -680,7 +680,8 @@ public final class GoalDetector
 
 		// "Kill 5 hill giants": the number counts kills, not items — strip
 		// it so the pair scan below can't invent a "hill giants" goal.
-		text = text.replaceAll("(?i)\\b(kill|fight|defeat|slay)\\s+(?:a|an|the)?\\s*\\d+\\s+", "$1 ");
+		text = text.replaceAll(
+			"(?i)\\b(kill|fight|defeat|slay|safespot)\\s+(?:a|an|the)?\\s*\\d+\\s+", "$1 ");
 
 		// Every "number + name" pair anywhere in the fragment, so "buy 5
 		// bolts of cloth and 100 steel nails" yields BOTH goals. Junk pairs

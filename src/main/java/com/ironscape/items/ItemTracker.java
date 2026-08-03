@@ -163,7 +163,55 @@ public class ItemTracker
 			}
 			break;
 		}
+		// Last resort: canonical comparison that forgives apostrophes,
+		// possessives and plural drift — the guide writes "wizard mind
+		// bombs", the item is "Wizard's mind bomb". Exact/alias/substitute
+		// matches above always win.
+		if (base == null && substitutes == 0)
+		{
+			String want = canonical(name);
+			if (!want.isEmpty())
+			{
+				for (Map.Entry<String, Integer> entry : counts.entrySet())
+				{
+					if (canonical(entry.getKey()).equals(want))
+					{
+						return entry.getValue();
+					}
+				}
+			}
+		}
 		return (base == null ? 0 : base) + substitutes;
+	}
+
+	/**
+	 * Spelling-drift-proof form of an item name: lowercase, punctuation
+	 * gone (so possessive 's collapses), every word depluralized.
+	 * "Wizard's mind bomb" and "wizard mind bombs" both become
+	 * "wizard mind bomb".
+	 */
+	static String canonical(String name)
+	{
+		StringBuilder sb = new StringBuilder();
+		for (String word : name.toLowerCase(Locale.ROOT)
+			.replaceAll("[^a-z0-9 ]", "").split("\\s+"))
+		{
+			if (word.isEmpty())
+			{
+				continue;
+			}
+			// "glass"/"grass" keep their s; short words like "gp" too.
+			if (word.length() > 3 && word.endsWith("s") && !word.endsWith("ss"))
+			{
+				word = word.substring(0, word.length() - 1);
+			}
+			if (sb.length() > 0)
+			{
+				sb.append(' ');
+			}
+			sb.append(word);
+		}
+		return sb.toString();
 	}
 
 	/** Guide slang -> the item's real in-game name. */
@@ -493,7 +541,28 @@ public class ItemTracker
 			}
 			for (net.runelite.http.api.item.ItemPrice price : itemManager.search(alias))
 			{
-				if (price.getName().equalsIgnoreCase(alias))
+				if (price.getName().equalsIgnoreCase(alias)
+					|| canonical(price.getName()).equals(canonical(alias)))
+				{
+					return price.getId();
+				}
+			}
+		}
+		// A possessive in the REAL name defeats substring search ("wizard
+		// mind bomb" never brings back "Wizard's mind bomb"): search the
+		// name's last word alone and canonical-compare the hits.
+		String[] words = name.toLowerCase(Locale.ROOT).trim().split("\\s+");
+		if (words.length > 1)
+		{
+			String want = canonical(name);
+			String lastSingular = words[words.length - 1];
+			if (lastSingular.length() > 3 && lastSingular.endsWith("s") && !lastSingular.endsWith("ss"))
+			{
+				lastSingular = lastSingular.substring(0, lastSingular.length() - 1);
+			}
+			for (net.runelite.http.api.item.ItemPrice price : itemManager.search(lastSingular))
+			{
+				if (canonical(price.getName()).equals(want))
 				{
 					return price.getId();
 				}
