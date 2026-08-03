@@ -170,6 +170,10 @@ public class ItemTracker
 		{
 			key = "coins";
 		}
+		// "few cakes" / "plenty of stews" are cakes and stews — annotation
+		// item names carry the guide's quantifier words; strip them like
+		// the goal detector does or the count never matches anything.
+		key = key.replaceFirst("^(?:a )?(?:few|couple|plenty|some|bunch) (?:of )?", "");
 		// the guide says "arrowheads"; smithable metal ones are named
 		// "arrowtips" in game. Metal-specific on purpose: "Broad
 		// arrowheads" really is called arrowheads.

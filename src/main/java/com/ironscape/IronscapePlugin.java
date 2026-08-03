@@ -2027,11 +2027,15 @@ public class IronscapePlugin extends Plugin
 		}
 
 		// "Teleport using the chronicle" — a recent position jump proves it.
+		// Gated on the step's annotation items being IN HAND: "Home tele,
+		// Lumby" with a cakes/runes shopping list means "teleport WITH the
+		// items" — the jump alone must not tick it (owner hit this).
 		// No early false: a travel sub can ALSO complete by arriving at its
 		// destination below ("Home tele to lumby and run north to Varrock
 		// east bank" — walking the second half needs arrival detection).
 		if (travelGoalSubs.contains(sub.getId())
-			&& inFrontierStep && recentTeleportTicks > 0)
+			&& inFrontierStep && recentTeleportTicks > 0
+			&& annotationItemsCarried(step, sub))
 		{
 			return true;
 		}
@@ -2052,17 +2056,9 @@ public class IronscapePlugin extends Plugin
 		// "Walk to Ardy WITH rope, dwellberries, hangover cure" — the
 		// items are part of the errand: every annotation item must be in
 		// hand before arriving can tick the step.
-		String annotationId = step.getSubSteps().size() == 1 ? step.getId() : sub.getId();
-		for (StepAnnotation.ItemNeed need : annotationManager.getItems(annotationId))
+		if (!annotationItemsCarried(step, sub))
 		{
-			int required = need.quantity == null ? 1 : need.quantity;
-			int count = itemTracker.bankCountable(need.name, required)
-				? itemTracker.countOf(need.name)
-				: itemTracker.carriedCountOf(need.name);
-			if (count < required)
-			{
-				return false;
-			}
+			return false;
 		}
 
 		WorldPoint here = player.getWorldLocation();
@@ -2086,6 +2082,35 @@ public class IronscapePlugin extends Plugin
 		return place != null
 			&& here.getPlane() == place.getPlane()
 			&& here.distanceTo(place) <= PLACE_ARRIVE_RADIUS;
+	}
+
+	/**
+	 * Are the step's ANNOTATION items (its authored shopping list) in the
+	 * player's hands? Gates travel/arrival ticks: "teleport with X, Y"
+	 * means WITH them. Names the tracker can't resolve to a real item
+	 * ("all of your mind and air runes") are skipped — an uncountable
+	 * name must degrade to not-gating, never to never-completing.
+	 * Client thread (item id resolution).
+	 */
+	private boolean annotationItemsCarried(GuideStep step, SubStep sub)
+	{
+		String annotationId = step.getSubSteps().size() == 1 ? step.getId() : sub.getId();
+		for (StepAnnotation.ItemNeed need : annotationManager.getItems(annotationId))
+		{
+			if (itemTracker.iconIdFor(need.name) <= 0)
+			{
+				continue; // unresolvable name: can't count it, don't block on it
+			}
+			int required = need.quantity == null ? 1 : need.quantity;
+			int count = itemTracker.bankCountable(need.name, required)
+				? itemTracker.countOf(need.name)
+				: itemTracker.carriedCountOf(need.name);
+			if (count < required)
+			{
+				return false;
+			}
+		}
+		return true;
 	}
 
 	/** A whole step completed by its skill requirement annotation. */
