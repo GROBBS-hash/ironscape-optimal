@@ -225,7 +225,7 @@ public class MinigameTeleportOverlay extends Overlay
 				for (Widget entry : contents.getDynamicChildren())
 				{
 					String text = entry.getText();
-					if (text != null && namesMatch(Text.removeTags(text), minigame))
+					if (text != null && namesMatch(text, minigame))
 					{
 						highlight(graphics, entry);
 						return;
@@ -241,7 +241,7 @@ public class MinigameTeleportOverlay extends Overlay
 		// Dropdown closed: is the right minigame already selected?
 		Widget selected = client.getWidget(InterfaceID.Grouping.CURRENTGAME);
 		String selectedName = selected == null || selected.getText() == null
-			? "" : Text.removeTags(selected.getText());
+			? "" : selected.getText();
 		if (!namesMatch(selectedName, minigame))
 		{
 			highlight(graphics, client.getWidget(InterfaceID.Grouping.DROPDOWN_TOP));
@@ -285,41 +285,48 @@ public class MinigameTeleportOverlay extends Overlay
 
 	private static boolean textContains(String text, String lowerNeedle)
 	{
-		if (text == null)
-		{
-			return false;
-		}
-		String clean = Text.removeTags(text);
-		return clean.toLowerCase().contains(lowerNeedle) || namesMatch(clean, lowerNeedle);
+		return text != null && namesMatch(text, lowerNeedle);
 	}
 
 	/**
-	 * Guide-slang-tolerant name match: every guide word must be a PREFIX
-	 * of the widget's word in order — "fish trawler" matches the widget's
-	 * "Fishing Trawler", "barb assault" would match "Barbarian Assault".
+	 * Guide-slang-tolerant name match: the guide's words must appear in
+	 * the widget's words, in order, each as a PREFIX — "fish trawler"
+	 * matches "Fishing Trawler<br>Port Khazard" ("<br>" separates words:
+	 * removeTags alone would fuse "TrawlerPort").
 	 */
 	private static boolean namesMatch(String widgetText, String guideName)
 	{
-		String widget = widgetText.toLowerCase().replace('’', '\'').trim();
+		String widget = Text.removeTags(widgetText.replaceAll("(?i)<br\\s*/?>", " "))
+			.toLowerCase().replace('’', '\'').trim();
 		String guide = guideName.toLowerCase().replace('’', '\'').trim();
-		if (widget.equals(guide))
+		if (widget.contains(guide))
 		{
 			return true;
 		}
 		String[] widgetWords = widget.split("\\s+");
 		String[] guideWords = guide.split("\\s+");
-		if (widgetWords.length != guideWords.length)
+		if (guideWords.length == 0 || widgetWords.length < guideWords.length)
 		{
 			return false;
 		}
-		for (int i = 0; i < widgetWords.length; i++)
+		for (int offset = 0; offset <= widgetWords.length - guideWords.length; offset++)
 		{
-			if (guideWords[i].length() < 3 || !widgetWords[i].startsWith(guideWords[i]))
+			boolean all = true;
+			for (int i = 0; i < guideWords.length; i++)
 			{
-				return false;
+				if (guideWords[i].length() < 3
+					|| !widgetWords[offset + i].startsWith(guideWords[i]))
+				{
+					all = false;
+					break;
+				}
+			}
+			if (all)
+			{
+				return true;
 			}
 		}
-		return true;
+		return false;
 	}
 
 	private void highlight(Graphics2D graphics, Widget widget)
