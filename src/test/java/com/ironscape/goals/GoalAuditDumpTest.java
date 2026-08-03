@@ -27,6 +27,11 @@ public class GoalAuditDumpTest
 		GoalDetector.Goals goals = GoalDetector.detect(guide);
 		File out = new File("build/goal-audit.tsv");
 		out.getParentFile().mkdirs();
+		java.util.Set<String> subsWithItems = new java.util.HashSet<>();
+		for (GoalDetector.ItemGoal goal : goals.getItemGoals())
+		{
+			subsWithItems.add(goal.getSub().getId());
+		}
 		try (PrintWriter writer = new PrintWriter(out, StandardCharsets.UTF_8))
 		{
 			for (GoalDetector.ItemGoal goal : goals.getItemGoals())
@@ -37,6 +42,23 @@ public class GoalAuditDumpTest
 					+ "\t" + String.join("|", ItemTracker.aliases(goal.getItemName()))
 					+ "\t" + goal.getSub().getPlainText().trim()
 						.replaceAll("[\\t\\r\\n]+", " "));
+			}
+			// The audit's other blind spot: a BUY sub where detection
+			// produced NO goal at all (the "1 PACK of eyes of newt and
+			// pestle and mortar" class — nothing to resolve, nothing red,
+			// just silently untracked).
+			for (com.ironscape.guide.GuideStep step : guide.getAllSteps())
+			{
+				for (com.ironscape.guide.SubStep sub : step.getSubSteps())
+				{
+					String text = sub.getPlainText();
+					if (!subsWithItems.contains(sub.getId())
+						&& text.toLowerCase().matches(".*\\b(?:buy|purchase|grab)\\b.*"))
+					{
+						writer.println("NOGOAL\t" + sub.getId() + "\t"
+							+ text.trim().replaceAll("[\\t\\r\\n]+", " "));
+					}
+				}
 			}
 		}
 	}

@@ -40,7 +40,7 @@ const SPECIAL = new Set(['gloves', 'glove', 'boots', 'boot', 'pickaxe', 'pickaxe
   // Real UNTRADEABLE items the prices mapping can't know — the tracker
   // counts them by name at runtime just fine.
   'message', 'plague sample', 'touch paper', 'celestial ring', 'camulet',
-  'graceful', 'brooch', 'varrock armor 2', 'rune pick', 'bucket of slime']);
+  'graceful', 'brooch', 'varrock armor 2', 'rune pick', 'bucket of slime', 'eye of newt pack', 'compost pack']);
 
 // Mirror of ItemTracker.COLLOQUIAL additions the audit must not re-flag.
 const COLLOQUIAL = {
@@ -48,7 +48,7 @@ const COLLOQUIAL = {
   'chocolate': 'chocolate bar', 'dueling ring': 'ring of dueling(8)',
   'dueling rings': 'ring of dueling(8)', 'soft leather': 'leather',
   'priest robes': 'priest gown (top)', 'silver': 'silver bar',
-  'regular plank': 'plank', 'regular planks': 'plank',
+  'regular plank': 'plank', 'regular planks': 'plank', 'normal compost pack': 'compost pack',
 };
 
 const resolves = (name, aliases) => {
@@ -121,3 +121,16 @@ for (const [key, entry] of Object.entries(ann)) {
   }
 }
 console.log(`${aFlagged} of ${aTotal} annotation items unresolvable`);
+
+// ---- 3. buy-subs where detection produced NOTHING ---------------------
+console.log('\n=== BUY subs with NO detected item goal (silently untracked) ===');
+let nogoals = 0;
+for (const line of fs.readFileSync(tsv, 'utf8').split('\n')) {
+  if (!line.startsWith('NOGOAL\t')) continue;
+  const [, subId, text] = line.split('\t');
+  // A sub whose STEP has bundled annotation items is tracked that way.
+  if (ann[subId.split(':')[0]]?.items?.length) continue;
+  nogoals++;
+  console.log(`  [${subId}] ${text.slice(0, 100)}`);
+}
+console.log(`${nogoals} untracked buy subs`);

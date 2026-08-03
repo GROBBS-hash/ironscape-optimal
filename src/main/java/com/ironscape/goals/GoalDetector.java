@@ -54,6 +54,16 @@ public final class GoalDetector
 	private static final Pattern INV_OF = Pattern.compile(
 		"^(?:inv|invs|inventory|inventories)\\s+of\\s+(.+)$");
 
+	/** "1 PACK of eyes of newt" — the item is named "Eye of newt pack". */
+	private static final Pattern PACK_OF = Pattern.compile("^packs?\\s+of\\s+(.+)$");
+
+	/**
+	 * Item names CONTAINING "and": the comma/and list-splitting terminator
+	 * shreds them, so they're scanned whole before the pair scan runs.
+	 */
+	private static final java.util.Set<String> AND_ITEM_NAMES = java.util.Set.of(
+		"pestle and mortar");
+
 	/** "get 43 prayer" is a skill goal (handled by annotations), not an item. */
 	private static final java.util.Set<String> SKILL_WORDS = java.util.Set.of(
 		"attack", "strength", "defence", "defense", "hitpoints", "hp", "ranged", "range",
@@ -683,6 +693,18 @@ public final class GoalDetector
 		text = text.replaceAll(
 			"(?i)\\b(kill|fight|defeat|slay|safespot)\\s+(?:a|an|the)?\\s*\\d+\\s+", "$1 ");
 
+		// "buy ... and pestle and mortar": names containing "and" never
+		// survive the list terminator — scan the known ones whole and add
+		// them DIRECTLY (addIfValid would shred them the same way).
+		String lowerText = text.toLowerCase(Locale.ROOT);
+		for (String andName : AND_ITEM_NAMES)
+		{
+			if (lowerText.contains(andName) && seen.add(andName + ":1"))
+			{
+				out.add(new ItemGoal(step, sub, andName, 1, ownPurchase));
+			}
+		}
+
 		// Every "number + name" pair anywhere in the fragment, so "buy 5
 		// bolts of cloth and 100 steel nails" yields BOTH goals. Junk pairs
 		// ("world 444 is recommended") die in addIfValid's name checks.
@@ -710,13 +732,16 @@ public final class GoalDetector
 
 		// "Buy 8 woad leaves, offer 20gp to get 2 leaves": the bare word
 		// re-mentions the SAME item. A goal whose name is the word-suffix
-		// of another goal in this sub is a duplicate, not a second item.
+		// OR word-prefix of another goal in this sub is a fragment of it
+		// ("pestle" beside "pestle and mortar"), not a second item.
 		for (int i = out.size() - 1; i >= before; i--)
 		{
 			String shortName = out.get(i).getItemName();
 			for (int j = before; j < out.size(); j++)
 			{
-				if (i != j && out.get(j).getItemName().endsWith(" " + shortName))
+				if (i != j
+					&& (out.get(j).getItemName().endsWith(" " + shortName)
+						|| out.get(j).getItemName().startsWith(shortName + " ")))
 				{
 					out.remove(i);
 					break;
@@ -814,6 +839,14 @@ public final class GoalDetector
 		{
 			name = inventories.group(1);
 			quantity = quantity * 28;
+		}
+
+		// "1 PACK of eyes of newt" -> "eyes of newt pack"; the alias
+		// chain's first-word deplural then reaches "Eye of newt pack".
+		Matcher packOf = PACK_OF.matcher(name);
+		if (packOf.matches())
+		{
+			name = packOf.group(1) + " pack";
 		}
 
 		// "4 red, 4 blue, 5 yellow dye" / "1 soft, 1 hard leather": the

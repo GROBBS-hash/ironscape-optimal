@@ -266,7 +266,9 @@ public class ItemTracker
 		Map.entry("dueling rings", "ring of dueling(8)"),
 		Map.entry("soft leather", "leather"),
 		Map.entry("priest robes", "priest gown (top)"),
-		Map.entry("silver", "silver bar"));
+		Map.entry("silver", "silver bar"),
+		// The farming shop's pack of normal compost is just "Compost pack".
+		Map.entry("normal compost pack", "compost pack"));
 
 	/**
 	 * The in-game item names a guide phrase might refer to, most literal
@@ -296,6 +298,9 @@ public class ItemTracker
 		// item names carry the guide's quantifier words; strip them like
 		// the goal detector does or the count never matches anything.
 		key = key.replaceFirst("^(?:a )?(?:few|couple|plenty|some|bunch) (?:of )?", "");
+		// "house teletabs" / "fally teletab" are the same words the
+		// COLLOQUIAL map already knows as "house tabs" / "fally tab".
+		key = key.replace("teletab", "tab");
 		// the guide says "arrowheads"; smithable metal ones are named
 		// "arrowtips" in game. Metal-specific on purpose: "Broad
 		// arrowheads" really is called arrowheads.
