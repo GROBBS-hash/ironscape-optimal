@@ -394,6 +394,18 @@ public class IronscapePlugin extends Plugin
 	/** Quest goals by sub-step id, for the in-order evaluator. */
 	private final Map<String, GoalDetector.QuestGoal> questGoalBySub = new HashMap<>();
 
+	/** Earliest guide step (global index) each quest's goal appears on. */
+	private final Map<Quest, Integer> minStepIndexByQuest = new HashMap<>();
+
+	/**
+	 * True while a quest belonging to a LATER guide step is in progress —
+	 * the player jumped ahead (doing Tourist Trap while the frontier is
+	 * still Sleeping Giants). ALL frontier guidance stands down: routing
+	 * them back mid-quest interrupts Quest Helper. Drive-by starts from
+	 * EARLIER steps never trigger this.
+	 */
+	private volatile boolean playerJumpedAhead;
+
 	/** Skill-action goals by sub-step id ("Chop down a dying tree" -> WOODCUTTING). */
 	private final Map<String, Skill> actionGoalBySub = new HashMap<>();
 
@@ -755,9 +767,12 @@ public class IronscapePlugin extends Plugin
 			itemGoalsBySub.computeIfAbsent(goal.getSub().getId(), id -> new ArrayList<>()).add(goal);
 		}
 		questGoalBySub.clear();
+		minStepIndexByQuest.clear();
 		for (GoalDetector.QuestGoal goal : goals.getQuestGoals())
 		{
 			questGoalBySub.put(goal.getSub().getId(), goal);
+			minStepIndexByQuest.merge(goal.getQuest(),
+				goal.getStep().getGlobalIndex(), Math::min);
 		}
 		actionGoalBySub.clear();
 		for (GoalDetector.SkillActionGoal goal : goals.getSkillActionGoals())
@@ -1475,6 +1490,26 @@ public class IronscapePlugin extends Plugin
 		// Feed the overlays. Computed here once per tick, not per frame.
 		Current current = findCurrent();
 
+		// Jumped ahead? A quest from a LATER guide step being in progress
+		// means the player is off doing it — frontier guidance would just
+		// fight Quest Helper (it routed him back to the Foundry mid
+		// Tourist Trap). Checked once per tick.
+		boolean jumped = false;
+		if (current != null)
+		{
+			int frontierIndex = current.step.getGlobalIndex();
+			for (Map.Entry<Quest, Integer> entry : minStepIndexByQuest.entrySet())
+			{
+				if (entry.getValue() > frontierIndex
+					&& entry.getKey().getState(client) == QuestState.IN_PROGRESS)
+				{
+					jumped = true;
+					break;
+				}
+			}
+		}
+		playerJumpedAhead = jumped;
+
 		// Teleport hints: a clicked minigame link wins while its countdown
 		// runs; otherwise the current "Minigame teleport to X" sub.
 		if (clickedMinigameTicks > 0)
@@ -1500,8 +1535,9 @@ public class IronscapePlugin extends Plugin
 			// getting anywhere near — drops the hint.
 			// NOT gated on quest-in-progress: starting the quest and then
 			// teleporting away to gather items is normal — presence alone
-			// decides whether the way back needs showing.
-			if (activeMinigameTarget == null && current != null)
+			// decides whether the way back needs showing. But jumping AHEAD
+			// to a later step's quest means leave the player alone.
+			if (activeMinigameTarget == null && current != null && !playerJumpedAhead)
 			{
 				String location = current.step.getMetadata().get("location");
 				String key = location == null ? null
@@ -2968,6 +3004,14 @@ public class IronscapePlugin extends Plugin
 					return;
 				}
 				navHoldStepId = null;
+			}
+			// Player jumped ahead to a later step's quest: ANY route we
+			// post drags them back toward the frontier mid-quest — full
+			// stand-down until that quest wraps up.
+			if (playerJumpedAhead)
+			{
+				eventBus.post(new PluginMessage("shortestpath", "clear"));
+				return;
 			}
 			// Quest in progress = Quest Helper's show for the DETAILS. But
 			// standing down completely left players without QH pointing
