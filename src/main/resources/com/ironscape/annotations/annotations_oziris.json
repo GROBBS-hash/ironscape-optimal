@@ -42,7 +42,13 @@
    "requires": {
     "skill": "FIREMAKING",
     "level": 15
-   }
+   },
+   "items": [
+    {
+     "name": "tinderbox",
+     "quantity": 1
+    }
+   ]
   },
   "9a801a1f57": {
    "requires": {
@@ -1615,6 +1621,10 @@
     {
      "name": "coins",
      "quantity": 100
+    },
+    {
+     "name": "axe",
+     "quantity": 1
     }
    ]
   },
@@ -1766,6 +1776,135 @@
     },
     {
      "name": "pie dish",
+     "quantity": 1
+    }
+   ]
+  },
+  "cdc44128dd": {
+   "items": [
+    {
+     "name": "small fishing net",
+     "quantity": 1
+    }
+   ]
+  },
+  "fcd6568396": {
+   "items": [
+    {
+     "name": "pickaxe",
+     "quantity": 1
+    }
+   ]
+  },
+  "5b2af09171": {
+   "items": [
+    {
+     "name": "tinderbox",
+     "quantity": 1
+    }
+   ]
+  },
+  "bbbd9a9020": {
+   "items": [
+    {
+     "name": "pickaxe",
+     "quantity": 1
+    }
+   ]
+  },
+  "48db8d23b1": {
+   "items": [
+    {
+     "name": "small fishing net",
+     "quantity": 1
+    }
+   ]
+  },
+  "e260d5c680": {
+   "items": [
+    {
+     "name": "pickaxe",
+     "quantity": 1
+    }
+   ]
+  },
+  "29c5dcb92e": {
+   "items": [
+    {
+     "name": "pickaxe",
+     "quantity": 1
+    }
+   ]
+  },
+  "573dc27831": {
+   "items": [
+    {
+     "name": "small fishing net",
+     "quantity": 1
+    }
+   ]
+  },
+  "ca203865fd": {
+   "items": [
+    {
+     "name": "pickaxe",
+     "quantity": 1
+    }
+   ]
+  },
+  "27dfbb2ccf": {
+   "items": [
+    {
+     "name": "hammer",
+     "quantity": 1
+    }
+   ]
+  },
+  "0d525d6d34": {
+   "items": [
+    {
+     "name": "hammer",
+     "quantity": 1
+    }
+   ]
+  },
+  "87a5ec23fb": {
+   "items": [
+    {
+     "name": "hammer",
+     "quantity": 1
+    }
+   ]
+  },
+  "4c0560fff4": {
+   "items": [
+    {
+     "name": "pickaxe",
+     "quantity": 1
+    }
+   ]
+  },
+  "f95cece537": {},
+  "8ee7b10803": {
+   "items": [
+    {
+     "name": "pickaxe",
+     "quantity": 1
+    }
+   ]
+  },
+  "01dee538c1": {
+   "items": [
+    {
+     "name": "tinderbox",
+     "quantity": 1
+    }
+   ]
+  },
+  "9fb85660a2": {
+   "items": [
+    {
+     "name": "box trap",
      "quantity": 1
     }
    ]
