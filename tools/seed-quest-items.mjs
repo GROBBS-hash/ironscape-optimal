@@ -24,16 +24,25 @@ const stepId = (t) => crypto.createHash('sha256')
   .update(t.replace(/\s+/g, ' ').trim().toLowerCase(), 'utf8').digest('hex').slice(0, 10);
 const runText = (rs) => (rs || []).map((r) => r.text).join('');
 
-// quest name -> first step id tagged with it
+// The kit belongs on the step that FINISHES the quest (questStatus
+// "complete"), not a drive-by "Start X and talk to Osman" — the guide
+// gathers the items across the steps in between. First tagged step is
+// the fallback for one-shot quests.
 const guide = JSON.parse(fs.readFileSync(path.join(RES, 'guide/guide_data_oziris.json'), 'utf8'));
 const firstStepByQuest = new Map();
+const completeStepByQuest = new Map();
 guide.chapters.forEach((ch) => ch.sections.forEach((sec) => sec.steps.forEach((step) => {
   const quest = step.metadata?.quest?.trim();
-  if (quest && !firstStepByQuest.has(quest)) {
-    firstStepByQuest.set(quest, stepId(runText(step.content)));
+  if (!quest) return;
+  const id = stepId(runText(step.content));
+  if (!firstStepByQuest.has(quest)) firstStepByQuest.set(quest, id);
+  if ('complete'.localeCompare(step.metadata?.questStatus ?? '',
+    undefined, { sensitivity: 'base' }) === 0 && !completeStepByQuest.has(quest)) {
+    completeStepByQuest.set(quest, id);
   }
 })));
-console.log(`${firstStepByQuest.size} quests tagged in the guide`);
+console.log(`${firstStepByQuest.size} quests tagged in the guide, `
+  + `${completeStepByQuest.size} with a completing step`);
 
 // Infobox entries that are skills, categories or prose — never items.
 const DROP = new Set(['magic', 'ranged', 'woodcutting', 'combat', 'combat style',
@@ -68,13 +77,28 @@ async function fetchQuestItems(quest) {
 
 const annotations = JSON.parse(fs.readFileSync(ANNOTATIONS_FILE, 'utf8'));
 let applied = 0;
-for (const [quest, sid] of [...firstStepByQuest.entries()].sort()) {
-  const existing = annotations.annotations[sid]?.items || [];
+for (const [quest, firstSid] of [...firstStepByQuest.entries()].sort()) {
+  const sid = completeStepByQuest.get(quest) ?? firstSid;
   const items = await fetchQuestItems(quest);
   if (!items) {
     console.log(`miss  ${quest}`);
     continue;
   }
+  // MIGRATION: an earlier run put the kit on the first tagged step —
+  // strip exactly the wiki-listed names from there when the kit now
+  // belongs on the completing step.
+  if (sid !== firstSid && annotations.annotations[firstSid]?.items) {
+    const wikiNames = new Set(items.map((m) => m.name));
+    const old = annotations.annotations[firstSid];
+    const before = old.items.length;
+    old.items = old.items.filter((e) => !wikiNames.has((e.name || '').toLowerCase()));
+    if (old.items.length < before) {
+      console.log(`move  ${quest}: ${before - old.items.length} item(s) off start step ${firstSid}`);
+      applied++;
+    }
+    if (!old.items.length) delete old.items;
+  }
+  const existing = annotations.annotations[sid]?.items || [];
   const scaled = items.filter((m) =>
     !existing.some((e) => (e.name || '').toLowerCase() === m.name));
   if (!scaled.length) {

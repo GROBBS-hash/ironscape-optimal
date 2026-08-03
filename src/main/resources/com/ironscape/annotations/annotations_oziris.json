@@ -222,18 +222,6 @@
     {
      "name": "gp",
      "quantity": null
-    },
-    {
-     "name": "bucket of milk",
-     "quantity": 1
-    },
-    {
-     "name": "coins",
-     "quantity": 100
-    },
-    {
-     "name": "seasoned sardine",
-     "quantity": 1
     }
    ]
   },
@@ -470,6 +458,10 @@
     {
      "name": "cakes",
      "quantity": null
+    },
+    {
+     "name": "hammer",
+     "quantity": 1
     }
    ]
   },
@@ -644,10 +636,6 @@
     {
      "name": "mind runes",
      "quantity": null
-    },
-    {
-     "name": "coins",
-     "quantity": 1000
     }
    ]
   },
@@ -655,7 +643,13 @@
    "requires": {
     "skill": "MAGIC",
     "level": 43
-   }
+   },
+   "items": [
+    {
+     "name": "coins",
+     "quantity": 1000
+    }
+   ]
   },
   "27405fdda8": {
    "items": [
@@ -689,14 +683,6 @@
     },
     {
      "name": "law rune",
-     "quantity": 1
-    },
-    {
-     "name": "priest gown top",
-     "quantity": 1
-    },
-    {
-     "name": "gas mask",
      "quantity": 1
     }
    ]
@@ -826,10 +812,6 @@
     {
      "name": "gp",
      "quantity": null
-    },
-    {
-     "name": "pickaxe",
-     "quantity": 1
     }
    ]
   },
@@ -942,6 +924,10 @@
     {
      "name": "bronze bar",
      "quantity": null
+    },
+    {
+     "name": "pickaxe",
+     "quantity": 1
     }
    ]
   },
@@ -2276,18 +2262,7 @@
     }
    ]
   },
-  "fb429230e6": {
-   "items": [
-    {
-     "name": "bones",
-     "quantity": 25
-    },
-    {
-     "name": "coin",
-     "quantity": 1
-    }
-   ]
-  },
+  "fb429230e6": {},
   "ce39cab917": {
    "items": [
     {
@@ -2404,46 +2379,7 @@
     }
    ]
   },
-  "00027badc9": {
-   "items": [
-    {
-     "name": "unfired bowl",
-     "quantity": 1
-    },
-    {
-     "name": "wizard's mind bomb",
-     "quantity": 1
-    },
-    {
-     "name": "lobster pot",
-     "quantity": 1
-    },
-    {
-     "name": "silk",
-     "quantity": 1
-    },
-    {
-     "name": "hammer",
-     "quantity": 1
-    },
-    {
-     "name": "anti-dragon shield",
-     "quantity": 1
-    },
-    {
-     "name": "steel nails",
-     "quantity": 90
-    },
-    {
-     "name": "plank",
-     "quantity": 3
-    },
-    {
-     "name": "coins",
-     "quantity": 2000
-    }
-   ]
-  },
+  "00027badc9": {},
   "798b0dbd71": {
    "items": [
     {
@@ -2572,14 +2508,7 @@
     }
    ]
   },
-  "55333783ab": {
-   "items": [
-    {
-     "name": "hammer",
-     "quantity": 1
-    }
-   ]
-  },
+  "55333783ab": {},
   "cc64d9b2f4": {
    "items": [
     {
@@ -2680,26 +2609,7 @@
     }
    ]
   },
-  "b13981f2d0": {
-   "items": [
-    {
-     "name": "secateurs",
-     "quantity": 1
-    },
-    {
-     "name": "spade",
-     "quantity": 1
-    },
-    {
-     "name": "ghostspeak amulet",
-     "quantity": 1
-    },
-    {
-     "name": "dramen staff",
-     "quantity": 1
-    }
-   ]
-  },
+  "b13981f2d0": {},
   "1d9b9cf742": {
    "items": [
     {
@@ -2728,30 +2638,7 @@
     }
    ]
   },
-  "b86c6efaa5": {
-   "items": [
-    {
-     "name": "spade",
-     "quantity": 1
-    },
-    {
-     "name": "coins",
-     "quantity": 5
-    },
-    {
-     "name": "garlic",
-     "quantity": 1
-    },
-    {
-     "name": "fishing rod",
-     "quantity": 1
-    },
-    {
-     "name": "red vine worm",
-     "quantity": 1
-    }
-   ]
-  },
+  "b86c6efaa5": {},
   "e2746be131": {
    "items": [
     {
@@ -2836,54 +2723,7 @@
     }
    ]
   },
-  "26825ccf15": {
-   "items": [
-    {
-     "name": "ecto-tokens",
-     "quantity": 1
-    },
-    {
-     "name": "coins",
-     "quantity": 1
-    },
-    {
-     "name": "ghostspeak amulet",
-     "quantity": 1
-    },
-    {
-     "name": "bucket of milk",
-     "quantity": 1
-    },
-    {
-     "name": "silk",
-     "quantity": 1
-    },
-    {
-     "name": "spade",
-     "quantity": 1
-    },
-    {
-     "name": "oak longbow",
-     "quantity": 1
-    },
-    {
-     "name": "knife",
-     "quantity": 1
-    },
-    {
-     "name": "needle",
-     "quantity": 1
-    },
-    {
-     "name": "bucket of slime",
-     "quantity": 1
-    },
-    {
-     "name": "nettle tea",
-     "quantity": 1
-    }
-   ]
-  },
+  "26825ccf15": {},
   "e8ee60d3b8": {
    "items": [
     {
@@ -2976,14 +2816,7 @@
     }
    ]
   },
-  "70f06cc8d2": {
-   "items": [
-    {
-     "name": "excalibur",
-     "quantity": 1
-    }
-   ]
-  },
+  "70f06cc8d2": {},
   "931e176337": {
    "items": [
     {
@@ -3040,14 +2873,7 @@
     }
    ]
   },
-  "c1a70db6bd": {
-   "items": [
-    {
-     "name": "knife",
-     "quantity": 1
-    }
-   ]
-  },
+  "c1a70db6bd": {},
   "e376e8a4a0": {
    "items": [
     {
@@ -3088,26 +2914,7 @@
     }
    ]
   },
-  "d4b486fd19": {
-   "items": [
-    {
-     "name": "bread",
-     "quantity": 1
-    },
-    {
-     "name": "tinderbox",
-     "quantity": 1
-    },
-    {
-     "name": "bucket of wax",
-     "quantity": 1
-    },
-    {
-     "name": "bat bones",
-     "quantity": 1
-    }
-   ]
-  },
+  "d4b486fd19": {},
   "7a4590b937": {
    "items": [
     {
@@ -3236,30 +3043,7 @@
     }
    ]
   },
-  "b79f373813": {
-   "items": [
-    {
-     "name": "karamjan rum",
-     "quantity": 1
-    },
-    {
-     "name": "white apron",
-     "quantity": 1
-    },
-    {
-     "name": "coins",
-     "quantity": 60
-    },
-    {
-     "name": "banana",
-     "quantity": 10
-    },
-    {
-     "name": "spade",
-     "quantity": 1
-    }
-   ]
-  },
+  "b79f373813": {},
   "326668c883": {
    "items": [
     {
@@ -3288,70 +3072,8 @@
     }
    ]
   },
-  "93f1dd8c69": {
-   "items": [
-    {
-     "name": "rune essence",
-     "quantity": 50
-    },
-    {
-     "name": "bucket",
-     "quantity": 1
-    }
-   ]
-  },
-  "07aef0d346": {
-   "items": [
-    {
-     "name": "soft clay",
-     "quantity": 1
-    },
-    {
-     "name": "balls of wool",
-     "quantity": 3
-    },
-    {
-     "name": "yellow dye",
-     "quantity": 1
-    },
-    {
-     "name": "redberries",
-     "quantity": 1
-    },
-    {
-     "name": "ashes",
-     "quantity": 1
-    },
-    {
-     "name": "bucket of water",
-     "quantity": 1
-    },
-    {
-     "name": "pot of flour",
-     "quantity": 1
-    },
-    {
-     "name": "bronze bar",
-     "quantity": 1
-    },
-    {
-     "name": "pink skirt",
-     "quantity": 1
-    },
-    {
-     "name": "beer",
-     "quantity": 3
-    },
-    {
-     "name": "rope",
-     "quantity": 1
-    },
-    {
-     "name": "coins",
-     "quantity": 30
-    }
-   ]
-  },
+  "93f1dd8c69": {},
+  "07aef0d346": {},
   "5bc5011c12": {
    "items": [
     {
@@ -3392,194 +3114,7 @@
     }
    ]
   },
-  "ae8a853fb6": {
-   "items": [
-    {
-     "name": "eye of newt",
-     "quantity": 1
-    },
-    {
-     "name": "greenman's ale",
-     "quantity": 1
-    },
-    {
-     "name": "rotten tomato",
-     "quantity": 1
-    },
-    {
-     "name": "fruit blast",
-     "quantity": 1
-    },
-    {
-     "name": "ashes",
-     "quantity": 1
-    },
-    {
-     "name": "coins",
-     "quantity": 1
-    },
-    {
-     "name": "bowl of water",
-     "quantity": 1
-    },
-    {
-     "name": "bucket of water",
-     "quantity": 1
-    },
-    {
-     "name": "buckets of milk",
-     "quantity": 3
-    },
-    {
-     "name": "eggs",
-     "quantity": 2
-    },
-    {
-     "name": "orange",
-     "quantity": 1
-    },
-    {
-     "name": "banana",
-     "quantity": 1
-    },
-    {
-     "name": "spice",
-     "quantity": 1
-    },
-    {
-     "name": "gloves",
-     "quantity": 1
-    },
-    {
-     "name": "charcoal",
-     "quantity": 1
-    },
-    {
-     "name": "fishing bait",
-     "quantity": 1
-    },
-    {
-     "name": "fishbowl",
-     "quantity": 1
-    },
-    {
-     "name": "bread",
-     "quantity": 2
-    },
-    {
-     "name": "pestle and mortar",
-     "quantity": 1
-    },
-    {
-     "name": "needle",
-     "quantity": 1
-    },
-    {
-     "name": "bronze wire",
-     "quantity": 3
-    },
-    {
-     "name": "cake tin",
-     "quantity": 1
-    },
-    {
-     "name": "asgarnian ale",
-     "quantity": 4
-    },
-    {
-     "name": "cat",
-     "quantity": 1
-    },
-    {
-     "name": "stew",
-     "quantity": 1
-    },
-    {
-     "name": "raw chompy",
-     "quantity": 1
-    },
-    {
-     "name": "raw chicken",
-     "quantity": 1
-    },
-    {
-     "name": "raw cod",
-     "quantity": 1
-    },
-    {
-     "name": "iron spit",
-     "quantity": 1
-    },
-    {
-     "name": "logs",
-     "quantity": 1
-    },
-    {
-     "name": "tinderbox",
-     "quantity": 1
-    },
-    {
-     "name": "ball of wool",
-     "quantity": 1
-    },
-    {
-     "name": "ogre bellows",
-     "quantity": 1
-    },
-    {
-     "name": "ogre bow",
-     "quantity": 1
-    },
-    {
-     "name": "pots of flour",
-     "quantity": 2
-    },
-    {
-     "name": "pot of cornflour",
-     "quantity": 1
-    },
-    {
-     "name": "pot of cream",
-     "quantity": 1
-    },
-    {
-     "name": "axe",
-     "quantity": 1
-    },
-    {
-     "name": "pickaxe",
-     "quantity": 1
-    },
-    {
-     "name": "machete",
-     "quantity": 1
-    },
-    {
-     "name": "knife",
-     "quantity": 1
-    },
-    {
-     "name": "dramen staff",
-     "quantity": 1
-    },
-    {
-     "name": "m'speak amulet",
-     "quantity": 1
-    },
-    {
-     "name": "gorilla greegree",
-     "quantity": 1
-    },
-    {
-     "name": "monkey nuts",
-     "quantity": 1
-    },
-    {
-     "name": "rope",
-     "quantity": 1
-    }
-   ]
-  },
+  "ae8a853fb6": {},
   "d20cb8cc05": {
    "items": [
     {
@@ -3624,14 +3159,7 @@
     }
    ]
   },
-  "1b38cf21f5": {
-   "items": [
-    {
-     "name": "cadava berries",
-     "quantity": 1
-    }
-   ]
-  },
+  "1b38cf21f5": {},
   "d36b8a5c25": {
    "items": [
     {
@@ -3664,14 +3192,7 @@
     }
    ]
   },
-  "eb6f0caf31": {
-   "items": [
-    {
-     "name": "air talisman",
-     "quantity": 1
-    }
-   ]
-  },
+  "eb6f0caf31": {},
   "f1bcbcf2b6": {
    "items": [
     {
@@ -4056,42 +3577,7 @@
     }
    ]
   },
-  "cdb767e3c4": {
-   "items": [
-    {
-     "name": "coins",
-     "quantity": 501
-    },
-    {
-     "name": "gloves",
-     "quantity": 1
-    },
-    {
-     "name": "kharidian headpiece",
-     "quantity": 1
-    },
-    {
-     "name": "fake beard",
-     "quantity": 1
-    },
-    {
-     "name": "beer",
-     "quantity": 3
-    },
-    {
-     "name": "bucket",
-     "quantity": 1
-    },
-    {
-     "name": "snake charm",
-     "quantity": 1
-    },
-    {
-     "name": "snake basket",
-     "quantity": 1
-    }
-   ]
-  },
+  "cdb767e3c4": {},
   "80a3ae4d44": {
    "items": [
     {
@@ -4116,86 +3602,9 @@
     }
    ]
   },
-  "2d3d6b006f": {
-   "items": [
-    {
-     "name": "coins",
-     "quantity": 200
-    },
-    {
-     "name": "logs",
-     "quantity": 1
-    },
-    {
-     "name": "tinderbox",
-     "quantity": 1
-    },
-    {
-     "name": "coal",
-     "quantity": 1
-    },
-    {
-     "name": "iron bar",
-     "quantity": 1
-    },
-    {
-     "name": "sapphire",
-     "quantity": 3
-    },
-    {
-     "name": "redberry pie",
-     "quantity": 1
-    }
-   ]
-  },
-  "43e2b987b0": {
-   "items": [
-    {
-     "name": "vial",
-     "quantity": 1
-    },
-    {
-     "name": "pestle and mortar",
-     "quantity": 1
-    },
-    {
-     "name": "papyrus",
-     "quantity": 1
-    },
-    {
-     "name": "soft clay",
-     "quantity": 4
-    },
-    {
-     "name": "phoenix feather",
-     "quantity": 1
-    },
-    {
-     "name": "shantay pass (item)",
-     "quantity": 1
-    }
-   ]
-  },
-  "42dea87308": {
-   "items": [
-    {
-     "name": "redberry pie",
-     "quantity": 1
-    },
-    {
-     "name": "iron bar",
-     "quantity": 2
-    },
-    {
-     "name": "blurite ore",
-     "quantity": 1
-    },
-    {
-     "name": "pickaxe",
-     "quantity": 1
-    }
-   ]
-  },
+  "2d3d6b006f": {},
+  "43e2b987b0": {},
+  "42dea87308": {},
   "31de9f85a0": {},
   "a8e75e2c0a": {
    "items": [
@@ -4362,26 +3771,7 @@
     }
    ]
   },
-  "476c85b265": {
-   "items": [
-    {
-     "name": "air rune",
-     "quantity": 6
-    },
-    {
-     "name": "earth rune",
-     "quantity": 6
-    },
-    {
-     "name": "water rune",
-     "quantity": 6
-    },
-    {
-     "name": "rope",
-     "quantity": 1
-    }
-   ]
-  },
+  "476c85b265": {},
   "0da34b3a89": {
    "items": [
     {
@@ -4482,7 +3872,644 @@
     }
    ]
   },
-  "6e540329c5": {
+  "6e540329c5": {},
+  "af619686cb": {
+   "items": [
+    {
+     "name": "priest gown top",
+     "quantity": 1
+    },
+    {
+     "name": "gas mask",
+     "quantity": 1
+    }
+   ]
+  },
+  "95213feaa2": {
+   "items": [
+    {
+     "name": "bones",
+     "quantity": 25
+    },
+    {
+     "name": "coin",
+     "quantity": 1
+    }
+   ]
+  },
+  "c798796c06": {
+   "items": [
+    {
+     "name": "unfired bowl",
+     "quantity": 1
+    },
+    {
+     "name": "wizard's mind bomb",
+     "quantity": 1
+    },
+    {
+     "name": "lobster pot",
+     "quantity": 1
+    },
+    {
+     "name": "silk",
+     "quantity": 1
+    },
+    {
+     "name": "hammer",
+     "quantity": 1
+    },
+    {
+     "name": "anti-dragon shield",
+     "quantity": 1
+    },
+    {
+     "name": "steel nails",
+     "quantity": 90
+    },
+    {
+     "name": "plank",
+     "quantity": 3
+    },
+    {
+     "name": "coins",
+     "quantity": 2000
+    }
+   ]
+  },
+  "3adbb4cdbb": {
+   "items": [
+    {
+     "name": "secateurs",
+     "quantity": 1
+    },
+    {
+     "name": "spade",
+     "quantity": 1
+    },
+    {
+     "name": "ghostspeak amulet",
+     "quantity": 1
+    },
+    {
+     "name": "dramen staff",
+     "quantity": 1
+    }
+   ]
+  },
+  "c3d60a5ce4": {
+   "items": [
+    {
+     "name": "spade",
+     "quantity": 1
+    },
+    {
+     "name": "coins",
+     "quantity": 5
+    },
+    {
+     "name": "garlic",
+     "quantity": 1
+    },
+    {
+     "name": "fishing rod",
+     "quantity": 1
+    },
+    {
+     "name": "red vine worm",
+     "quantity": 1
+    }
+   ]
+  },
+  "5de03d538f": {
+   "items": [
+    {
+     "name": "bucket of milk",
+     "quantity": 1
+    },
+    {
+     "name": "coins",
+     "quantity": 100
+    },
+    {
+     "name": "seasoned sardine",
+     "quantity": 1
+    }
+   ]
+  },
+  "a6ef9bcd3f": {
+   "items": [
+    {
+     "name": "ecto-tokens",
+     "quantity": 1
+    },
+    {
+     "name": "coins",
+     "quantity": 1
+    },
+    {
+     "name": "ghostspeak amulet",
+     "quantity": 1
+    },
+    {
+     "name": "bucket of milk",
+     "quantity": 1
+    },
+    {
+     "name": "silk",
+     "quantity": 1
+    },
+    {
+     "name": "spade",
+     "quantity": 1
+    },
+    {
+     "name": "oak longbow",
+     "quantity": 1
+    },
+    {
+     "name": "knife",
+     "quantity": 1
+    },
+    {
+     "name": "needle",
+     "quantity": 1
+    },
+    {
+     "name": "bucket of slime",
+     "quantity": 1
+    },
+    {
+     "name": "nettle tea",
+     "quantity": 1
+    }
+   ]
+  },
+  "ad6df5b62b": {
+   "items": [
+    {
+     "name": "excalibur",
+     "quantity": 1
+    }
+   ]
+  },
+  "ef681e210e": {
+   "items": [
+    {
+     "name": "knife",
+     "quantity": 1
+    }
+   ]
+  },
+  "9365098918": {
+   "items": [
+    {
+     "name": "bread",
+     "quantity": 1
+    },
+    {
+     "name": "tinderbox",
+     "quantity": 1
+    },
+    {
+     "name": "bucket of wax",
+     "quantity": 1
+    },
+    {
+     "name": "bat bones",
+     "quantity": 1
+    }
+   ]
+  },
+  "da93eb7b7e": {
+   "items": [
+    {
+     "name": "karamjan rum",
+     "quantity": 1
+    },
+    {
+     "name": "white apron",
+     "quantity": 1
+    },
+    {
+     "name": "coins",
+     "quantity": 60
+    },
+    {
+     "name": "banana",
+     "quantity": 10
+    },
+    {
+     "name": "spade",
+     "quantity": 1
+    }
+   ]
+  },
+  "697e845576": {
+   "items": [
+    {
+     "name": "rune essence",
+     "quantity": 50
+    },
+    {
+     "name": "bucket",
+     "quantity": 1
+    }
+   ]
+  },
+  "02641a7971": {
+   "items": [
+    {
+     "name": "soft clay",
+     "quantity": 1
+    },
+    {
+     "name": "balls of wool",
+     "quantity": 3
+    },
+    {
+     "name": "yellow dye",
+     "quantity": 1
+    },
+    {
+     "name": "redberries",
+     "quantity": 1
+    },
+    {
+     "name": "ashes",
+     "quantity": 1
+    },
+    {
+     "name": "bucket of water",
+     "quantity": 1
+    },
+    {
+     "name": "pot of flour",
+     "quantity": 1
+    },
+    {
+     "name": "bronze bar",
+     "quantity": 1
+    },
+    {
+     "name": "pink skirt",
+     "quantity": 1
+    },
+    {
+     "name": "beer",
+     "quantity": 3
+    },
+    {
+     "name": "rope",
+     "quantity": 1
+    },
+    {
+     "name": "coins",
+     "quantity": 30
+    }
+   ]
+  },
+  "2be2695463": {
+   "items": [
+    {
+     "name": "eye of newt",
+     "quantity": 1
+    },
+    {
+     "name": "greenman's ale",
+     "quantity": 1
+    },
+    {
+     "name": "rotten tomato",
+     "quantity": 1
+    },
+    {
+     "name": "fruit blast",
+     "quantity": 1
+    },
+    {
+     "name": "ashes",
+     "quantity": 1
+    },
+    {
+     "name": "coins",
+     "quantity": 1
+    },
+    {
+     "name": "bowl of water",
+     "quantity": 1
+    },
+    {
+     "name": "bucket of water",
+     "quantity": 1
+    },
+    {
+     "name": "buckets of milk",
+     "quantity": 3
+    },
+    {
+     "name": "eggs",
+     "quantity": 2
+    },
+    {
+     "name": "orange",
+     "quantity": 1
+    },
+    {
+     "name": "banana",
+     "quantity": 1
+    },
+    {
+     "name": "spice",
+     "quantity": 1
+    },
+    {
+     "name": "gloves",
+     "quantity": 1
+    },
+    {
+     "name": "charcoal",
+     "quantity": 1
+    },
+    {
+     "name": "fishing bait",
+     "quantity": 1
+    },
+    {
+     "name": "fishbowl",
+     "quantity": 1
+    },
+    {
+     "name": "bread",
+     "quantity": 2
+    },
+    {
+     "name": "pestle and mortar",
+     "quantity": 1
+    },
+    {
+     "name": "needle",
+     "quantity": 1
+    },
+    {
+     "name": "bronze wire",
+     "quantity": 3
+    },
+    {
+     "name": "cake tin",
+     "quantity": 1
+    },
+    {
+     "name": "asgarnian ale",
+     "quantity": 4
+    },
+    {
+     "name": "cat",
+     "quantity": 1
+    },
+    {
+     "name": "stew",
+     "quantity": 1
+    },
+    {
+     "name": "raw chompy",
+     "quantity": 1
+    },
+    {
+     "name": "raw chicken",
+     "quantity": 1
+    },
+    {
+     "name": "raw cod",
+     "quantity": 1
+    },
+    {
+     "name": "iron spit",
+     "quantity": 1
+    },
+    {
+     "name": "logs",
+     "quantity": 1
+    },
+    {
+     "name": "tinderbox",
+     "quantity": 1
+    },
+    {
+     "name": "ball of wool",
+     "quantity": 1
+    },
+    {
+     "name": "ogre bellows",
+     "quantity": 1
+    },
+    {
+     "name": "ogre bow",
+     "quantity": 1
+    },
+    {
+     "name": "pots of flour",
+     "quantity": 2
+    },
+    {
+     "name": "pot of cornflour",
+     "quantity": 1
+    },
+    {
+     "name": "pot of cream",
+     "quantity": 1
+    },
+    {
+     "name": "axe",
+     "quantity": 1
+    },
+    {
+     "name": "pickaxe",
+     "quantity": 1
+    },
+    {
+     "name": "machete",
+     "quantity": 1
+    },
+    {
+     "name": "knife",
+     "quantity": 1
+    },
+    {
+     "name": "dramen staff",
+     "quantity": 1
+    },
+    {
+     "name": "m'speak amulet",
+     "quantity": 1
+    },
+    {
+     "name": "gorilla greegree",
+     "quantity": 1
+    },
+    {
+     "name": "monkey nuts",
+     "quantity": 1
+    },
+    {
+     "name": "rope",
+     "quantity": 1
+    }
+   ]
+  },
+  "feec037e1b": {
+   "items": [
+    {
+     "name": "cadava berries",
+     "quantity": 1
+    }
+   ]
+  },
+  "5db7ef9d05": {
+   "items": [
+    {
+     "name": "air talisman",
+     "quantity": 1
+    }
+   ]
+  },
+  "3bae3f0e67": {
+   "items": [
+    {
+     "name": "coins",
+     "quantity": 501
+    },
+    {
+     "name": "gloves",
+     "quantity": 1
+    },
+    {
+     "name": "kharidian headpiece",
+     "quantity": 1
+    },
+    {
+     "name": "fake beard",
+     "quantity": 1
+    },
+    {
+     "name": "beer",
+     "quantity": 3
+    },
+    {
+     "name": "bucket",
+     "quantity": 1
+    },
+    {
+     "name": "snake charm",
+     "quantity": 1
+    },
+    {
+     "name": "snake basket",
+     "quantity": 1
+    }
+   ]
+  },
+  "4af552d7d3": {
+   "items": [
+    {
+     "name": "coins",
+     "quantity": 200
+    },
+    {
+     "name": "logs",
+     "quantity": 1
+    },
+    {
+     "name": "tinderbox",
+     "quantity": 1
+    },
+    {
+     "name": "coal",
+     "quantity": 1
+    },
+    {
+     "name": "iron bar",
+     "quantity": 1
+    },
+    {
+     "name": "sapphire",
+     "quantity": 3
+    },
+    {
+     "name": "redberry pie",
+     "quantity": 1
+    }
+   ]
+  },
+  "20e0b80487": {
+   "items": [
+    {
+     "name": "vial",
+     "quantity": 1
+    },
+    {
+     "name": "pestle and mortar",
+     "quantity": 1
+    },
+    {
+     "name": "papyrus",
+     "quantity": 1
+    },
+    {
+     "name": "soft clay",
+     "quantity": 4
+    },
+    {
+     "name": "phoenix feather",
+     "quantity": 1
+    },
+    {
+     "name": "shantay pass (item)",
+     "quantity": 1
+    }
+   ]
+  },
+  "625acad723": {
+   "items": [
+    {
+     "name": "redberry pie",
+     "quantity": 1
+    },
+    {
+     "name": "iron bar",
+     "quantity": 2
+    },
+    {
+     "name": "blurite ore",
+     "quantity": 1
+    },
+    {
+     "name": "pickaxe",
+     "quantity": 1
+    }
+   ]
+  },
+  "f92ed3a61e": {
+   "items": [
+    {
+     "name": "air rune",
+     "quantity": 6
+    },
+    {
+     "name": "earth rune",
+     "quantity": 6
+    },
+    {
+     "name": "water rune",
+     "quantity": 6
+    },
+    {
+     "name": "rope",
+     "quantity": 1
+    }
+   ]
+  },
+  "b9facd3f97": {
    "items": [
     {
      "name": "spade",
