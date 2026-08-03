@@ -1464,11 +1464,22 @@ public class IronscapePlugin extends Plugin
 				{
 					WorldPoint area = placeManager.getLoose(location);
 					Player me = client.getLocalPlayer();
-					if (area != null && me != null
-						&& (me.getWorldLocation().getPlane() != area.getPlane()
-							|| me.getWorldLocation().distanceTo2D(area) > 100))
+					if (area != null && me != null)
 					{
-						activeMinigameTarget = location;
+						boolean near = me.getWorldLocation().getPlane() == area.getPlane()
+							&& me.getWorldLocation().distanceTo2D(area) <= 100;
+						if (near)
+						{
+							// STICKY: walking in passes the surface pin, and
+							// once inside the interior region the pin reads
+							// as "far" again — one near sighting means the
+							// hint has served its purpose for this step.
+							minigameHintSuppressed.add(current.step.getId());
+						}
+						else
+						{
+							activeMinigameTarget = location;
+						}
 					}
 				}
 			}
