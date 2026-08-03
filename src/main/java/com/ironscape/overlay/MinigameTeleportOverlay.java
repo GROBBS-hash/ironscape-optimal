@@ -225,7 +225,7 @@ public class MinigameTeleportOverlay extends Overlay
 				for (Widget entry : contents.getDynamicChildren())
 				{
 					String text = entry.getText();
-					if (text != null && Text.removeTags(text).equalsIgnoreCase(minigame))
+					if (text != null && namesMatch(Text.removeTags(text), minigame))
 					{
 						highlight(graphics, entry);
 						return;
@@ -242,7 +242,7 @@ public class MinigameTeleportOverlay extends Overlay
 		Widget selected = client.getWidget(InterfaceID.Grouping.CURRENTGAME);
 		String selectedName = selected == null || selected.getText() == null
 			? "" : Text.removeTags(selected.getText());
-		if (!selectedName.equalsIgnoreCase(minigame))
+		if (!namesMatch(selectedName, minigame))
 		{
 			highlight(graphics, client.getWidget(InterfaceID.Grouping.DROPDOWN_TOP));
 			return;
@@ -285,7 +285,41 @@ public class MinigameTeleportOverlay extends Overlay
 
 	private static boolean textContains(String text, String lowerNeedle)
 	{
-		return text != null && Text.removeTags(text).toLowerCase().contains(lowerNeedle);
+		if (text == null)
+		{
+			return false;
+		}
+		String clean = Text.removeTags(text);
+		return clean.toLowerCase().contains(lowerNeedle) || namesMatch(clean, lowerNeedle);
+	}
+
+	/**
+	 * Guide-slang-tolerant name match: every guide word must be a PREFIX
+	 * of the widget's word in order — "fish trawler" matches the widget's
+	 * "Fishing Trawler", "barb assault" would match "Barbarian Assault".
+	 */
+	private static boolean namesMatch(String widgetText, String guideName)
+	{
+		String widget = widgetText.toLowerCase().replace('’', '\'').trim();
+		String guide = guideName.toLowerCase().replace('’', '\'').trim();
+		if (widget.equals(guide))
+		{
+			return true;
+		}
+		String[] widgetWords = widget.split("\\s+");
+		String[] guideWords = guide.split("\\s+");
+		if (widgetWords.length != guideWords.length)
+		{
+			return false;
+		}
+		for (int i = 0; i < widgetWords.length; i++)
+		{
+			if (guideWords[i].length() < 3 || !widgetWords[i].startsWith(guideWords[i]))
+			{
+				return false;
+			}
+		}
+		return true;
 	}
 
 	private void highlight(Graphics2D graphics, Widget widget)
