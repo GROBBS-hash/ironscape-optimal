@@ -185,6 +185,17 @@ public class ItemTracker
 	}
 
 	/**
+	 * Does a carried item (by its in-game name) satisfy a guide goal name?
+	 * Full matching stack: aliases, substitutes (any pickaxe tier),
+	 * family sums and canonical spelling drift. Used by the inventory
+	 * hint overlay to light up the step's items.
+	 */
+	public static boolean nameMatchesGoal(String itemName, String goalName)
+	{
+		return resolve(Map.of(itemName.toLowerCase(Locale.ROOT), 1), goalName) > 0;
+	}
+
+	/**
 	 * Spelling-drift-proof form of an item name: lowercase, punctuation
 	 * gone (so possessive 's collapses), every word depluralized.
 	 * "Wizard's mind bomb" and "wizard mind bombs" both become

@@ -11,17 +11,18 @@ import net.runelite.api.widgets.WidgetItem;
 import net.runelite.client.ui.overlay.WidgetItemOverlay;
 
 /**
- * Outlines ONE item in the inventory — the thing the current sub-step
- * tells you to use ("Use house tab and run back to Thurgo" lights up
- * the carried Teleport to house). The plugin resolves the wanted item
- * id once per game tick; -1 = nothing to hint.
+ * Outlines the inventory items the CURRENT step is about — its tools,
+ * ingredients and tabs ("Use house tab..." lights up the carried
+ * Teleport to house; "Make redberry pie" lights up the flour, water,
+ * redberries and dish). The plugin resolves the wanted slot item ids
+ * once per game tick; empty = nothing to hint.
  */
 @Singleton
 public class InventoryItemHintOverlay extends WidgetItemOverlay
 {
 	private static final Color OUTLINE = new Color(0, 255, 255);
 
-	private Supplier<Integer> itemIdSupplier = () -> -1;
+	private Supplier<java.util.Set<Integer>> itemIdsSupplier = java.util.Collections::emptySet;
 
 	@Inject
 	public InventoryItemHintOverlay()
@@ -29,16 +30,16 @@ public class InventoryItemHintOverlay extends WidgetItemOverlay
 		showOnInventory();
 	}
 
-	public void setItemIdSupplier(Supplier<Integer> itemIdSupplier)
+	public void setItemIdsSupplier(Supplier<java.util.Set<Integer>> itemIdsSupplier)
 	{
-		this.itemIdSupplier = itemIdSupplier;
+		this.itemIdsSupplier = itemIdsSupplier;
 	}
 
 	@Override
 	public void renderItemOverlay(Graphics2D graphics, int itemId, WidgetItem widgetItem)
 	{
-		Integer wanted = itemIdSupplier.get();
-		if (wanted == null || wanted <= 0 || itemId != wanted)
+		java.util.Set<Integer> wanted = itemIdsSupplier.get();
+		if (wanted == null || !wanted.contains(itemId))
 		{
 			return;
 		}

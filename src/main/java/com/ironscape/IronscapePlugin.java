@@ -193,8 +193,8 @@ public class IronscapePlugin extends Plugin
 	@Inject
 	private com.ironscape.overlay.InventoryItemHintOverlay inventoryItemHintOverlay;
 
-	/** Inventory item the current sub says to USE ("house tab"); -1 = none. */
-	private volatile int inventoryHintItemId = -1;
+	/** Inventory slot item ids the current step is about; overlay-outlined. */
+	private volatile java.util.Set<Integer> inventoryHintItemIds = java.util.Collections.emptySet();
 
 	/** "use the house tab", "fally teletab to..." — the tab phrase in a travel sub. */
 	private static final java.util.regex.Pattern TAB_PHRASE = java.util.regex.Pattern.compile(
@@ -791,7 +791,7 @@ public class IronscapePlugin extends Plugin
 		overlayManager.add(targetTileOverlay);
 		objectTargetOverlay.setObjectsSupplier(() -> objectTargets);
 		overlayManager.add(objectTargetOverlay);
-		inventoryItemHintOverlay.setItemIdSupplier(() -> inventoryHintItemId);
+		inventoryItemHintOverlay.setItemIdsSupplier(() -> inventoryHintItemIds);
 		overlayManager.add(inventoryItemHintOverlay);
 
 		panel = panelProvider.get();
@@ -1646,30 +1646,12 @@ public class IronscapePlugin extends Plugin
 			? findWantedRocks(current)
 			: java.util.Collections.emptyList();
 
-		// "Use house tab and run back to Thurgo": outline the carried tab
-		// in the inventory so the first leg is obvious.
-		int tabHint = -1;
-		if (current != null && travelGoalSubs.contains(current.sub.getId()))
-		{
-			java.util.regex.Matcher tab = TAB_PHRASE.matcher(current.sub.getPlainText());
-			if (tab.find())
-			{
-				// The capture may swallow a verb ("USE house tab") — try
-				// the shorter word suffix too.
-				String full = tab.group(1).toLowerCase(Locale.ROOT);
-				String[] candidates = {full, full.contains(" ")
-					? full.substring(full.indexOf(' ') + 1) : full};
-				for (String candidate : candidates)
-				{
-					if (itemTracker.carriedCountOf(candidate) > 0)
-					{
-						tabHint = itemTracker.iconIdFor(candidate);
-						break;
-					}
-				}
-			}
-		}
-		inventoryHintItemId = tabHint;
+		// Outline the carried items the current step is ABOUT — its tab
+		// ("Use house tab..."), tools, ingredients and goal items — so
+		// what to use next is obvious at a glance.
+		inventoryHintItemIds = config.showInventoryHints() && current != null
+			? findStepInventoryItems(current)
+			: java.util.Collections.emptySet();
 		currentSubIsQuest = current != null && questGoalBySub.containsKey(current.sub.getId());
 
 		updateStepOverlay();
@@ -2629,6 +2611,77 @@ public class IronscapePlugin extends Plugin
 			}
 		}
 		return new java.util.ArrayList<>(found);
+	}
+
+	/**
+	 * Inventory slot ids matching anything the current step needs: its
+	 * annotation items (tools/ingredients/shopping list), the sub's text
+	 * goals, and a "use X tab" phrase. Matching runs through the tracker's
+	 * full stack, so a rune pickaxe lights up for "pickaxe". Client thread.
+	 */
+	private java.util.Set<Integer> findStepInventoryItems(Current current)
+	{
+		java.util.List<String> wanted = new java.util.ArrayList<>();
+		for (StepAnnotation.ItemNeed need : annotationManager.getItems(current.step.getId()))
+		{
+			wanted.add(need.name);
+		}
+		for (StepAnnotation.ItemNeed need : annotationManager.getItems(current.sub.getId()))
+		{
+			wanted.add(need.name);
+		}
+		List<GoalDetector.ItemGoal> goals = itemGoalsBySub.get(current.sub.getId());
+		if (goals != null)
+		{
+			for (GoalDetector.ItemGoal goal : goals)
+			{
+				wanted.add(goal.getItemName());
+			}
+		}
+		java.util.regex.Matcher tab = TAB_PHRASE.matcher(current.sub.getPlainText());
+		if (tab.find())
+		{
+			// The capture may swallow a verb ("USE house tab") — offer
+			// the shorter word suffix too.
+			String full = tab.group(1).toLowerCase(Locale.ROOT);
+			wanted.add(full);
+			if (full.contains(" "))
+			{
+				wanted.add(full.substring(full.indexOf(' ') + 1));
+			}
+		}
+		if (wanted.isEmpty())
+		{
+			return java.util.Collections.emptySet();
+		}
+		net.runelite.api.ItemContainer inventory =
+			client.getItemContainer(net.runelite.api.gameval.InventoryID.INV);
+		if (inventory == null)
+		{
+			return java.util.Collections.emptySet();
+		}
+		java.util.Set<Integer> ids = new java.util.HashSet<>();
+		for (net.runelite.api.Item item : inventory.getItems())
+		{
+			if (item.getId() < 0)
+			{
+				continue;
+			}
+			String itemName = itemManager.getItemComposition(item.getId()).getName();
+			if (itemName == null)
+			{
+				continue;
+			}
+			for (String goalName : wanted)
+			{
+				if (goalName != null && ItemTracker.nameMatchesGoal(itemName, goalName))
+				{
+					ids.add(item.getId());
+					break;
+				}
+			}
+		}
+		return ids;
 	}
 
 	/** The object's CURRENT (impostor-resolved) name, lowercased; null if none. */

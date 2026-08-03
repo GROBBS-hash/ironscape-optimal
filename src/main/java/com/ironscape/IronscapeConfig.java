@@ -105,4 +105,14 @@ public interface IronscapeConfig extends Config
 	{
 		return true;
 	}
+
+	@ConfigItem(
+		keyName = "showInventoryHints",
+		name = "Highlight step items in inventory",
+		description = "Outline the carried items the current step is about (its tools, ingredients and tabs) in the inventory"
+	)
+	default boolean showInventoryHints()
+	{
+		return true;
+	}
 }
