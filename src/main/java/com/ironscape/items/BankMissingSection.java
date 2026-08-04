@@ -194,6 +194,22 @@ public class BankMissingSection
 						break;
 					}
 				}
+				if (banked == null)
+				{
+					// The alias map is exact names only — "axe" must still
+					// find YOUR axe whatever its tier, and "beads" any bead
+					// colour. Full matching stack (substitutes, families,
+					// canonical drift), first bank-order hit wins.
+					for (Map.Entry<String, Widget> nativeEntry : nativeByName.entrySet())
+					{
+						if (!kept.contains(nativeEntry.getValue())
+							&& ItemTracker.nameMatchesGoal(nativeEntry.getKey(), entry.getKey()))
+						{
+							banked = nativeEntry.getValue();
+							break;
+						}
+					}
+				}
 				if (banked != null && !kept.contains(banked))
 				{
 					kept.add(banked);

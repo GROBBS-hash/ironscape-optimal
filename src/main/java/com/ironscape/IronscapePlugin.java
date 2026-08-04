@@ -340,6 +340,24 @@ public class IronscapePlugin extends Plugin
 	}
 
 	/** Whether {@code word} appears in {@code text} as a whole word. */
+	/** "imp" also as "imps", "wolf" as "wolves", "fairy" as "fairies". */
+	private static String[] pluralVariants(String name)
+	{
+		if (name.endsWith("f"))
+		{
+			return new String[]{name, name.substring(0, name.length() - 1) + "ves"};
+		}
+		if (name.endsWith("fe"))
+		{
+			return new String[]{name, name.substring(0, name.length() - 2) + "ves"};
+		}
+		if (name.endsWith("y"))
+		{
+			return new String[]{name, name.substring(0, name.length() - 1) + "ies"};
+		}
+		return new String[]{name, name + "s", name + "es"};
+	}
+
 	private static boolean containsWord(String text, String word)
 	{
 		int at = text.indexOf(word);
@@ -1738,13 +1756,20 @@ public class IronscapePlugin extends Plugin
 				{
 					continue;
 				}
-				int at = subText.indexOf(clean);
-				if (at > 0
-					&& !Character.isLetter(subText.charAt(at - 1))
-					&& !Character.isLetter(subText.charAt(at + clean.length()))
-					&& !insideLongerSpan(placeSpans, at, at + clean.length()))
+				// The guide speaks in plurals ("fire strike imps", "kill
+				// cows"); the NPC is named in the singular ("Imp"). Match
+				// the name and its plural forms, word-bounded either side.
+				for (String variant : pluralVariants(clean))
 				{
-					npcNames.add(clean);
+					int at = subText.indexOf(variant);
+					if (at > 0
+						&& !Character.isLetter(subText.charAt(at - 1))
+						&& !Character.isLetter(subText.charAt(at + variant.length()))
+						&& !insideLongerSpan(placeSpans, at, at + variant.length()))
+					{
+						npcNames.add(clean);
+						break;
+					}
 				}
 				// The quest giver is rarely NAMED by the step ("Do Waterfall
 				// quest..."), but whoever stands NEAREST the quest's start
@@ -2087,15 +2112,21 @@ public class IronscapePlugin extends Plugin
 				}
 				for (SubStep sub : step.getSubSteps())
 				{
-					if (progressManager.isSubCompleted(activeVariant, step, sub))
-					{
-						continue;
-					}
+					// A DONE sub keeps its items listed while you still meet
+					// the count — withdrawing the runes auto-ticks the sub,
+					// and the runes vanishing from the bank view mid-banking
+					// reads as a bug. Items you no longer have (consumed long
+					// ago) stay hidden; a done sub must not demand them back.
+					boolean subDone = progressManager.isSubCompleted(activeVariant, step, sub);
 					List<GoalDetector.ItemGoal> itemGoals = itemGoalsBySub.get(sub.getId());
 					if (itemGoals != null)
 					{
 						for (GoalDetector.ItemGoal goal : itemGoals)
 						{
+							if (subDone && !stillMet(goal.getItemName(), goal.getQuantity()))
+							{
+								continue;
+							}
 							section.items.merge(goal.getItemName(), goal.getQuantity(), Math::max);
 						}
 					}
@@ -2103,6 +2134,10 @@ public class IronscapePlugin extends Plugin
 					{
 						String name = need.name.toLowerCase(Locale.ROOT);
 						int quantity = need.quantity == null ? 1 : need.quantity;
+						if (subDone && !stillMet(name, quantity))
+						{
+							continue;
+						}
 						section.items.merge(name, quantity, Math::max);
 					}
 				}
@@ -2111,6 +2146,15 @@ public class IronscapePlugin extends Plugin
 		}
 		upcomingSections = sections;
 		bankFilterCacheTick = tickCounter;
+	}
+
+	/** Same have/need arithmetic the bank section renders with. */
+	private boolean stillMet(String itemName, int need)
+	{
+		int have = itemTracker.bankCountable(itemName, need)
+			? itemTracker.countOf(itemName)
+			: itemTracker.carriedCountOf(itemName);
+		return have >= need;
 	}
 
 	/** Per-step needs of the next steps, for the bank's filter sections. */
