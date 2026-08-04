@@ -229,6 +229,24 @@ public class AnnotationManager
 	}
 
 	/**
+	 * Right-click on the capture button: forget the LOCAL capture (an
+	 * accidental ⌖ click writes a wrong target). Bundled targets can't be
+	 * deleted — clearing the local one falls back to them. Returns true
+	 * when something was actually removed.
+	 */
+	public synchronized boolean clearTarget(String stepId)
+	{
+		StepAnnotation annotation = local.get(stepId);
+		if (annotation == null || annotation.target == null)
+		{
+			return false;
+		}
+		annotation.target = null;
+		saveLocal();
+		return true;
+	}
+
+	/**
 	 * One bundled file per guide corpus. Step ids are content hashes, so
 	 * the key spaces can't collide and a flat merge is safe.
 	 */

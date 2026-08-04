@@ -478,6 +478,43 @@ class StepRow extends JPanel
 						"IRONSCAPE Optimal", JOptionPane.INFORMATION_MESSAGE);
 				}
 			}));
+			// Right-click undoes an accidental capture: a popup offers to
+			// forget the LOCAL target (bundled ones only get overridden).
+			if (ctx.getClearTargetHandler() != null)
+			{
+				capture.addMouseListener(new java.awt.event.MouseAdapter()
+				{
+					@Override
+					public void mousePressed(java.awt.event.MouseEvent e)
+					{
+						maybeShowClearMenu(e);
+					}
+
+					@Override
+					public void mouseReleased(java.awt.event.MouseEvent e)
+					{
+						maybeShowClearMenu(e);
+					}
+
+					private void maybeShowClearMenu(java.awt.event.MouseEvent e)
+					{
+						if (!e.isPopupTrigger()
+							|| ctx.getAnnotations().getTarget(annotationId) == null)
+						{
+							return;
+						}
+						javax.swing.JPopupMenu menu = new javax.swing.JPopupMenu();
+						javax.swing.JMenuItem clear =
+							new javax.swing.JMenuItem("Remove captured location");
+						clear.addActionListener(a -> {
+							ctx.getClearTargetHandler().accept(annotationId);
+							styleAnnotationButtons(annotationId, capture, finalNavigate);
+						});
+						menu.add(clear);
+						menu.show(e.getComponent(), e.getX(), e.getY());
+					}
+				});
+			}
 			buttons.add(capture, 0);
 			styleAnnotationButtons(annotationId, capture, navigate);
 		}
@@ -505,7 +542,7 @@ class StepRow extends JPanel
 				capture.setForeground(CAPTURED_COLOR);
 				capture.setToolTipText("Target: " + target.x + ", " + target.y
 					+ (target.plane != 0 ? " (plane " + target.plane + ")" : "")
-					+ " — click to overwrite with my current location");
+					+ " — click to overwrite with my current location, right-click to remove");
 			}
 		}
 		if (navigate != null)

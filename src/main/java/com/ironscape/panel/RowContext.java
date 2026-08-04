@@ -36,6 +36,9 @@ class RowContext
 	/** Null when capture buttons are disabled/unwired. */
 	CaptureHandler captureHandler;
 
+	/** Right-click on ⌖: forget the LOCAL captured target. Null if unwired. */
+	Consumer<String> clearTargetHandler;
+
 	/** Routes to an annotation id's target via Shortest Path. Null if unwired. */
 	Consumer<String> navigateHandler;
 

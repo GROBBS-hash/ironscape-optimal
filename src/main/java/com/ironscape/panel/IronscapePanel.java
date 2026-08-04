@@ -244,6 +244,14 @@ public class IronscapePanel extends PluginPanel
 		this.captureHandler = captureHandler;
 	}
 
+	/** Set by the plugin; right-click on ⌖ forgets the LOCAL captured target. */
+	private Consumer<String> clearTargetHandler;
+
+	public void setClearTargetHandler(Consumer<String> clearTargetHandler)
+	{
+		this.clearTargetHandler = clearTargetHandler;
+	}
+
 	public void setNavigateHandler(Consumer<String> navigateHandler)
 	{
 		this.navigateHandler = navigateHandler;
@@ -667,6 +675,7 @@ public class IronscapePanel extends PluginPanel
 			itemGoals, actionBadgeSupplier,
 			this::onManualProgressChange,
 			config.showCaptureButtons() ? captureHandler : null,
+			clearTargetHandler,
 			navigateHandler,
 			placeNavigateHandler,
 			worldHopHandler);

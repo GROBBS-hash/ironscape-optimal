@@ -176,6 +176,9 @@ public class IronscapePlugin extends Plugin
 	private com.ironscape.overlay.MinigameTeleportOverlay minigameTeleportOverlay;
 
 	@Inject
+	private com.ironscape.overlay.TravelMenuOverlay travelMenuOverlay;
+
+	@Inject
 	private com.ironscape.overlay.StepOverlay stepOverlay;
 
 	@Inject
@@ -512,6 +515,9 @@ public class IronscapePlugin extends Plugin
 	 * our panel back to the front the moment it FINISHES. */
 	private Quest handedOffQuest;
 
+	/** Words the travel-menu overlay matches list entries against. */
+	private volatile java.util.Set<String> travelMenuWords = java.util.Collections.emptySet();
+
 	/** Errand stages whose nudge already fired this session (step|item). */
 	private final java.util.Set<String> errandReminded = new java.util.HashSet<>();
 
@@ -646,6 +652,19 @@ public class IronscapePlugin extends Plugin
 	 * Port Khazard all the way to Ardougne is worse than useless. Targets
 	 * only need to be near the bank; Shortest Path ends the trail there.
 	 */
+	/** "Use the spirit tree..." subs route to the NEAREST tree first. */
+	private static final java.util.regex.Pattern SPIRIT_TREE =
+		java.util.regex.Pattern.compile("(?i)spirit\\s+tree");
+
+	/** The always-available spirit trees (quest/farming ones excluded). */
+	private static final WorldPoint[] SPIRIT_TREES = {
+		new WorldPoint(2542, 3170, 0), // Tree Gnome Village
+		new WorldPoint(2461, 3444, 0), // Gnome Stronghold
+		new WorldPoint(2555, 3259, 0), // Battlefield of Khazard
+		new WorldPoint(3183, 3508, 0), // Grand Exchange
+		new WorldPoint(2488, 2850, 0), // Feldip Hills
+	};
+
 	private static final WorldPoint[] BANKS = {
 		new WorldPoint(3164, 3487, 0), // Grand Exchange
 		new WorldPoint(3185, 3436, 0), // Varrock west
@@ -973,6 +992,8 @@ public class IronscapePlugin extends Plugin
 		minigameTeleportOverlay.setTargetSupplier(() -> activeMinigameTarget);
 		minigameTeleportOverlay.setHomeTeleportSupplier(() -> homeTeleportHint);
 		overlayManager.add(minigameTeleportOverlay);
+		travelMenuOverlay.setWordsSupplier(() -> travelMenuWords);
+		overlayManager.add(travelMenuOverlay);
 		stepOverlay.setModelSupplier(() -> stepOverlayModel);
 		overlayManager.add(stepOverlay);
 		questStartMarkerOverlay.setTargetSupplier(() -> questStartMarker);
@@ -1060,6 +1081,7 @@ public class IronscapePlugin extends Plugin
 		});
 		panel.setProgressChangedListener(this::maybeNavigateToNext);
 		panel.setCaptureHandler(this::captureLocation);
+		panel.setClearTargetHandler(this::clearCapturedTarget);
 		panel.setNavigateHandler(this::navigateToStep);
 		panel.setPlaceNavigateHandler(this::navigateToPlace);
 		panel.setWorldHopHandler(this::hopToWorld);
@@ -1100,6 +1122,7 @@ public class IronscapePlugin extends Plugin
 	protected void shutDown() throws Exception
 	{
 		overlayManager.remove(minigameTeleportOverlay);
+		overlayManager.remove(travelMenuOverlay);
 		overlayManager.remove(stepOverlay);
 		overlayManager.remove(questStartMarkerOverlay);
 		overlayManager.remove(npcTargetOverlay);
@@ -1784,6 +1807,31 @@ public class IronscapePlugin extends Plugin
 		homeTeleportHint = config.showTeleportHints() && current != null
 			&& activeMinigameTarget == null
 			&& HOME_TELEPORT.matcher(current.sub.getPlainText()).find();
+
+		// Travel menus (spirit trees, gliders — interface 187): the word
+		// set the overlay matches list entries against. Sub text + the
+		// step's 📍 tag, so "Khazard Battlefield" still lights up the
+		// menu's "Battlefield of Khazard" whatever the word order.
+		java.util.Set<String> menuWords = java.util.Collections.emptySet();
+		if (config.showTeleportHints() && current != null)
+		{
+			StringBuilder hay = new StringBuilder(current.sub.getPlainText());
+			String locationTag = current.step.getMetadata().get("location");
+			if (locationTag != null)
+			{
+				hay.append(' ').append(locationTag);
+			}
+			menuWords = new java.util.HashSet<>();
+			for (String token : hay.toString().toLowerCase(Locale.ROOT)
+				.replace('’', '\'').split("[^a-z0-9']+"))
+			{
+				if (!token.isEmpty())
+				{
+					menuWords.add(token);
+				}
+			}
+		}
+		travelMenuWords = menuWords;
 
 		// Quest-start marker: float the quest icon at the start point of
 		// the quest the player is heading to — a clicked quest link, or
@@ -3243,6 +3291,21 @@ public class IronscapePlugin extends Plugin
 		});
 	}
 
+	/** Right-click on ⌖: forget an accidental LOCAL capture. */
+	private void clearCapturedTarget(String annotationId)
+	{
+		boolean removed = annotationManager.clearTarget(annotationId);
+		// The capture also pinned auto-navigation — release the pin so the
+		// next pass routes by the step's normal target chain again.
+		navHoldStepId = null;
+		maybeNavigateToNext();
+		clientThread.invokeLater(() -> client.addChatMessage(ChatMessageType.CONSOLE, "",
+			removed
+				? "IRONSCAPE: captured location for " + annotationId + " removed."
+				: "IRONSCAPE: no captured location to remove (bundled targets can't be deleted).",
+			null));
+	}
+
 	/**
 	 * Ask the Shortest Path plugin to draw a route from the player to this
 	 * step's annotated target. The message namespace/keys are Shortest
@@ -3390,6 +3453,27 @@ public class IronscapePlugin extends Plugin
 			}
 		}
 
+		// "Use the spirit tree and go to X": the journey STARTS at the
+		// nearest spirit tree, not at the far-off destination — Shortest
+		// Path would otherwise draw the long walk. After the teleport
+		// lands, the reroute finds the destination close (or the tree
+		// beside you) and guidance continues normally.
+		Current frontier = window.get(0);
+		if (SPIRIT_TREE.matcher(frontier.sub.getPlainText()).find())
+		{
+			WorldPoint destination = targetFor(frontier.step, frontier.sub);
+			Player me = client.getLocalPlayer();
+			if (me != null && (destination == null
+				|| me.getWorldLocation().distanceTo2D(destination) > 40))
+			{
+				WorldPoint tree = nearestOf(SPIRIT_TREES);
+				if (tree != null)
+				{
+					return tree;
+				}
+			}
+		}
+
 		for (Current current : window)
 		{
 			WorldPoint target = targetFor(current.step, current.sub);
@@ -3404,6 +3488,12 @@ public class IronscapePlugin extends Plugin
 	/** The closest well-known bank to the player (straight-line distance). */
 	private WorldPoint nearestBank()
 	{
+		return nearestOf(BANKS);
+	}
+
+	/** The closest of the given points to the player (straight-line). */
+	private WorldPoint nearestOf(WorldPoint[] points)
+	{
 		Player player = client.getLocalPlayer();
 		if (player == null)
 		{
@@ -3412,13 +3502,13 @@ public class IronscapePlugin extends Plugin
 		WorldPoint here = player.getWorldLocation();
 		WorldPoint best = null;
 		int bestDistance = Integer.MAX_VALUE;
-		for (WorldPoint bank : BANKS)
+		for (WorldPoint point : points)
 		{
-			int distance = here.distanceTo2D(bank);
+			int distance = here.distanceTo2D(point);
 			if (distance < bestDistance)
 			{
 				bestDistance = distance;
-				best = bank;
+				best = point;
 			}
 		}
 		return best;
