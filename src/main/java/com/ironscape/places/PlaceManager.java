@@ -197,6 +197,14 @@ public class PlaceManager
 			{
 				continue;
 			}
+			// Transport networks ("spirit tree") are CLICK affordances that
+			// route to the nearest one — never automatic targets: journeys
+			// START next to one, so auto-targeting (and arrival detection!)
+			// would misfire on the spot the player is leaving from.
+			if ("transport".equals(place.type))
+			{
+				continue;
+			}
 			if ("quest".equals(place.type)
 				&& !lower.contains("start " + key)
 				&& !lower.contains("begin " + key)
@@ -231,6 +239,11 @@ public class PlaceManager
 			String key = key(matcher.group());
 			Place place = local.containsKey(key) ? local.get(key) : bundled.get(key);
 			if (place == null)
+			{
+				continue;
+			}
+			// Same transport-network exclusion as firstPlaceIn.
+			if ("transport".equals(place.type))
 			{
 				continue;
 			}

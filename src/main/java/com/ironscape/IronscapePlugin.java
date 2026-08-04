@@ -3590,9 +3590,30 @@ public class IronscapePlugin extends Plugin
 		}
 	}
 
+	/** Multi-location transports by clicked name: route to the NEAREST one. */
+	private static final Map<String, WorldPoint[]> TRANSPORT_NETWORKS = Map.of(
+		"spirit tree", SPIRIT_TREES,
+		"spirit trees", SPIRIT_TREES);
+
 	/** A place-name link was clicked in the step text. */
 	private void navigateToPlace(String placeName, GuideStep contextStep)
 	{
+		// A transport NETWORK name ("spirit tree") means "take me to the
+		// nearest one" — there is no single fixed point to route to.
+		WorldPoint[] network = TRANSPORT_NETWORKS.get(
+			placeName.toLowerCase(Locale.ROOT).trim());
+		if (network != null)
+		{
+			clientThread.invokeLater(() -> {
+				WorldPoint nearest = nearestOf(network);
+				if (nearest != null)
+				{
+					eventBus.post(new PluginMessage("shortestpath", "path",
+						Map.of("target", nearest)));
+				}
+			});
+			return;
+		}
 		// Clicking a minigame's name ("Soul Wars") means "how do I get
 		// there?" — and the answer is the minigame teleport, so light up
 		// its click path and do NOT hand the place to Shortest Path: a

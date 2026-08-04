@@ -1,6 +1,20 @@
 {
  "version": 1,
  "places": {
+  "spirit tree": {
+   "display": "Spirit tree",
+   "type": "transport",
+   "x": 2542,
+   "y": 3170,
+   "plane": 0
+  },
+  "spirit trees": {
+   "display": "Spirit trees",
+   "type": "transport",
+   "x": 2542,
+   "y": 3170,
+   "plane": 0
+  },
   "glarial's pebble": {
    "display": "Glarial's pebble",
    "x": 2514,
