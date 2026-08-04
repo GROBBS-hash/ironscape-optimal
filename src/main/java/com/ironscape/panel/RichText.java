@@ -153,10 +153,8 @@ final class RichText
 						+ Pattern.quote(name) + "(?![\\w<])").matcher(segment);
 					if (m.find())
 					{
-						String page = (Character.toUpperCase(name.charAt(0)) + name.substring(1))
-							.replace(' ', '_');
 						segment = segment.substring(0, m.start())
-							+ "<a href='https://oldschool.runescape.wiki/w/" + page + "'>"
+							+ "<a href='" + wikiUrl(name) + "'>"
 							+ m.group() + "</a>"
 							+ segment.substring(m.end());
 						it.remove();
@@ -166,6 +164,13 @@ final class RichText
 			out.append(segment);
 		}
 		return out.toString();
+	}
+
+	/** The OSRS wiki page for an item name ("glarial's pebble" -> .../Glarial's_pebble). */
+	static String wikiUrl(String name)
+	{
+		return "https://oldschool.runescape.wiki/w/"
+			+ (Character.toUpperCase(name.charAt(0)) + name.substring(1)).replace(' ', '_');
 	}
 
 	/** Wraps "world NNN" mentions in bruh:world: links (escaped HTML in/out). */

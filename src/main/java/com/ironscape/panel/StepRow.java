@@ -204,11 +204,38 @@ class StepRow extends JPanel
 				line.setFont(new Font(Font.DIALOG, Font.PLAIN, 11));
 				line.setIconTextGap(4);
 				line.setAlignmentX(LEFT_ALIGNMENT);
-				line.setToolTipText("Matches item name \"" + RichText.escape(need.name) + "\"");
 				ctx.getItems().attachIcon(need.name, line);
 				Runnable refresh = () -> line.setText(itemLineHtml(need, isBadgeDone(badgeSub)));
 				refresh.run();
 				badgeRefreshers.add(refresh);
+
+				// Every item line is clickable: route to its known source
+				// (place/item-source/errand chain), else open its wiki page.
+				// Source knowledge is re-checked at CLICK time — a place
+				// captured mid-session upgrades the click from wiki to nav.
+				String itemName = need.name;
+				boolean routable = ctx.getPlaces().get(itemName) != null;
+				line.setToolTipText("<html>Matches item name \"" + RichText.escape(need.name)
+					+ "\"<br>" + (routable
+						? "Click: route to where you get it"
+						: "Click: open its wiki page") + "</html>");
+				line.setCursor(java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.HAND_CURSOR));
+				line.addMouseListener(new java.awt.event.MouseAdapter()
+				{
+					@Override
+					public void mouseClicked(java.awt.event.MouseEvent e)
+					{
+						if (ctx.getPlaces().get(itemName) != null
+							&& ctx.getPlaceNavigateHandler() != null)
+						{
+							ctx.getPlaceNavigateHandler().accept(itemName, step);
+						}
+						else
+						{
+							LinkBrowser.browse(RichText.wikiUrl(itemName));
+						}
+					}
+				});
 				list.add(line);
 			}
 			add(list);
