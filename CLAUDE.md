@@ -391,6 +391,32 @@ refresh when "Failed to login" appears.
   when unresolvable — bundle ids to make gates real); GROUPING_MINIGAMES
   set lets any minigame place/chip light the teleport click path.
 
+- SESSION WAVE 3 (2026-08-04, main at 18c082a, all pushed, audit
+  0 text / 0 annotation): quest kits MOVED to the step that FINISHES
+  the quest (questStatus=complete; migration in seed-quest-items);
+  kit lines parse comma/and CHAINS incl. Oxford comma, or-alternatives
+  keep first only; purchases are HISTORY (acquisition goals join coins
+  in the reopen skip — consuming/banking bought goods never reopens);
+  full-inventory goals (exactly 28, 'inv of X') count the bank;
+  JUMPED-AHEAD stand-down: a quest on a LATER step being IN_PROGRESS
+  (minStepIndexByQuest) clears nav + silences minigame hints until it
+  finishes (drive-by starts from earlier steps never trigger);
+  minigame presence hardened: cave-entrance jumps within 3 ticks of a
+  GAME OBJECT click carry presence + confirm the region, presence
+  persists as config 'minigamePresence' ("name|region") restored on
+  login-in-place; minigame picker/dropdown matching is slang-tolerant
+  (word-prefix windows, 'fish trawler' ~ 'Fishing Trawler') and
+  normalizes <br> (removeTags fused 'TrawlerPort'); NOTE-carried
+  quantities upgrade unnumbered goals ('around 600 buckets of sand');
+  unnumbered BUY lists split on 'and' (crafting/action verbs end the
+  list); flour->pot of flour (bare 'Flour' EXISTS but unobtainable —
+  existence audits can't catch semantic mismatches, colloquials can);
+  substitute/family badge names borrow a member's icon (pickaxe,
+  beads); the panel Go button falls back to targetFor's chain (text
+  place -> 📍 tag) when no ⌖ captured. Hub pin still cf9be08 — the
+  wave 3 commits are play-tested but NOT pinned; bump when it next
+  matters.
+
 - The ONLY guide is **GuideVariant.OZIRIS** — Ironman Efficiency Guide
   v4, community "Enhanced 2026" edition from https://ironman.guide/,
   scraped by `tools/scrape-oziris.mjs` (575 steps, 7 sections). The
