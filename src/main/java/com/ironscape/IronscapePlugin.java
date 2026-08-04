@@ -518,6 +518,9 @@ public class IronscapePlugin extends Plugin
 	/** Words the travel-menu overlay matches list entries against. */
 	private volatile java.util.Set<String> travelMenuWords = java.util.Collections.emptySet();
 
+	/** Last widget group loaded while a travel sub was current (-1 = none). */
+	private volatile int travelMenuGroup = -1;
+
 	/** Errand stages whose nudge already fired this session (step|item). */
 	private final java.util.Set<String> errandReminded = new java.util.HashSet<>();
 
@@ -993,6 +996,7 @@ public class IronscapePlugin extends Plugin
 		minigameTeleportOverlay.setHomeTeleportSupplier(() -> homeTeleportHint);
 		overlayManager.add(minigameTeleportOverlay);
 		travelMenuOverlay.setWordsSupplier(() -> travelMenuWords);
+		travelMenuOverlay.setGroupSupplier(() -> travelMenuGroup);
 		overlayManager.add(travelMenuOverlay);
 		stepOverlay.setModelSupplier(() -> stepOverlayModel);
 		overlayManager.add(stepOverlay);
@@ -1499,6 +1503,17 @@ public class IronscapePlugin extends Plugin
 			// are gone with it.
 			bankMissingSection.invalidate();
 			bankFilterButton.init();
+		}
+		// Travel menus (spirit trees, gliders): whatever interface just
+		// loaded while a travel sub is current is probably the destination
+		// list — the overlay scans it for matching entries, so the group
+		// id never needs hardcoding. Logged for diagnosis when a menu
+		// still doesn't highlight.
+		if (!travelMenuWords.isEmpty())
+		{
+			travelMenuGroup = event.getGroupId();
+			log.info("travel-menu probe: widget group {} loaded while travel sub current",
+				event.getGroupId());
 		}
 	}
 
@@ -3135,10 +3150,11 @@ public class IronscapePlugin extends Plugin
 		}
 		// "Use the spirit tree...": outline the tree itself — it IS the
 		// click target, same as an ore rock is for a mining sub.
+		// liveObjectName lowercases, so the names here must be lowercase
+		// too (that mismatch cost a play-test round).
 		if (SPIRIT_TREE.matcher(current.sub.getPlainText()).find())
 		{
-			rockNames.add("Spirit tree");
-			rockNames.add("Spirit Tree");
+			rockNames.add("spirit tree");
 		}
 		if (rockNames.isEmpty())
 		{

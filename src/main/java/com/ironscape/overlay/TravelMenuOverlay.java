@@ -58,6 +58,14 @@ public class TravelMenuOverlay extends Overlay
 		this.wordsSupplier = wordsSupplier;
 	}
 
+	/** The widget group that loaded while the travel sub was current. */
+	private Supplier<Integer> groupSupplier = () -> -1;
+
+	public void setGroupSupplier(Supplier<Integer> groupSupplier)
+	{
+		this.groupSupplier = groupSupplier;
+	}
+
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
@@ -66,21 +74,28 @@ public class TravelMenuOverlay extends Overlay
 		{
 			return null;
 		}
-		// The menu's list lives somewhere inside group 187, but WHICH
-		// component (and whether entries are dynamic, static or nested
-		// children) has shifted across game updates — scan them all; the
-		// group is tiny and only exists while the menu is open.
-		int group = InterfaceID.Menu.LJ_LAYER2 >>> 16;
-		for (int component = 0; component < 8; component++)
+		// Scan the group that loaded while the travel sub was current (the
+		// menu itself, whatever its id — nothing is hardcoded), plus the
+		// classic "Menu" group 187 as a fallback. Which component holds
+		// the entries (and whether they're dynamic, static or nested
+		// children) shifts across game updates — scan them all; the
+		// groups are tiny and only exist while a menu is open.
+		int loaded = groupSupplier.get();
+		int fallback = InterfaceID.Menu.LJ_LAYER2 >>> 16;
+		for (int group : loaded > 0 && loaded != fallback
+			? new int[]{loaded, fallback} : new int[]{fallback})
 		{
-			Widget container = client.getWidget((group << 16) | component);
-			if (container == null || container.isHidden())
+			for (int component = 0; component < 16; component++)
 			{
-				continue;
+				Widget container = client.getWidget((group << 16) | component);
+				if (container == null || container.isHidden())
+				{
+					continue;
+				}
+				highlightMatches(graphics, container.getDynamicChildren(), words);
+				highlightMatches(graphics, container.getStaticChildren(), words);
+				highlightMatches(graphics, container.getNestedChildren(), words);
 			}
-			highlightMatches(graphics, container.getDynamicChildren(), words);
-			highlightMatches(graphics, container.getStaticChildren(), words);
-			highlightMatches(graphics, container.getNestedChildren(), words);
 		}
 		return null;
 	}
