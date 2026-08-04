@@ -3189,6 +3189,35 @@ public class IronscapePlugin extends Plugin
 		if (target != null)
 		{
 			navigateTo(new WorldPoint(target.x, target.y, target.plane));
+			return;
+		}
+		// No captured ⌖ for this step: the Go button silently did NOTHING
+		// ("Fire strike imps west of the tower of life" — the tower is a
+		// known place!). Fall back to the step's best-known location: a
+		// place named in its text, else its 📍 area tag.
+		String stepId = annotationId.contains(":")
+			? annotationId.substring(0, annotationId.indexOf(':')) : annotationId;
+		GuideStep step = guideFor(activeVariant).getStepsById().get(stepId);
+		if (step == null || step.getSubSteps().isEmpty())
+		{
+			return;
+		}
+		SubStep sub = step.getSubSteps().get(0);
+		if (annotationId.contains(":"))
+		{
+			for (SubStep candidate : step.getSubSteps())
+			{
+				if (candidate.getId().equals(annotationId))
+				{
+					sub = candidate;
+					break;
+				}
+			}
+		}
+		WorldPoint fallback = targetFor(step, sub);
+		if (fallback != null)
+		{
+			navigateTo(fallback);
 		}
 	}
 
