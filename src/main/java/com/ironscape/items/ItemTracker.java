@@ -113,16 +113,19 @@ public class ItemTracker
 	/**
 	 * Bare family words: "runes" means the runes you bought, "bars" the
 	 * bars you smelted, "beads" the four imp bead colours — no single
-	 * item can match, so anything in the family counts.
+	 * item can match, so anything in the family counts. Suffixes are in
+	 * CANONICAL (singular) form and members are matched canonically,
+	 * because the game names some families singular ("Black bead") and
+	 * others plural ("Steel nails").
 	 */
 	private static final Map<String, String> FAMILY_SUFFIX = Map.of(
 		"runes", " rune",
 		"all runes", " rune",
 		"all of your runes", " rune",
 		"bars", " bar",
-		"beads", " beads",
-		"nails", " nails",
-		"nail", " nails");
+		"beads", " bead",
+		"nails", " nail",
+		"nail", " nail");
 
 	private static int resolve(Map<String, Integer> counts, String name)
 	{
@@ -132,7 +135,7 @@ public class ItemTracker
 			int total = 0;
 			for (Map.Entry<String, Integer> entry : counts.entrySet())
 			{
-				if (entry.getKey().endsWith(suffix))
+				if (canonical(entry.getKey()).endsWith(suffix))
 				{
 					total += entry.getValue();
 				}
@@ -629,12 +632,14 @@ public class ItemTracker
 			}
 		}
 		// Family names ("beads", "bars") borrow any family member's sprite.
+		// Canonical comparison, same as counting: "Black bead" is singular
+		// in game, the suffix is canonical-singular.
 		String suffix = FAMILY_SUFFIX.get(name.toLowerCase(Locale.ROOT).trim());
 		if (suffix != null)
 		{
 			for (net.runelite.http.api.item.ItemPrice price : itemManager.search(suffix.trim()))
 			{
-				if (price.getName().toLowerCase(Locale.ROOT).endsWith(suffix))
+				if (canonical(price.getName()).endsWith(suffix))
 				{
 					return price.getId();
 				}
