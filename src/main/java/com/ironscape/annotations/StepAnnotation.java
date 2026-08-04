@@ -44,6 +44,27 @@ public class StepAnnotation
 	 */
 	public Link link;
 
+	/**
+	 * Mid-quest side pickup ("Do Tree gnome village, get Glarial's pebble
+	 * on the way"). Quest Helper owns the quest flow but knows nothing
+	 * about the errand — while the sub's quest is IN_PROGRESS and the item
+	 * is still unowned, the errand's spot gets our tile marker, the
+	 * nearest NPC to it the outline with the item overhead, and coming
+	 * near it triggers a one-time chat reminder.
+	 */
+	public Errand errand;
+
+	public static class Errand
+	{
+		public int x;
+		public int y;
+		public int plane;
+		/** Item to pick up; the errand stands down once you own one. */
+		public String item;
+		/** Optional reminder text; defaults to naming the item. */
+		public String note;
+	}
+
 	public static class Link
 	{
 		/** Text shown in the panel, e.g. "Natural History Quiz (wiki)". */

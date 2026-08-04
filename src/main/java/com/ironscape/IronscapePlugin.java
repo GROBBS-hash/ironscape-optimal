@@ -512,6 +512,9 @@ public class IronscapePlugin extends Plugin
 	 * our panel back to the front the moment it FINISHES. */
 	private Quest handedOffQuest;
 
+	/** Sub ids whose errand nudge already fired this session. */
+	private final java.util.Set<String> errandReminded = new java.util.HashSet<>();
+
 	/**
 	 * Auto-completion applies to the first few incomplete sub-steps, not
 	 * just the very first — one un-tickable prose fragment must not freeze
@@ -1706,7 +1709,48 @@ public class IronscapePlugin extends Plugin
 				spot = new WorldPoint(target.x, target.y, target.plane);
 			}
 		}
+
+		// On-the-way errand: while Quest Helper owns the quest flow, an
+		// annotated side pickup ("get Glarial's pebble during Tree Gnome
+		// Village") keeps OUR guidance alive — QH knows nothing about it.
+		// Active only while the item is still unowned.
+		StepAnnotation.Errand errand = null;
+		if (current != null && questHelperOwnsGuidance())
+		{
+			StepAnnotation.Errand candidate = annotationManager.getErrand(current.sub.getId());
+			if (candidate == null)
+			{
+				candidate = annotationManager.getErrand(current.step.getId());
+			}
+			if (candidate != null && candidate.item != null
+				&& itemTracker.countOf(candidate.item) == 0)
+			{
+				errand = candidate;
+			}
+		}
+		WorldPoint errandPoint = errand == null ? null
+			: new WorldPoint(errand.x, errand.y, errand.plane);
+		if (spot == null && errandPoint != null && config.showTargetMarker())
+		{
+			spot = errandPoint;
+		}
 		targetTileMarker = spot;
+
+		// One-time nudge when the quest route brings you NEAR the errand
+		// spot — the whole point is not walking past Golrie's tunnel.
+		if (errandPoint != null && player != null)
+		{
+			WorldPoint here = player.getWorldLocation();
+			if (here.getPlane() == errandPoint.getPlane()
+				&& here.distanceTo2D(errandPoint) <= 30
+				&& errandReminded.add(current.sub.getId()))
+			{
+				client.addChatMessage(ChatMessageType.CONSOLE, "",
+					"IRONSCAPE: on-the-way pickup — "
+						+ (errand.note != null ? errand.note : "get " + errand.item + " here")
+						+ ".", null);
+			}
+		}
 
 		// Shop-keeper anchor: for a sub that still needs items ("From
 		// sawmill buy 500 bronze nails"), the sub's resolved nav target
@@ -1714,8 +1758,9 @@ public class IronscapePlugin extends Plugin
 		// the nearest NPC to it gets the outline and the wanted item
 		// floats over their head, Quest Helper-style. ⌖ captures keep
 		// priority; the ≤4-tile rule below keeps town-center points from
-		// outlining random passers-by.
-		WorldPoint shopAnchor = spot;
+		// outlining random passers-by. An active errand's spot anchors the
+		// same way (Golrie gets the outline, the pebble floats overhead).
+		WorldPoint shopAnchor = spot != null ? spot : errandPoint;
 		if (shopAnchor == null && current != null && hasPurchaseGoal(current.sub))
 		{
 			// Text places only — the step's 📍 town tag is far too coarse
@@ -1735,7 +1780,10 @@ public class IronscapePlugin extends Plugin
 		// giver's outline served its purpose getting the quest STARTED) and
 		// resume when the quest finishes and the step ticks — otherwise we
 		// keep pointing at Kovac while QH points at the actual objective.
-		if (current != null && !questHelperOwnsGuidance())
+		// EXCEPT an active errand: its anchor still nominates the nearest
+		// NPC (the name scan stays off — mid-quest names are QH's job).
+		boolean errandOnly = errand != null;
+		if (current != null && (!questHelperOwnsGuidance() || errandOnly))
 		{
 			// The step's NOTE lines join the scan: "Note: Use phials to
 			// un-note planks" names the NPC the step is really about even
@@ -1781,16 +1829,19 @@ public class IronscapePlugin extends Plugin
 				// The guide speaks in plurals ("fire strike imps", "kill
 				// cows"); the NPC is named in the singular ("Imp"). Match
 				// the name and its plural forms, word-bounded either side.
-				for (String variant : pluralVariants(clean))
+				if (!errandOnly)
 				{
-					int at = subText.indexOf(variant);
-					if (at > 0
-						&& !Character.isLetter(subText.charAt(at - 1))
-						&& !Character.isLetter(subText.charAt(at + variant.length()))
-						&& !insideLongerSpan(placeSpans, at, at + variant.length()))
+					for (String variant : pluralVariants(clean))
 					{
-						npcNames.add(clean);
-						break;
+						int at = subText.indexOf(variant);
+						if (at > 0
+							&& !Character.isLetter(subText.charAt(at - 1))
+							&& !Character.isLetter(subText.charAt(at + variant.length()))
+							&& !insideLongerSpan(placeSpans, at, at + variant.length()))
+						{
+							npcNames.add(clean);
+							break;
+						}
 					}
 				}
 				// The quest giver is rarely NAMED by the step ("Do Waterfall
@@ -1821,7 +1872,8 @@ public class IronscapePlugin extends Plugin
 			// The quest's ACTUAL giver (wiki-seeded from the quest infobox)
 			// beats guessing whoever stands nearest the start pin — a
 			// decorative giant at the Foundry wore Kovac's quest icon.
-			for (SubStep questSub : current.step.getSubSteps())
+			for (SubStep questSub : errandOnly
+				? java.util.Collections.<SubStep>emptyList() : current.step.getSubSteps())
 			{
 				GoalDetector.QuestGoal questGoal = questGoalBySub.get(questSub.getId());
 				if (questGoal == null)
@@ -1915,6 +1967,16 @@ public class IronscapePlugin extends Plugin
 				&& itemTracker.carriedCountOf(depleting) > 0)
 			{
 				wantedIcon = itemTracker.iconIdFor(depleting);
+			}
+		}
+		// An active errand's item wins the overhead slot — the outlined NPC
+		// IS the errand (the pebble over Golrie, not some other step item).
+		if (errand != null)
+		{
+			int errandIcon = itemTracker.iconIdFor(errand.item);
+			if (errandIcon > 0)
+			{
+				wantedIcon = errandIcon;
 			}
 		}
 		currentSubItemIcon = wantedIcon;

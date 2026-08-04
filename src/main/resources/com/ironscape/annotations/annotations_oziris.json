@@ -1,6 +1,15 @@
 {
  "version": 1,
  "annotations": {
+  "624c2f822c:0": {
+   "errand": {
+    "x": 2515,
+    "y": 9581,
+    "plane": 0,
+    "item": "glarial's pebble",
+    "note": "ask Golrie for Glarial's pebble while you're in his tunnel (needed for Waterfall Quest)"
+   }
+  },
   "62593ad63e:0": {
    "target": {
     "x": 2469,

@@ -93,6 +93,18 @@ public class AnnotationManager
 		return b == null ? null : b.requires;
 	}
 
+	/** The step/sub's mid-quest errand, local file winning over bundled. Null if none. */
+	public synchronized StepAnnotation.Errand getErrand(String annotationId)
+	{
+		StepAnnotation l = local.get(annotationId);
+		if (l != null && l.errand != null)
+		{
+			return l.errand;
+		}
+		StepAnnotation b = bundled.get(annotationId);
+		return b == null ? null : b.errand;
+	}
+
 	/** Items needed for a step/sub-step, local file winning over bundled. Empty if none. */
 	public synchronized List<StepAnnotation.ItemNeed> getItems(String annotationId)
 	{
