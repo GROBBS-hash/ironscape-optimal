@@ -417,6 +417,43 @@ refresh when "Failed to login" appears.
   wave 3 commits are play-tested but NOT pinned; bump when it next
   matters.
 
+- SESSION WAVE 4 (2026-08-04/05, live play-test session, all pushed):
+  quest-NAME place links act as places when the quest isn't the step's
+  task (article-tolerant match vs step quest metadata; FINISHED quests
+  always just route); handoff RETURN — ClientToolbar.openPanel pulls our
+  panel back when the handed-off quest FINISHES (handedOffQuest tracked
+  on the lastQuestOwnsGuidance edge); bank filter keeps withdrawn items
+  (done subs keep items while stillMet) and the widget join falls back
+  to nameMatchesGoal (any axe tier clickable); NPC outlines match
+  PLURALS (pluralVariants: imps/wolves/fairies); family sums + iconIdFor
+  match CANONICALLY ("beads" counts the singular "Black bead" imp
+  drops); **ERRAND CHAINS** — annotation `errands` (ordered stages
+  {x,y,plane,item,note}, sub-keyed "624c2f822c:0" = TGV pebble: key
+  crate 2548,9565 -> Golrie 2514,9580, coords from QH source): active
+  from quest START until items owned, OUTLIVES the quest, blocks the
+  quest-completion subsume/atomic ticks while unsatisfied, stage = first
+  unsatisfied (sticky per session; owning a LATER stage's item satisfies
+  earlier ones; intermediate stages count CARRIED only — bank items
+  named "Key" are impostors), errand outranks jumped-ahead + QH-owns in
+  nav, route re-posts every 10 ticks, ⌖ marker + nearest-NPC outline +
+  item overhead + 30-tile one-shot chat nudge; **ITEM SOURCES**
+  (places/item_sources.json, place namespace + `note` chatted on click;
+  RichText overrides an author wiki link whose WHOLE text is a nav name;
+  navigateToPlace routes chain-aware — clicking the pebble goes to the
+  CURRENT stage); jumped-ahead minStepIndexByQuest also learns from
+  metadata quest tags (Barcrawl's start step never says the full name —
+  it looked permanently jumped-ahead and CLEARED ALL AUTO-NAV);
+  panel item badge lines CLICKABLE (route via place/source/chain if
+  known, else wiki page; RichText.wikiUrl); right-click ⌖ = "Remove
+  captured location" (AnnotationManager.clearTarget, local only,
+  releases navHold); TravelMenuOverlay highlights matching entries in
+  interface 187 (Spirit Tree Locations, gliders — word-SET match of sub
+  text + 📍 tag, InterfaceID.Menu.LJ_LAYER1); "use the spirit tree" subs
+  route to the NEAREST of the 5 permanent spirit trees when far from the
+  destination (SPIRIT_TREES, nearestOf); tools/qh-lookup.mjs pulls
+  WorldPoints + ItemRequirements from Quest Helper source ("Quest Name",
+  --item code search via gh, cache gitignored). Hub pin still cf9be08.
+
 - The ONLY guide is **GuideVariant.OZIRIS** — Ironman Efficiency Guide
   v4, community "Enhanced 2026" edition from https://ironman.guide/,
   scraped by `tools/scrape-oziris.mjs` (575 steps, 7 sections). The
