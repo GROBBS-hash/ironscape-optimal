@@ -526,35 +526,85 @@ public class IronscapePlugin extends Plugin
 	private String lastErrandStage;
 
 	/**
-	 * The first unsatisfied stage of the current sub/step's errand chain
-	 * while its quest is in progress; null when none or all satisfied.
+	 * The first unsatisfied stage of the current sub/step's errand chain,
+	 * once its quest has STARTED (before that, quest-start guidance is
+	 * the right pointer). Deliberately still active after the quest
+	 * finishes: completing Tree Gnome Village without the pebble leaves
+	 * the errand as the step's only remaining signal.
 	 */
 	private StepAnnotation.Errand activeErrand()
 	{
 		Current current = findCurrent();
-		if (current == null || !questHelperOwnsGuidance())
+		if (current == null)
 		{
 			return null;
 		}
-		List<StepAnnotation.Errand> chain = annotationManager.getErrands(current.sub.getId());
+		Quest quest = stepQuest(current);
+		if (quest == null || quest.getState(client) == QuestState.NOT_STARTED)
+		{
+			return null;
+		}
+		return unsatisfiedErrandStage(current.step, current.sub);
+	}
+
+	/**
+	 * First unsatisfied stage of the sub/step's errand chain, else null.
+	 * A stage seen OWNED once stays satisfied for the session, and owning
+	 * a LATER stage's item satisfies every earlier one — the gate key
+	 * disappears into the lock, but holding the pebble proves it served.
+	 */
+	private StepAnnotation.Errand unsatisfiedErrandStage(GuideStep step, SubStep sub)
+	{
+		List<StepAnnotation.Errand> chain = annotationManager.getErrands(sub.getId());
 		if (chain.isEmpty())
 		{
-			chain = annotationManager.getErrands(current.step.getId());
+			chain = annotationManager.getErrands(step.getId());
+		}
+		if (chain.isEmpty())
+		{
+			return null;
+		}
+		for (int i = 0; i < chain.size(); i++)
+		{
+			if (chain.get(i).item != null && itemTracker.countOf(chain.get(i).item) > 0)
+			{
+				for (int k = 0; k <= i; k++)
+				{
+					if (chain.get(k).item != null)
+					{
+						errandDone.add(step.getId() + "|" + chain.get(k).item);
+					}
+				}
+			}
 		}
 		for (StepAnnotation.Errand stage : chain)
 		{
-			if (stage.item == null)
-			{
-				continue;
-			}
-			String doneKey = current.step.getId() + "|" + stage.item;
-			if (itemTracker.countOf(stage.item) > 0)
-			{
-				errandDone.add(doneKey);
-			}
-			if (!errandDone.contains(doneKey))
+			if (stage.item != null && !errandDone.contains(step.getId() + "|" + stage.item))
 			{
 				return stage;
+			}
+		}
+		return null;
+	}
+
+	/** The quest the current step is about (any state), else null. */
+	private Quest stepQuest(Current current)
+	{
+		GoalDetector.QuestGoal goal = questGoalBySub.get(current.sub.getId());
+		if (goal != null)
+		{
+			return goal.getQuest();
+		}
+		String questName = current.step.getMetadata().get("quest");
+		if (questName == null)
+		{
+			return null;
+		}
+		for (Quest quest : Quest.values())
+		{
+			if (quest.getName().equalsIgnoreCase(questName.trim()))
+			{
+				return quest;
 			}
 		}
 		return null;
@@ -1755,9 +1805,10 @@ public class IronscapePlugin extends Plugin
 			}
 		}
 
-		// On-the-way errand: while Quest Helper owns the quest flow, an
-		// annotated side pickup ("get Glarial's pebble during Tree Gnome
-		// Village") keeps OUR guidance alive — QH knows nothing about it.
+		// On-the-way errand: an annotated side pickup ("get Glarial's
+		// pebble during Tree Gnome Village") keeps OUR guidance alive from
+		// quest start until the item is in the bag — mid-quest QH knows
+		// nothing about it, and post-quest it's the step's only signal.
 		StepAnnotation.Errand errand = activeErrand();
 		String errandStage = errand == null ? null : errand.item;
 		if (!java.util.Objects.equals(errandStage, lastErrandStage))
@@ -2445,17 +2496,25 @@ public class IronscapePlugin extends Plugin
 	private boolean currentSubSatisfied(GuideStep step, SubStep sub, boolean frontier,
 		boolean inFrontierStep)
 	{
+		// An unsatisfied errand chain BLOCKS quest-state ticking: "Do Tree
+		// gnome village, get Glarial's pebble on the way" must not tick on
+		// the quest jingle while the pebble is still in Golrie's tunnel.
+		boolean errandPending = unsatisfiedErrandStage(step, sub) != null;
+
 		// A FINISHED quest subsumes EVERY sub of a step that carries its
 		// goal: "Continue Gertrude's cat, talk to the kids" cannot have
 		// unfinished errands once the quest itself is done — the kids sub
 		// has no signal of its own and stayed unticked (owner hit this).
-		for (SubStep other : step.getSubSteps())
+		if (!errandPending)
 		{
-			GoalDetector.QuestGoal stepQuest = questGoalBySub.get(other.getId());
-			if (stepQuest != null
-				&& stepQuest.getQuest().getState(client) == QuestState.FINISHED)
+			for (SubStep other : step.getSubSteps())
 			{
-				return true;
+				GoalDetector.QuestGoal stepQuest = questGoalBySub.get(other.getId());
+				if (stepQuest != null
+					&& stepQuest.getQuest().getState(client) == QuestState.FINISHED)
+				{
+					return true;
+				}
 			}
 		}
 
@@ -2467,9 +2526,10 @@ public class IronscapePlugin extends Plugin
 		if (atomicQuestGoal != null && itemGoalsBySub.containsKey(sub.getId()))
 		{
 			QuestState state = atomicQuestGoal.getQuest().getState(client);
-			return atomicQuestGoal.isRequiresFinished()
+			boolean questDone = atomicQuestGoal.isRequiresFinished()
 				? state == QuestState.FINISHED
 				: state != QuestState.NOT_STARTED;
+			return questDone && !errandPending;
 		}
 
 		List<GoalDetector.ItemGoal> itemGoals = itemGoalsBySub.get(sub.getId());
@@ -3187,19 +3247,20 @@ public class IronscapePlugin extends Plugin
 			// nowhere ("run back to Falador" gave no route) — so still
 			// route to the step's own 📍 area: QH users get a route to the
 			// same area QH is guiding them through, no conflict.
+			// An active errand outranks everything below: Shortest Path
+			// knows the dungeon transports, so the route points at the
+			// LADDER down to Golrie — from the surface the errand's tile
+			// marker is invisible and gave no hint to descend. Holds both
+			// mid-quest AND after (quest done, pebble still unclaimed).
+			StepAnnotation.Errand errand = activeErrand();
+			if (errand != null)
+			{
+				eventBus.post(new PluginMessage("shortestpath", "path",
+					Map.of("target", new WorldPoint(errand.x, errand.y, errand.plane))));
+				return;
+			}
 			if (questHelperOwnsGuidance())
 			{
-				// An active errand outranks the step's 📍 area: Shortest
-				// Path knows the dungeon transports, so the route points at
-				// the LADDER down to Golrie — from the surface the errand's
-				// tile marker is invisible and gave no hint to descend.
-				StepAnnotation.Errand errand = activeErrand();
-				if (errand != null)
-				{
-					eventBus.post(new PluginMessage("shortestpath", "path",
-						Map.of("target", new WorldPoint(errand.x, errand.y, errand.plane))));
-					return;
-				}
 				Current questCurrent = findCurrent();
 				String location = questCurrent == null
 					? null : questCurrent.step.getMetadata().get("location");
@@ -3251,26 +3312,9 @@ public class IronscapePlugin extends Plugin
 		{
 			return null;
 		}
-		GoalDetector.QuestGoal goal = questGoalBySub.get(current.sub.getId());
-		if (goal != null)
-		{
-			return goal.getQuest().getState(client) == QuestState.IN_PROGRESS
-				? goal.getQuest() : null;
-		}
-		String questName = current.step.getMetadata().get("quest");
-		if (questName == null)
-		{
-			return null;
-		}
-		for (Quest quest : Quest.values())
-		{
-			if (quest.getName().equalsIgnoreCase(questName.trim()))
-			{
-				return quest.getState(client) == QuestState.IN_PROGRESS
-					? quest : null;
-			}
-		}
-		return null;
+		Quest quest = stepQuest(current);
+		return quest != null && quest.getState(client) == QuestState.IN_PROGRESS
+			? quest : null;
 	}
 
 	/** The target of the first incomplete sub-step, scanning at most a few ahead. */
