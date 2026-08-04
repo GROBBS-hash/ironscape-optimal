@@ -569,7 +569,15 @@ public class IronscapePlugin extends Plugin
 		}
 		for (int i = 0; i < chain.size(); i++)
 		{
-			if (chain.get(i).item != null && itemTracker.countOf(chain.get(i).item) > 0)
+			// Intermediate stages count CARRIED only: quest keys are all
+			// literally named "Key", and an unrelated one in the BANK must
+			// not skip the crate. The LAST stage is the objective itself
+			// and may sit banked — that still counts as done.
+			String item = chain.get(i).item;
+			int have = item == null ? 0 : (i == chain.size() - 1
+				? itemTracker.countOf(item)
+				: itemTracker.carriedCountOf(item));
+			if (have > 0)
 			{
 				for (int k = 0; k <= i; k++)
 				{
@@ -896,6 +904,27 @@ public class IronscapePlugin extends Plugin
 			questGoalBySub.put(goal.getSub().getId(), goal);
 			minStepIndexByQuest.merge(goal.getQuest(),
 				goal.getStep().getGlobalIndex(), Math::min);
+		}
+		// Metadata quest tags join the min-index map: "Start Barcrawl
+		// miniquest" never says the full "Alfred Grimhand's Barcrawl", so
+		// no TEXT goal lands on the start step — leaving only the later
+		// finish step in the map and making the long-running miniquest
+		// look "jumped ahead" (which cleared ALL auto-navigation).
+		for (GuideStep step : guideFor(activeVariant).getAllSteps())
+		{
+			String questName = step.getMetadata().get("quest");
+			if (questName == null)
+			{
+				continue;
+			}
+			for (Quest quest : Quest.values())
+			{
+				if (quest.getName().equalsIgnoreCase(questName.trim()))
+				{
+					minStepIndexByQuest.merge(quest, step.getGlobalIndex(), Math::min);
+					break;
+				}
+			}
 		}
 		actionGoalBySub.clear();
 		for (GoalDetector.SkillActionGoal goal : goals.getSkillActionGoals())
@@ -3245,6 +3274,20 @@ public class IronscapePlugin extends Plugin
 				}
 				navHoldStepId = null;
 			}
+			// An active errand outranks everything below, INCLUDING the
+			// jumped-ahead stand-down — it's explicit hand-authored
+			// guidance for the CURRENT step, not a heuristic. Shortest
+			// Path knows the dungeon transports, so the route points at
+			// the LADDER down to Golrie — from the surface the errand's
+			// tile marker is invisible and gave no hint to descend. Holds
+			// both mid-quest AND after (quest done, pebble unclaimed).
+			StepAnnotation.Errand errand = activeErrand();
+			if (errand != null)
+			{
+				eventBus.post(new PluginMessage("shortestpath", "path",
+					Map.of("target", new WorldPoint(errand.x, errand.y, errand.plane))));
+				return;
+			}
 			// Player jumped ahead to a later step's quest: ANY route we
 			// post drags them back toward the frontier mid-quest — full
 			// stand-down until that quest wraps up.
@@ -3258,18 +3301,6 @@ public class IronscapePlugin extends Plugin
 			// nowhere ("run back to Falador" gave no route) — so still
 			// route to the step's own 📍 area: QH users get a route to the
 			// same area QH is guiding them through, no conflict.
-			// An active errand outranks everything below: Shortest Path
-			// knows the dungeon transports, so the route points at the
-			// LADDER down to Golrie — from the surface the errand's tile
-			// marker is invisible and gave no hint to descend. Holds both
-			// mid-quest AND after (quest done, pebble still unclaimed).
-			StepAnnotation.Errand errand = activeErrand();
-			if (errand != null)
-			{
-				eventBus.post(new PluginMessage("shortestpath", "path",
-					Map.of("target", new WorldPoint(errand.x, errand.y, errand.plane))));
-				return;
-			}
 			if (questHelperOwnsGuidance())
 			{
 				Current questCurrent = findCurrent();

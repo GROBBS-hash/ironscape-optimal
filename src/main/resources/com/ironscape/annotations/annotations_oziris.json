@@ -2,6 +2,12 @@
  "version": 1,
  "annotations": {
   "624c2f822c:0": {
+   "items": [
+    {
+     "name": "key",
+     "quantity": 1
+    }
+   ],
    "errands": [
     {
      "x": 2548,
