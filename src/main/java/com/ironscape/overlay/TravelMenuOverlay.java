@@ -66,15 +66,30 @@ public class TravelMenuOverlay extends Overlay
 		{
 			return null;
 		}
-		Widget list = client.getWidget(InterfaceID.Menu.LJ_LAYER1);
-		if (list == null || list.isHidden())
+		// The menu's list lives somewhere inside group 187, but WHICH
+		// component (and whether entries are dynamic, static or nested
+		// children) has shifted across game updates — scan them all; the
+		// group is tiny and only exists while the menu is open.
+		int group = InterfaceID.Menu.LJ_LAYER2 >>> 16;
+		for (int component = 0; component < 8; component++)
 		{
-			return null;
+			Widget container = client.getWidget((group << 16) | component);
+			if (container == null || container.isHidden())
+			{
+				continue;
+			}
+			highlightMatches(graphics, container.getDynamicChildren(), words);
+			highlightMatches(graphics, container.getStaticChildren(), words);
+			highlightMatches(graphics, container.getNestedChildren(), words);
 		}
-		Widget[] children = list.getDynamicChildren();
+		return null;
+	}
+
+	private void highlightMatches(Graphics2D graphics, Widget[] children, Set<String> words)
+	{
 		if (children == null)
 		{
-			return null;
+			return;
 		}
 		for (Widget child : children)
 		{
@@ -100,7 +115,6 @@ public class TravelMenuOverlay extends Overlay
 				graphics.draw(bounds);
 			}
 		}
-		return null;
 	}
 
 	/** Every meaningful word of the entry name appears in the sub's words. */

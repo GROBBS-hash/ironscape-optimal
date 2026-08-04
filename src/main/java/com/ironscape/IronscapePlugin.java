@@ -3112,27 +3112,33 @@ public class IronscapePlugin extends Plugin
 	 */
 	private List<net.runelite.api.GameObject> findWantedRocks(Current current)
 	{
-		List<GoalDetector.ItemGoal> wanted = itemGoalsBySub.get(current.sub.getId());
-		if (wanted == null)
-		{
-			return java.util.Collections.emptyList();
-		}
 		java.util.Set<String> rockNames = new java.util.HashSet<>();
-		for (GoalDetector.ItemGoal goal : wanted)
+		List<GoalDetector.ItemGoal> wanted = itemGoalsBySub.get(current.sub.getId());
+		if (wanted != null)
 		{
-			String rock = ROCK_BY_ORE.get(goal.getItemName().toLowerCase(Locale.ROOT));
-			if (rock == null)
+			for (GoalDetector.ItemGoal goal : wanted)
 			{
-				continue;
+				String rock = ROCK_BY_ORE.get(goal.getItemName().toLowerCase(Locale.ROOT));
+				if (rock == null)
+				{
+					continue;
+				}
+				boolean gather = itemTracker.bankCountable(goal.getItemName(), goal.getQuantity());
+				int count = gather
+					? itemTracker.countOf(goal.getItemName())
+					: itemTracker.carriedCountOf(goal.getItemName());
+				if (count < goal.getQuantity())
+				{
+					rockNames.add(rock);
+				}
 			}
-			boolean gather = itemTracker.bankCountable(goal.getItemName(), goal.getQuantity());
-			int count = gather
-				? itemTracker.countOf(goal.getItemName())
-				: itemTracker.carriedCountOf(goal.getItemName());
-			if (count < goal.getQuantity())
-			{
-				rockNames.add(rock);
-			}
+		}
+		// "Use the spirit tree...": outline the tree itself — it IS the
+		// click target, same as an ore rock is for a mining sub.
+		if (SPIRIT_TREE.matcher(current.sub.getPlainText()).find())
+		{
+			rockNames.add("Spirit tree");
+			rockNames.add("Spirit Tree");
 		}
 		if (rockNames.isEmpty())
 		{

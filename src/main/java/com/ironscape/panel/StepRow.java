@@ -180,6 +180,18 @@ class StepRow extends JPanel
 				needs.add(annotated);
 			}
 		}
+		// Single-sub steps pass the STEP id as annotationId — items keyed
+		// to the sub ("624c2f822c:0"'s gate key) must still render.
+		if (goalSubId != null && !goalSubId.equals(annotationId))
+		{
+			for (StepAnnotation.ItemNeed annotated : ctx.getAnnotations().getItems(goalSubId))
+			{
+				if (seenNames.add(annotated.name.toLowerCase(java.util.Locale.ROOT)))
+				{
+					needs.add(annotated);
+				}
+			}
+		}
 		boolean hasActionBadge = goalSubId != null && ctx.getActionBadge() != null
 			&& ctx.getActionBadge().apply(goalSubId) != null;
 		if (needs.isEmpty() && !hasActionBadge)
