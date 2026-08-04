@@ -3222,7 +3222,7 @@ public class IronscapePlugin extends Plugin
 	}
 
 	/** A place-name link was clicked in the step text. */
-	private void navigateToPlace(String placeName)
+	private void navigateToPlace(String placeName, GuideStep contextStep)
 	{
 		// Clicking a minigame's name ("Soul Wars") means "how do I get
 		// there?" — and the answer is the minigame teleport, so light up
@@ -3261,9 +3261,16 @@ public class IronscapePlugin extends Plugin
 		// way that's the wrong place — Quest Helper (its own plugin) is the
 		// tool that knows the current quest step; no API exists for us to
 		// ask it, so we say so instead of routing somewhere misleading.
+		// BUT: quest-name semantics only apply while the name can still MEAN
+		// the quest — many steps use quest names as landmarks ("fire strike
+		// imps west of the Tower of Life"). If the quest is finished, or this
+		// step isn't about that quest, the click means "take me there".
 		Quest quest = questByName(placeName);
 		if (quest != null)
 		{
+			String stepQuest = contextStep != null ? contextStep.getMetadata().get("quest") : null;
+			boolean questIsTheTask = stepQuest != null
+				&& stripArticle(stepQuest).equalsIgnoreCase(stripArticle(quest.getName()));
 			clientThread.invokeLater(() -> {
 				QuestState state = quest.getState(client);
 				if (state == QuestState.NOT_STARTED)
@@ -3275,12 +3282,7 @@ public class IronscapePlugin extends Plugin
 					questStartMarker = point;
 					eventBus.post(new PluginMessage("shortestpath", "path", Map.of("target", point)));
 				}
-				else if (state == QuestState.FINISHED)
-				{
-					client.addChatMessage(ChatMessageType.CONSOLE, "",
-						"IRONSCAPE: " + quest.getName() + " is already finished.", null);
-				}
-				else
+				else if (questIsTheTask && state == QuestState.IN_PROGRESS)
 				{
 					// No programmatic Quest Helper handoff: QH exposes no
 					// public API, and the Plugin Hub forbids reflection —
@@ -3291,11 +3293,23 @@ public class IronscapePlugin extends Plugin
 							+ "Select it in Quest Helper for step-by-step guidance.",
 						null);
 				}
+				else
+				{
+					// Finished quest, or a landmark reference on some other
+					// step — the name means the PLACE now, so just route.
+					eventBus.post(new PluginMessage("shortestpath", "path", Map.of("target", point)));
+				}
 			});
 			return;
 		}
 
 		navigateTo(point);
+	}
+
+	/** "The Tower of Life" and "Tower of Life" name the same quest. */
+	private static String stripArticle(String name)
+	{
+		return name.trim().replaceFirst("(?i)^the\\s+", "");
 	}
 
 	private static Quest questByName(String name)

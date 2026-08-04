@@ -39,8 +39,9 @@ class RowContext
 	/** Routes to an annotation id's target via Shortest Path. Null if unwired. */
 	Consumer<String> navigateHandler;
 
-	/** Routes to a named place via Shortest Path. Null if unwired. */
-	Consumer<String> placeNavigateHandler;
+	/** Routes to a named place via Shortest Path (the step gives quest-name
+	 * links their context: landmark vs the quest itself). Null if unwired. */
+	java.util.function.BiConsumer<String, com.ironscape.guide.GuideStep> placeNavigateHandler;
 
 	/** Hops to a world number ("world 444" links). Null if unwired. */
 	Consumer<Integer> worldHopHandler;

@@ -71,8 +71,10 @@ public class IronscapePanel extends PluginPanel
 	/** Set by the plugin; routes to a target (by annotation id) via Shortest Path. */
 	private Consumer<String> navigateHandler;
 
-	/** Set by the plugin; routes to a named place via Shortest Path. */
-	private Consumer<String> placeNavigateHandler;
+	/** Set by the plugin; routes to a named place via Shortest Path. The step
+	 * is passed along so quest-name links know whether the step is ABOUT that
+	 * quest or just uses its name as a landmark. */
+	private java.util.function.BiConsumer<String, com.ironscape.guide.GuideStep> placeNavigateHandler;
 
 	/** Set by the plugin; hops to a world number ("world 444" links). */
 	private Consumer<Integer> worldHopHandler;
@@ -247,7 +249,7 @@ public class IronscapePanel extends PluginPanel
 		this.navigateHandler = navigateHandler;
 	}
 
-	public void setPlaceNavigateHandler(Consumer<String> placeNavigateHandler)
+	public void setPlaceNavigateHandler(java.util.function.BiConsumer<String, com.ironscape.guide.GuideStep> placeNavigateHandler)
 	{
 		this.placeNavigateHandler = placeNavigateHandler;
 	}

@@ -617,7 +617,7 @@ class StepRow extends JPanel
 			if (ctx.getPlaceNavigateHandler() != null)
 			{
 				ctx.getPlaceNavigateHandler().accept(
-					decode(description.substring(PlaceManager.LINK_PREFIX.length())));
+					decode(description.substring(PlaceManager.LINK_PREFIX.length())), step);
 			}
 		}
 		else if (description != null && description.startsWith(RichText.WORLD_LINK_PREFIX))
