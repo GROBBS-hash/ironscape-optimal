@@ -553,13 +553,16 @@ public class IronscapePlugin extends Plugin
 	 * a LATER stage's item satisfies every earlier one — the gate key
 	 * disappears into the lock, but holding the pebble proves it served.
 	 */
-	private StepAnnotation.Errand unsatisfiedErrandStage(GuideStep step, SubStep sub)
+	/** The sub/step's errand chain (sub-keyed winning), possibly empty. */
+	private List<StepAnnotation.Errand> errandChain(GuideStep step, SubStep sub)
 	{
 		List<StepAnnotation.Errand> chain = annotationManager.getErrands(sub.getId());
-		if (chain.isEmpty())
-		{
-			chain = annotationManager.getErrands(step.getId());
-		}
+		return chain.isEmpty() ? annotationManager.getErrands(step.getId()) : chain;
+	}
+
+	private StepAnnotation.Errand unsatisfiedErrandStage(GuideStep step, SubStep sub)
+	{
+		List<StepAnnotation.Errand> chain = errandChain(step, sub);
 		if (chain.isEmpty())
 		{
 			return null;
@@ -1817,6 +1820,14 @@ public class IronscapePlugin extends Plugin
 			// all reroute: Shortest Path targets the live stage, and must
 			// move on the moment it's satisfied.
 			lastErrandStage = errandStage;
+			maybeNavigateToNext();
+		}
+		else if (errand != null && tickCounter % 10 == 0)
+		{
+			// Keep the stage route ALIVE while the errand runs — ladder
+			// hops and other transitions can drop the Shortest Path route,
+			// and QH-style guidance means it always points at the current
+			// stage. Idempotent when the route is already right.
 			maybeNavigateToNext();
 		}
 		WorldPoint errandPoint = errand == null ? null
@@ -3534,15 +3545,46 @@ public class IronscapePlugin extends Plugin
 			return;
 		}
 
-		// Item sources carry a how-to ("ask Golrie... key from the crate")
-		// — the route shows WHERE, the note says HOW.
-		String note = placeManager.note(placeName);
-		if (note != null)
-		{
-			clientThread.invokeLater(() -> client.addChatMessage(ChatMessageType.CONSOLE, "",
-				"IRONSCAPE: " + note, null));
-		}
-		navigateTo(point);
+		// Clicking an item that an active errand CHAIN yields routes to the
+		// chain's CURRENT stage instead of the item's final spot — the
+		// pebble link must first walk you to the key crate, stage by
+		// stage, the way Quest Helper would.
+		clientThread.invokeLater(() -> {
+			StepAnnotation.Errand stage = activeErrand();
+			Current chainCurrent = findCurrent();
+			boolean clickedInChain = false;
+			if (stage != null && chainCurrent != null)
+			{
+				for (StepAnnotation.Errand link : errandChain(chainCurrent.step, chainCurrent.sub))
+				{
+					if (link.item != null && link.item.equalsIgnoreCase(placeName.trim()))
+					{
+						clickedInChain = true;
+						break;
+					}
+				}
+			}
+			if (clickedInChain)
+			{
+				if (stage.note != null)
+				{
+					client.addChatMessage(ChatMessageType.CONSOLE, "",
+						"IRONSCAPE: next: " + stage.note, null);
+				}
+				eventBus.post(new PluginMessage("shortestpath", "path",
+					Map.of("target", new WorldPoint(stage.x, stage.y, stage.plane))));
+				return;
+			}
+			// Item sources carry a how-to ("ask Golrie... key from the
+			// crate") — the route shows WHERE, the note says HOW.
+			String note = placeManager.note(placeName);
+			if (note != null)
+			{
+				client.addChatMessage(ChatMessageType.CONSOLE, "",
+					"IRONSCAPE: " + note, null);
+			}
+			eventBus.post(new PluginMessage("shortestpath", "path", Map.of("target", point)));
+		});
 	}
 
 	/** "The Tower of Life" and "Tower of Life" name the same quest. */
