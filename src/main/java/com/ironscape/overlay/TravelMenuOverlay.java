@@ -81,9 +81,16 @@ public class TravelMenuOverlay extends Overlay
 		// children) shifts across game updates — scan them all; the
 		// groups are tiny and only exist while a menu is open.
 		int loaded = groupSupplier.get();
-		int fallback = InterfaceID.Menu.LJ_LAYER2 >>> 16;
-		for (int group : loaded > 0 && loaded != fallback
-			? new int[]{loaded, fallback} : new int[]{fallback})
+		java.util.LinkedHashSet<Integer> groups = new java.util.LinkedHashSet<>();
+		if (loaded > 0)
+		{
+			groups.add(loaded);
+		}
+		// Confirmed via the load probe: the spirit tree list is MenuNew
+		// (group 947). Classic Menu (187) kept for older-style lists.
+		groups.add(InterfaceID.MenuNew.INFINITE >>> 16);
+		groups.add(InterfaceID.Menu.LJ_LAYER2 >>> 16);
+		for (int group : groups)
 		{
 			for (int component = 0; component < 16; component++)
 			{

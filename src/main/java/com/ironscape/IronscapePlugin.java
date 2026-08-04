@@ -2824,6 +2824,16 @@ public class IronscapePlugin extends Plugin
 			: placeManager.firstPlaceIn(sub.getPlainText());
 		if (place == null)
 		{
+			// The guide's phrasing flips word order against the place list
+			// ("go to battlefield of khazard" vs the place "Khazard
+			// Battlefield") — no text match, and teleport arrivals never
+			// ticked. The step's authored 📍 tag IS the destination; use
+			// it whenever the text comes up empty.
+			String location = step.getMetadata().get("location");
+			place = location == null ? null : placeManager.getLoose(location);
+		}
+		if (place == null)
+		{
 			return false;
 		}
 		boolean within = here.getPlane() == place.getPlane()

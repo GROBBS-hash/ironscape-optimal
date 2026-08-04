@@ -3464,6 +3464,12 @@
       "y": 3630,
       "plane": 0
     },
+    "zmi bank": {
+      "display": "ZMI bank",
+      "x": 3013,
+      "y": 5625,
+      "plane": 0
+    },
     "the pandemonium": {
       "display": "the Pandemonium",
       "x": 3040,

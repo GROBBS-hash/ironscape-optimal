@@ -1,10 +1,8 @@
 package com.ironscape.overlay;
 
-import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
-import java.awt.Shape;
 import java.awt.image.BufferedImage;
 import java.util.Collections;
 import java.util.Set;
@@ -38,11 +36,11 @@ import net.runelite.client.util.Text;
 public class NpcTargetOverlay extends Overlay
 {
 	private static final Color OUTLINE = new Color(0, 255, 255);
-	private static final Color OUTLINE_FILL = new Color(0, 255, 255, 30);
 
 	private final Client client;
 	private final SpriteManager spriteManager;
 	private final net.runelite.client.game.ItemManager itemManager;
+	private final net.runelite.client.ui.overlay.outline.ModelOutlineRenderer outlineRenderer;
 
 	private Supplier<Set<String>> namesSupplier = Collections::emptySet;
 	private Supplier<Set<Integer>> indexesSupplier = Collections::emptySet;
@@ -54,11 +52,13 @@ public class NpcTargetOverlay extends Overlay
 
 	@Inject
 	public NpcTargetOverlay(Client client, SpriteManager spriteManager,
-		net.runelite.client.game.ItemManager itemManager)
+		net.runelite.client.game.ItemManager itemManager,
+		net.runelite.client.ui.overlay.outline.ModelOutlineRenderer outlineRenderer)
 	{
 		this.client = client;
 		this.spriteManager = spriteManager;
 		this.itemManager = itemManager;
+		this.outlineRenderer = outlineRenderer;
 		setPosition(OverlayPosition.DYNAMIC);
 		setLayer(OverlayLayer.ABOVE_SCENE);
 	}
@@ -118,15 +118,9 @@ public class NpcTargetOverlay extends Overlay
 				continue;
 			}
 
-			Shape hull = npc.getConvexHull();
-			if (hull != null)
-			{
-				graphics.setColor(OUTLINE_FILL);
-				graphics.fill(hull);
-				graphics.setColor(OUTLINE);
-				graphics.setStroke(new BasicStroke(2));
-				graphics.draw(hull);
-			}
+			// Quest Helper look: a crisp line hugging the model silhouette,
+			// not a convex-hull blob.
+			outlineRenderer.drawOutline(npc, 2, OUTLINE, 2);
 
 			BufferedImage overhead = null;
 			if (questIcon)

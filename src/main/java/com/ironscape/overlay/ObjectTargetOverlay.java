@@ -1,10 +1,8 @@
 package com.ironscape.overlay;
 
-import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
-import java.awt.Shape;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Supplier;
@@ -14,26 +12,31 @@ import net.runelite.api.GameObject;
 import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
+import net.runelite.client.ui.overlay.outline.ModelOutlineRenderer;
 
 /**
  * Outlines scene OBJECTS the current sub-step is about — the copper and
- * iron rocks of "Mine 4 copper ore and 1 iron ore" — the same way
- * NpcTargetOverlay outlines NPCs. The plugin rescans the scene once per
- * game tick (matching live rocks only: a depleted rock's impostor is
- * plain "Rocks" and drops out); the hulls are re-read per frame so the
- * outline tracks camera movement.
+ * iron rocks of "Mine 4 copper ore and 1 iron ore", the spirit tree of a
+ * travel sub — the same way NpcTargetOverlay outlines NPCs. The plugin
+ * rescans the scene once per game tick (matching live rocks only: a
+ * depleted rock's impostor is plain "Rocks" and drops out).
+ *
+ * Drawn with ModelOutlineRenderer — the Quest Helper look: a crisp line
+ * hugging the model's silhouette, not a convex-hull blob around it.
  */
 @Singleton
 public class ObjectTargetOverlay extends Overlay
 {
 	private static final Color OUTLINE = new Color(0, 255, 255);
-	private static final Color OUTLINE_FILL = new Color(0, 255, 255, 25);
+
+	private final ModelOutlineRenderer outlineRenderer;
 
 	private Supplier<List<GameObject>> objectsSupplier = Collections::emptyList;
 
 	@Inject
-	public ObjectTargetOverlay()
+	public ObjectTargetOverlay(ModelOutlineRenderer outlineRenderer)
 	{
+		this.outlineRenderer = outlineRenderer;
 		setPosition(OverlayPosition.DYNAMIC);
 		setLayer(OverlayLayer.ABOVE_SCENE);
 	}
@@ -54,16 +57,7 @@ public class ObjectTargetOverlay extends Overlay
 		}
 		for (GameObject object : objects)
 		{
-			Shape hull = object.getConvexHull();
-			if (hull == null)
-			{
-				continue;
-			}
-			graphics.setColor(OUTLINE_FILL);
-			graphics.fill(hull);
-			graphics.setColor(OUTLINE);
-			graphics.setStroke(new BasicStroke(2));
-			graphics.draw(hull);
+			outlineRenderer.drawOutline(object, 2, OUTLINE, 2);
 		}
 		return null;
 	}
