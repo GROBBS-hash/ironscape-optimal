@@ -508,6 +508,10 @@ public class IronscapePlugin extends Plugin
 	/** Last poll of questHelperOwnsGuidance, to react to the handoff edges. */
 	private boolean lastQuestOwnsGuidance;
 
+	/** The quest we last handed guidance to (Quest Helper's show), to pull
+	 * our panel back to the front the moment it FINISHES. */
+	private Quest handedOffQuest;
+
 	/**
 	 * Auto-completion applies to the first few incomplete sub-steps, not
 	 * just the very first — one un-tickable prose fragment must not freeze
@@ -1498,11 +1502,29 @@ public class IronscapePlugin extends Plugin
 			// Starting a quest fires no progress event, so the route to
 			// its start point would linger under Quest Helper's guidance.
 			// React to the handoff transition in both directions.
-			boolean questOwns = questHelperOwnsGuidance();
+			Quest questOwner = questOwningGuidance();
+			boolean questOwns = questOwner != null;
 			if (questOwns != lastQuestOwnsGuidance)
 			{
 				lastQuestOwnsGuidance = questOwns;
 				maybeNavigateToNext();
+				if (questOwns)
+				{
+					handedOffQuest = questOwner;
+				}
+				else
+				{
+					// Guidance came back to us. If it's because the quest we
+					// handed off FINISHED (not a logout or a step edit), pull
+					// our panel back in front — Quest Helper closes its quest
+					// UI but stays selected in the sidebar otherwise.
+					if (handedOffQuest != null
+						&& handedOffQuest.getState(client) == QuestState.FINISHED)
+					{
+						SwingUtilities.invokeLater(() -> clientToolbar.openPanel(navButton));
+					}
+					handedOffQuest = null;
+				}
 			}
 		}
 
@@ -3105,29 +3127,37 @@ public class IronscapePlugin extends Plugin
 	 */
 	private boolean questHelperOwnsGuidance()
 	{
+		return questOwningGuidance() != null;
+	}
+
+	/** The current step's quest while it's IN_PROGRESS, else null. */
+	private Quest questOwningGuidance()
+	{
 		Current current = findCurrent();
 		if (current == null)
 		{
-			return false;
+			return null;
 		}
 		GoalDetector.QuestGoal goal = questGoalBySub.get(current.sub.getId());
 		if (goal != null)
 		{
-			return goal.getQuest().getState(client) == QuestState.IN_PROGRESS;
+			return goal.getQuest().getState(client) == QuestState.IN_PROGRESS
+				? goal.getQuest() : null;
 		}
 		String questName = current.step.getMetadata().get("quest");
 		if (questName == null)
 		{
-			return false;
+			return null;
 		}
 		for (Quest quest : Quest.values())
 		{
 			if (quest.getName().equalsIgnoreCase(questName.trim()))
 			{
-				return quest.getState(client) == QuestState.IN_PROGRESS;
+				return quest.getState(client) == QuestState.IN_PROGRESS
+					? quest : null;
 			}
 		}
-		return false;
+		return null;
 	}
 
 	/** The target of the first incomplete sub-step, scanning at most a few ahead. */
