@@ -614,6 +614,32 @@ public class ItemTracker
 				}
 			}
 		}
+		// Substitute-only names ("pickaxe" = any tier) have no item of
+		// their own — borrow the FIRST substitute's sprite.
+		for (String alias : aliases(name))
+		{
+			String[] alternates = SUBSTITUTES.get(alias);
+			if (alternates != null && alternates.length > 0)
+			{
+				int id = lookupIconId(alternates[0]);
+				if (id > 0)
+				{
+					return id;
+				}
+			}
+		}
+		// Family names ("beads", "bars") borrow any family member's sprite.
+		String suffix = FAMILY_SUFFIX.get(name.toLowerCase(Locale.ROOT).trim());
+		if (suffix != null)
+		{
+			for (net.runelite.http.api.item.ItemPrice price : itemManager.search(suffix.trim()))
+			{
+				if (price.getName().toLowerCase(Locale.ROOT).endsWith(suffix))
+				{
+					return price.getId();
+				}
+			}
+		}
 		return -1;
 	}
 
