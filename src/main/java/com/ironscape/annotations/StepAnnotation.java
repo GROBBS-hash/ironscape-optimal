@@ -45,21 +45,24 @@ public class StepAnnotation
 	public Link link;
 
 	/**
-	 * Mid-quest side pickup ("Do Tree gnome village, get Glarial's pebble
-	 * on the way"). Quest Helper owns the quest flow but knows nothing
-	 * about the errand — while the sub's quest is IN_PROGRESS and the item
-	 * is still unowned, the errand's spot gets our tile marker, the
-	 * nearest NPC to it the outline with the item overhead, and coming
-	 * near it triggers a one-time chat reminder.
+	 * Mid-quest side pickups ("Do Tree gnome village, get Glarial's
+	 * pebble on the way"). Quest Helper owns the quest flow but knows
+	 * nothing about the errand — while the sub's quest is IN_PROGRESS,
+	 * the first unsatisfied stage's spot gets our tile marker and a
+	 * Shortest Path route, the nearest NPC to it the outline with the
+	 * item overhead, and coming near it triggers a one-time chat
+	 * reminder. Ordered: earlier stages are prerequisites (the gate KEY
+	 * before Golrie's pebble); a stage seen owned once stays satisfied
+	 * for the session even if using it consumes it.
 	 */
-	public Errand errand;
+	public List<Errand> errands;
 
 	public static class Errand
 	{
 		public int x;
 		public int y;
 		public int plane;
-		/** Item to pick up; the errand stands down once you own one. */
+		/** Item this stage yields; the stage stands down once you own one. */
 		public String item;
 		/** Optional reminder text; defaults to naming the item. */
 		public String note;

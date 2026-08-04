@@ -512,8 +512,53 @@ public class IronscapePlugin extends Plugin
 	 * our panel back to the front the moment it FINISHES. */
 	private Quest handedOffQuest;
 
-	/** Sub ids whose errand nudge already fired this session. */
+	/** Errand stages whose nudge already fired this session (step|item). */
 	private final java.util.Set<String> errandReminded = new java.util.HashSet<>();
+
+	/**
+	 * Errand stages seen OWNED at least once this session (step|item).
+	 * Sticky on purpose: the gate key disappears into the lock, and the
+	 * chain must not point back at the empty crate.
+	 */
+	private final java.util.Set<String> errandDone = new java.util.HashSet<>();
+
+	/** Last poll of activeErrand()'s stage item, to reroute on stage changes. */
+	private String lastErrandStage;
+
+	/**
+	 * The first unsatisfied stage of the current sub/step's errand chain
+	 * while its quest is in progress; null when none or all satisfied.
+	 */
+	private StepAnnotation.Errand activeErrand()
+	{
+		Current current = findCurrent();
+		if (current == null || !questHelperOwnsGuidance())
+		{
+			return null;
+		}
+		List<StepAnnotation.Errand> chain = annotationManager.getErrands(current.sub.getId());
+		if (chain.isEmpty())
+		{
+			chain = annotationManager.getErrands(current.step.getId());
+		}
+		for (StepAnnotation.Errand stage : chain)
+		{
+			if (stage.item == null)
+			{
+				continue;
+			}
+			String doneKey = current.step.getId() + "|" + stage.item;
+			if (itemTracker.countOf(stage.item) > 0)
+			{
+				errandDone.add(doneKey);
+			}
+			if (!errandDone.contains(doneKey))
+			{
+				return stage;
+			}
+		}
+		return null;
+	}
 
 	/**
 	 * Auto-completion applies to the first few incomplete sub-steps, not
@@ -1713,20 +1758,15 @@ public class IronscapePlugin extends Plugin
 		// On-the-way errand: while Quest Helper owns the quest flow, an
 		// annotated side pickup ("get Glarial's pebble during Tree Gnome
 		// Village") keeps OUR guidance alive — QH knows nothing about it.
-		// Active only while the item is still unowned.
-		StepAnnotation.Errand errand = null;
-		if (current != null && questHelperOwnsGuidance())
+		StepAnnotation.Errand errand = activeErrand();
+		String errandStage = errand == null ? null : errand.item;
+		if (!java.util.Objects.equals(errandStage, lastErrandStage))
 		{
-			StepAnnotation.Errand candidate = annotationManager.getErrand(current.sub.getId());
-			if (candidate == null)
-			{
-				candidate = annotationManager.getErrand(current.step.getId());
-			}
-			if (candidate != null && candidate.item != null
-				&& itemTracker.countOf(candidate.item) == 0)
-			{
-				errand = candidate;
-			}
+			// Activation, stage advance (key -> pebble) and final pickup
+			// all reroute: Shortest Path targets the live stage, and must
+			// move on the moment it's satisfied.
+			lastErrandStage = errandStage;
+			maybeNavigateToNext();
 		}
 		WorldPoint errandPoint = errand == null ? null
 			: new WorldPoint(errand.x, errand.y, errand.plane);
@@ -1743,7 +1783,7 @@ public class IronscapePlugin extends Plugin
 			WorldPoint here = player.getWorldLocation();
 			if (here.getPlane() == errandPoint.getPlane()
 				&& here.distanceTo2D(errandPoint) <= 30
-				&& errandReminded.add(current.sub.getId()))
+				&& errandReminded.add(current.step.getId() + "|" + errand.item))
 			{
 				client.addChatMessage(ChatMessageType.CONSOLE, "",
 					"IRONSCAPE: on-the-way pickup — "
@@ -3149,6 +3189,17 @@ public class IronscapePlugin extends Plugin
 			// same area QH is guiding them through, no conflict.
 			if (questHelperOwnsGuidance())
 			{
+				// An active errand outranks the step's 📍 area: Shortest
+				// Path knows the dungeon transports, so the route points at
+				// the LADDER down to Golrie — from the surface the errand's
+				// tile marker is invisible and gave no hint to descend.
+				StepAnnotation.Errand errand = activeErrand();
+				if (errand != null)
+				{
+					eventBus.post(new PluginMessage("shortestpath", "path",
+						Map.of("target", new WorldPoint(errand.x, errand.y, errand.plane))));
+					return;
+				}
 				Current questCurrent = findCurrent();
 				String location = questCurrent == null
 					? null : questCurrent.step.getMetadata().get("location");
