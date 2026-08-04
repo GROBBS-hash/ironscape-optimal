@@ -3534,6 +3534,14 @@ public class IronscapePlugin extends Plugin
 			return;
 		}
 
+		// Item sources carry a how-to ("ask Golrie... key from the crate")
+		// — the route shows WHERE, the note says HOW.
+		String note = placeManager.note(placeName);
+		if (note != null)
+		{
+			clientThread.invokeLater(() -> client.addChatMessage(ChatMessageType.CONSOLE, "",
+				"IRONSCAPE: " + note, null));
+		}
 		navigateTo(point);
 	}
 

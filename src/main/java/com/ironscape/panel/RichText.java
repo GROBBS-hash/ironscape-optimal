@@ -65,12 +65,29 @@ final class RichText
 		for (TextRun run : runs)
 		{
 			String text = escape(run.getText()).replace("\n", "<br>");
+			boolean navClaimed = false;
 
 			// Wrap known place names in navigation links — but not inside
 			// text that is already a link.
 			if (linkifier != null && run.getUrl() == null)
 			{
 				text = linkifier.apply(text);
+			}
+			else if (linkifier != null)
+			{
+				// An author link whose WHOLE text is one known nav name (a
+				// place or an item source) becomes OUR link instead —
+				// clicking "Glarial's pebble" should route there, not open
+				// a wiki tab. Partial matches keep the author's link.
+				String linked = linkifier.apply(text);
+				int close = linked.indexOf('>');
+				if (linked.startsWith("<a href='" + com.ironscape.places.PlaceManager.LINK_PREFIX)
+					&& linked.endsWith("</a>") && close > 0
+					&& linked.substring(close + 1, linked.length() - 4).equals(text))
+				{
+					text = linked;
+					navClaimed = true;
+				}
 			}
 			// "world 444" becomes a click-to-hop link. After the place
 			// linkifier: place names never contain "world <digits>", so
@@ -101,7 +118,7 @@ final class RichText
 			{
 				text = "<font color='" + readableOnDark(run.getColorHex()) + "'>" + text + "</font>";
 			}
-			if (run.getUrl() != null)
+			if (run.getUrl() != null && !navClaimed)
 			{
 				text = "<a href='" + escape(run.getUrl()) + "'>" + text + "</a>";
 			}

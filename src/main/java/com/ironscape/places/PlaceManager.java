@@ -70,11 +70,29 @@ public class PlaceManager
 			InputStream in = PlaceManager.class.getResourceAsStream("places.json");
 			return in == null ? null : new InputStreamReader(in, StandardCharsets.UTF_8);
 		});
+		// Item SOURCES ("glarial's pebble" -> Golrie's cell) share the place
+		// namespace: same links, same routing, plus a how-to note chatted on
+		// click. Real places win a name clash.
+		read(() -> {
+			InputStream in = PlaceManager.class.getResourceAsStream("item_sources.json");
+			return in == null ? null : new InputStreamReader(in, StandardCharsets.UTF_8);
+		}).forEach(bundled::putIfAbsent);
 		local = read(() -> localFile.exists() ? new FileReader(localFile) : null);
 		rebuildPattern();
 		loadQuestGivers();
 		log.debug("Places loaded: {} bundled, {} local, {} quest givers",
 			bundled.size(), local.size(), questGivers.size());
+	}
+
+	/** The item source's how-to note, or null for ordinary places. */
+	public synchronized String note(String name)
+	{
+		Place place = local.get(key(name));
+		if (place == null)
+		{
+			place = bundled.get(key(name));
+		}
+		return place == null ? null : place.note;
 	}
 
 	/** Quest name (lowercase) -> the NPC who starts it (wiki-seeded, bundled). */
@@ -411,5 +429,7 @@ public class PlaceManager
 		int x;
 		int y;
 		int plane;
+		/** Item sources only: HOW to get it, chatted when the link routes. */
+		String note;
 	}
 }
