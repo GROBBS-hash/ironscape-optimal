@@ -1,0 +1,19 @@
+{
+ "version": 1,
+ "comment": "Where each Grouping minigame teleport effectively puts you for ROUTING (surface points; interiors use their surface exit — TzHaar Fight Pit lands in Mor Ul Rek but you emerge at the Karamja volcano). Owner-tentative: correct in play. Underground/instanced landings with no useful surface point (Guardians of the Rift, Rat Pits) are deliberately absent.",
+ "landings": {
+  "Barbarian Assault": { "x": 2531, "y": 3577, "plane": 0 },
+  "Burthorpe Games Room": { "x": 2899, "y": 3546, "plane": 0 },
+  "Castle Wars": { "x": 2440, "y": 3089, "plane": 0 },
+  "Clan Wars": { "x": 3149, "y": 3635, "plane": 0 },
+  "Fishing Trawler": { "x": 2666, "y": 3161, "plane": 0 },
+  "Last Man Standing": { "x": 3138, "y": 3635, "plane": 0 },
+  "Nightmare Zone": { "x": 2606, "y": 3115, "plane": 0 },
+  "Pest Control": { "x": 2657, "y": 2639, "plane": 0 },
+  "Shades of Mort'ton": { "x": 3487, "y": 3287, "plane": 0 },
+  "Soul Wars": { "x": 2209, "y": 2857, "plane": 0 },
+  "Tithe Farm": { "x": 1793, "y": 3501, "plane": 0 },
+  "Trouble Brewing": { "x": 3811, "y": 3021, "plane": 0 },
+  "TzHaar Fight Pit": { "x": 2856, "y": 3167, "plane": 0 }
+ }
+}

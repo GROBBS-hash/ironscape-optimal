@@ -147,6 +147,9 @@ public class IronscapePlugin extends Plugin
 	private GuideLoader guideLoader;
 
 	@Inject
+	private com.google.gson.Gson gson;
+
+	@Inject
 	private ProgressManager progressManager;
 
 	@Inject
@@ -875,6 +878,7 @@ public class IronscapePlugin extends Plugin
 		activeVariant = GuideVariant.OZIRIS;
 		annotationManager.load();
 		placeManager.load();
+		loadMinigameLandings();
 		loadGuideState();
 		// "minigame|region" from the previous session — restored on the
 		// first evaluation if the player is still standing in that region.
@@ -1944,6 +1948,33 @@ public class IronscapePlugin extends Plugin
 				String location = current.step.getMetadata().get("location");
 				String key = location == null ? null
 					: location.toLowerCase(Locale.ROOT).replace('’', '\'');
+				// Route-aware hint: the step names no minigame and its 📍
+				// isn't one, but the best first leg toward the nav target
+				// (or a waiting gravestone) IS a Grouping teleport —
+				// Shortest Path routes through it, so show the click path
+				// to the teleport it expects you to take. Presence check:
+				// once you've taken it, interiors (Mor Ul Rek) keep 2D
+				// distances huge — "already there" must kill the hint, not
+				// the distance math.
+				if (key == null || !GROUPING_MINIGAMES.contains(key))
+				{
+					WorldPoint routeTarget = deathPoint != null ? deathPoint
+						: targetFor(current.step, current.sub);
+					String towards = minigameTowards(routeTarget);
+					if (towards != null)
+					{
+						String towardsKey = towards.toLowerCase(Locale.ROOT).replace('’', '\'');
+						java.util.Set<Integer> confirmed = minigameRegions.get(towardsKey);
+						Player me = client.getLocalPlayer();
+						boolean there = towardsKey.equals(minigamePresence)
+							|| (me != null && confirmed != null
+								&& confirmed.contains(me.getWorldLocation().getRegionID()));
+						if (!there)
+						{
+							activeMinigameTarget = towards;
+						}
+					}
+				}
 				if (key != null && GROUPING_MINIGAMES.contains(key))
 				{
 					WorldPoint area = placeManager.getLoose(location);
@@ -4226,6 +4257,75 @@ public class IronscapePlugin extends Plugin
 		"last man standing", "nightmare zone", "pest control", "rat pits",
 		"shades of mort'ton", "soul wars", "tithe farm", "trouble brewing",
 		"tzhaar fight pit");
+
+	/**
+	 * Where each Grouping teleport effectively lands for ROUTING (bundled
+	 * minigame_landings.json; interiors use their surface exit). Lets the
+	 * click-path hint fire when the route's best first leg is a minigame
+	 * teleport even though the step never names one — Shortest Path told
+	 * the owner "TzHaar Fight Pit Minigame Teleport" for a Brimhaven bar
+	 * step while our overlay stayed dark.
+	 */
+	private final Map<String, WorldPoint> minigameLandings = new HashMap<>();
+
+	private void loadMinigameLandings()
+	{
+		try (java.io.InputStream in = IronscapePlugin.class
+			.getResourceAsStream("/com/ironscape/places/minigame_landings.json"))
+		{
+			if (in == null)
+			{
+				return;
+			}
+			com.google.gson.JsonObject root = gson.fromJson(
+				new java.io.InputStreamReader(in, java.nio.charset.StandardCharsets.UTF_8),
+				com.google.gson.JsonObject.class);
+			com.google.gson.JsonObject landings = root.getAsJsonObject("landings");
+			for (String name : landings.keySet())
+			{
+				com.google.gson.JsonObject p = landings.getAsJsonObject(name);
+				minigameLandings.put(name, new WorldPoint(
+					p.get("x").getAsInt(), p.get("y").getAsInt(), p.get("plane").getAsInt()));
+			}
+		}
+		catch (Exception e)
+		{
+			log.warn("Could not read bundled minigame landings", e);
+		}
+	}
+
+	/**
+	 * The Grouping minigame whose landing makes the best first leg toward
+	 * `target`, or null when walking/other transport is comparable: the
+	 * landing must be under 60% of the player's own distance, and the
+	 * journey must be long enough (>100 tiles) that menuing through the
+	 * Grouping tab beats just walking.
+	 */
+	private String minigameTowards(WorldPoint target)
+	{
+		Player me = client.getLocalPlayer();
+		if (me == null || target == null)
+		{
+			return null;
+		}
+		int playerDistance = me.getWorldLocation().distanceTo2D(target);
+		if (playerDistance <= 100)
+		{
+			return null;
+		}
+		String best = null;
+		int bestDistance = (int) (playerDistance * 0.6);
+		for (Map.Entry<String, WorldPoint> entry : minigameLandings.entrySet())
+		{
+			int d = entry.getValue().distanceTo2D(target);
+			if (d < bestDistance)
+			{
+				bestDistance = d;
+				best = entry.getKey();
+			}
+		}
+		return best;
+	}
 
 	/** The minigame-teleport name matching this place name, or null. */
 	private String minigameByName(String placeName)
