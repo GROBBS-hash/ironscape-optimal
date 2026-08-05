@@ -11,3 +11,4 @@ tools/node_modules/
 # personal local scripts
 *.ahk
 tools/.qh-cache/
+tools/.wiki-cache/
