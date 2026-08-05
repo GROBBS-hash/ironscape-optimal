@@ -1,6 +1,22 @@
 {
  "version": 1,
  "annotations": {
+  "b3a38e5fec:0": {
+   "errands": [
+    {
+     "x": 2452,
+     "y": 3231,
+     "plane": 0
+    },
+    {
+     "x": 3015,
+     "y": 5583,
+     "plane": 0,
+     "item": "rune scimitar",
+     "note": "safespot the Zamorak warriors at the cave's end until a rune scimitar drops"
+    }
+   ]
+  },
   "624c2f822c:0": {
    "items": [
     {

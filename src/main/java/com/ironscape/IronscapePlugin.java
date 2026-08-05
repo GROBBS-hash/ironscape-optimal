@@ -548,8 +548,12 @@ public class IronscapePlugin extends Plugin
 		{
 			return null;
 		}
+		// Quest steps wait for the quest to START (before that, the
+		// quest-start guidance is the right pointer). Quest-LESS steps
+		// ("run to ZMI bank and safespot...") have no such conflict —
+		// their errand chain guides from the moment the step is current.
 		Quest quest = stepQuest(current);
-		if (quest == null || quest.getState(client) == QuestState.NOT_STARTED)
+		if (quest != null && quest.getState(client) == QuestState.NOT_STARTED)
 		{
 			return null;
 		}
@@ -576,35 +580,58 @@ public class IronscapePlugin extends Plugin
 		{
 			return null;
 		}
+		Player me = client.getLocalPlayer();
+		WorldPoint here = me == null ? null : me.getWorldLocation();
 		for (int i = 0; i < chain.size(); i++)
 		{
-			// Intermediate stages count CARRIED only: quest keys are all
-			// literally named "Key", and an unrelated one in the BANK must
-			// not skip the crate. The LAST stage is the objective itself
-			// and may sit banked — that still counts as done.
-			String item = chain.get(i).item;
-			int have = item == null ? 0 : (i == chain.size() - 1
-				? itemTracker.countOf(item)
-				: itemTracker.carriedCountOf(item));
-			if (have > 0)
+			StepAnnotation.Errand stage = chain.get(i);
+			boolean satisfied;
+			if (stage.item != null)
+			{
+				// Intermediate stages count CARRIED only: quest keys are
+				// all literally named "Key", and an unrelated one in the
+				// BANK must not skip the crate. The LAST stage is the
+				// objective itself and may sit banked — still done.
+				satisfied = (i == chain.size() - 1
+					? itemTracker.countOf(stage.item)
+					: itemTracker.carriedCountOf(stage.item)) > 0;
+			}
+			else
+			{
+				// Item-less WAYPOINT stage (the cave entrance on the way
+				// to the warriors): satisfied by getting there — or by
+				// being closer to the NEXT stage than to it (a teleport
+				// skipped it; it served its purpose either way).
+				satisfied = here != null
+					&& (here.distanceTo2D(new WorldPoint(stage.x, stage.y, stage.plane)) <= 12
+						|| (i + 1 < chain.size()
+							&& here.distanceTo2D(new WorldPoint(chain.get(i + 1).x,
+								chain.get(i + 1).y, chain.get(i + 1).plane))
+								< here.distanceTo2D(new WorldPoint(stage.x, stage.y, stage.plane))));
+			}
+			if (satisfied)
 			{
 				for (int k = 0; k <= i; k++)
 				{
-					if (chain.get(k).item != null)
-					{
-						errandDone.add(step.getId() + "|" + chain.get(k).item);
-					}
+					errandDone.add(errandStageKey(step, chain.get(k)));
 				}
 			}
 		}
 		for (StepAnnotation.Errand stage : chain)
 		{
-			if (stage.item != null && !errandDone.contains(step.getId() + "|" + stage.item))
+			if (!errandDone.contains(errandStageKey(step, stage)))
 			{
 				return stage;
 			}
 		}
 		return null;
+	}
+
+	/** Sticky-satisfaction key for one errand stage (item or waypoint). */
+	private static String errandStageKey(GuideStep step, StepAnnotation.Errand stage)
+	{
+		return step.getId() + "|"
+			+ (stage.item != null ? stage.item : "wp:" + stage.x + "," + stage.y);
 	}
 
 	/** The quest the current step is about (any state), else null. */
@@ -658,6 +685,17 @@ public class IronscapePlugin extends Plugin
 	/** "Use the spirit tree..." subs route to the NEAREST tree first. */
 	private static final java.util.regex.Pattern SPIRIT_TREE =
 		java.util.regex.Pattern.compile("(?i)spirit\\s+tree");
+
+	/** "safespot the zamorak warrior" — names the ⌖ tile "Safespot". */
+	private static final java.util.regex.Pattern SAFESPOT =
+		java.util.regex.Pattern.compile("(?i)safe\\s*-?\\s*spot");
+
+	/** Label floated over the ⌖ tile marker; null = none. */
+	private volatile String targetTileLabel;
+
+	/** Subs whose TEXT has matched a scene NPC this session — the
+	 * nearest-to-anchor fallback stays off for them permanently. */
+	private final java.util.Set<String> namedNpcSubs = new java.util.HashSet<>();
 
 	/** The always-available spirit trees (quest/farming ones excluded). */
 	private static final WorldPoint[] SPIRIT_TREES = {
@@ -1016,6 +1054,7 @@ public class IronscapePlugin extends Plugin
 		npcTargetOverlay.setItemIconSupplier(() -> currentSubItemIcon);
 		overlayManager.add(npcTargetOverlay);
 		targetTileOverlay.setTargetSupplier(() -> targetTileMarker);
+		targetTileOverlay.setLabelSupplier(() -> targetTileLabel);
 		targetTileOverlay.setGroundItemsSupplier(() -> groundItemTargets);
 		overlayManager.add(targetTileOverlay);
 		objectTargetOverlay.setObjectsSupplier(() -> objectTargets);
@@ -1913,7 +1952,8 @@ public class IronscapePlugin extends Plugin
 		// quest start until the item is in the bag — mid-quest QH knows
 		// nothing about it, and post-quest it's the step's only signal.
 		StepAnnotation.Errand errand = activeErrand();
-		String errandStage = errand == null ? null : errand.item;
+		String errandStage = errand == null ? null
+			: (errand.item != null ? errand.item : "wp:" + errand.x + "," + errand.y);
 		if (!java.util.Objects.equals(errandStage, lastErrandStage))
 		{
 			// Activation, stage advance (key -> pebble) and final pickup
@@ -1937,10 +1977,16 @@ public class IronscapePlugin extends Plugin
 			spot = errandPoint;
 		}
 		targetTileMarker = spot;
+		// Name the tile when the step says what it IS: a ⌖ on a
+		// "safespot the zamorak warrior" sub is the safespot itself.
+		targetTileLabel = spot != null && current != null
+			&& SAFESPOT.matcher(current.sub.getPlainText()).find()
+			? "Safespot" : null;
 
-		// One-time nudge when the quest route brings you NEAR the errand
-		// spot — the whole point is not walking past Golrie's tunnel.
-		if (errandPoint != null && player != null)
+		// One-time nudge when the route brings you NEAR the errand spot —
+		// the whole point is not walking past Golrie's tunnel. Waypoint
+		// stages skip it: reaching one IS the event, nothing to say.
+		if (errandPoint != null && player != null && errand.item != null)
 		{
 			WorldPoint here = player.getWorldLocation();
 			if (here.getPlane() == errandPoint.getPlane()
@@ -1983,9 +2029,11 @@ public class IronscapePlugin extends Plugin
 		// resume when the quest finishes and the step ticks — otherwise we
 		// keep pointing at Kovac while QH points at the actual objective.
 		// EXCEPT an active errand: its anchor still nominates the nearest
-		// NPC (the name scan stays off — mid-quest names are QH's job).
-		boolean errandOnly = errand != null;
-		if (current != null && (!questHelperOwnsGuidance() || errandOnly))
+		// NPC. The name scan stays off only MID-QUEST (names are QH's job
+		// there) — a quest-less errand step keeps its name outlines: the
+		// Zamorak warriors light up while the chain routes you to them.
+		boolean errandOnly = errand != null && questHelperOwnsGuidance();
+		if (current != null && (!questHelperOwnsGuidance() || errand != null))
 		{
 			// The step's NOTE lines join the scan: "Note: Use phials to
 			// un-note planks" names the NPC the step is really about even
@@ -2110,8 +2158,15 @@ public class IronscapePlugin extends Plugin
 			// cards from Diango" must outline only Diango — the nearest-NPC
 			// fallback exists for steps that DON'T name their NPC, and with
 			// NPCs wandering it happily picked a villager standing closer
-			// to the anchor than the actual seller.
-			if (npcNames.isEmpty())
+			// to the anchor than the actual seller. STICKY per sub: once the
+			// text has matched a scene NPC, the fallback stays off even
+			// while they're all briefly dead — the safespot pin must not
+			// crown a passing Zamorak crafter with the scimitar.
+			if (!npcNames.isEmpty())
+			{
+				namedNpcSubs.add(current.sub.getId());
+			}
+			if (npcNames.isEmpty() && !namedNpcSubs.contains(current.sub.getId()))
 			{
 				java.util.Set<Integer> indexes = new java.util.HashSet<>();
 				if (nearestToMarker != -1)
@@ -2173,7 +2228,7 @@ public class IronscapePlugin extends Plugin
 		}
 		// An active errand's item wins the overhead slot — the outlined NPC
 		// IS the errand (the pebble over Golrie, not some other step item).
-		if (errand != null)
+		if (errand != null && errand.item != null)
 		{
 			int errandIcon = itemTracker.iconIdFor(errand.item);
 			if (errandIcon > 0)

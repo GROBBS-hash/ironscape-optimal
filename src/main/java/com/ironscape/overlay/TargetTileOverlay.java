@@ -58,6 +58,14 @@ public class TargetTileOverlay extends Overlay
 		this.targetSupplier = targetSupplier;
 	}
 
+	/** Short label floated over the tile ("Safespot"); null = none. */
+	private Supplier<String> labelSupplier = () -> null;
+
+	public void setLabelSupplier(Supplier<String> labelSupplier)
+	{
+		this.labelSupplier = labelSupplier;
+	}
+
 	public void setGroundItemsSupplier(Supplier<java.util.List<WorldPoint>> groundItemsSupplier)
 	{
 		this.groundItemsSupplier = groundItemsSupplier;
@@ -121,6 +129,20 @@ public class TargetTileOverlay extends Overlay
 			graphics.setColor(Color.BLACK);
 			graphics.setStroke(new BasicStroke(1f));
 			graphics.draw(arrow);
+
+			// The tile's meaning, when the step gives it one ("Safespot")
+			// — QH-style, centred above the arrow with a drop shadow.
+			String label = labelSupplier.get();
+			if (label != null && !label.isEmpty())
+			{
+				int width = graphics.getFontMetrics().stringWidth(label);
+				int tx = centre.getX() - width / 2;
+				int ty = centre.getY() - ARROW_LENGTH - 4;
+				graphics.setColor(Color.BLACK);
+				graphics.drawString(label, tx + 1, ty + 1);
+				graphics.setColor(ACCENT);
+				graphics.drawString(label, tx, ty);
+			}
 		}
 		return null;
 	}
