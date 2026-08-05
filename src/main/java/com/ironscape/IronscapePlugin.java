@@ -233,6 +233,24 @@ public class IronscapePlugin extends Plugin
 		Map.entry("adamantite ore", "adamantite rocks"),
 		Map.entry("runite ore", "runite rocks"));
 
+	/** "steal from the fruit stall" — a qualified stall is a scene OBJECT. */
+	private static final java.util.regex.Pattern STALL_PHRASE =
+		java.util.regex.Pattern.compile("\\b([a-z']+)\\s+stalls?\\b");
+
+	/** Words that precede "stall" without naming one ("the stall at..."). */
+	private static final java.util.Set<String> STALL_STOPWORDS =
+		java.util.Set.of("the", "a", "an", "that", "this", "from", "one", "each", "both");
+
+	/**
+	 * Wiki-verified xp per successful action at a grind object — drives the
+	 * "N to go" label over the outline when the sub carries a level goal.
+	 */
+	private static final Map<String, Double> XP_PER_ACTION = Map.of(
+		"fruit stall", 28.5);
+
+	/** "1,234 to go" floated over outlined grind objects; null = hidden. */
+	private volatile String objectActionsLabel;
+
 	/** Lowercased names of scene NPCs the current sub mentions. Written per tick. */
 	private volatile java.util.Set<String> npcTargetNames = java.util.Collections.emptySet();
 
@@ -1136,6 +1154,7 @@ public class IronscapePlugin extends Plugin
 		targetTileOverlay.setGroundItemsSupplier(() -> groundItemTargets);
 		overlayManager.add(targetTileOverlay);
 		objectTargetOverlay.setObjectsSupplier(() -> objectTargets);
+		objectTargetOverlay.setLabelSupplier(() -> objectActionsLabel);
 		overlayManager.add(objectTargetOverlay);
 		inventoryItemHintOverlay.setItemIdsSupplier(() -> inventoryHintItemIds);
 		overlayManager.add(inventoryItemHintOverlay);
@@ -2514,7 +2533,11 @@ public class IronscapePlugin extends Plugin
 			{
 				namedNpcSubs.add(current.sub.getId());
 			}
-			if (npcNames.isEmpty() && !namedNpcSubs.contains(current.sub.getId()))
+			// A sub whose subject is a scene OBJECT ("train thieving at the
+			// fruit stall") never wants the nearest-NPC fallback — it crowned
+			// a Woman browsing the stall house with the outline.
+			if (npcNames.isEmpty() && !namedNpcSubs.contains(current.sub.getId())
+				&& objectGrindNames(subText).isEmpty())
 			{
 				java.util.Set<Integer> indexes = new java.util.HashSet<>();
 				if (nearestToMarker != -1)
@@ -2596,6 +2619,7 @@ public class IronscapePlugin extends Plugin
 		objectTargets = current != null
 			? findWantedRocks(current)
 			: java.util.Collections.emptyList();
+		objectActionsLabel = current != null ? actionsRemainingLabel(current) : null;
 
 		// Outline the carried items the current step is ABOUT — its tab
 		// ("Use house tab..."), tools, ingredients and goal items — so
@@ -3675,6 +3699,62 @@ public class IronscapePlugin extends Plugin
 	 * out of the highlight until it respawns. Runs once per game tick and
 	 * only while an ore goal is current. Client thread.
 	 */
+	/**
+	 * "1,234 to go" over an outlined grind object: the sub's level goal plus
+	 * the object's wiki xp-per-action say exactly how many successful
+	 * actions remain to the target level. Null when the sub has no level
+	 * goal, no outlined object with known xp, or the goal is already met.
+	 * Client thread (reads live xp).
+	 */
+	private String actionsRemainingLabel(Current current)
+	{
+		List<GoalDetector.SkillLevelGoal> levels = levelGoalsBySub.get(current.sub.getId());
+		if (levels == null || objectTargets.isEmpty())
+		{
+			return null;
+		}
+		Double xpPer = null;
+		for (net.runelite.api.GameObject object : objectTargets)
+		{
+			String name = liveObjectName(object.getId());
+			if (name != null && XP_PER_ACTION.containsKey(name))
+			{
+				xpPer = XP_PER_ACTION.get(name);
+				break;
+			}
+		}
+		if (xpPer == null)
+		{
+			return null;
+		}
+		for (GoalDetector.SkillLevelGoal goal : levels)
+		{
+			long xpLeft = net.runelite.api.Experience.getXpForLevel(goal.getLevel())
+				- client.getSkillExperience(goal.getSkill());
+			if (xpLeft <= 0)
+			{
+				continue;
+			}
+			return String.format("%,d to go", (long) Math.ceil(xpLeft / xpPer));
+		}
+		return null;
+	}
+
+	/** Scene-object names a sub's text is about ("fruit stall"); lowercase in, lowercase out. */
+	private static java.util.Set<String> objectGrindNames(String lowerText)
+	{
+		java.util.Set<String> names = new java.util.HashSet<>();
+		java.util.regex.Matcher m = STALL_PHRASE.matcher(lowerText);
+		while (m.find())
+		{
+			if (!STALL_STOPWORDS.contains(m.group(1)))
+			{
+				names.add(m.group(1) + " stall");
+			}
+		}
+		return names;
+	}
+
 	private List<net.runelite.api.GameObject> findWantedRocks(Current current)
 	{
 		java.util.Set<String> rockNames = new java.util.HashSet<>();
@@ -3706,6 +3786,10 @@ public class IronscapePlugin extends Plugin
 		{
 			rockNames.add("spirit tree");
 		}
+		// Grind-at-object subs: "train 42 thieving at the fruit stall..."
+		// outlines the stalls themselves, same as rocks for a mining sub.
+		rockNames.addAll(objectGrindNames(
+			current.sub.getPlainText().toLowerCase(Locale.ROOT)));
 		if (rockNames.isEmpty())
 		{
 			return java.util.Collections.emptyList();

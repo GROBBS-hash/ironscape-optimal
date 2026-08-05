@@ -33,6 +33,9 @@ public class ObjectTargetOverlay extends Overlay
 
 	private Supplier<List<GameObject>> objectsSupplier = Collections::emptyList;
 
+	/** Progress label floated over each object ("1,234 to go"); null = none. */
+	private Supplier<String> labelSupplier = () -> null;
+
 	@Inject
 	public ObjectTargetOverlay(ModelOutlineRenderer outlineRenderer)
 	{
@@ -47,6 +50,11 @@ public class ObjectTargetOverlay extends Overlay
 		this.objectsSupplier = objectsSupplier;
 	}
 
+	public void setLabelSupplier(Supplier<String> labelSupplier)
+	{
+		this.labelSupplier = labelSupplier;
+	}
+
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
@@ -55,9 +63,22 @@ public class ObjectTargetOverlay extends Overlay
 		{
 			return null;
 		}
+		String label = labelSupplier.get();
 		for (GameObject object : objects)
 		{
 			outlineRenderer.drawOutline(object, 2, OUTLINE, 2);
+			if (label != null && !label.isEmpty())
+			{
+				// Same drop-shadow style as the ⌖ tile's "Safespot" label.
+				net.runelite.api.Point at = object.getCanvasTextLocation(graphics, label, 60);
+				if (at != null)
+				{
+					graphics.setColor(Color.BLACK);
+					graphics.drawString(label, at.getX() + 1, at.getY() + 1);
+					graphics.setColor(OUTLINE);
+					graphics.drawString(label, at.getX(), at.getY());
+				}
+			}
 		}
 		return null;
 	}
