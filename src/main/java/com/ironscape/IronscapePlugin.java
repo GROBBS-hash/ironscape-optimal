@@ -2282,6 +2282,31 @@ public class IronscapePlugin extends Plugin
 			// nominating pyromancers (who then wore coin stacks).
 			shopAnchor = placeManager.firstPlaceIn(current.sub.getPlainText());
 		}
+		if (shopAnchor == null && current != null)
+		{
+			// GATHER subs anchor at their item's authored SOURCE ("get 100
+			// compost" -> Vannah's stall in item_sources): a curated
+			// item-source point is as precise as a shop pin — the coarse
+			// pyromancer problem above can't happen, item names only ever
+			// resolve to sources someone seeded. First unmet goal wins.
+			List<GoalDetector.ItemGoal> gatherGoals = itemGoalsBySub.get(current.sub.getId());
+			if (gatherGoals != null)
+			{
+				for (GoalDetector.ItemGoal goal : gatherGoals)
+				{
+					if (itemTracker.countOf(goal.getItemName()) >= goal.getQuantity())
+					{
+						continue;
+					}
+					WorldPoint source = placeManager.get(goal.getItemName());
+					if (source != null)
+					{
+						shopAnchor = source;
+						break;
+					}
+				}
+			}
+		}
 
 		// NPC targets: outline scene NPCs whose name the current sub-step
 		// mentions ("speak with Veos" -> Veos). Names matched once per

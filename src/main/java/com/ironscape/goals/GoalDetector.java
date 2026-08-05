@@ -51,6 +51,29 @@ public final class GoalDetector
 	private static final Pattern COMPOUND_NAME = Pattern.compile(
 		"([a-z]+)/([a-z]+)\\s+([a-z' ]+)");
 
+	/**
+	 * "get 100 compost and saltpetre" — a numbered goal's bare "and" tail
+	 * (no number of its own) inherits the quantity: the guide's idiom
+	 * means 100 of EACH. The middle char class can't cross digits or
+	 * commas, so "5 cloth and 100 nails" list items keep their own counts.
+	 */
+	private static final Pattern INHERITED_AND_TAIL = Pattern.compile(
+		"(\\d[\\d,]*)([km])?\\s+[a-z][a-z'/ -]*?\\s+and\\s+([a-z][a-z' -]+)",
+		Pattern.CASE_INSENSITIVE);
+
+	/** Tails that are prose, not a second item ("110 logs and bank them"). */
+	private static final java.util.Set<String> AND_TAIL_STOP = java.util.Set.of(
+		"them", "it", "they", "you", "your", "the", "a", "an", "then", "bank",
+		"use", "make", "drop", "keep", "note", "go", "run", "walk", "head",
+		"talk", "buy", "get", "grab", "take", "continue", "finish", "start",
+		"do", "sell", "more", "some", "any", "all", "this", "that", "repeat",
+		"deposit", "withdraw", "return", "put", "bring", "equip", "wear",
+		"open", "click", "pick", "cut", "burn", "cook", "craft", "smith",
+		"mine", "fish", "kill", "train",
+		// first sweep's catches: verbs/adverbs the guide chains after "and"
+		"firemake", "offer", "quickly", "for", "chin", "fletch", "alch",
+		"string", "bury", "light", "plant", "superheat", "so", "if", "when");
+
 	/** "inv of bronze bars", "inventories of gold ore" — 28 slots each. */
 	private static final Pattern INV_OF = Pattern.compile(
 		"^(?:inv|invs|inventory|inventories)\\s+of\\s+(.+)$");
@@ -790,6 +813,29 @@ public final class GoalDetector
 		{
 			addIfValid(out, step, sub, sharedRunes.group(1).replace(",", ""),
 				sharedRunes.group(2), seen, ownPurchase);
+		}
+
+		// "get 100 compost and saltpetre": the bare tail inherits the
+		// number — without this, only compost became a goal and the step
+		// auto-ticked with zero saltpetre gathered (owner hit this).
+		// addIfValid's junk checks + the audit sweep guard the fallout.
+		Matcher inherited = INHERITED_AND_TAIL.matcher(text);
+		while (inherited.find())
+		{
+			String tail = inherited.group(3);
+			String firstWord = tail.split("[\\s'-]+")[0].toLowerCase(Locale.ROOT);
+			if (AND_TAIL_STOP.contains(firstWord))
+			{
+				continue;
+			}
+			String quantity = inherited.group(1);
+			if (inherited.group(2) != null)
+			{
+				long value = Long.parseLong(quantity.replace(",", ""))
+					* ("k".equalsIgnoreCase(inherited.group(2)) ? 1_000L : 1_000_000L);
+				quantity = Long.toString(value);
+			}
+			addIfValid(out, step, sub, quantity, tail, seen, ownPurchase);
 		}
 
 		// "Buy 8 woad leaves, offer 20gp to get 2 leaves": the bare word

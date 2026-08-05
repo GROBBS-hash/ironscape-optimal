@@ -614,10 +614,28 @@ refresh when "Failed to login" appears.
   live frontier every rebuild — withdrawals auto-ticked steps and the
   layout jumped mid-banking; frozenFilterStepIds fixes composition at
   filter activation (live counts, done steps stay green), unfreezes
-  on deactivate/fresh bank open. OPEN TASKS: GP-cost badges on
-  fee/purchase steps (charter fares, compost — seed from wiki);
-  big frog leg verdict; minigame landing + charter dock coords are
-  owner-tentative.
+  on deactivate/fresh bank open. NETWORK-TRAVEL ARRIVAL: a ⌖ on "Charter to
+  X" marks the BOARDING dock — charter/spirit-tree subs skip the
+  precise-target arrival branch, only the text destination (or 📍)
+  proves arrival; "charter" joined MOVEMENT_WORD (keeps the sub
+  current so the travel overlay scans the ship Destination interface
+  — probe saw group 72). GP-COST BADGES (seed-gp-costs.mjs): buy
+  steps get a coins ItemNeed = wiki item |value| x qty (30 seeded;
+  Barrows gloves hand-set 130k; Zeah compost hand row); coins are
+  EXCLUDED from the annotationItemsCarried arrival gate (money spent
+  mid-step must not wedge the destination tick). Zeah step: saltpetre
+  (dig spot 1700,3522) + compost (Vannah 1763,3594) item_sources;
+  Vannah keepered; GATHER subs anchor at their item goal SOURCE when
+  no purchase goal (item_sources precision = safe). INHERITED AND-
+  TAIL goals: "get 100 compost and saltpetre" gives the bare tail
+  the same number (AND_TAIL_STOP filters verbs/adverbs — the audit
+  sweep caught 5 garbage tails on the first run, stop-list extended).
+  Zeah = Veos to Port Piscarilius (owner) — no charter alias needed.
+  Session ended at HEAD, all pushed, audits 0/0/1. OPEN: big frog leg
+  verdict (item_ids 7908 RAG_MEDIUM_FROG_BONE — wishlist bone vs
+  food?); death test for gravestone routing; minigame landings,
+  charter docks + gp costs owner-tentative; hub pin still a07a1eb —
+  bump after a calm session on this build.
 
 - KIT-SEEDING POLICY (owner, 2026-08-05): quest-kit annotation items
   carry TRUE REQUIREMENTS always; items a quest hands you MID-QUEST
