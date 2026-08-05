@@ -23,6 +23,24 @@ const SRC_ROOT = 'src/main/java/com/questhelper/helpers/quests/';
 
 const stepId = (t) => crypto.createHash('sha256')
   .update(t.replace(/\s+/g, ' ').trim().toLowerCase(), 'utf8').digest('hex').slice(0, 10);
+
+// Tradeable item names (audit-goals' cache): a QH-only item that is NOT
+// tradeable is almost always quest-internal (Hazeel scroll, research
+// package) — you can't pre-buy it, so it's not kit material.
+const mappingCache = path.join(__dirname, 'wiki-item-mapping.json');
+if (!fs.existsSync(mappingCache)) {
+  const res = await fetch('https://prices.runescape.wiki/api/v1/osrs/mapping',
+    { headers: { 'User-Agent': 'ironscape-runelite-plugin dev tooling (kit cross-check)' } });
+  fs.writeFileSync(mappingCache, JSON.stringify(await res.json()));
+}
+const tradeable = new Set(JSON.parse(fs.readFileSync(mappingCache, 'utf8'))
+  .map((i) => i.name.toLowerCase()));
+const isTradeable = (name) => {
+  const n = name.toLowerCase().trim();
+  return tradeable.has(n)
+    || (n.endsWith('s') && tradeable.has(n.slice(0, -1)))
+    || tradeable.has(n + 's');
+};
 const runText = (rs) => (rs || []).map((r) => r.text).join('');
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -89,6 +107,23 @@ function qhRequiredItems(java) {
 // Freeform QH names that aren't concrete items ("Combat gear + food").
 const JUNK = /\+|\bgear\b|\bfood\b|teleport|\bcombat\b|\bweapon\b|armou?r|\bpotions?\b|\brunes? for\b|optional|if you|\(level/i;
 
+// An item the quest HANDS YOU mid-quest is not kit material — seeding
+// it would sit permanently red. Heuristic: the same helper file has a
+// step description that ACQUIRES it ("Search the crate for the key",
+// "Pick up the scroll"). Review aid, not proof — flagged separately.
+const ACQUIRE_VERB = /\b(?:pick ?up|search(?:es)?|take|grab|steal|loot|receive|gives? you|hands? you|found in|he gives|she gives)\b/i;
+
+function inQuestItems(java, names) {
+  const acquireStrings = [];
+  for (const m of java.matchAll(/"((?:[^"\\]|\\.)*)"/g)) {
+    if (m[1].length > 15 && ACQUIRE_VERB.test(m[1])) {
+      acquireStrings.push(m[1].toLowerCase());
+    }
+  }
+  return new Set(names.filter((n) =>
+    acquireStrings.some((s) => s.includes(n.toLowerCase()))));
+}
+
 function normalize(name) {
   let n = name.toLowerCase().replace(/\([^)]*\)/g, '').trim();
   n = n.split(/\s+or\s+|\//)[0];          // "climbing boots or 12 coins" -> first side
@@ -96,7 +131,9 @@ function normalize(name) {
   n = n.replace(/^(?:any|a|an|some|few|many|lit|full)\s+/g, '');
   n = n.replace(/^\d+[\d,]*\s*x?\s*/, '').replace(/^x\d+\s*/, '');
   n = n.replace(/\s+/g, ' ').trim();
-  if (n.length > 3 && n.endsWith('s') && !n.endsWith('ss')) n = n.slice(0, -1);
+  // Every word depluralizes ("buckets of water" == "bucket of water").
+  n = n.split(' ').map((w) =>
+    w.length > 3 && w.endsWith('s') && !w.endsWith('ss') ? w.slice(0, -1) : w).join(' ');
   return n;
 }
 
@@ -125,14 +162,19 @@ for (const [quest, id] of kitStepByQuest) {
   }
   checked++;
   const qh = qhRequiredItems(java).filter((n) => !JUNK.test(n));
+  const inQuest = inQuestItems(java, qh);
   const oursNorm = new Map(ours.map((n) => [normalize(n), n]));
-  const qhNorm = new Map(qh.map((n) => [normalize(n), n]));
-  const qhOnly = only(qhNorm, oursNorm);
+  const qhNorm = new Map(qh.filter((n) => !inQuest.has(n)).map((n) => [normalize(n), n]));
+  const qhOnlyAll = only(qhNorm, oursNorm);
+  const qhOnly = qhOnlyAll.filter(isTradeable);
+  const untradeable = qhOnlyAll.filter((n) => !isTradeable(n));
   const oursOnly = only(oursNorm, qhNorm);
-  if (!qhOnly.length && !oursOnly.length) continue;
+  if (!qhOnly.length && !oursOnly.length && !untradeable.length) continue;
   flaggedQuests++;
   console.log(`\n${quest} [${id}]`);
   if (qhOnly.length) console.log(`  QH also requires: ${qhOnly.join(', ')}`);
+  if (untradeable.length) console.log(`  (untradeable, likely in-quest: ${untradeable.join(', ')})`);
+  if (inQuest.size) console.log(`  (obtained in-quest, ignored: ${[...inQuest].join(', ')})`);
   if (oursOnly.length) console.log(`  ours only:        ${oursOnly.join(', ')}`);
 }
 console.log(`\n${checked} quests checked (${skipped} without a matching QH file), `
