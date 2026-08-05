@@ -124,6 +124,9 @@ public class IronscapePlugin extends Plugin
 	private ItemManager itemManager;
 
 	@Inject
+	private net.runelite.client.game.SkillIconManager skillIconManager;
+
+	@Inject
 	private BankFilterButton bankFilterButton;
 
 	@Inject
@@ -1174,6 +1177,41 @@ public class IronscapePlugin extends Plugin
 			}
 			return null;
 		});
+		panel.setSkillIconSupplier(subId -> {
+			// The skill whose progress the badge shows — same lookup chain
+			// as the badge text, so icon and number always agree.
+			Skill skill = null;
+			List<GoalDetector.SkillLevelGoal> levels = levelGoalsBySub.get(subId);
+			if (levels != null && !levels.isEmpty())
+			{
+				skill = levels.get(0).getSkill();
+			}
+			if (skill == null)
+			{
+				List<StepRequirement> requirements = subRequirements.get(subId);
+				if (requirements == null)
+				{
+					requirements = stepSkillRequirements.get(subId);
+				}
+				if (requirements != null)
+				{
+					for (StepRequirement requirement : requirements)
+					{
+						if (requirement.skill != null)
+						{
+							skill = requirement.skill;
+							break;
+						}
+					}
+				}
+			}
+			if (skill == null)
+			{
+				GoalDetector.CountedSkillGoal counted = countedGoalBySub.get(subId);
+				skill = counted == null ? null : counted.getSkill();
+			}
+			return skill == null ? null : skillIconManager.getSkillImage(skill, true);
+		});
 		panel.setProgressChangedListener(this::maybeNavigateToNext);
 		panel.setCaptureHandler(this::captureLocation);
 		panel.setClearTargetHandler(this::clearCapturedTarget);
@@ -1775,6 +1813,7 @@ public class IronscapePlugin extends Plugin
 		// fight Quest Helper (it routed him back to the Foundry mid
 		// Tourist Trap). Checked once per tick.
 		boolean jumped = false;
+		Quest jumpedQuest = null;
 		if (current != null)
 		{
 			int frontierIndex = current.step.getGlobalIndex();
@@ -1784,9 +1823,20 @@ public class IronscapePlugin extends Plugin
 					&& entry.getKey().getState(client) == QuestState.IN_PROGRESS)
 				{
 					jumped = true;
+					jumpedQuest = entry.getKey();
 					break;
 				}
 			}
+		}
+		if (jumped != playerJumpedAhead)
+		{
+			// The stand-down silently kills ALL auto-navigation — when the
+			// culprit quest is one the route parks in-progress for hours,
+			// that reads as "auto-nav is broken". Name it in the log.
+			log.info("jumped-ahead {} ({})", jumped ? "ON" : "OFF",
+				jumpedQuest != null
+					? jumpedQuest.getName() + " in progress, first guide step ahead of frontier"
+					: "no later-step quest in progress");
 		}
 		playerJumpedAhead = jumped;
 
@@ -3590,6 +3640,7 @@ public class IronscapePlugin extends Plugin
 				Current heldCurrent = findCurrent();
 				if (heldCurrent != null && navHoldStepId.equals(heldCurrent.step.getId()))
 				{
+					logNavDecision("holding: manual ⌖ capture pins the route for this step");
 					return;
 				}
 				navHoldStepId = null;
@@ -3613,6 +3664,7 @@ public class IronscapePlugin extends Plugin
 			// stand-down until that quest wraps up.
 			if (playerJumpedAhead)
 			{
+				logNavDecision("cleared: jumped ahead to a later step's quest");
 				eventBus.post(new PluginMessage("shortestpath", "clear"));
 				return;
 			}
@@ -3629,10 +3681,12 @@ public class IronscapePlugin extends Plugin
 				WorldPoint area = location == null ? null : placeManager.getLoose(location);
 				if (area != null)
 				{
+					logNavDecision("routing to step area " + location + " (quest owns guidance)");
 					eventBus.post(new PluginMessage("shortestpath", "path", Map.of("target", area)));
 				}
 				else
 				{
+					logNavDecision("cleared: quest owns guidance, step has no routable area");
 					eventBus.post(new PluginMessage("shortestpath", "clear"));
 				}
 				return;
@@ -3640,6 +3694,7 @@ public class IronscapePlugin extends Plugin
 			WorldPoint target = findNextTarget();
 			if (target != null)
 			{
+				logNavDecision("routing to " + target);
 				eventBus.post(new PluginMessage("shortestpath", "path", Map.of("target", target)));
 			}
 			else
@@ -3647,9 +3702,26 @@ public class IronscapePlugin extends Plugin
 				// The next thing to do has no known location — clear the
 				// route so a STALE one (last step's quest etc.) doesn't
 				// keep pointing somewhere you no longer need to go.
+				logNavDecision("cleared: no routable target in the window");
 				eventBus.post(new PluginMessage("shortestpath", "clear"));
 			}
 		});
+	}
+
+	private String lastNavDecision;
+
+	/**
+	 * One INFO line per CHANGE of auto-navigation outcome. "Auto-nav seems
+	 * dead" reports were undiagnosable — every stand-down branch was
+	 * silent; now the session log (mine-session-log.mjs) names the branch.
+	 */
+	private void logNavDecision(String decision)
+	{
+		if (!decision.equals(lastNavDecision))
+		{
+			lastNavDecision = decision;
+			log.info("auto-nav: {}", decision);
+		}
 	}
 
 	/**

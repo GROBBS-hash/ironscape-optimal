@@ -473,6 +473,11 @@
    "requires": {
     "skill": "MAGIC",
     "level": 42
+   },
+   "target": {
+    "x": 2553,
+    "y": 3406,
+    "plane": 0
    }
   },
   "635b974a08": {

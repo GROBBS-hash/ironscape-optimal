@@ -1,0 +1,19 @@
+[
+ {
+  "stepId": "55fb71551c",
+  "text": "Train 42 magic at Moss giants near fishing guild",
+  "npc": "Moss giant",
+  "place": "fishing guild",
+  "placeAt": {
+   "x": 2586,
+   "y": 3420
+  },
+  "page": "Moss giant",
+  "cluster": "West of Fishing Guild",
+  "coords": {
+   "x": 2553,
+   "y": 3406
+  },
+  "ok": true
+ }
+]

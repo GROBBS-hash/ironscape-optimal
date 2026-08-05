@@ -269,6 +269,18 @@ class StepRow extends JPanel
 			badge.setIconTextGap(4);
 			ctx.getItems().attachIcon(badgeIconName, badge);
 		}
+		else if (ctx.getSkillIcon() != null)
+		{
+			// Level/counted badges get their skill's icon ("magic 33/42"
+			// wears the Magic star) — synchronous, RuneLite bundles them.
+			java.awt.image.BufferedImage skillImage = ctx.getSkillIcon().apply(actionSubId);
+			if (skillImage != null)
+			{
+				badge.setIconTextGap(4);
+				badge.setIcon(new javax.swing.ImageIcon(skillImage));
+				badgeIconName = ""; // non-null: the width math below sees the icon
+			}
+		}
 		// indent + wrap width must stay inside the panel column, or this
 		// badge widens EVERY row and pushes the buttons off-screen. An
 		// icon's width comes OUT of the html body width: the label's

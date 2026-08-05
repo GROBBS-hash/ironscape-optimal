@@ -94,6 +94,7 @@ public class IronscapePanel extends PluginPanel
 	/** Set by the plugin; sub-id -> html for counted-action progress badges. */
 	private java.util.function.Function<String, String> actionBadgeSupplier;
 	private java.util.function.Function<String, String> badgeIconSupplier;
+	private java.util.function.Function<String, java.awt.image.BufferedImage> skillIconSupplier;
 
 	// Toolbar (stays fixed while the content below scrolls)
 	private final JProgressBar progressBar = new JProgressBar();
@@ -286,6 +287,12 @@ public class IronscapePanel extends PluginPanel
 	public void setBadgeIconSupplier(java.util.function.Function<String, String> badgeIconSupplier)
 	{
 		this.badgeIconSupplier = badgeIconSupplier;
+	}
+
+	public void setSkillIconSupplier(
+		java.util.function.Function<String, java.awt.image.BufferedImage> skillIconSupplier)
+	{
+		this.skillIconSupplier = skillIconSupplier;
 	}
 
 	public void setProgressChangedListener(Runnable progressChangedListener)
@@ -678,7 +685,7 @@ public class IronscapePanel extends PluginPanel
 	{
 		return new RowContext(
 			guide.getVariant(), progressManager, annotationManager, itemTracker, placeManager,
-			itemGoals, actionBadgeSupplier, badgeIconSupplier,
+			itemGoals, actionBadgeSupplier, badgeIconSupplier, skillIconSupplier,
 			this::onManualProgressChange,
 			config.showCaptureButtons() ? captureHandler : null,
 			clearTargetHandler,

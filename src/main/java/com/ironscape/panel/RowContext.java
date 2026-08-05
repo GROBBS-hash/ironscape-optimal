@@ -34,6 +34,10 @@ class RowContext
 	 * card" next to "stamp 0/1"); null function or null result = no icon. */
 	java.util.function.Function<String, String> badgeIcon;
 
+	/** sub-id -> small skill icon for level/counted badges ("magic 33/42"
+	 * gets the Magic star); null function or null result = no icon. */
+	java.util.function.Function<String, java.awt.image.BufferedImage> skillIcon;
+
 	/** Tells the panel to refresh the progress bar after a tick. */
 	Runnable onProgressChanged;
 
