@@ -713,6 +713,14 @@ public class IronscapePlugin extends Plugin
 	private static final int PLACE_ARRIVE_RADIUS = 25;
 
 	/**
+	 * Wider "arrived" radius in the ticks right after a TELEPORT lands:
+	 * teleport pads sit at the EDGE of the area they serve (the spirit
+	 * tree stands ~34 tiles from the Khazard Battlefield point), and
+	 * landing on one is the strongest possible arrival evidence.
+	 */
+	private static final int TELEPORT_ARRIVE_RADIUS = 45;
+
+	/**
 	 * A sub reads as a movement instruction — anywhere in the text, since
 	 * travel is often compound ("Use the spirit tree and go to the
 	 * battlefield"). Gates place-name arrival ticks.
@@ -2837,7 +2845,8 @@ public class IronscapePlugin extends Plugin
 			return false;
 		}
 		boolean within = here.getPlane() == place.getPlane()
-			&& here.distanceTo(place) <= PLACE_ARRIVE_RADIUS;
+			&& here.distanceTo(place) <= (recentTeleportTicks > 0
+				? TELEPORT_ARRIVE_RADIUS : PLACE_ARRIVE_RADIUS);
 		// ARMING: already standing at the destination when the sub became
 		// current proves nothing — "run to Thurgo for the sword, run back
 		// to Falador" ticked at the START point. Arrival only counts after
