@@ -259,9 +259,6 @@ class StepRow extends JPanel
 		badge.setBorder(BorderFactory.createEmptyBorder(0, indentPx, 2, 0));
 		badge.setAlignmentX(LEFT_ALIGNMENT);
 		badge.setToolTipText("Live progress toward this goal (your skill level, or xp drops counted so far)");
-		// indent + wrap width must stay inside the panel column, or this
-		// badge widens EVERY row and pushes the buttons off-screen
-		int wrapWidth = Math.max(80, 170 - indentPx);
 		String actionSubId = goalSubId;
 		// Checkpoint badges can name an item sprite ("Barcrawl card" heads
 		// the "stamp 0/1" line) — same async icon machinery as item lines.
@@ -272,6 +269,14 @@ class StepRow extends JPanel
 			badge.setIconTextGap(4);
 			ctx.getItems().attachIcon(badgeIconName, badge);
 		}
+		// indent + wrap width must stay inside the panel column, or this
+		// badge widens EVERY row and pushes the buttons off-screen. An
+		// icon's width comes OUT of the html body width: the label's
+		// preferred width is icon + gap + body, and the fixed 170px body
+		// alone already fills the column (shipped that bug 2026-08-05 —
+		// every row widened, Go/⌖ pushed off-screen).
+		final int wrapWidth = Math.max(60,
+			170 - indentPx - (badgeIconName != null ? 40 : 0));
 		Runnable refresh = () -> {
 			String action = ctx.getActionBadge().apply(actionSubId);
 			if (isBadgeDone(badgeSub) && action != null)

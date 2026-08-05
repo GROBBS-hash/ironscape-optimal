@@ -20,6 +20,14 @@
 //
 // Usage: node tools/seed-shops.mjs            (build the draft)
 //        node tools/seed-shops.mjs --apply    (merge draft rows marked ok)
+//        node tools/seed-shops.mjs --places   (make DISTINCTIVE applied shop
+//                                              phrases clickable place links:
+//                                              "Ardy farming shop" in the step
+//                                              text linkifies + routes to the
+//                                              pin. Generic phrases — "general
+//                                              store", "the bar" — are skipped:
+//                                              a global entry would mislink
+//                                              every other step saying them.)
 
 import fs from 'fs';
 import path from 'path';
@@ -123,7 +131,36 @@ function parseMapBody(body) {
 // 3. Draft (default) or apply (--apply)
 // ---------------------------------------------------------------------
 
-if (process.argv.includes('--apply')) {
+if (process.argv.includes('--places')) {
+  const PLACES_FILE = path.join(__dirname, '../src/main/resources/com/ironscape/places/places.json');
+  const placesJson = JSON.parse(fs.readFileSync(PLACES_FILE, 'utf8'));
+  const draft = JSON.parse(fs.readFileSync(DRAFT_FILE, 'utf8'));
+  // Words that don't identify WHICH shop: a phrase made only of these
+  // (or containing prose leakage) stays unseeded.
+  const GENERIC = new Set(['general', 'store', 'shop', 'stall', 'bar', 'shops',
+    'cooking', 'crafting', 'farming', 'fishing', 'food', 'clothes', 'sword',
+    'magic', 'hunter', 'ore', 'emporium', 'a', 'an', 'of']);
+  const PROSE = new Set(['from', 'your', 'same', 'the', 'at', 'inventory']);
+  let added = 0;
+  for (const row of draft) {
+    const target = annotations.annotations[row.stepId]?.target;
+    if (!target || !row.phrase) continue;
+    const words = row.phrase.toLowerCase().split(/\s+/);
+    if (words.some((w) => PROSE.has(w))) continue;
+    if (words.every((w) => GENERIC.has(w))) continue;
+    const key = words.join(' ');
+    if (placesJson.places[key]) continue; // never clobber (incl. hand entries)
+    // display MUST be the phrase as the guide writes it: PlaceManager's
+    // linkify pattern is built from display names, so a wiki shop name
+    // here ("Richard's Farming shop") would never match the step text
+    // ("Ardy farming shop") and the link simply wouldn't appear.
+    placesJson.places[key] = { display: row.phrase, x: target.x, y: target.y, plane: target.plane || 0 };
+    console.log(`+ "${key}" -> ${row.phrase} @ ${target.x},${target.y}`);
+    added++;
+  }
+  fs.writeFileSync(PLACES_FILE, JSON.stringify(placesJson, null, 1) + '\n');
+  console.log(`added ${added} shop place(s) to places.json`);
+} else if (process.argv.includes('--apply')) {
   const draft = JSON.parse(fs.readFileSync(DRAFT_FILE, 'utf8'));
   let applied = 0;
   for (const row of draft) {

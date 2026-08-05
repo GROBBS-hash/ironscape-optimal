@@ -27,6 +27,17 @@ public final class PlaceLinkProbe
 		}
 		PlaceManager places = new PlaceManager(new Gson(), new File("no-local-places.json"));
 		places.load();
+		if (args.length > 0)
+		{
+			// Each argument: a phrase to resolve, or a sentence to linkify.
+			for (String arg : args)
+			{
+				System.out.println("get(" + arg + ")      = " + places.get(arg));
+				System.out.println("getLoose(" + arg + ") = " + places.getLoose(arg));
+				System.out.println("linkify:  " + places.linkify(arg));
+			}
+			return;
+		}
 		System.out.println("get(zmi bank)        = " + places.get("zmi bank"));
 		System.out.println("getLoose(ZMI Bank)   = " + places.getLoose("ZMI Bank"));
 		System.out.println("getLoose(Khazard Battlefield) = " + places.getLoose("Khazard Battlefield"));
