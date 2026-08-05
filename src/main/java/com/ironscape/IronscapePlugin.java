@@ -1699,6 +1699,9 @@ public class IronscapePlugin extends Plugin
 			// are gone with it.
 			bankMissingSection.invalidate();
 			bankFilterButton.init();
+			// A fresh bank interface = a fresh banking session: the frozen
+			// filter window re-anchors on wherever the frontier is now.
+			frozenFilterStepIds = null;
 		}
 		// Travel menus (spirit trees, gliders): whatever interface just
 		// loaded while a travel sub is current is probably the destination
@@ -1771,6 +1774,11 @@ public class IronscapePlugin extends Plugin
 			{
 				refreshUpcomingNeeds();
 				sections = upcomingSections;
+			}
+			else
+			{
+				// Filter off: next activation re-anchors on the live frontier.
+				frozenFilterStepIds = null;
 			}
 			bankMissingSection.update(filterView, sections);
 		}
@@ -2719,70 +2727,96 @@ public class IronscapePlugin extends Plugin
 	 * a fixed sub-step window reached too far, and section scoping
 	 * collected almost nothing near a section boundary. Cached per tick.
 	 */
+	/**
+	 * Step ids the OPEN filter session shows, fixed at activation. The
+	 * window used to re-anchor on the live frontier every rebuild —
+	 * withdrawing the last item of a step auto-ticked it, the window
+	 * slid, and the whole layout jumped mid-banking (owner report, twice).
+	 * Frozen composition, live counts; null = compute fresh next build.
+	 */
+	private List<String> frozenFilterStepIds;
+
 	private void refreshUpcomingNeeds()
 	{
 		if (bankFilterCacheTick == tickCounter)
 		{
 			return;
 		}
-		List<com.ironscape.items.BankMissingSection.Section> sections = new ArrayList<>();
-		Current frontier = findCurrent();
-		if (frontier != null)
+		Guide guide = guideFor(activeVariant);
+		if (frozenFilterStepIds == null)
 		{
-			Guide guide = guideFor(activeVariant);
-			List<GuideStep> steps = guide.getAllSteps();
-			int included = 0;
-			for (int i = frontier.step.getGlobalIndex();
-				i < steps.size() && included < BANK_FILTER_STEPS; i++)
+			List<String> ids = new ArrayList<>();
+			Current frontier = findCurrent();
+			if (frontier != null)
 			{
-				GuideStep step = steps.get(i);
-				if (progressManager.isCompleted(activeVariant, step.getId()))
+				List<GuideStep> steps = guide.getAllSteps();
+				for (int i = frontier.step.getGlobalIndex();
+					i < steps.size() && ids.size() < BANK_FILTER_STEPS; i++)
 				{
-					continue;
-				}
-				included++;
-				com.ironscape.items.BankMissingSection.Section section =
-					new com.ironscape.items.BankMissingSection.Section(
-						truncate(step.getPlainText().trim(), 200));
-				for (StepAnnotation.ItemNeed need : annotationManager.getItems(step.getId()))
-				{
-					String name = need.name.toLowerCase(Locale.ROOT);
-					int quantity = need.quantity == null ? 1 : need.quantity;
-					section.items.merge(name, quantity, Math::max);
-				}
-				for (SubStep sub : step.getSubSteps())
-				{
-					// A DONE sub keeps its items listed while you still meet
-					// the count — withdrawing the runes auto-ticks the sub,
-					// and the runes vanishing from the bank view mid-banking
-					// reads as a bug. Items you no longer have (consumed long
-					// ago) stay hidden; a done sub must not demand them back.
-					boolean subDone = progressManager.isSubCompleted(activeVariant, step, sub);
-					List<GoalDetector.ItemGoal> itemGoals = itemGoalsBySub.get(sub.getId());
-					if (itemGoals != null)
+					if (!progressManager.isCompleted(activeVariant, steps.get(i).getId()))
 					{
-						for (GoalDetector.ItemGoal goal : itemGoals)
-						{
-							if (subDone && !stillMet(goal.getItemName(), goal.getQuantity()))
-							{
-								continue;
-							}
-							section.items.merge(goal.getItemName(), goal.getQuantity(), Math::max);
-						}
+						ids.add(steps.get(i).getId());
 					}
-					for (StepAnnotation.ItemNeed need : annotationManager.getItems(sub.getId()))
+				}
+			}
+			frozenFilterStepIds = ids;
+		}
+		Map<String, GuideStep> stepById = new HashMap<>();
+		for (GuideStep step : guide.getAllSteps())
+		{
+			stepById.put(step.getId(), step);
+		}
+		List<com.ironscape.items.BankMissingSection.Section> sections = new ArrayList<>();
+		for (String stepId : frozenFilterStepIds)
+		{
+			GuideStep step = stepById.get(stepId);
+			if (step == null)
+			{
+				continue;
+			}
+			// NO completed-step skip here: a step finishing mid-banking keeps
+			// its section — counts go green, nothing moves.
+			com.ironscape.items.BankMissingSection.Section section =
+				new com.ironscape.items.BankMissingSection.Section(
+					truncate(step.getPlainText().trim(), 200));
+			for (StepAnnotation.ItemNeed need : annotationManager.getItems(step.getId()))
+			{
+				String name = need.name.toLowerCase(Locale.ROOT);
+				int quantity = need.quantity == null ? 1 : need.quantity;
+				section.items.merge(name, quantity, Math::max);
+			}
+			for (SubStep sub : step.getSubSteps())
+			{
+				// A DONE sub keeps its items listed while you still meet
+				// the count — withdrawing the runes auto-ticks the sub,
+				// and the runes vanishing from the bank view mid-banking
+				// reads as a bug. Items you no longer have (consumed long
+				// ago) stay hidden; a done sub must not demand them back.
+				boolean subDone = progressManager.isSubCompleted(activeVariant, step, sub);
+				List<GoalDetector.ItemGoal> itemGoals = itemGoalsBySub.get(sub.getId());
+				if (itemGoals != null)
+				{
+					for (GoalDetector.ItemGoal goal : itemGoals)
 					{
-						String name = need.name.toLowerCase(Locale.ROOT);
-						int quantity = need.quantity == null ? 1 : need.quantity;
-						if (subDone && !stillMet(name, quantity))
+						if (subDone && !stillMet(goal.getItemName(), goal.getQuantity()))
 						{
 							continue;
 						}
-						section.items.merge(name, quantity, Math::max);
+						section.items.merge(goal.getItemName(), goal.getQuantity(), Math::max);
 					}
 				}
-				sections.add(section);
+				for (StepAnnotation.ItemNeed need : annotationManager.getItems(sub.getId()))
+				{
+					String name = need.name.toLowerCase(Locale.ROOT);
+					int quantity = need.quantity == null ? 1 : need.quantity;
+					if (subDone && !stillMet(name, quantity))
+					{
+						continue;
+					}
+					section.items.merge(name, quantity, Math::max);
+				}
 			}
+			sections.add(section);
 		}
 		upcomingSections = sections;
 		bankFilterCacheTick = tickCounter;
