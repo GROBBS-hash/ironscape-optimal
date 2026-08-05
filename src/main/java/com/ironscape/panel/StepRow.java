@@ -49,11 +49,13 @@ class StepRow extends JPanel
 	/**
 	 * Width the text of a level-0 sub-step is laid out at. Panel is 225px;
 	 * subtract panel padding, checkbox column, button column (⌖ AND Go),
-	 * and scrollbar — being too generous here makes the widest row widen
-	 * the whole column and push buttons off-screen.
+	 * scrollbar, AND the card chrome (7px padding each side + 1px edges —
+	 * forgetting it clipped the buttons off the first cards build) —
+	 * being too generous here makes the widest row widen the whole column
+	 * and push buttons off-screen.
 	 * JEditorPane does NOT wrap to its container on its own — see setHtml().
 	 */
-	private static final int TEXT_WIDTH = 128;
+	private static final int TEXT_WIDTH = 112;
 	private static final int INDENT_PER_LEVEL = 10;
 
 	private static final Color CAPTURED_COLOR = new Color(0x4c, 0xaf, 0x50);
@@ -62,16 +64,21 @@ class StepRow extends JPanel
 	private static final String MISSING_HEX = "#e57373";
 
 	// "Cards & chips" restyle (owner-picked mockup, 2026-08-05): every
-	// step is a card a shade warmer than the panel, metadata renders as
-	// bordered chips, notes get a boxed NOTE block, and a fully-done card
-	// dims WHOLESALE (paint-time alpha) instead of restyling each child.
-	/** Card face — slightly warm against the #282828 panel. */
-	static final Color CARD_BG = new Color(0x2e, 0x2c, 0x29);
-	private static final Color CARD_EDGE = new Color(0x3c, 0x39, 0x34);
+	// step is a card, metadata renders as bordered chips, notes get a
+	// boxed NOTE block. ACTIVE cards are near-black so their content pops;
+	// DONE cards flatten to panel-grey AND dim wholesale (paint-time
+	// alpha) — the first cut styled both faces the same and active vs
+	// done barely read apart (owner feedback).
+	/** ACTIVE card face — near-black, warm, darker than the #282828 panel. */
+	static final Color CARD_BG = new Color(0x1f, 0x1e, 0x1b);
+	private static final Color CARD_EDGE = new Color(0x3f, 0x3b, 0x35);
+	/** DONE card face — flat grey, melts into the panel. */
+	private static final Color DONE_BG = new Color(0x2b, 0x2b, 0x2b);
+	private static final Color DONE_EDGE = new Color(0x34, 0x34, 0x34);
 	private static final int CARD_MARGIN_TOP = 2;
 	private static final int CARD_MARGIN_BOTTOM = 6;
-	/** Inset boxes: chips and the NOTE block. */
-	private static final Color BOX_BG = new Color(0x26, 0x23, 0x1e);
+	/** Inset boxes: chips and the NOTE block — a step LIGHTER than the face. */
+	private static final Color BOX_BG = new Color(0x2a, 0x27, 0x22);
 	private static final Color BOX_EDGE = new Color(0x45, 0x40, 0x3a);
 	private static final Color CHIP_FG = new Color(0xc2, 0xab, 0x7c);
 	private static final Color CHIP_QUEST_FG = new Color(0x8f, 0xbf, 0x8f);
@@ -99,7 +106,6 @@ class StepRow extends JPanel
 		// margin band too); the border is pure spacing: margin + edge +
 		// padding on each side.
 		setOpaque(false);
-		setBackground(CARD_BG);
 		setBorder(BorderFactory.createEmptyBorder(
 			CARD_MARGIN_TOP + 6, 7, CARD_MARGIN_BOTTOM + 6, 7));
 
@@ -140,10 +146,11 @@ class StepRow extends JPanel
 	@Override
 	protected void paintComponent(java.awt.Graphics g)
 	{
-		g.setColor(CARD_BG);
+		boolean done = ctx.getProgress().isCompleted(ctx.getVariant(), step.getId());
+		g.setColor(done ? DONE_BG : CARD_BG);
 		g.fillRect(0, CARD_MARGIN_TOP, getWidth(),
 			getHeight() - CARD_MARGIN_TOP - CARD_MARGIN_BOTTOM);
-		g.setColor(CARD_EDGE);
+		g.setColor(done ? DONE_EDGE : CARD_EDGE);
 		g.drawRect(0, CARD_MARGIN_TOP, getWidth() - 1,
 			getHeight() - CARD_MARGIN_TOP - CARD_MARGIN_BOTTOM - 1);
 	}
@@ -313,7 +320,7 @@ class StepRow extends JPanel
 			// to a colored have/need count. Vertical list = nothing to wrap.
 			JPanel list = new JPanel();
 			list.setLayout(new BoxLayout(list, BoxLayout.Y_AXIS));
-			list.setBackground(CARD_BG);
+			list.setOpaque(false);
 			list.setAlignmentX(LEFT_ALIGNMENT);
 			list.setBorder(BorderFactory.createEmptyBorder(0, indentPx, 2, 0));
 			list.setToolTipText("<html>Counts inventory + worn + bank (bank as of your last visit)</html>");
@@ -422,7 +429,7 @@ class StepRow extends JPanel
 		// alone already fills the column (shipped that bug 2026-08-05 —
 		// every row widened, Go/⌖ pushed off-screen).
 		final int wrapWidth = Math.max(60,
-			170 - indentPx - (badgeIconName != null ? 40 : 0));
+			154 - indentPx - (badgeIconName != null ? 40 : 0));
 		Runnable refresh = () -> {
 			String action = ctx.getActionBadge().apply(actionSubId);
 			if (isBadgeDone(badgeSub) && action != null)
@@ -521,7 +528,7 @@ class StepRow extends JPanel
 	{
 		masterBox = new JCheckBox("Step " + (step.getStepIndex() + 1));
 		masterBox.setSelected(ctx.getProgress().isCompleted(ctx.getVariant(), step.getId()) || allSubsTicked());
-		masterBox.setBackground(CARD_BG);
+		masterBox.setOpaque(false);
 		masterBox.setForeground(ColorScheme.BRAND_ORANGE);
 		masterBox.setFont(FontManager.getRunescapeSmallFont());
 		masterBox.setToolTipText(metadataTooltip());
@@ -547,7 +554,7 @@ class StepRow extends JPanel
 		});
 
 		JPanel header = new JPanel(new BorderLayout(4, 0));
-		header.setBackground(CARD_BG);
+		header.setOpaque(false);
 		header.setAlignmentX(LEFT_ALIGNMENT);
 		header.add(masterBox, BorderLayout.CENTER);
 		JPanel buttons = annotationButtons(step.getId());
@@ -616,7 +623,7 @@ class StepRow extends JPanel
 
 		JPanel buttons = new JPanel();
 		buttons.setLayout(new BoxLayout(buttons, BoxLayout.X_AXIS));
-		buttons.setBackground(CARD_BG);
+		buttons.setOpaque(false);
 
 		JButton navigate = null;
 		if (ctx.getNavigateHandler() != null)
@@ -797,7 +804,7 @@ class StepRow extends JPanel
 		{
 			combined += c.getPreferredSize().width + 4;
 		}
-		boolean stack = combined > 200;
+		boolean stack = combined > 184;
 		JPanel row = new JPanel();
 		row.setLayout(new BoxLayout(row, stack ? BoxLayout.Y_AXIS : BoxLayout.X_AXIS));
 		row.setOpaque(false);
@@ -967,7 +974,7 @@ class StepRow extends JPanel
 
 			checkBox = new JCheckBox();
 			checkBox.setSelected(completed);
-			checkBox.setBackground(CARD_BG);
+			checkBox.setOpaque(false);
 			checkBox.addActionListener(e -> {
 				boolean nowCompleted = checkBox.isSelected();
 				ctx.getProgress().setSubCompleted(ctx.getVariant(), step, sub, nowCompleted);
@@ -1010,11 +1017,11 @@ class StepRow extends JPanel
 			setHtml(completed);
 
 			JPanel checkBoxWrapper = new JPanel(new BorderLayout());
-			checkBoxWrapper.setBackground(CARD_BG);
+			checkBoxWrapper.setOpaque(false);
 			checkBoxWrapper.add(checkBox, BorderLayout.NORTH);
 
 			panel = new JPanel(new BorderLayout(2, 0));
-			panel.setBackground(CARD_BG);
+			panel.setOpaque(false);
 			panel.setAlignmentX(LEFT_ALIGNMENT);
 			panel.setBorder(BorderFactory.createEmptyBorder(
 				1, sub.getIndentLevel() * INDENT_PER_LEVEL, 1, 0));
@@ -1028,7 +1035,7 @@ class StepRow extends JPanel
 			if (buttons != null)
 			{
 				JPanel buttonsWrapper = new JPanel(new BorderLayout());
-				buttonsWrapper.setBackground(CARD_BG);
+				buttonsWrapper.setOpaque(false);
 				buttonsWrapper.add(buttons, BorderLayout.NORTH);
 				panel.add(buttonsWrapper, BorderLayout.EAST);
 			}
