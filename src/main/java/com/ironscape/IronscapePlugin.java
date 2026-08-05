@@ -903,6 +903,8 @@ public class IronscapePlugin extends Plugin
 	 * window completes silently.
 	 */
 	private int loginGraceTicks;
+	/** Set on a real (re)connect: fire auto-nav once when the grace ends. */
+	private boolean navOnLoginPending;
 
 	private int tickCounter;
 
@@ -1286,11 +1288,14 @@ public class IronscapePlugin extends Plugin
 		panel.setGuide(guideFor(activeVariant));
 
 		// If we start while already logged in (plugin toggled mid-session),
-		// prime the item counts; otherwise the login event does it.
+		// prime the item counts and resume the route; otherwise the login
+		// event does both.
 		clientThread.invoke(() -> {
 			if (client.getGameState() == GameState.LOGGED_IN)
 			{
 				itemTracker.onLoggedIn();
+				loginGraceTicks = 10;
+				navOnLoginPending = true;
 			}
 			// Warm the stackability cache for every detected item goal:
 			// the panel's Swing badges can't compute it off-thread.
@@ -1496,6 +1501,7 @@ public class IronscapePlugin extends Plugin
 			&& lastGameState != GameState.LOADING)
 		{
 			loginGraceTicks = 10;
+			navOnLoginPending = true; // fire nav once the grace window ends
 			lastXpBySkill.clear(); // next account/session sets fresh baselines
 			// A (re)connect may be a DIFFERENT account: quest states must
 			// re-baseline, and a jumped-ahead jaunt doesn't survive relog.
@@ -1831,6 +1837,16 @@ public class IronscapePlugin extends Plugin
 		if (loginGraceTicks > 0)
 		{
 			loginGraceTicks--;
+			// Resume-and-navigate: a fresh session used to sit routeless
+			// until the first progress event fired nav. Once the grace
+			// window ends (quest states and item baselines are settled),
+			// route to the next target exactly as if progress just happened.
+			if (loginGraceTicks == 0 && navOnLoginPending)
+			{
+				navOnLoginPending = false;
+				logNavDecision("login: resuming route to the next target");
+				maybeNavigateToNext();
+			}
 		}
 		if (recentTeleportTicks > 0)
 		{
