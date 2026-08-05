@@ -514,6 +514,19 @@ public class ItemTracker
 		return String.format(Locale.US, "%,d", n);
 	}
 
+	/**
+	 * "compost pack" -> "Compost pack" for DISPLAY (badges, overlays) —
+	 * guide/annotation names are lowercase for matching, but the panel
+	 * should read like the game does (owner ask). Never use this on
+	 * names that feed matching.
+	 */
+	public static String capitalize(String name)
+	{
+		return name == null || name.isEmpty()
+			? name
+			: Character.toUpperCase(name.charAt(0)) + name.substring(1);
+	}
+
 	/** Cached stackability by guide item name; see bankCountable. */
 	private final Map<String, Boolean> stackableByName =
 		new java.util.concurrent.ConcurrentHashMap<>();

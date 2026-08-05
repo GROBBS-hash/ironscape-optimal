@@ -332,7 +332,7 @@ class StepRow extends JPanel
 				// scanning "what am I missing" goes down the right edge,
 				// and the one red count finally stands out because names
 				// no longer shout in the same colors.
-				JLabel name = new JLabel(RichText.escape(need.name));
+				JLabel name = new JLabel(RichText.escape(ItemTracker.capitalize(need.name)));
 				name.setFont(new Font(Font.DIALOG, Font.PLAIN, 11));
 				name.setForeground(ITEM_NAME_FG);
 				name.setIconTextGap(4);
@@ -515,7 +515,7 @@ class StepRow extends JPanel
 			int have = ctx.getItems().distinctCarried(check.set);
 			String color = have >= check.need ? SATISFIED_HEX : MISSING_HEX;
 			badge.setText("<html><b><font color='" + color + "'>"
-				+ RichText.escape(check.set) + " " + have + "/" + check.need
+				+ RichText.escape(ItemTracker.capitalize(check.set)) + " " + have + "/" + check.need
 				+ "</font></b></html>");
 		};
 		refresh.run();

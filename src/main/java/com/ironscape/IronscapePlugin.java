@@ -1111,7 +1111,7 @@ public class IronscapePlugin extends Plugin
 						sb.append(" <font color='#606060'>·</font> ");
 					}
 					sb.append("<font color='").append(levelColor).append("'>")
-						.append(goal.getSkill().getName().toLowerCase())
+						.append(goal.getSkill().getName())
 						.append(' ').append(have).append('/').append(goal.getLevel())
 						.append("</font>");
 				}
@@ -1144,7 +1144,7 @@ public class IronscapePlugin extends Plugin
 								sb.append(" <font color='#606060'>·</font> ");
 							}
 							sb.append("<font color='").append(met ? "#4caf50" : "#ffa000")
-								.append("'>").append(requirement.label)
+								.append("'>").append(ItemTracker.capitalize(requirement.label))
 								.append(' ').append(met ? 1 : 0).append("/1</font>");
 						}
 						continue;
@@ -1156,7 +1156,7 @@ public class IronscapePlugin extends Plugin
 						sb.append(" <font color='#606060'>·</font> ");
 					}
 					sb.append("<font color='").append(reqColor).append("'>")
-						.append(requirement.skill.getName().toLowerCase())
+						.append(requirement.skill.getName())
 						.append(' ').append(have).append('/').append(requirement.threshold)
 						.append("</font>");
 				}
@@ -1173,7 +1173,7 @@ public class IronscapePlugin extends Plugin
 			int seen = Math.min(progressManager.countedProgress(activeVariant, subId),
 				counted.getCount());
 			String color = seen >= counted.getCount() ? "#4caf50" : "#ffa000";
-			return "<font color='" + color + "'>" + counted.getSkill().getName().toLowerCase()
+			return "<font color='" + color + "'>" + counted.getSkill().getName()
 				+ " " + seen + "/" + counted.getCount() + " done</font>";
 		});
 		panel.setBadgeIconSupplier(subId -> {
@@ -2518,7 +2518,7 @@ public class IronscapePlugin extends Plugin
 						java.awt.Color color =
 							have >= goal.getQuantity() ? OVERLAY_ORANGE : OVERLAY_RED;
 						reqs.add(new com.ironscape.overlay.StepOverlay.Requirement(
-							goal.getItemName(),
+							ItemTracker.capitalize(goal.getItemName()),
 							ItemTracker.formatCount(have) + "/" + ItemTracker.formatCount(goal.getQuantity()),
 							color));
 					}
@@ -2530,7 +2530,7 @@ public class IronscapePlugin extends Plugin
 					{
 						int have = realLevelBySkill.getOrDefault(goal.getSkill(), 1);
 						reqs.add(new com.ironscape.overlay.StepOverlay.Requirement(
-							goal.getSkill().getName().toLowerCase(Locale.ROOT),
+							goal.getSkill().getName(),
 							have + "/" + goal.getLevel(),
 							have >= goal.getLevel() ? OVERLAY_GREEN : OVERLAY_ORANGE));
 					}
@@ -2541,7 +2541,7 @@ public class IronscapePlugin extends Plugin
 					int seen = Math.min(progressManager.countedProgress(activeVariant, sub.getId()),
 						counted.getCount());
 					reqs.add(new com.ironscape.overlay.StepOverlay.Requirement(
-						counted.getSkill().getName().toLowerCase(Locale.ROOT) + " actions",
+						counted.getSkill().getName() + " actions",
 						seen + "/" + counted.getCount(),
 						seen >= counted.getCount() ? OVERLAY_GREEN : OVERLAY_ORANGE));
 				}
