@@ -55,6 +55,50 @@ import net.runelite.client.ui.components.IconTextField;
  */
 public class IronscapePanel extends PluginPanel
 {
+	/**
+	 * Scroll content that always matches the viewport's width (vertical
+	 * scrolling only). Without Scrollable, a JViewport sizes a plain
+	 * JPanel to its PREFERRED width — one over-wide row and everything
+	 * right of the viewport edge is simply cut off.
+	 */
+	private static class ViewportWidthPanel extends JPanel implements javax.swing.Scrollable
+	{
+		ViewportWidthPanel(java.awt.LayoutManager layout)
+		{
+			super(layout);
+		}
+
+		@Override
+		public Dimension getPreferredScrollableViewportSize()
+		{
+			return getPreferredSize();
+		}
+
+		@Override
+		public int getScrollableUnitIncrement(java.awt.Rectangle visible, int orientation, int direction)
+		{
+			return 16;
+		}
+
+		@Override
+		public int getScrollableBlockIncrement(java.awt.Rectangle visible, int orientation, int direction)
+		{
+			return 96;
+		}
+
+		@Override
+		public boolean getScrollableTracksViewportWidth()
+		{
+			return true;
+		}
+
+		@Override
+		public boolean getScrollableTracksViewportHeight()
+		{
+			return false;
+		}
+	}
+
 	private static final String CONFIG_GROUP = "ironscape";
 	private static final int MAX_SEARCH_RESULTS = 50;
 
@@ -136,8 +180,12 @@ public class IronscapePanel extends PluginPanel
 
 		content.setBackground(ColorScheme.DARK_GRAY_COLOR);
 		// BorderLayout.NORTH wrapper keeps short content top-aligned
-		// instead of vertically centered in the viewport.
-		JPanel wrapper = new JPanel(new BorderLayout());
+		// instead of vertically centered in the viewport. It TRACKS the
+		// viewport width: a plain JPanel lays out at preferred width when
+		// content prefers wider, and with the horizontal scrollbar set to
+		// NEVER the overflow just clips off-screen — that silently ate the
+		// ⌖/Go buttons whenever any row grew past the viewport.
+		JPanel wrapper = new ViewportWidthPanel(new BorderLayout());
 		wrapper.setBackground(ColorScheme.DARK_GRAY_COLOR);
 		wrapper.add(content, BorderLayout.NORTH);
 
