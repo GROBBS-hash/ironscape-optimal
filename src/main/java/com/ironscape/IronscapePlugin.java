@@ -432,6 +432,13 @@ public class IronscapePlugin extends Plugin
 	private Quest jumpedAheadQuest;
 
 	/**
+	 * Where the player died — the gravestone (or Wilderness item pile)
+	 * stands there. While set, navigation routes HERE above everything
+	 * else: no gear, no route. Cleared on getting within 8 tiles.
+	 */
+	private WorldPoint deathPoint;
+
+	/**
 	 * True while a quest belonging to a LATER guide step is in progress —
 	 * the player jumped ahead (doing Tourist Trap while the frontier is
 	 * still Sleeping Giants). ALL frontier guidance stands down: routing
@@ -1458,6 +1465,27 @@ public class IronscapePlugin extends Plugin
 		lastGameState = event.getGameState();
 	}
 
+	/**
+	 * The local player died: remember the spot. The gravestone spawns
+	 * where you fall (Wilderness deaths leave the items there instead —
+	 * same destination either way), and after the respawn the route pins
+	 * to it until the player gets close.
+	 */
+	@Subscribe
+	public void onActorDeath(net.runelite.api.events.ActorDeath event)
+	{
+		Player me = client.getLocalPlayer();
+		if (me == null || event.getActor() != me)
+		{
+			return;
+		}
+		deathPoint = me.getWorldLocation();
+		log.info("player died at {} — routing to the gravestone until reached", deathPoint);
+		client.addChatMessage(ChatMessageType.CONSOLE, "",
+			"IRONSCAPE: you died — the route now points at your gravestone.", null);
+		maybeNavigateToNext();
+	}
+
 	/** Fires on the client thread whenever any item container changes. */
 	@Subscribe
 	public void onItemContainerChanged(ItemContainerChanged event)
@@ -1727,6 +1755,26 @@ public class IronscapePlugin extends Plugin
 			SwingUtilities.invokeLater(panel::refreshItemCounts);
 		}
 		refreshCheckpointBadgeCache();
+		// Death retrieval: while a gravestone waits, keep the route pinned
+		// on it (re-post every 10 ticks — the respawn's loading screen and
+		// any teleport en route can drop a Shortest Path route). Getting
+		// close clears it and normal frontier routing resumes.
+		if (deathPoint != null)
+		{
+			Player me = client.getLocalPlayer();
+			if (me != null && me.getWorldLocation().getPlane() == deathPoint.getPlane()
+				&& me.getWorldLocation().distanceTo2D(deathPoint) <= 8)
+			{
+				deathPoint = null;
+				client.addChatMessage(ChatMessageType.CONSOLE, "",
+					"IRONSCAPE: gravestone reached — routing back to the guide.", null);
+				maybeNavigateToNext();
+			}
+			else if (tickCounter % 10 == 0)
+			{
+				maybeNavigateToNext();
+			}
+		}
 		if (loginGraceTicks > 0)
 		{
 			loginGraceTicks--;
@@ -1746,7 +1794,10 @@ public class IronscapePlugin extends Plugin
 		if (player != null)
 		{
 			WorldPoint here = player.getWorldLocation();
-			if (lastTickPosition != null && loginGraceTicks == 0
+			// A waiting gravestone mutes the teleport signal: the RESPAWN
+			// is a 20+ tile jump ("you teleported to Lumbridge" — no), and
+			// any teleport taken to reach the grave is off-route travel.
+			if (lastTickPosition != null && loginGraceTicks == 0 && deathPoint == null
 				&& (here.getPlane() != lastTickPosition.getPlane()
 					|| lastTickPosition.distanceTo2D(here) > 20))
 			{
@@ -2080,6 +2131,13 @@ public class IronscapePlugin extends Plugin
 				|| annotationManager.isSafespotTarget(current.sub.getId())
 				|| annotationManager.isSafespotTarget(current.step.getId()))
 			? "Safespot" : null;
+		// A waiting gravestone takes the marker over: that's where you're
+		// going, whatever the current step wants.
+		if (deathPoint != null)
+		{
+			targetTileMarker = deathPoint;
+			targetTileLabel = "Gravestone";
+		}
 
 		// One-time nudge when the route brings you NEAR the errand spot —
 		// the whole point is not walking past Golrie's tunnel. Waypoint
@@ -3671,6 +3729,15 @@ public class IronscapePlugin extends Plugin
 			return;
 		}
 		clientThread.invokeLater(() -> {
+			// A waiting gravestone outranks EVERYTHING — captures, errands,
+			// stand-downs: without the gear there is no route to follow.
+			if (deathPoint != null)
+			{
+				logNavDecision("routing to gravestone at " + deathPoint);
+				eventBus.post(new PluginMessage("shortestpath", "path",
+					Map.of("target", deathPoint)));
+				return;
+			}
 			// A manual ⌖ capture pinned the route to where the player is
 			// working — leave it alone until the frontier step changes.
 			if (navHoldStepId != null)
