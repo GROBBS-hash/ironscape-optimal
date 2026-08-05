@@ -162,11 +162,37 @@ if (process.argv.includes('--apply')) {
         best = { ...cluster, d };
       }
     }
+    // Cross-check against the skill's wiki TRAINING GUIDE: a flat location
+    // list can't say WHICH spot the guide means ("fruit stall" has market
+    // stalls with guard dogs AND the safe house pair), but the training
+    // page's prose names the spot and its {{Map}} pins carry coordinates.
+    // Attached as review context — the reviewer reads it before ok'ing.
+    let guideContext = null;
+    const skill = row.text.match(/\btrain(?:ing)?\s+\d+\s+([a-z]+)/i)?.[1];
+    if (skill) {
+      const guideText = await rawPage(
+        skill[0].toUpperCase() + skill.slice(1).toLowerCase() + ' training');
+      for (const sec of (guideText || '').split(/\n(?===)/)) {
+        if (!sec.toLowerCase().includes(row.npc.toLowerCase())) continue;
+        const gpins = [...sec.matchAll(/x:(\d{3,5}),y:(\d{3,5})/g)]
+          .map((p) => ({ x: +p[1], y: +p[2] }));
+        if (!gpins.length) continue;
+        const line = sec.split('\n').find((l) =>
+          l.toLowerCase().includes(row.npc.toLowerCase()) && !/^[={[]/.test(l));
+        guideContext = {
+          section: sec.match(/^==+\s*([^=]+)/)?.[1]?.trim() || '?',
+          excerpt: line ? line.slice(0, 300) : null,
+          pins: gpins,
+        };
+        break;
+      }
+    }
     draft.push({
       ...row, page: wikitext ? page : null,
       cluster: best?.label || null,
       coords: best ? { x: best.x, y: best.y } : null,
       pins: best?.pins || null,
+      guideContext,
       ok: false,
     });
     console.log(`${best ? 'HIT ' : 'miss'} ${row.stepId} "${row.npc}" near "${row.place}"`
