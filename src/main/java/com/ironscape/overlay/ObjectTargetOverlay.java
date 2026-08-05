@@ -64,18 +64,21 @@ public class ObjectTargetOverlay extends Overlay
 			return null;
 		}
 		String label = labelSupplier.get();
+		// The in-game bold font in white over a black shadow — the same
+		// treatment RuneLite's own overlays use; small cyan text vanished
+		// against stall produce.
+		graphics.setFont(net.runelite.client.ui.FontManager.getRunescapeBoldFont());
 		for (GameObject object : objects)
 		{
 			outlineRenderer.drawOutline(object, 2, OUTLINE, 2);
 			if (label != null && !label.isEmpty())
 			{
-				// Same drop-shadow style as the ⌖ tile's "Safespot" label.
-				net.runelite.api.Point at = object.getCanvasTextLocation(graphics, label, 60);
+				net.runelite.api.Point at = object.getCanvasTextLocation(graphics, label, 120);
 				if (at != null)
 				{
 					graphics.setColor(Color.BLACK);
 					graphics.drawString(label, at.getX() + 1, at.getY() + 1);
-					graphics.setColor(OUTLINE);
+					graphics.setColor(Color.WHITE);
 					graphics.drawString(label, at.getX(), at.getY());
 				}
 			}
