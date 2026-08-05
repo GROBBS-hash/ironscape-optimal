@@ -425,11 +425,28 @@ public class IronscapePlugin extends Plugin
 	private final Map<Quest, Integer> minStepIndexByQuest = new HashMap<>();
 
 	/**
-	 * Last observed state per quest, for detecting LIVE quest starts (the
-	 * jumped-ahead trigger). Session-only: the first observation after
-	 * login baselines without triggering.
+	 * Last observed state per quest — the jumped-ahead transition baseline
+	 * AND the read cache for every per-tick quest-state consumer.
+	 * Quest.getState runs a CLIENTSCRIPT: the old code executed it for
+	 * ~100 guide quests every tick plus per-sub in the subsume loop, and
+	 * that script spam on the shared client thread degraded Quest
+	 * Helper's own behavior (owner: "I have to reload quest state to get
+	 * QH pathing to work"). Refreshed by the every-5-ticks scan; misses
+	 * fall through to one live read. Client thread only.
 	 */
 	private final Map<Quest, QuestState> lastQuestState = new HashMap<>();
+
+	/** Cached quest state (≤3s stale) — use for all per-tick reads. */
+	private QuestState cachedQuestState(Quest quest)
+	{
+		QuestState state = lastQuestState.get(quest);
+		if (state == null)
+		{
+			state = quest.getState(client);
+			lastQuestState.put(quest, state);
+		}
+		return state;
+	}
 
 	/** The later-step quest the player started live; null = none. */
 	private Quest jumpedAheadQuest;
@@ -716,6 +733,10 @@ public class IronscapePlugin extends Plugin
 	private static final java.util.regex.Pattern SPIRIT_TREE =
 		java.util.regex.Pattern.compile("(?i)spirit\\s+tree");
 
+	/** "Charter to port sarim" — board the nearest charter ship first. */
+	private static final java.util.regex.Pattern CHARTER =
+		java.util.regex.Pattern.compile("(?i)\\bcharter\\b");
+
 	/** "safespot the zamorak warrior" — names the ⌖ tile "Safespot". */
 	private static final java.util.regex.Pattern SAFESPOT =
 		java.util.regex.Pattern.compile("(?i)safe\\s*-?\\s*spot");
@@ -726,6 +747,9 @@ public class IronscapePlugin extends Plugin
 
 	/** Label floated over the ⌖ tile marker; null = none. */
 	private volatile String targetTileLabel;
+
+	/** Spellbook teleport component the route wants next, or -1. */
+	private volatile int activeSpellTeleport = -1;
 
 	/** Subs whose TEXT has matched a scene NPC this session — the
 	 * nearest-to-anchor fallback stays off for them permanently. */
@@ -738,6 +762,22 @@ public class IronscapePlugin extends Plugin
 		new WorldPoint(2555, 3259, 0), // Battlefield of Khazard
 		new WorldPoint(3183, 3508, 0), // Grand Exchange
 		new WorldPoint(2488, 2850, 0), // Feldip Hills
+	};
+
+	/**
+	 * Charter ship docks (Trader Crewmembers) — same network treatment as
+	 * spirit trees: "Charter to port sarim" means board HERE, not walk
+	 * there. Owner-tentative dock spots; correct in play.
+	 */
+	private static final WorldPoint[] CHARTER_DOCKS = {
+		new WorldPoint(2674, 3149, 0), // Port Khazard
+		new WorldPoint(2792, 3414, 0), // Catherby
+		new WorldPoint(2760, 3238, 0), // Brimhaven
+		new WorldPoint(3038, 3192, 0), // Port Sarim
+		new WorldPoint(2954, 3158, 0), // Musa Point
+		new WorldPoint(3702, 3503, 0), // Port Phasmatys
+		new WorldPoint(3001, 3032, 0), // Shipyard
+		new WorldPoint(2620, 2857, 0), // Corsair Cove
 	};
 
 	private static final WorldPoint[] BANKS = {
@@ -1075,6 +1115,7 @@ public class IronscapePlugin extends Plugin
 	{
 		minigameTeleportOverlay.setTargetSupplier(() -> activeMinigameTarget);
 		minigameTeleportOverlay.setHomeTeleportSupplier(() -> homeTeleportHint);
+		minigameTeleportOverlay.setSpellTeleportSupplier(() -> activeSpellTeleport);
 		overlayManager.add(minigameTeleportOverlay);
 		travelMenuOverlay.setWordsSupplier(() -> travelMenuWords);
 		travelMenuOverlay.setGroupSupplier(() -> travelMenuGroup);
@@ -1866,7 +1907,7 @@ public class IronscapePlugin extends Plugin
 					// our panel back in front — Quest Helper closes its quest
 					// UI but stays selected in the sidebar otherwise.
 					if (handedOffQuest != null
-						&& handedOffQuest.getState(client) == QuestState.FINISHED)
+						&& cachedQuestState(handedOffQuest) == QuestState.FINISHED)
 					{
 						SwingUtilities.invokeLater(() -> clientToolbar.openPanel(navButton));
 					}
@@ -1887,7 +1928,12 @@ public class IronscapePlugin extends Plugin
 		// later-step quest in progress" test was ON almost permanently —
 		// every auto-navigation silently dead. Quests already in progress
 		// when the session starts just baseline on first observation.
-		if (current != null && loginGraceTicks == 0)
+		// Every 5 ticks, not every tick: this loop runs one clientscript
+		// per guide quest (~100), and per-tick it was enough script-engine
+		// load to break Quest Helper's pathing. 3s transition latency is
+		// harmless; the scan doubles as the cachedQuestState refresher.
+		if (current != null && loginGraceTicks == 0
+			&& (tickCounter % 5 == 0 || lastQuestState.isEmpty()))
 		{
 			int frontierIndex = current.step.getGlobalIndex();
 			for (Map.Entry<Quest, Integer> entry : minStepIndexByQuest.entrySet())
@@ -1906,7 +1952,7 @@ public class IronscapePlugin extends Plugin
 			// frontier caught up to its step. (Route progress also disarms
 			// — see completeSubGoal — ticking steps IS following the route.)
 			if (jumpedAheadQuest != null
-				&& (jumpedAheadQuest.getState(client) != QuestState.IN_PROGRESS
+				&& (cachedQuestState(jumpedAheadQuest) != QuestState.IN_PROGRESS
 					|| minStepIndexByQuest.getOrDefault(jumpedAheadQuest, 0) <= frontierIndex))
 			{
 				log.info("jumped-ahead OFF ({} finished or frontier caught up)",
@@ -1922,6 +1968,10 @@ public class IronscapePlugin extends Plugin
 		{
 			clickedMinigameTicks--;
 		}
+		// Recomputed fresh each tick by the chain below; only the
+		// route-aware branch sets it, so stale values must not linger when
+		// an earlier branch wins.
+		activeSpellTeleport = -1;
 		if (!config.showTeleportHints())
 		{
 			activeMinigameTarget = null;
@@ -1960,7 +2010,11 @@ public class IronscapePlugin extends Plugin
 				{
 					WorldPoint routeTarget = deathPoint != null ? deathPoint
 						: targetFor(current.step, current.sub);
-					String towards = minigameTowards(routeTarget);
+					// The free Grouping teleport first — but not while its
+					// 20-minute cooldown runs (owner watched the hint point
+					// at a teleport the game refused).
+					String towards = minigameTeleportOnCooldown()
+						? null : minigameTowards(routeTarget);
 					if (towards != null)
 					{
 						String towardsKey = towards.toLowerCase(Locale.ROOT).replace('’', '\'');
@@ -1974,6 +2028,21 @@ public class IronscapePlugin extends Plugin
 							activeMinigameTarget = towards;
 						}
 					}
+					// Else: a spellbook teleport (Varrock etc.) as the first
+					// leg — the overlay highlights the spell.
+					if (activeMinigameTarget == null)
+					{
+						TeleportSpell spell = spellTeleportTowards(routeTarget);
+						activeSpellTeleport = spell == null ? -1 : spell.component;
+					}
+					else
+					{
+						activeSpellTeleport = -1;
+					}
+				}
+				else
+				{
+					activeSpellTeleport = -1;
 				}
 				if (key != null && GROUPING_MINIGAMES.contains(key))
 				{
@@ -2099,7 +2168,7 @@ public class IronscapePlugin extends Plugin
 				// you must go first.
 				GoalDetector.QuestGoal questGoal = questGoalBySub.get(current.sub.getId());
 				if (questGoal != null
-					&& questGoal.getQuest().getState(client) == QuestState.NOT_STARTED)
+					&& cachedQuestState(questGoal.getQuest()) == QuestState.NOT_STARTED)
 				{
 					marker = placeManager.get(questGoal.getQuest().getName());
 				}
@@ -2921,7 +2990,7 @@ public class IronscapePlugin extends Plugin
 			{
 				GoalDetector.QuestGoal stepQuest = questGoalBySub.get(other.getId());
 				if (stepQuest != null
-					&& stepQuest.getQuest().getState(client) == QuestState.FINISHED)
+					&& cachedQuestState(stepQuest.getQuest()) == QuestState.FINISHED)
 				{
 					return true;
 				}
@@ -2935,7 +3004,7 @@ public class IronscapePlugin extends Plugin
 		GoalDetector.QuestGoal atomicQuestGoal = questGoalBySub.get(sub.getId());
 		if (atomicQuestGoal != null && itemGoalsBySub.containsKey(sub.getId()))
 		{
-			QuestState state = atomicQuestGoal.getQuest().getState(client);
+			QuestState state = cachedQuestState(atomicQuestGoal.getQuest());
 			boolean questDone = atomicQuestGoal.isRequiresFinished()
 				? state == QuestState.FINISHED
 				: state != QuestState.NOT_STARTED;
@@ -3008,7 +3077,7 @@ public class IronscapePlugin extends Plugin
 		GoalDetector.QuestGoal questGoal = questGoalBySub.get(sub.getId());
 		if (questGoal != null)
 		{
-			QuestState state = questGoal.getQuest().getState(client);
+			QuestState state = cachedQuestState(questGoal.getQuest());
 			return questGoal.isRequiresFinished()
 				? state == QuestState.FINISHED
 				: state != QuestState.NOT_STARTED;
@@ -3885,7 +3954,7 @@ public class IronscapePlugin extends Plugin
 			return null;
 		}
 		Quest quest = stepQuest(current);
-		return quest != null && quest.getState(client) == QuestState.IN_PROGRESS
+		return quest != null && cachedQuestState(quest) == QuestState.IN_PROGRESS
 			? quest : null;
 	}
 
@@ -3937,6 +4006,26 @@ public class IronscapePlugin extends Plugin
 				if (tree != null)
 				{
 					return tree;
+				}
+			}
+		}
+		// "Charter to port sarim": the journey starts at the NEAREST charter
+		// dock, not at the destination on foot — same network treatment as
+		// spirit trees (owner report: routed the whole walk from Khazard
+		// with the Trader Crewmembers thirty tiles east).
+		if (CHARTER.matcher(frontier.sub.getPlainText()).find())
+		{
+			WorldPoint destination = targetFor(frontier.step, frontier.sub);
+			Player me = client.getLocalPlayer();
+			if (me != null && (destination == null
+				|| me.getWorldLocation().distanceTo2D(destination) > 40))
+			{
+				WorldPoint dock = nearestOf(CHARTER_DOCKS);
+				if (dock != null && me.getWorldLocation().distanceTo2D(dock)
+					< (destination == null ? Integer.MAX_VALUE
+						: me.getWorldLocation().distanceTo2D(destination)))
+				{
+					return dock;
 				}
 			}
 		}
@@ -4294,6 +4383,104 @@ public class IronscapePlugin extends Plugin
 		{
 			log.warn("Could not read bundled minigame landings", e);
 		}
+	}
+
+	/** The Grouping teleport's 20-minute cooldown (varp 888 = minute stamp). */
+	private boolean minigameTeleportOnCooldown()
+	{
+		int lastUseMinutes = client.getVarpValue(net.runelite.api.VarPlayer.LAST_MINIGAME_TELEPORT);
+		return System.currentTimeMillis() - lastUseMinutes * 60_000L < 20 * 60_000L;
+	}
+
+	/**
+	 * One standard-spellbook teleport: where it lands, what it takes to
+	 * cast, and the spell's widget for the overlay to point at. Element
+	 * runes are deliberately NOT checked — staves substitute for them and
+	 * modelling that isn't worth it for a hint; law runes can't be
+	 * substituted, so they're the real gate.
+	 */
+	private static final class TeleportSpell
+	{
+		final String name;
+		final int component;
+		final int level;
+		final int laws;
+		final WorldPoint destination;
+		final Quest requiredQuest;
+
+		TeleportSpell(String name, int component, int level, int laws,
+			WorldPoint destination, Quest requiredQuest)
+		{
+			this.name = name;
+			this.component = component;
+			this.level = level;
+			this.laws = laws;
+			this.destination = destination;
+			this.requiredQuest = requiredQuest;
+		}
+	}
+
+	private static final TeleportSpell[] TELEPORT_SPELLS = {
+		new TeleportSpell("Varrock Teleport",
+			net.runelite.api.gameval.InterfaceID.MagicSpellbook.VARROCK_TELEPORT,
+			25, 1, new WorldPoint(3213, 3424, 0), null),
+		new TeleportSpell("Lumbridge Teleport",
+			net.runelite.api.gameval.InterfaceID.MagicSpellbook.LUMBRIDGE_TELEPORT,
+			31, 1, new WorldPoint(3222, 3218, 0), null),
+		new TeleportSpell("Falador Teleport",
+			net.runelite.api.gameval.InterfaceID.MagicSpellbook.FALADOR_TELEPORT,
+			37, 1, new WorldPoint(2965, 3379, 0), null),
+		new TeleportSpell("Camelot Teleport",
+			net.runelite.api.gameval.InterfaceID.MagicSpellbook.CAMELOT_TELEPORT,
+			45, 1, new WorldPoint(2757, 3479, 0), null),
+		new TeleportSpell("Ardougne Teleport",
+			net.runelite.api.gameval.InterfaceID.MagicSpellbook.ARDOUGNE_TELEPORT,
+			51, 2, new WorldPoint(2662, 3305, 0), Quest.PLAGUE_CITY),
+		new TeleportSpell("Watchtower Teleport",
+			net.runelite.api.gameval.InterfaceID.MagicSpellbook.WATCHTOWER_TELEPORT,
+			58, 2, new WorldPoint(2547, 3113, 0), Quest.WATCHTOWER),
+	};
+
+	/**
+	 * The best CASTABLE standard teleport toward `target` (magic level,
+	 * law runes carried, quest unlocks), or null when walking or another
+	 * transport is comparable. Same shape as minigameTowards.
+	 */
+	private TeleportSpell spellTeleportTowards(WorldPoint target)
+	{
+		Player me = client.getLocalPlayer();
+		if (me == null || target == null)
+		{
+			return null;
+		}
+		int playerDistance = me.getWorldLocation().distanceTo2D(target);
+		if (playerDistance <= 100)
+		{
+			return null;
+		}
+		int magic = client.getRealSkillLevel(Skill.MAGIC);
+		int laws = itemTracker.carriedCountOf("law runes");
+		TeleportSpell best = null;
+		int bestDistance = (int) (playerDistance * 0.6);
+		for (TeleportSpell spell : TELEPORT_SPELLS)
+		{
+			if (magic < spell.level || laws < spell.laws)
+			{
+				continue;
+			}
+			if (spell.requiredQuest != null
+				&& cachedQuestState(spell.requiredQuest) != QuestState.FINISHED)
+			{
+				continue;
+			}
+			int d = spell.destination.distanceTo2D(target);
+			if (d < bestDistance)
+			{
+				bestDistance = d;
+				best = spell;
+			}
+		}
+		return best;
 	}
 
 	/**

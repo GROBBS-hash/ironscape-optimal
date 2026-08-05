@@ -147,3 +147,65 @@ for (const line of fs.readFileSync(tsv, 'utf8').split('\n')) {
   console.log(`  [${subId}] ${text.slice(0, 100)}`);
 }
 console.log(`${nogoals} untracked buy subs`);
+
+// ---- 4. item_ids.json keys vs their id's REAL name --------------------
+// A key with the right id but an invented NAME ("notes for dwarf cannon"
+// -> NULODIONS_NOTES) gets a correct sprite, passes section 2 (item_ids
+// keys feed the known set), and never counts anything in play — the
+// tracker matches names against what you carry. Deliberate colloquials
+// are fine when every key word survives inside the constant name
+// ("airs" -> AIRRUNE, "barcrawl card" -> BARCRAWL_CARD); anything else
+// needs a look. Requires build/item-id-constants.tsv from the dump test.
+console.log('\n=== item_ids.json keys that do not match their id\'s real name ===');
+const constantsTsv = path.join(ROOT, 'build/item-id-constants.tsv');
+if (!fs.existsSync(constantsTsv)) {
+  console.log('(skipped — run gradlew test --tests "*.GoalAuditDumpTest" for build/item-id-constants.tsv)');
+} else {
+  const constantById = new Map();
+  for (const line of fs.readFileSync(constantsTsv, 'utf8').split('\n')) {
+    const [id, name] = line.split('\t');
+    if (id && name && !constantById.has(id)) {
+      constantById.set(id, name.trim());
+    }
+  }
+  // Keys verified in play (or hand-checked) whose wording legitimately
+  // differs from the constant: extend as new ones are confirmed.
+  // (First sweep 2026-08-05: every flag hand-checked against the wiki —
+  // these are correct ids under colloquial/abbreviated constant names.)
+  const VERIFIED = new Set(['agility pots', 'b gloves', 'black wizards hat',
+    'blurite sword', 'bronze arrowtips', 'buckets of slime', 'cadava potion',
+    'digsite pendants', 'dragon defender', 'fally teletab', "green d'hide top",
+    'helm of neitiznot', 'house teletabs', 'jugs of vinegar', 'key imprint',
+    'lantern lenses', 'maze key', 'normal compost', 'normal log',
+    'pack of normal compost', 'rainbow scarf', 'range void', 'regular plank',
+    'rune mysteries notes', 'rune mysteries package', 'small fishing net',
+    'steel nails', 'teleport cards', 'translation notes', 'armor seeds',
+    'bolts of cloth']);
+  const itemIds = JSON.parse(fs.readFileSync(
+    path.join(RES, 'items/item_ids.json'), 'utf8'));
+  let idFlagged = 0;
+  for (const [key, id] of Object.entries(itemIds)) {
+    if (VERIFIED.has(key)) continue;
+    const constant = constantById.get(String(id));
+    if (!constant) {
+      idFlagged++;
+      console.log(`  "${key}" -> ${id} (no such item id!)`);
+      continue;
+    }
+    const squashed = constant.toLowerCase().replace(/_/g, '');
+    // every key word (minus plural s / possessive) must appear in the
+    // constant name — "nulodion's notes" -> NULODIONS_NOTES passes,
+    // "notes for dwarf cannon" -> NULODIONS_NOTES fails on "dwarf".
+    // Every word must match under SOME form (raw / -s / -es / -ves->f /
+    // armour) — chaining the rules mangled words ("gloves" -> "glof").
+    const words = key.toLowerCase().replace(/'/g, '')
+      .split(/[^a-z0-9]+/).filter((w) => w && !['of', 'the', 'a'].includes(w));
+    const matches = (w) => [w, w.replace(/s$/, ''), w.replace(/es$/, ''),
+      w.replace(/ves$/, 'f'), w.replace(/^armor$/, 'armour')]
+      .some((form) => squashed.includes(form));
+    if (words.every(matches)) continue;
+    idFlagged++;
+    console.log(`  "${key}" -> ${id} = ${constant} (name mismatch — sprite right, counting broken?)`);
+  }
+  console.log(`${idFlagged} suspicious item_ids entr${idFlagged === 1 ? 'y' : 'ies'}`);
+}

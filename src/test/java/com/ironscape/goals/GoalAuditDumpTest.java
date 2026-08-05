@@ -20,6 +20,29 @@ import org.junit.Test;
  */
 public class GoalAuditDumpTest
 {
+	/**
+	 * id -> gameval ItemID constant name, for the item_ids.json key check:
+	 * a key whose id is right but whose NAME isn't the real item ("notes
+	 * for dwarf cannon" -> NULODIONS_NOTES) shows a correct sprite, passes
+	 * the resolvability audit, and never counts a thing in play.
+	 */
+	@Test
+	public void dumpItemIdConstants() throws Exception
+	{
+		File out = new File("build/item-id-constants.tsv");
+		out.getParentFile().mkdirs();
+		try (PrintWriter writer = new PrintWriter(out, StandardCharsets.UTF_8))
+		{
+			for (java.lang.reflect.Field field : net.runelite.api.gameval.ItemID.class.getFields())
+			{
+				if (field.getType() == int.class)
+				{
+					writer.println(field.getInt(null) + "\t" + field.getName());
+				}
+			}
+		}
+	}
+
 	@Test
 	public void dumpGoals() throws Exception
 	{

@@ -93,6 +93,9 @@ public class MinigameTeleportOverlay extends Overlay
 	/** Set by the plugin: true while the current sub is a home teleport. */
 	private Supplier<Boolean> homeTeleportSupplier = () -> false;
 
+	/** Set by the plugin: spellbook teleport component the route wants, or -1. */
+	private Supplier<Integer> spellTeleportSupplier = () -> -1;
+
 	@Inject
 	public MinigameTeleportOverlay(Client client)
 	{
@@ -111,12 +114,34 @@ public class MinigameTeleportOverlay extends Overlay
 		this.homeTeleportSupplier = homeTeleportSupplier;
 	}
 
+	public void setSpellTeleportSupplier(Supplier<Integer> spellTeleportSupplier)
+	{
+		this.spellTeleportSupplier = spellTeleportSupplier;
+	}
+
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
 		String minigame = targetSupplier.get();
 		if (minigame == null)
 		{
+			// Route-aware SPELL teleport ("Varrock Teleport" as the first
+			// leg): highlight the spell if the book is open, else the
+			// Magic side tab — one click at a time, like home teleport.
+			Integer spellComponent = spellTeleportSupplier.get();
+			if (spellComponent != null && spellComponent != -1)
+			{
+				Widget spell = client.getWidget(spellComponent);
+				if (spell != null && !spell.isHidden())
+				{
+					highlight(graphics, spell);
+				}
+				else
+				{
+					highlightFirstVisible(graphics, MAGIC_TAB_CANDIDATES);
+				}
+				return null;
+			}
 			if (Boolean.TRUE.equals(homeTeleportSupplier.get()))
 			{
 				renderHomeTeleport(graphics);
