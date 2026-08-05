@@ -75,7 +75,10 @@ public class AnnotationManager
 		StepAnnotation l = local.get(stepId);
 		if (l != null && l.target != null)
 		{
-			return l.target;
+			// A cleared tombstone masks a wrong BUNDLED target (the seeded
+			// Ardy farming shop pin was 70 tiles off) without touching the
+			// read-only bundle; capturing writes a real target over it.
+			return Boolean.TRUE.equals(l.target.cleared) ? null : l.target;
 		}
 		StepAnnotation b = bundled.get(stepId);
 		return b == null ? null : b.target;
@@ -228,22 +231,56 @@ public class AnnotationManager
 		saveLocal();
 	}
 
-	/**
-	 * Right-click on the capture button: forget the LOCAL capture (an
-	 * accidental ⌖ click writes a wrong target). Bundled targets can't be
-	 * deleted — clearing the local one falls back to them. Returns true
-	 * when something was actually removed.
-	 */
-	public synchronized boolean clearTarget(String stepId)
+	/** What a right-click "remove captured location" actually did. */
+	public enum ClearResult
 	{
-		StepAnnotation annotation = local.get(stepId);
-		if (annotation == null || annotation.target == null)
+		/** Local capture deleted; a bundled pin (if any) shows again. */
+		REMOVED_LOCAL,
+		/** No local capture — the BUNDLED pin was masked with a tombstone. */
+		MASKED_BUNDLED,
+		/** Nothing visible to remove. */
+		NOTHING
+	}
+
+	/**
+	 * Right-click on the capture button. Two-stage: the first remove
+	 * forgets the LOCAL capture (an accidental ⌖ click writes a wrong
+	 * target), falling back to any bundled pin; removing again — or
+	 * removing when only a bundled pin shows — masks the bundled pin with
+	 * a `cleared` tombstone, because a wrong SEEDED pin (the Ardy farming
+	 * shop was 70 tiles off) must be removable in-game too. Capturing a
+	 * new location replaces the tombstone.
+	 */
+	public synchronized ClearResult clearTarget(String stepId)
+	{
+		StepAnnotation l = local.get(stepId);
+		StepAnnotation b = bundled.get(stepId);
+		boolean hasBundled = b != null && b.target != null;
+		if (l != null && l.target != null)
 		{
-			return false;
+			if (Boolean.TRUE.equals(l.target.cleared))
+			{
+				return ClearResult.NOTHING; // already tombstoned
+			}
+			l.target = null;
+			if (!hasBundled)
+			{
+				saveLocal();
+				return ClearResult.REMOVED_LOCAL;
+			}
+			// fall through: local capture gone, mask the bundled pin too —
+			// the player is standing there saying "this spot is wrong".
 		}
-		annotation.target = null;
+		if (!hasBundled)
+		{
+			return ClearResult.NOTHING;
+		}
+		StepAnnotation annotation = local.computeIfAbsent(stepId, id -> new StepAnnotation());
+		StepAnnotation.Target tombstone = new StepAnnotation.Target();
+		tombstone.cleared = true;
+		annotation.target = tombstone;
 		saveLocal();
-		return true;
+		return ClearResult.MASKED_BUNDLED;
 	}
 
 	/**
@@ -252,7 +289,8 @@ public class AnnotationManager
 	 */
 	private static final String[] BUNDLED_FILES = {"annotations_oziris.json"};
 
-	private Map<String, StepAnnotation> readBundled()
+	/** Package-private so tests can inject a bundled corpus. */
+	Map<String, StepAnnotation> readBundled()
 	{
 		Map<String, StepAnnotation> merged = new HashMap<>();
 		for (String file : BUNDLED_FILES)

@@ -96,6 +96,12 @@ public class StepAnnotation
 		public int x;
 		public int y;
 		public int plane;
+		/**
+		 * Local-file only: masks a bundled target the player removed
+		 * in-game (the seeded pin was wrong). x/y are meaningless when set;
+		 * capturing a new location replaces the tombstone.
+		 */
+		public Boolean cleared;
 	}
 
 	/**
@@ -117,5 +123,21 @@ public class StepAnnotation
 		public Integer varp;
 		/** Met when the varbit/varp value is >= this. */
 		public Integer value;
+		/**
+		 * Alternative to `value` for BITFIELD vars: met when this bit of the
+		 * varbit/varp is set (e.g. varp 77 packs one bit per barcrawl bar —
+		 * bit 7 = Flying Horse Inn signed your card). A sub with any
+		 * varbit/varp requirement completes ONLY off that requirement:
+		 * arrival at the bar must not tick "get a drink" before the stamp.
+		 */
+		public Integer bit;
+		/**
+		 * Optional panel badge for varbit/varp checkpoints: item name whose
+		 * sprite heads the line (must resolve via item_ids.json for
+		 * untradeables), e.g. "Barcrawl card".
+		 */
+		public String icon;
+		/** Badge text for checkpoints, shown as "<label> 0/1", e.g. "stamp". */
+		public String label;
 	}
 }

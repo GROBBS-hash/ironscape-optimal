@@ -508,6 +508,39 @@ refresh when "Failed to login" appears.
   scim on MOBILE then logging into the dev client ticked the step on
   login (login-in-place auto-completion works).
 
+- SESSION WAVE 6 (2026-08-05 evening, live play-test): BARCRAWL STAMP
+  CHECKPOINTS — all 10 "get a drink" steps used to tick on ARRIVAL at
+  the bar; now each carries a sub-keyed varp-BIT annotation (varp 77
+  packs one bit per signed bar, positions from QH's
+  AlfredGrimhandsBarcrawl.java: BlueMoon 3, Blurberry 4, DeadMansChest
+  5, DragonInn 6, FlyingHorse 7, ForestersArms 8, JollyBoar 9, Zambo
+  10, RisingSun 11, RustyAnchor 12). Requirement gains `bit` (bitfield
+  test — >= would let other bars' stamps fake it), `icon` (item NAME
+  for the badge sprite) and `label`; a sub with ANY varbit/varp
+  checkpoint completes ONLY off it — heuristics don't get a vote (the
+  annotation exists precisely because they fired early) — enforced in
+  the window loop AND the xp-drop path. The old "signs your card" chat
+  hook was DELETED: each pub prints its own flavor text ("signing your
+  barcrawl card" at the Flying Horse) and it never matched. Panel shows
+  a "stamp 0/1" badge with the Barcrawl card sprite (id 455 bundled)
+  fed by checkpointMetBySub, a per-tick Swing-readable cache — badges
+  can't read varps off the client thread. BUNDLED ⌖ REMOVABLE — right-
+  click remove now returns ClearResult: local capture deleted normally;
+  when a bundled pin sits underneath it's masked with a local
+  {cleared:true} TOMBSTONE (capture replaces it) — a wrong SEEDED pin
+  must be fixable in-game. tools/audit-shops.mjs — cross-checks every
+  seeded shop pin: its wiki page must BE a shop page (stock table),
+  SELL the step's item (word-normalized, possessive/plural/containment
+  tolerant, any part of a comma/and list), and the pin must match the
+  page's {{Map}} (drift >15 flags). First sweep caught FOUR town-page
+  pins whose {{Map}} was a random landmark: Ardy farming shop (church!
+  -> Richard's Farming shop 2645,3360 — the owner's compost-icon-over-
+  Councillor-Halgrive report), ardy general store (-> Aemad's 2614,
+  3293), Seers bar stew (-> Forester's Arms 2695,3493), Shilo fishing
+  shop (-> Fernahei's 2871,2970). Now 17 OK / 5 hand-pinned / 0 flags.
+  Gotcha: wiki action=raw does NOT follow redirects — chase #REDIRECT
+  manually (audit-drops' species fallback masked this).
+
 - KIT-SEEDING POLICY (owner, 2026-08-05): quest-kit annotation items
   carry TRUE REQUIREMENTS always; items a quest hands you MID-QUEST
   never (they sit permanently red — misinformation); "nice to have"

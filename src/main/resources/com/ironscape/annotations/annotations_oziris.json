@@ -172,8 +172,8 @@
     }
    ],
    "target": {
-    "x": 2624,
-    "y": 3300,
+    "x": 2614,
+    "y": 3293,
     "plane": 0
    }
   },
@@ -1555,8 +1555,8 @@
   },
   "7676874ffb": {
    "target": {
-    "x": 2624,
-    "y": 3300,
+    "x": 2645,
+    "y": 3360,
     "plane": 0
    }
   },
@@ -1576,15 +1576,15 @@
   },
   "5e820a7596": {
    "target": {
-    "x": 2710,
-    "y": 3485,
+    "x": 2695,
+    "y": 3493,
     "plane": 0
    }
   },
   "b6ed006cf7": {
    "target": {
-    "x": 2849,
-    "y": 2972,
+    "x": 2871,
+    "y": 2970,
     "plane": 0
    }
   },
@@ -4825,6 +4825,86 @@
      "quantity": 10
     }
    ]
+  },
+  "45372e48a5:0": {
+   "requires": {
+    "varp": 77,
+    "bit": 3,
+    "icon": "Barcrawl card",
+    "label": "stamp"
+   }
+  },
+  "3786d596af:0": {
+   "requires": {
+    "varp": 77,
+    "bit": 4,
+    "icon": "Barcrawl card",
+    "label": "stamp"
+   }
+  },
+  "2ec2fc3a83:0": {
+   "requires": {
+    "varp": 77,
+    "bit": 5,
+    "icon": "Barcrawl card",
+    "label": "stamp"
+   }
+  },
+  "f5fa9a94a7:0": {
+   "requires": {
+    "varp": 77,
+    "bit": 6,
+    "icon": "Barcrawl card",
+    "label": "stamp"
+   }
+  },
+  "f4c42f72a8:0": {
+   "requires": {
+    "varp": 77,
+    "bit": 7,
+    "icon": "Barcrawl card",
+    "label": "stamp"
+   }
+  },
+  "a640572dbb:0": {
+   "requires": {
+    "varp": 77,
+    "bit": 8,
+    "icon": "Barcrawl card",
+    "label": "stamp"
+   }
+  },
+  "5850a7f337:0": {
+   "requires": {
+    "varp": 77,
+    "bit": 9,
+    "icon": "Barcrawl card",
+    "label": "stamp"
+   }
+  },
+  "2bd7b72ec8:0": {
+   "requires": {
+    "varp": 77,
+    "bit": 10,
+    "icon": "Barcrawl card",
+    "label": "stamp"
+   }
+  },
+  "e5075fa29d:0": {
+   "requires": {
+    "varp": 77,
+    "bit": 11,
+    "icon": "Barcrawl card",
+    "label": "stamp"
+   }
+  },
+  "9f04c897bc:0": {
+   "requires": {
+    "varp": 77,
+    "bit": 12,
+    "icon": "Barcrawl card",
+    "label": "stamp"
+   }
   }
  }
 }

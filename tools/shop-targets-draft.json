@@ -47,10 +47,10 @@
   "location": "Ardougne",
   "phrase": "ardy general store",
   "query": "Ardougne ardy general store",
-  "page": "East Ardougne",
+  "page": "Aemad's Adventuring Supplies.",
   "coords": {
-   "x": 2624,
-   "y": 3300,
+   "x": 2614,
+   "y": 3293,
    "plane": 0
   },
   "ok": true
@@ -159,10 +159,10 @@
   "location": "Ardougne",
   "phrase": "Ardy farming shop",
   "query": "Ardougne Ardy farming shop",
-  "page": "East Ardougne",
+  "page": "Richard's Farming shop.",
   "coords": {
-   "x": 2624,
-   "y": 3300,
+   "x": 2645,
+   "y": 3360,
    "plane": 0
   },
   "ok": true
@@ -201,10 +201,10 @@
   "location": "Seers Village",
   "phrase": "Seers bar",
   "query": "Seers Village Seers bar",
-  "page": "Seers' Village",
+  "page": "Forester's Arms",
   "coords": {
-   "x": 2710,
-   "y": 3485,
+   "x": 2695,
+   "y": 3493,
    "plane": 0
   },
   "ok": true
@@ -229,10 +229,10 @@
   "location": "Shilo Village",
   "phrase": "shilo village fishing shop",
   "query": "Shilo Village shilo village fishing shop",
-  "page": "Shilo Village (location)",
+  "page": "Fernahei's Fishing Hut",
   "coords": {
-   "x": 2849,
-   "y": 2972,
+   "x": 2871,
+   "y": 2970,
    "plane": 0
   },
   "ok": true

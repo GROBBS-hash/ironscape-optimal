@@ -263,6 +263,15 @@ class StepRow extends JPanel
 		// badge widens EVERY row and pushes the buttons off-screen
 		int wrapWidth = Math.max(80, 170 - indentPx);
 		String actionSubId = goalSubId;
+		// Checkpoint badges can name an item sprite ("Barcrawl card" heads
+		// the "stamp 0/1" line) — same async icon machinery as item lines.
+		String badgeIconName = ctx.getBadgeIcon() == null ? null
+			: ctx.getBadgeIcon().apply(actionSubId);
+		if (badgeIconName != null)
+		{
+			badge.setIconTextGap(4);
+			ctx.getItems().attachIcon(badgeIconName, badge);
+		}
 		Runnable refresh = () -> {
 			String action = ctx.getActionBadge().apply(actionSubId);
 			if (isBadgeDone(badgeSub) && action != null)

@@ -464,6 +464,13 @@ public class IronscapePlugin extends Plugin
 	private final Map<Skill, Integer> realLevelBySkill = new java.util.concurrent.ConcurrentHashMap<>();
 
 	/**
+	 * Swing-readable cache of each varbit/varp checkpoint sub's met-state
+	 * (the "stamp 0/1" badges can't read the client off its thread).
+	 * Refreshed every game tick; a flip re-renders the panel badges.
+	 */
+	private final Map<String, Boolean> checkpointMetBySub = new java.util.concurrent.ConcurrentHashMap<>();
+
+	/**
 	 * The minigame the CURRENT sub-step wants to teleport to, or null.
 	 * Written on the game thread each tick, read by the overlay at render
 	 * time — hence volatile.
@@ -1105,7 +1112,22 @@ public class IronscapePlugin extends Plugin
 				{
 					if (requirement.skill == null)
 					{
-						continue; // varbit/combat checkpoints have no badge form
+						// Varbit/varp checkpoints with an authored label get a
+						// live "stamp 0/1" badge (met-state from the per-tick
+						// cache); combat/unlabeled ones stay badge-less.
+						if (requirement.label != null
+							&& (requirement.varbit != null || requirement.varp != null))
+						{
+							boolean met = Boolean.TRUE.equals(checkpointMetBySub.get(subId));
+							if (sb.length() > 0)
+							{
+								sb.append(" <font color='#606060'>·</font> ");
+							}
+							sb.append("<font color='").append(met ? "#4caf50" : "#ffa000")
+								.append("'>").append(requirement.label)
+								.append(' ').append(met ? 1 : 0).append("/1</font>");
+						}
+						continue;
 					}
 					int have = realLevelBySkill.getOrDefault(requirement.skill, 1);
 					String reqColor = have >= requirement.threshold ? "#4caf50" : "#ffa000";
@@ -1133,6 +1155,24 @@ public class IronscapePlugin extends Plugin
 			String color = seen >= counted.getCount() ? "#4caf50" : "#ffa000";
 			return "<font color='" + color + "'>" + counted.getSkill().getName().toLowerCase()
 				+ " " + seen + "/" + counted.getCount() + " done</font>";
+		});
+		panel.setBadgeIconSupplier(subId -> {
+			// Checkpoint badges can carry an item sprite ("Barcrawl card"
+			// next to "stamp 0/1") — the icon name is authored in the
+			// annotation, resolved via the same icon machinery as items.
+			List<StepRequirement> requirements = subRequirements.get(subId);
+			if (requirements == null)
+			{
+				return null;
+			}
+			for (StepRequirement requirement : requirements)
+			{
+				if (requirement.icon != null)
+				{
+					return requirement.icon;
+				}
+			}
+			return null;
 		});
 		panel.setProgressChangedListener(this::maybeNavigateToNext);
 		panel.setCaptureHandler(this::captureLocation);
@@ -1307,6 +1347,11 @@ public class IronscapePlugin extends Plugin
 				if (itemGoalsBySub.containsKey(subId))
 				{
 					continue;
+				}
+				List<StepRequirement> checkpoint = subRequirements.get(subId);
+				if (checkpoint != null && hasVarCheckpoint(checkpoint))
+				{
+					continue; // authored checkpoint owns this sub's completion
 				}
 				if (event.getSkill() == actionGoalBySub.get(subId))
 				{
@@ -1512,37 +1557,11 @@ public class IronscapePlugin extends Plugin
 		return reopened;
 	}
 
-	/**
-	 * Barcrawl bars hand you the drink INSIDE dialogue and you gulp it
-	 * immediately — no item ever exists to count. The reliable signal is
-	 * the game message every one of the ten pubs prints: "<bartender>
-	 * signs your card". Frontier sub only: the message names no bar, so
-	 * order is the disambiguator.
-	 */
-	@Subscribe
-	public void onChatMessage(net.runelite.api.events.ChatMessage event)
-	{
-		if (event.getType() != ChatMessageType.GAMEMESSAGE
-			&& event.getType() != ChatMessageType.SPAM)
-		{
-			return;
-		}
-		if (!config.autoCompleteSteps() || loginGraceTicks > 0
-			|| !event.getMessage().contains("signs your card"))
-		{
-			return;
-		}
-		Current current = findCurrent();
-		if (current != null
-			&& current.sub.getPlainText().toLowerCase(Locale.ROOT).contains("barcrawl"))
-		{
-			completeSubGoal(current.step, current.sub, "barcrawl card signed");
-			if (panel != null)
-			{
-				SwingUtilities.invokeLater(panel::refresh);
-			}
-		}
-	}
+	// (The old "signs your card" chat hook is gone: each pub prints its own
+	// flavor text — the Flying Horse Inn says "signing your barcrawl card"
+	// and never matched. The card's varp bits (annotation checkpoints on
+	// varp 77) are the authoritative signal now, and unlike chat they also
+	// catch up on login after crawling bars with the plugin off.)
 
 	/** The bank interface (re)opened: (re)create our filter button in it. */
 	@Subscribe
@@ -1654,6 +1673,7 @@ public class IronscapePlugin extends Plugin
 		{
 			SwingUtilities.invokeLater(panel::refreshItemCounts);
 		}
+		refreshCheckpointBadgeCache();
 		if (loginGraceTicks > 0)
 		{
 			loginGraceTicks--;
@@ -2572,10 +2592,24 @@ public class IronscapePlugin extends Plugin
 				// the orb" completes off the quest's progress varbit while
 				// the step's other errands stay open. Monotonic game state
 				// = strong evidence, so anywhere in the window is fine.
+				// A sub with a varbit/varp checkpoint completes ONLY here:
+				// the annotation exists precisely because the heuristics
+				// fire early ("get a drink for the barcrawl" ticked on
+				// walking into the bar, stamp or no stamp).
 				List<StepRequirement> subReqs = subRequirements.get(current.sub.getId());
+				if (subReqs != null && hasVarCheckpoint(subReqs))
+				{
+					if (requirementsMet(subReqs))
+					{
+						completeSubGoal(current.step, current.sub, "quest checkpoint (varbit/varp)");
+						completedSomething = true;
+						break;
+					}
+					continue; // checkpoint not reached — heuristics don't get a vote
+				}
 				if (subReqs != null && requirementsMet(subReqs))
 				{
-					completeSubGoal(current.step, current.sub, "quest checkpoint (varbit/varp)");
+					completeSubGoal(current.step, current.sub, "sub requirement met");
 					completedSomething = true;
 					break;
 				}
@@ -3115,9 +3149,14 @@ public class IronscapePlugin extends Plugin
 			{
 				if (requires.varbit != null || requires.varp != null)
 				{
-					if (requires.value != null)
+					if (requires.value != null || requires.bit != null)
 					{
-						parsed.add(new StepRequirement(null, requires.varbit, requires.varp, requires.value));
+						// value = threshold test; bit = bitfield test (varp 77
+						// packs one bit per barcrawl bar). Threshold 1 is a
+						// placeholder when only a bit is given.
+						parsed.add(new StepRequirement(null, requires.varbit, requires.varp,
+							requires.value == null ? 1 : requires.value,
+							requires.bit, requires.icon, requires.label));
 					}
 					continue;
 				}
@@ -3159,6 +3198,49 @@ public class IronscapePlugin extends Plugin
 		});
 	}
 
+	/**
+	 * Re-read every checkpoint sub's varbit/varp into the Swing-readable
+	 * badge cache (~a dozen var reads, once per tick). On a flip — a
+	 * bartender just signed the card — the panel badges re-render.
+	 */
+	private void refreshCheckpointBadgeCache()
+	{
+		if (client.getGameState() != GameState.LOGGED_IN)
+		{
+			return;
+		}
+		boolean changed = false;
+		for (Map.Entry<String, List<StepRequirement>> entry : subRequirements.entrySet())
+		{
+			if (!hasVarCheckpoint(entry.getValue()))
+			{
+				continue;
+			}
+			Boolean met = requirementsMet(entry.getValue());
+			if (!met.equals(checkpointMetBySub.put(entry.getKey(), met)))
+			{
+				changed = true;
+			}
+		}
+		if (changed && panel != null)
+		{
+			SwingUtilities.invokeLater(panel::refreshItemCounts);
+		}
+	}
+
+	/** Does the list carry a varbit/varp checkpoint (vs only skill levels)? */
+	private static boolean hasVarCheckpoint(List<StepRequirement> requirements)
+	{
+		for (StepRequirement requirement : requirements)
+		{
+			if (requirement.varbit != null || requirement.varp != null)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
 	/** ALL requirements met? (Reviewed annotations; runs on the client thread.) */
 	private boolean requirementsMet(List<StepRequirement> requirements)
 	{
@@ -3186,7 +3268,16 @@ public class IronscapePlugin extends Plugin
 			{
 				have = client.getRealSkillLevel(requirement.skill);
 			}
-			if (have < requirement.threshold)
+			if (requirement.bit != null)
+			{
+				// Bitfield var: only this bit matters — a >= test would let
+				// OTHER bars' stamps (higher bits) fake this one.
+				if (((have >> requirement.bit) & 1) == 0)
+				{
+					return false;
+				}
+			}
+			else if (have < requirement.threshold)
 			{
 				return false;
 			}
@@ -3205,18 +3296,32 @@ public class IronscapePlugin extends Plugin
 		final Integer varbit;
 		final Integer varp;
 		final int threshold;
+		/** Bitfield test: met when this bit of the var is set (barcrawl card). */
+		final Integer bit;
+		/** Optional badge: item name for the sprite + short label ("stamp"). */
+		final String icon;
+		final String label;
 
 		StepRequirement(Skill skill, int level)
 		{
-			this(skill, null, null, level);
+			this(skill, null, null, level, null, null, null);
 		}
 
 		StepRequirement(Skill skill, Integer varbit, Integer varp, int threshold)
+		{
+			this(skill, varbit, varp, threshold, null, null, null);
+		}
+
+		StepRequirement(Skill skill, Integer varbit, Integer varp, int threshold,
+			Integer bit, String icon, String label)
 		{
 			this.skill = skill;
 			this.varbit = varbit;
 			this.varp = varp;
 			this.threshold = threshold;
+			this.bit = bit;
+			this.icon = icon;
+			this.label = label;
 		}
 	}
 
@@ -3422,16 +3527,27 @@ public class IronscapePlugin extends Plugin
 	/** Right-click on ⌖: forget an accidental LOCAL capture. */
 	private void clearCapturedTarget(String annotationId)
 	{
-		boolean removed = annotationManager.clearTarget(annotationId);
+		AnnotationManager.ClearResult result = annotationManager.clearTarget(annotationId);
 		// The capture also pinned auto-navigation — release the pin so the
 		// next pass routes by the step's normal target chain again.
 		navHoldStepId = null;
 		maybeNavigateToNext();
+		String message;
+		switch (result)
+		{
+			case REMOVED_LOCAL:
+				message = "IRONSCAPE: captured location for " + annotationId + " removed.";
+				break;
+			case MASKED_BUNDLED:
+				message = "IRONSCAPE: bundled location for " + annotationId
+					+ " hidden — use the ⌖ button to capture the right spot.";
+				break;
+			default:
+				message = "IRONSCAPE: no location to remove for this step.";
+				break;
+		}
 		clientThread.invokeLater(() -> client.addChatMessage(ChatMessageType.CONSOLE, "",
-			removed
-				? "IRONSCAPE: captured location for " + annotationId + " removed."
-				: "IRONSCAPE: no captured location to remove (bundled targets can't be deleted).",
-			null));
+			message, null));
 	}
 
 	/**

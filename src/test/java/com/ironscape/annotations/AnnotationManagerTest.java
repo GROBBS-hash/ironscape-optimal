@@ -98,4 +98,74 @@ public class AnnotationManagerTest
 		assertEquals(4000, target.y);
 		assertEquals(1, target.plane);
 	}
+
+	@Test
+	public void clearRemovesLocalCapture() throws Exception
+	{
+		File dir = Files.createTempDirectory("ironscape-test").toFile();
+		AnnotationManager manager = new AnnotationManager(new Gson(), new File(dir, "annotations.json"));
+		manager.load();
+		manager.setTarget("abc123", new WorldPoint(1000, 2000, 0));
+
+		assertEquals(AnnotationManager.ClearResult.REMOVED_LOCAL, manager.clearTarget("abc123"));
+		assertNull(manager.getTarget("abc123"));
+		assertEquals(AnnotationManager.ClearResult.NOTHING, manager.clearTarget("abc123"));
+	}
+
+	/** Test double with one bundled target — a wrong seeded pin. */
+	private static AnnotationManager withBundledTarget(File file, String stepId)
+	{
+		StepAnnotation bundled = new StepAnnotation();
+		bundled.target = new StepAnnotation.Target();
+		bundled.target.x = 2624;
+		bundled.target.y = 3300;
+		java.util.Map<String, StepAnnotation> corpus = new java.util.HashMap<>();
+		corpus.put(stepId, bundled);
+		return new AnnotationManager(new Gson(), file)
+		{
+			@Override
+			java.util.Map<String, StepAnnotation> readBundled()
+			{
+				return corpus;
+			}
+		};
+	}
+
+	@Test
+	public void clearMasksWrongBundledPinAndCaptureReplacesIt() throws Exception
+	{
+		File dir = Files.createTempDirectory("ironscape-test").toFile();
+		File file = new File(dir, "annotations.json");
+		AnnotationManager manager = withBundledTarget(file, "shop");
+		manager.load();
+		assertEquals(2624, manager.getTarget("shop").x);
+
+		// Removing with no local capture tombstones the bundled pin...
+		assertEquals(AnnotationManager.ClearResult.MASKED_BUNDLED, manager.clearTarget("shop"));
+		assertNull(manager.getTarget("shop"));
+		assertEquals(AnnotationManager.ClearResult.NOTHING, manager.clearTarget("shop"));
+
+		// ...the mask survives a client restart...
+		AnnotationManager reloaded = withBundledTarget(file, "shop");
+		reloaded.load();
+		assertNull(reloaded.getTarget("shop"));
+
+		// ...and capturing the right spot replaces the tombstone.
+		reloaded.setTarget("shop", new WorldPoint(2645, 3360, 0));
+		assertEquals(2645, reloaded.getTarget("shop").x);
+	}
+
+	@Test
+	public void clearOverBundledDropsLocalAndMasksInOneGo() throws Exception
+	{
+		File dir = Files.createTempDirectory("ironscape-test").toFile();
+		AnnotationManager manager = withBundledTarget(new File(dir, "annotations.json"), "shop");
+		manager.load();
+		manager.setTarget("shop", new WorldPoint(9, 9, 0));
+
+		// The player standing at the wrong pin means "no pin here" — falling
+		// back to the (equally wrong) bundled pin would force a second remove.
+		assertEquals(AnnotationManager.ClearResult.MASKED_BUNDLED, manager.clearTarget("shop"));
+		assertNull(manager.getTarget("shop"));
+	}
 }

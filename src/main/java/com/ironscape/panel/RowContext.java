@@ -30,6 +30,10 @@ class RowContext
 	/** sub-id -> html for counted-action badges ("construction 3/9"); may be null. */
 	java.util.function.Function<String, String> actionBadge;
 
+	/** sub-id -> item name whose sprite heads the action badge ("Barcrawl
+	 * card" next to "stamp 0/1"); null function or null result = no icon. */
+	java.util.function.Function<String, String> badgeIcon;
+
 	/** Tells the panel to refresh the progress bar after a tick. */
 	Runnable onProgressChanged;
 
