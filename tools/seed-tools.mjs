@@ -39,7 +39,11 @@ const RULES = [
   { re: /\bsmith\b/i, tools: ['hammer'] },
   { re: /\bcatch\b.*\bbutterfl/i, tools: ['butterfly net', 'butterfly jar'] },
   // hunting chins, not throwing them at something ("crabs with chins")
-  { re: /\b(?:catch|hunt)\b[^.,]{0,40}\bchin(?:chompa)?s?\b/i, tools: ['box trap'] },
+  // "catch less chins in the future" is advice, not an instruction
+  { re: /\b(?:catch|hunt)\b(?!\s+(?:less|fewer)\b)[^.,]{0,40}\bchin(?:chompa)?s?\b/i, tools: ['box trap'] },
+  // saltpetre is dug with a spade (Hosidius dig site), and dig as a VERB
+  // ("dig at the spot"), not the noun phrase alone
+  { re: /\bsaltpetre\b|\bdig\b/i, tools: ['spade'] },
 ];
 
 const guide = JSON.parse(fs.readFileSync(GUIDE_FILE, 'utf8'));
