@@ -142,10 +142,37 @@ class StepRow extends JPanel
 		return step;
 	}
 
+	/** Logged once per row: which child forced the card past the viewport. */
+	private boolean widthChecked;
+
 	/** Card face and 1px edge, inset by the transparent margin band. */
 	@Override
 	protected void paintComponent(java.awt.Graphics g)
 	{
+		// Width self-check: a child wider than the viewport clips ⌖/Go off
+		// the right edge and the culprit is invisible in a screenshot —
+		// name it in the log instead (this bit us twice in one evening).
+		if (!widthChecked && getWidth() > 0)
+		{
+			widthChecked = true;
+			if (getPreferredSize().width > getWidth())
+			{
+				java.awt.Component widest = null;
+				for (java.awt.Component child : getComponents())
+				{
+					if (widest == null
+						|| child.getPreferredSize().width > widest.getPreferredSize().width)
+					{
+						widest = child;
+					}
+				}
+				org.slf4j.LoggerFactory.getLogger(StepRow.class).info(
+					"card wider than viewport ({} > {}) on step {} — widest child: {} at {}px",
+					getPreferredSize().width, getWidth(), step.getId(),
+					widest == null ? "?" : widest.getClass().getSimpleName(),
+					widest == null ? 0 : widest.getPreferredSize().width);
+			}
+		}
 		boolean done = ctx.getProgress().isCompleted(ctx.getVariant(), step.getId());
 		g.setColor(done ? DONE_BG : CARD_BG);
 		g.fillRect(0, CARD_MARGIN_TOP, getWidth(),
@@ -358,7 +385,7 @@ class StepRow extends JPanel
 				// the row that widens the whole column; BoxLayout may
 				// stretch it wider, which just parks counts at the card edge.
 				int lineHeight = Math.max(name.getPreferredSize().height, 20);
-				line.setPreferredSize(new Dimension(TEXT_WIDTH + 56, lineHeight));
+				line.setPreferredSize(new Dimension(TEXT_WIDTH + 44, lineHeight));
 				line.setMaximumSize(new Dimension(Integer.MAX_VALUE, lineHeight));
 
 				// Every item line is clickable: route to its known source
@@ -428,8 +455,12 @@ class StepRow extends JPanel
 		// preferred width is icon + gap + body, and the fixed 170px body
 		// alone already fills the column (shipped that bug 2026-08-05 —
 		// every row widened, Go/⌖ pushed off-screen).
+		// 138 base: icon (36px sprite + 4 gap) + html body + the 22px
+		// indent + 14px card padding must stay under the ~200px viewport —
+		// the stamp badge at 154 was the widest child and clipped ⌖/Go
+		// off every card that carried a badge.
 		final int wrapWidth = Math.max(60,
-			154 - indentPx - (badgeIconName != null ? 40 : 0));
+			138 - indentPx - (badgeIconName != null ? 40 : 0));
 		Runnable refresh = () -> {
 			String action = ctx.getActionBadge().apply(actionSubId);
 			if (isBadgeDone(badgeSub) && action != null)
