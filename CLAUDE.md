@@ -495,9 +495,18 @@ refresh when "Failed to login" appears.
   gitignored. item_ids added: key 293, slayer gloves 6720, willow
   branches 5933. Item sources seeded: bat bones (Keep Le Faye giant
   bats), black candle (Catherby candle maker) from QH's Merlin's
-  Crystal WorldPoints. Giant-rat-for-meat confirmed by owner. Hub pin
-  STILL cf9be08 — many play-tested waves unpinned; bump when it next
-  matters.
+  Crystal WorldPoints. Giant-rat-for-meat confirmed by owner. LATE
+  WAVE 5: hub pin BUMPED to a07a1eb (fork commit ee63078) — awaiting
+  re-review; cross-check-quest-kits filters in-quest acquisitions
+  (step-text verbs) AND untradeables (price mapping) — actionable
+  QH-only list guide-wide is EMPTY (Tribal Totem glory excluded by
+  kit policy); tools/mine-session-log.mjs distills a client log into
+  warnings/exceptions/IRONSCAPE lines (no arg = newest task log;
+  known third-party noise: DoinkOink loot-list throws EVERY tick,
+  sailing CargoHoldTracker + NpcAggroArea throw on login — NOT ours);
+  Cabin Fever kit +hammer+swamp paste. CONFIRMED IN PLAY: farming the
+  scim on MOBILE then logging into the dev client ticked the step on
+  login (login-in-place auto-completion works).
 
 - KIT-SEEDING POLICY (owner, 2026-08-05): quest-kit annotation items
   carry TRUE REQUIREMENTS always; items a quest hands you MID-QUEST
