@@ -499,6 +499,16 @@ refresh when "Failed to login" appears.
   STILL cf9be08 — many play-tested waves unpinned; bump when it next
   matters.
 
+- KIT-SEEDING POLICY (owner, 2026-08-05): quest-kit annotation items
+  carry TRUE REQUIREMENTS always; items a quest hands you MID-QUEST
+  never (they sit permanently red — misinformation); "nice to have"
+  convenience items ONLY when cheaply acquirable by an ironman at that
+  route position — the guide's earlier steps already produced one, or
+  QH/wiki shows a trivial nearby source (then also consider an
+  item_sources entry so it's click-to-acquire). Required/recommended
+  labels don't decide; acquisition COST does. (Tribal Totem's Amulet
+  of glory stays OUT under this rule.)
+
 - The ONLY guide is **GuideVariant.OZIRIS** — Ironman Efficiency Guide
   v4, community "Enhanced 2026" edition from https://ironman.guide/,
   scraped by `tools/scrape-oziris.mjs` (575 steps, 7 sections). The
