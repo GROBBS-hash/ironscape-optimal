@@ -422,6 +422,16 @@ public class IronscapePlugin extends Plugin
 	private final Map<Quest, Integer> minStepIndexByQuest = new HashMap<>();
 
 	/**
+	 * Last observed state per quest, for detecting LIVE quest starts (the
+	 * jumped-ahead trigger). Session-only: the first observation after
+	 * login baselines without triggering.
+	 */
+	private final Map<Quest, QuestState> lastQuestState = new HashMap<>();
+
+	/** The later-step quest the player started live; null = none. */
+	private Quest jumpedAheadQuest;
+
+	/**
 	 * True while a quest belonging to a LATER guide step is in progress —
 	 * the player jumped ahead (doing Tourist Trap while the frontier is
 	 * still Sleeping Giants). ALL frontier guidance stands down: routing
@@ -1214,6 +1224,7 @@ public class IronscapePlugin extends Plugin
 		});
 		panel.setProgressChangedListener(this::maybeNavigateToNext);
 		panel.setCaptureHandler(this::captureLocation);
+		panel.setSafespotCaptureHandler(this::captureSafespot);
 		panel.setClearTargetHandler(this::clearCapturedTarget);
 		panel.setNavigateHandler(this::navigateToStep);
 		panel.setPlaceNavigateHandler(this::navigateToPlace);
@@ -1434,6 +1445,10 @@ public class IronscapePlugin extends Plugin
 		{
 			loginGraceTicks = 10;
 			lastXpBySkill.clear(); // next account/session sets fresh baselines
+			// A (re)connect may be a DIFFERENT account: quest states must
+			// re-baseline, and a jumped-ahead jaunt doesn't survive relog.
+			lastQuestState.clear();
+			jumpedAheadQuest = null;
 			itemTracker.onLoggedIn();
 			if (panel != null)
 			{
@@ -1808,37 +1823,43 @@ public class IronscapePlugin extends Plugin
 		// Feed the overlays. Computed here once per tick, not per frame.
 		Current current = findCurrent();
 
-		// Jumped ahead? A quest from a LATER guide step being in progress
-		// means the player is off doing it — frontier guidance would just
-		// fight Quest Helper (it routed him back to the Foundry mid
-		// Tourist Trap). Checked once per tick.
-		boolean jumped = false;
-		Quest jumpedQuest = null;
-		if (current != null)
+		// Jumped ahead? The player STARTING a later step's quest right now
+		// means they're off doing it — frontier guidance would just fight
+		// Quest Helper (it routed him back to the Foundry mid Tourist
+		// Trap). Only a LIVE NOT_STARTED -> IN_PROGRESS transition arms
+		// this: the route deliberately parks a dozen-plus quests half-done
+		// for hours (owner's journal: 17 yellow at once), so the old "any
+		// later-step quest in progress" test was ON almost permanently —
+		// every auto-navigation silently dead. Quests already in progress
+		// when the session starts just baseline on first observation.
+		if (current != null && loginGraceTicks == 0)
 		{
 			int frontierIndex = current.step.getGlobalIndex();
 			for (Map.Entry<Quest, Integer> entry : minStepIndexByQuest.entrySet())
 			{
-				if (entry.getValue() > frontierIndex
-					&& entry.getKey().getState(client) == QuestState.IN_PROGRESS)
+				QuestState state = entry.getKey().getState(client);
+				QuestState previous = lastQuestState.put(entry.getKey(), state);
+				if (previous == QuestState.NOT_STARTED && state == QuestState.IN_PROGRESS
+					&& entry.getValue() > frontierIndex)
 				{
-					jumped = true;
-					jumpedQuest = entry.getKey();
-					break;
+					jumpedAheadQuest = entry.getKey();
+					log.info("jumped-ahead ON ({} started live, first guide step ahead of frontier)",
+						entry.getKey().getName());
 				}
 			}
+			// Disarm when the jaunt ends: the quest wrapped up, or the
+			// frontier caught up to its step. (Route progress also disarms
+			// — see completeSubGoal — ticking steps IS following the route.)
+			if (jumpedAheadQuest != null
+				&& (jumpedAheadQuest.getState(client) != QuestState.IN_PROGRESS
+					|| minStepIndexByQuest.getOrDefault(jumpedAheadQuest, 0) <= frontierIndex))
+			{
+				log.info("jumped-ahead OFF ({} finished or frontier caught up)",
+					jumpedAheadQuest.getName());
+				jumpedAheadQuest = null;
+			}
 		}
-		if (jumped != playerJumpedAhead)
-		{
-			// The stand-down silently kills ALL auto-navigation — when the
-			// culprit quest is one the route parks in-progress for hours,
-			// that reads as "auto-nav is broken". Name it in the log.
-			log.info("jumped-ahead {} ({})", jumped ? "ON" : "OFF",
-				jumpedQuest != null
-					? jumpedQuest.getName() + " in progress, first guide step ahead of frontier"
-					: "no later-step quest in progress");
-		}
-		playerJumpedAhead = jumped;
+		playerJumpedAhead = jumpedAheadQuest != null;
 
 		// Teleport hints: a clicked minigame link wins while its countdown
 		// runs; otherwise the current "Minigame teleport to X" sub.
@@ -2051,10 +2072,13 @@ public class IronscapePlugin extends Plugin
 			spot = errandPoint;
 		}
 		targetTileMarker = spot;
-		// Name the tile when the step says what it IS: a ⌖ on a
-		// "safespot the zamorak warrior" sub is the safespot itself.
+		// Name the tile when the step says what it IS ("safespot the
+		// zamorak warrior") — or when the player captured it AS a safespot
+		// ("Capture as safespot" on the ⌖ button of any kill step).
 		targetTileLabel = spot != null && current != null
-			&& SAFESPOT.matcher(current.sub.getPlainText()).find()
+			&& (SAFESPOT.matcher(current.sub.getPlainText()).find()
+				|| annotationManager.isSafespotTarget(current.sub.getId())
+				|| annotationManager.isSafespotTarget(current.step.getId()))
 			? "Safespot" : null;
 
 		// One-time nudge when the route brings you NEAR the errand spot —
@@ -3113,6 +3137,9 @@ public class IronscapePlugin extends Plugin
 		log.info("auto-completed sub {} ({}){}: {}", sub.getId(), reason,
 			loginGraceTicks > 0 ? " [login grace]" : "",
 			sub.getPlainText().trim());
+		// Route progress = following the route again: the jumped-ahead
+		// stand-down (if armed) has served its purpose.
+		jumpedAheadQuest = null;
 		boolean atFrontier = isFrontierStep(step);
 		progressManager.setSubCompleted(activeVariant, step, sub, true);
 		if (atFrontier && progressManager.isCompleted(activeVariant, step.getId()))
@@ -3562,6 +3589,17 @@ public class IronscapePlugin extends Plugin
 
 	private void captureLocation(String annotationId, Consumer<Boolean> onDone)
 	{
+		captureLocation(annotationId, false, onDone);
+	}
+
+	/** "Capture as safespot": same capture, tile gets the Safespot label. */
+	private void captureSafespot(String annotationId, Consumer<Boolean> onDone)
+	{
+		captureLocation(annotationId, true, onDone);
+	}
+
+	private void captureLocation(String annotationId, boolean safespot, Consumer<Boolean> onDone)
+	{
 		clientThread.invoke(() -> {
 			Player player = client.getLocalPlayer();
 			if (client.getGameState() != GameState.LOGGED_IN || player == null)
@@ -3571,7 +3609,7 @@ public class IronscapePlugin extends Plugin
 			}
 
 			WorldPoint where = player.getWorldLocation();
-			annotationManager.setTarget(annotationId, where);
+			annotationManager.setTarget(annotationId, where, safespot);
 			// A manual capture also OVERRIDES auto-navigation: the player
 			// is doing this step HERE, so route to the captured spot and
 			// hold until the frontier moves on (owner request).

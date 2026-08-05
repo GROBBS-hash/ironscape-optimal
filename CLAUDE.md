@@ -540,6 +540,32 @@ refresh when "Failed to login" appears.
   shop (-> Fernahei's 2871,2970). Now 17 OK / 5 hand-pinned / 0 flags.
   Gotcha: wiki action=raw does NOT follow redirects — chase #REDIRECT
   manually (audit-drops' species fallback masked this).
+  LATE WAVE 6: SHOP PHRASES are place links (seed-shops --places writes
+  distinctive applied phrases into places.json — display MUST be the
+  guide's phrase, linkify matches DISPLAYS not keys; generic "general
+  store"/"the bar" stay unseeded). Badge-icon width bug: an icon's
+  width comes OUT of the badge's 170px html body or every row widens
+  and Go/⌖ fall off-panel. SHOPKEEPERS seeded (seed-shops --npcs ->
+  places/shop_npcs.json, infobox |owner=, 17 incl. hand-added Ordan
+  x2); purchase subs join the keeper into the NAMED-NPC scan — named
+  beats nearest-to-pin (Master Farmer wore the compost icon).
+  JUMPED-AHEAD REWRITTEN: the old "any later-step quest IN_PROGRESS"
+  test was ON almost permanently (owner's journal: 17 quests parked
+  yellow at once by route design) — every auto-nav silently dead, THE
+  recurring "nav is broken" report. Now only a LIVE NOT_STARTED ->
+  IN_PROGRESS transition of a later-step quest arms it
+  (lastQuestState baseline map, login-grace gated, cleared on relog);
+  disarms on quest finish, frontier catch-up, or ANY route progress
+  (completeSubGoal). Every maybeNavigateToNext outcome logs one INFO
+  line on change (logNavDecision) — mine-session-log makes nav
+  stand-downs greppable. seed-npc-spots.mjs: grind steps ("train 42
+  magic at Moss giants near fishing guild") get a ⌖ at the NPC's wiki
+  {{LocLine}} surface cluster nearest the step's place (moss giants
+  2553,3406 seeded — nav was routing to the guild gate). Skill icons
+  on level/counted/requirement badges (SkillIconManager via
+  panel.setSkillIconSupplier). SAFESPOT capture: ⌖ right-click menu
+  "Capture as safespot" (Target.safespot flag) — tile gets the
+  floating "Safespot" label on steps whose text never says the word.
 
 - KIT-SEEDING POLICY (owner, 2026-08-05): quest-kit annotation items
   carry TRUE REQUIREMENTS always; items a quest hands you MID-QUEST

@@ -67,6 +67,7 @@ public class IronscapePanel extends PluginPanel
 
 	/** Set by the plugin; null until then (capture buttons stay hidden). */
 	private CaptureHandler captureHandler;
+	private CaptureHandler safespotCaptureHandler;
 
 	/** Set by the plugin; routes to a target (by annotation id) via Shortest Path. */
 	private Consumer<String> navigateHandler;
@@ -293,6 +294,11 @@ public class IronscapePanel extends PluginPanel
 		java.util.function.Function<String, java.awt.image.BufferedImage> skillIconSupplier)
 	{
 		this.skillIconSupplier = skillIconSupplier;
+	}
+
+	public void setSafespotCaptureHandler(CaptureHandler safespotCaptureHandler)
+	{
+		this.safespotCaptureHandler = safespotCaptureHandler;
 	}
 
 	public void setProgressChangedListener(Runnable progressChangedListener)
@@ -688,6 +694,7 @@ public class IronscapePanel extends PluginPanel
 			itemGoals, actionBadgeSupplier, badgeIconSupplier, skillIconSupplier,
 			this::onManualProgressChange,
 			config.showCaptureButtons() ? captureHandler : null,
+			config.showCaptureButtons() ? safespotCaptureHandler : null,
 			clearTargetHandler,
 			navigateHandler,
 			placeNavigateHandler,

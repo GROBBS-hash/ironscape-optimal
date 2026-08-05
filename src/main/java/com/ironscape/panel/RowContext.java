@@ -44,6 +44,9 @@ class RowContext
 	/** Null when capture buttons are disabled/unwired. */
 	CaptureHandler captureHandler;
 
+	/** "Capture as safespot" in the ⌖ right-click menu. Null if unwired. */
+	CaptureHandler safespotCaptureHandler;
+
 	/** Right-click on ⌖: forget the LOCAL captured target. Null if unwired. */
 	Consumer<String> clearTargetHandler;
 

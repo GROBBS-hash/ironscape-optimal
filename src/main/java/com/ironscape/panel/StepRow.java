@@ -516,40 +516,62 @@ class StepRow extends JPanel
 						"IRONSCAPE Optimal", JOptionPane.INFORMATION_MESSAGE);
 				}
 			}));
-			// Right-click undoes an accidental capture: a popup offers to
-			// forget the LOCAL target (bundled ones only get overridden).
-			if (ctx.getClearTargetHandler() != null)
+			// Right-click menu: capture the tile AS A SAFESPOT (kill steps
+			// whose safe tile the guide never names — owner ask), and undo
+			// an accidental capture (bundled pins get tombstoned).
+			if (ctx.getClearTargetHandler() != null || ctx.getSafespotCaptureHandler() != null)
 			{
 				capture.addMouseListener(new java.awt.event.MouseAdapter()
 				{
 					@Override
 					public void mousePressed(java.awt.event.MouseEvent e)
 					{
-						maybeShowClearMenu(e);
+						maybeShowMenu(e);
 					}
 
 					@Override
 					public void mouseReleased(java.awt.event.MouseEvent e)
 					{
-						maybeShowClearMenu(e);
+						maybeShowMenu(e);
 					}
 
-					private void maybeShowClearMenu(java.awt.event.MouseEvent e)
+					private void maybeShowMenu(java.awt.event.MouseEvent e)
 					{
-						if (!e.isPopupTrigger()
-							|| ctx.getAnnotations().getTarget(annotationId) == null)
+						if (!e.isPopupTrigger())
 						{
 							return;
 						}
 						javax.swing.JPopupMenu menu = new javax.swing.JPopupMenu();
-						javax.swing.JMenuItem clear =
-							new javax.swing.JMenuItem("Remove captured location");
-						clear.addActionListener(a -> {
-							ctx.getClearTargetHandler().accept(annotationId);
-							styleAnnotationButtons(annotationId, capture, finalNavigate);
-						});
-						menu.add(clear);
-						menu.show(e.getComponent(), e.getX(), e.getY());
+						if (ctx.getSafespotCaptureHandler() != null)
+						{
+							javax.swing.JMenuItem safespot =
+								new javax.swing.JMenuItem("Capture as safespot");
+							safespot.setToolTipText("Save my current tile as this step's safespot"
+								+ " — marked in the world with a \"Safespot\" label");
+							safespot.addActionListener(a ->
+								ctx.getSafespotCaptureHandler().capture(annotationId, saved -> {
+									if (saved)
+									{
+										styleAnnotationButtons(annotationId, capture, finalNavigate);
+									}
+								}));
+							menu.add(safespot);
+						}
+						if (ctx.getClearTargetHandler() != null
+							&& ctx.getAnnotations().getTarget(annotationId) != null)
+						{
+							javax.swing.JMenuItem clear =
+								new javax.swing.JMenuItem("Remove captured location");
+							clear.addActionListener(a -> {
+								ctx.getClearTargetHandler().accept(annotationId);
+								styleAnnotationButtons(annotationId, capture, finalNavigate);
+							});
+							menu.add(clear);
+						}
+						if (menu.getComponentCount() > 0)
+						{
+							menu.show(e.getComponent(), e.getX(), e.getY());
+						}
 					}
 				});
 			}

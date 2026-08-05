@@ -102,6 +102,12 @@ public class StepAnnotation
 		 * capturing a new location replaces the tombstone.
 		 */
 		public Boolean cleared;
+		/**
+		 * This target IS a safespot ("Capture as safespot" on the ⌖
+		 * button) — the tile marker gets the floating "Safespot" label
+		 * even when the step text never says the word.
+		 */
+		public Boolean safespot;
 	}
 
 	/**

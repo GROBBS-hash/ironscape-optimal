@@ -222,13 +222,27 @@ public class AnnotationManager
 	/** Called by the capture button: remember where this step happens. */
 	public synchronized void setTarget(String stepId, WorldPoint point)
 	{
+		setTarget(stepId, point, false);
+	}
+
+	/** Capture variant: safespot targets get the floating "Safespot" label. */
+	public synchronized void setTarget(String stepId, WorldPoint point, boolean safespot)
+	{
 		StepAnnotation annotation = local.computeIfAbsent(stepId, id -> new StepAnnotation());
 		StepAnnotation.Target target = new StepAnnotation.Target();
 		target.x = point.getX();
 		target.y = point.getY();
 		target.plane = point.getPlane();
+		target.safespot = safespot ? Boolean.TRUE : null;
 		annotation.target = target;
 		saveLocal();
+	}
+
+	/** Is the EFFECTIVE target (local over bundled) flagged as a safespot? */
+	public synchronized boolean isSafespotTarget(String stepId)
+	{
+		StepAnnotation.Target target = getTarget(stepId);
+		return target != null && Boolean.TRUE.equals(target.safespot);
 	}
 
 	/** What a right-click "remove captured location" actually did. */
