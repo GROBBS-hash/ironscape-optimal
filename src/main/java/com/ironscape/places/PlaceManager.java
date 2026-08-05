@@ -80,8 +80,9 @@ public class PlaceManager
 		local = read(() -> localFile.exists() ? new FileReader(localFile) : null);
 		rebuildPattern();
 		loadQuestGivers();
-		log.debug("Places loaded: {} bundled, {} local, {} quest givers",
-			bundled.size(), local.size(), questGivers.size());
+		loadShopKeepers();
+		log.debug("Places loaded: {} bundled, {} local, {} quest givers, {} shop keepers",
+			bundled.size(), local.size(), questGivers.size(), shopKeepers.size());
 	}
 
 	/** The item source's how-to note, or null for ordinary places. */
@@ -129,6 +130,47 @@ public class PlaceManager
 	{
 		int version;
 		Map<String, String> givers;
+	}
+
+	/** Step id -> the shopkeeper NPC of that buy-step's shop (wiki-seeded). */
+	private Map<String, String> shopKeepers = new HashMap<>();
+
+	/**
+	 * The NPC who runs the shop this buy step targets, or null when
+	 * unknown. Named beats nearest: the pin's closest NPC was crowning
+	 * the Master Farmer with the compost icon while Richard ran the shop
+	 * four tiles away (owner report 2026-08-05).
+	 */
+	public synchronized String shopKeeper(String stepId)
+	{
+		return shopKeepers.get(stepId);
+	}
+
+	private void loadShopKeepers()
+	{
+		try (InputStream in = PlaceManager.class.getResourceAsStream("shop_npcs.json"))
+		{
+			if (in == null)
+			{
+				return;
+			}
+			KeepersFile file = gson.fromJson(
+				new InputStreamReader(in, StandardCharsets.UTF_8), KeepersFile.class);
+			if (file != null && file.keepers != null)
+			{
+				shopKeepers = file.keepers;
+			}
+		}
+		catch (Exception e)
+		{
+			log.warn("Could not read bundled shop keepers", e);
+		}
+	}
+
+	private static class KeepersFile
+	{
+		int version;
+		Map<String, String> keepers;
 	}
 
 	public synchronized WorldPoint get(String name)

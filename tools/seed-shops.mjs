@@ -28,6 +28,14 @@
 //                                              store", "the bar" — are skipped:
 //                                              a global entry would mislink
 //                                              every other step saying them.)
+//        node tools/seed-shops.mjs --npcs     (seed each applied buy step's
+//                                              SHOPKEEPER from its shop page's
+//                                              infobox |owner= into
+//                                              places/shop_npcs.json — the NPC
+//                                              outline prefers the named keeper
+//                                              over whoever stands nearest the
+//                                              pin, which crowned the Master
+//                                              Farmer with the compost icon.)
 
 import fs from 'fs';
 import path from 'path';
@@ -131,7 +139,40 @@ function parseMapBody(body) {
 // 3. Draft (default) or apply (--apply)
 // ---------------------------------------------------------------------
 
-if (process.argv.includes('--places')) {
+if (process.argv.includes('--npcs')) {
+  const NPCS_FILE = path.join(__dirname, '../src/main/resources/com/ironscape/places/shop_npcs.json');
+  const draft = JSON.parse(fs.readFileSync(DRAFT_FILE, 'utf8'));
+  const existing = fs.existsSync(NPCS_FILE)
+    ? JSON.parse(fs.readFileSync(NPCS_FILE, 'utf8'))
+    : { version: 1, keepers: {} };
+  let added = 0;
+  for (const row of draft) {
+    if (!annotations.annotations[row.stepId]?.target || !row.page) continue;
+    if (existing.keepers[row.stepId]) continue; // hand entries win
+    if (row.page.includes('hand-corrected')) {
+      console.log(`hand   ${row.stepId} "${(row.text || '').slice(0, 55)}" — no shop page; name the keeper by hand if wanted`);
+      continue;
+    }
+    await sleep(REQUEST_DELAY_MS);
+    const url = 'https://oldschool.runescape.wiki/api.php?action=parse&prop=wikitext&format=json&redirects=1&page='
+      + encodeURIComponent(row.page);
+    const res = await fetch(url, { headers: { 'User-Agent': USER_AGENT } });
+    const wikitext = res.ok ? (await res.json())?.parse?.wikitext?.['*'] : null;
+    // |owner = [[Richard (Ardougne)|Richard]] -> "Richard" (the display
+    // half is the in-game NPC name; the link half may carry a disambig).
+    const owner = wikitext?.match(/\|\s*owner\s*=\s*\[\[(?:[^\]|]*\|)?([^\]|]+)\]\]/)?.[1]
+      || wikitext?.match(/\|\s*owner\s*=\s*([A-Z][^\n[|{]*)/)?.[1]?.trim();
+    if (!owner) {
+      console.log(`none   ${row.stepId} -> ${row.page} (no infobox owner — not a shop page?)`);
+      continue;
+    }
+    existing.keepers[row.stepId] = owner;
+    console.log(`+ ${row.stepId} "${(row.text || '').slice(0, 55)}" -> ${owner}`);
+    added++;
+  }
+  fs.writeFileSync(NPCS_FILE, JSON.stringify(existing, null, 1) + '\n');
+  console.log(`added ${added} shopkeeper(s) to shop_npcs.json`);
+} else if (process.argv.includes('--places')) {
   const PLACES_FILE = path.join(__dirname, '../src/main/resources/com/ironscape/places/places.json');
   const placesJson = JSON.parse(fs.readFileSync(PLACES_FILE, 'utf8'));
   const draft = JSON.parse(fs.readFileSync(DRAFT_FILE, 'utf8'));

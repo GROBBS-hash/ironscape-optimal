@@ -2171,6 +2171,19 @@ public class IronscapePlugin extends Plugin
 					}
 				}
 			}
+			// The shop's ACTUAL keeper (wiki-seeded from the shop infobox
+			// owner field) beats whoever stands nearest the pin — the
+			// Master Farmer wore the compost icon while Richard ran the
+			// farming shop four tiles away. Purchase subs only, same gate
+			// as the anchor.
+			if (!errandOnly && hasPurchaseGoal(current.sub))
+			{
+				String keeper = placeManager.shopKeeper(current.step.getId());
+				if (keeper != null)
+				{
+					npcNames.add(keeper.toLowerCase(Locale.ROOT));
+				}
+			}
 			// The quest's ACTUAL giver (wiki-seeded from the quest infobox)
 			// beats guessing whoever stands nearest the start pin — a
 			// decorative giant at the Foundry wore Kovac's quest icon.
