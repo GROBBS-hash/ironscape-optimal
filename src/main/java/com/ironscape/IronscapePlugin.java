@@ -690,6 +690,10 @@ public class IronscapePlugin extends Plugin
 	private static final java.util.regex.Pattern SAFESPOT =
 		java.util.regex.Pattern.compile("(?i)safe\\s*-?\\s*spot");
 
+	/** A sub that KILLS something — species-word NPC matching is safe there. */
+	private static final java.util.regex.Pattern COMBAT_VERB =
+		java.util.regex.Pattern.compile("(?i)\\b(?:kill|slay|safe\\s*-?\\s*spot|fight)\\b");
+
 	/** Label floated over the ⌖ tile marker; null = none. */
 	private volatile String targetTileLabel;
 
@@ -2049,6 +2053,7 @@ public class IronscapePlugin extends Plugin
 			}
 			String subText = " " + scanned.toString().toLowerCase(Locale.ROOT)
 				.replace('’', '\'') + " ";
+			boolean combatSub = COMBAT_VERB.matcher(subText).find();
 			// Place-name spans in the same text: an NPC name inside a LONGER
 			// place name is the place talking, not the NPC — "Walk to
 			// Barbarian Village" must not outline every Barbarian (an
@@ -2091,6 +2096,33 @@ public class IronscapePlugin extends Plugin
 						{
 							npcNames.add(clean);
 							break;
+						}
+					}
+					// COMBAT subs name their target by SPECIES ("kill a
+					// rat", "safespot a bear") while the scene NPC is
+					// "Giant rat" or "Black bear": the name's last word
+					// counts too. Kill subs only — "guard" in ordinary
+					// prose must not light up every H.A.M. Guard. The
+					// specific-shadows-generic pass below then prefers
+					// "Giant rat" over a plain "Rat" when both match.
+					int lastSpace = clean.lastIndexOf(' ');
+					if (combatSub && lastSpace > 0 && !npcNames.contains(clean))
+					{
+						String species = clean.substring(lastSpace + 1);
+						if (species.length() >= 3)
+						{
+							for (String variant : pluralVariants(species))
+							{
+								int at = subText.indexOf(variant);
+								if (at > 0
+									&& !Character.isLetter(subText.charAt(at - 1))
+									&& !Character.isLetter(subText.charAt(at + variant.length()))
+									&& !insideLongerSpan(placeSpans, at, at + variant.length()))
+								{
+									npcNames.add(clean);
+									break;
+								}
+							}
 						}
 					}
 				}

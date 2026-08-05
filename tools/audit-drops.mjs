@@ -70,6 +70,20 @@ async function npcPage(phrase) {
   return null;
 }
 
+// Species fallback, mirroring the plugin's combat-sub matching: "a rat"
+// means any NPC whose name ENDS with "rat" ("Giant rat"), "a bear" any
+// "* bear". Wiki title search finds the species pages to check.
+async function speciesPages(phrase) {
+  const word = phrase.split(' ').pop();
+  const api = 'https://oldschool.runescape.wiki/api.php?action=query&list=search'
+    + '&srsearch=' + encodeURIComponent('intitle:' + word)
+    + '&srlimit=20&format=json';
+  const body = await fetchCached(api);
+  if (body == null) return [];
+  const titles = (JSON.parse(body).query?.search ?? []).map((s) => s.title);
+  return titles.filter((t) => new RegExp('(^|\\s)' + word + 's?$', 'i').test(t)).slice(0, 6);
+}
+
 function dropsItem(raw, item) {
   // {{DropsLine|name=Rune scimitar|...}} — tolerate case and spacing.
   const pattern = new RegExp(
@@ -105,6 +119,21 @@ for (const check of checks) {
   }
   if (dropsItem(page.raw, check.item)) {
     console.log(`  OK       [${check.subId}] ${page.name} drops "${check.item}"`);
+    continue;
+  }
+  // The named page doesn't drop it — a SPECIES page might ("rat" is
+  // really "Giant rat"). Same rule the plugin's outlines use.
+  let via = null;
+  for (const title of await speciesPages(check.npc.toLowerCase())) {
+    const raw = await fetchCached('https://oldschool.runescape.wiki/w/'
+      + encodeURIComponent(title.replace(/ /g, '_')) + '?action=raw');
+    if (raw != null && dropsItem(raw, check.item)) {
+      via = title;
+      break;
+    }
+  }
+  if (via != null) {
+    console.log(`  OK       [${check.subId}] "${check.npc}" -> ${via} drops "${check.item}"`);
   } else {
     missing++;
     console.log(`! MISSING  [${check.subId}] ${page.name} does NOT drop "${check.item}" — ${check.text.slice(0, 80)}`);

@@ -15,6 +15,20 @@
    "y": 3170,
    "plane": 0
   },
+  "bat bones": {
+   "display": "Bat bones",
+   "x": 2757,
+   "y": 3401,
+   "plane": 0,
+   "note": "Bat bones: kill a Giant bat outside Keep Le Faye (south-west of Camelot)."
+  },
+  "black candle": {
+   "display": "Black candle",
+   "x": 2797,
+   "y": 3440,
+   "plane": 0,
+   "note": "Black candle: talk to the Candle Maker in Catherby (twice) until he hands one over."
+  },
   "glarial's pebble": {
    "display": "Glarial's pebble",
    "x": 2514,
