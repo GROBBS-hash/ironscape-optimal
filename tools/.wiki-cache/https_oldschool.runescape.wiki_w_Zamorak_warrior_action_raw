@@ -1,0 +1,110 @@
+{{External|rs}}
+{{Infobox Monster
+|version1 = Level 84
+|version2 = Level 85
+|name = Zamorak warrior
+|image1 = [[File:Zamorak warrior (level 84).png|160px]]
+|image2 = [[File:Zamorak warrior (level 85).png|160px]]
+|release = [[13 October]] [[2016]]
+|update = The Ourania Altar
+|members = Yes
+|combat1 = 84
+|combat2 = 85
+|size = 1
+|examine = A warrior of Zamorak.
+|xpbonus = 0
+|max hit = 8
+|aggressive = Yes
+|poisonous = No
+|attack style1 = [[Slash]]
+|attack style2 = [[Crush]]
+|attack speed = 4
+|respawn = 50
+|hitpoints = 45
+|att1 = 85
+|att2 = 90
+|str = 70
+|def = 90
+|mage = 1
+|range = 1
+|attbns = 0
+|strbns = 0
+|amagic = 0
+|mbns = 0
+|arange = 0
+|rngbns = 0
+|dstab = 0
+|dslash = 0
+|dcrush = 0
+|dmagic = 0
+|dlight = 0
+|dstandard = 0
+|dheavy = 0
+|poisonresistance = 0
+|venomresistance = 0
+|immunecannon = No
+|immunethrall = No
+|id1 = 7418
+|id2 = 7419
+}}
+'''Zamorak warriors''' are the warriors of [[Zamorak Magical Institute|ZMI]] and currently guard the [[Ourania Altar]], found at the end of the [[Ourania Cave]].
+
+They can be [[Safespotting|safespotted]] using the various small lava vents in the cave, however it is suggested to wait until they are [[tolerant]] as the nearby [[Zamorak ranger]]s and [[Zamorak mage|mages]] can attack you.
+
+Zamorak warriors are commonly killed for their [[rune scimitar]] drop, having a significantly higher drop rate than other common monsters such as [[fire giant]]s.
+
+==Locations==
+{{LocTableHead}}
+{{LocLine
+|name = Zamorak warrior
+|location = [[Ourania Cave]]
+|levels = 84, 85
+|members = Yes
+|mapID = 16
+|plane = 0
+|x:3015,y:5583|x:3015,y:5606|x:3028,y:5574
+|mtype = pin
+|leagueRegion = Kandarin
+}}
+{{LocTableBottom}}
+
+==Drops==
+{{DropLogProject|kills=113032}}
+
+{{Average drop value}}
+
+===100%===
+{{DropsTableHead}}
+{{DropsLine|name=Bones|quantity=1|rarity=Always}}
+{{DropsTableBottom}}
+
+===Weapons===
+{{DropsTableHead}}
+{{DropsLine|name=Rune dagger|quantity=1|rarity=2/50}}
+{{DropsLine|name=Adamant longsword|quantity=1|rarity=1/50}}
+{{DropsLine|name=Steel scimitar|quantity=1|rarity=2/50}}
+{{DropsLine|name=Steel dagger|quantity=1|rarity=2/50}}
+{{DropsLine|name=Rune scimitar|quantity=1|rarity=1/50|raritynotes={{CiteTwitter|author=Mod Ash|url=https://twitter.com/JagexAsh/status/802542328825135104|date=26 November 2016|archiveurl=https://reldo.runescape.wiki/i/27964075|archivedate=30 May 2026|quote=In the ZMI? 1/50.}}}}
+{{DropsTableBottom}}
+
+===Other===
+{{DropsTableHead}}
+{{DropsLine|name=Coins|quantity=100|rarity=40/50|gemw=No}}
+{{DropsLine|name=Lobster|quantity=3|rarity=2/50}}
+{{DropsTableBottom}}
+
+==Trivia==
+*The level 84 Zamorak warrior appears to be wearing a red coloured [[Guthan's helm]], [[splitbark body]] and [[Splitbark legs|legs]], a [[Heraldic kiteshield (Construction)|heraldic kiteshield]] bearing the symbol of [[Zamorak]], and a sword similar to the one the [[Knight of Saradomin|Knights of Saradomin]] wield in the [[God Wars Dungeon]].
+*The level 85 Zamorak warrior appears to be wearing a red coloured [[rock-shell helm]], a [[spined body]] and [[Spined gloves|gloves]], [[granite legs]], [[granite boots]], [[dragon longsword]] and a [[dragon sq shield]].
+
+==See also==
+*[[Zamorak mage]]
+*[[Zamorak ranger]]
+*[[Zamorak crafter]]
+
+==References==
+{{Reflist}}
+
+{{Ourania Cave}}
+{{Zamorak Magical Institute}}
+[[Category:Zamorakians]]

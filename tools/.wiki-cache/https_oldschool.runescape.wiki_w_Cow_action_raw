@@ -1,0 +1,382 @@
+{{External|rs|rsc|dw}}
+{{otheruses|the monster called a Cow}}
+{{Infobox Monster
+|version1 = 1
+|version2 = 2
+|version3 = 3
+|version4 = Isle of Souls
+|version5 = Zanaris
+|name = Cow
+|image1 = [[File:Cow (1).png|200px]]
+|image2 = [[File:Cow (2).png|200px]]
+|image3 = [[File:Cow (3).png|200px]]
+|image4 = [[File:Cow (Isle of Souls).png|200px]]
+|image5 = [[File:Cow (Zanaris).png|200px]]
+|release1 = [[4 January]] [[2001]]
+|release2 = 1-6 April [[2004]]
+|release3 = [[22 February]] [[2005]]
+|release4 = [[3 February]] [[2021]]
+|release5 = [[27 February]] [[2006]]
+|update1 = Runescape beta is now online!
+|update2 = 
+|update3 = Wilderness Capes, and Changes
+|update4 = The Isle of Souls
+|update5 = A Fairy Tale Part I - Growing Pains
+|members1 = No
+|members2 = No
+|members3 = No
+|members4 = Yes
+|members5 = Yes
+|combat = 2
+|size = 2
+|examine1 = Converts grass to beef.
+|examine2 = Beefy.
+|examine3 = Where beef comes from.
+|examine4 = A cow by any other name would smell as sweet.
+|examine5 = Converts grass to beef.
+|xpbonus = 0
+|max hit = 1
+|aggressive = No
+|poisonous = No
+|attack style = [[Crush]]
+|attack speed = 4
+|respawn = 45
+|slayxp = 8
+|cat = Cows
+|assignedby = turael,spria
+|hitpoints = 8
+|att = 1
+|str = 1
+|def = 1
+|mage = 1
+|range = 1
+|attbns = -15
+|strbns = -15
+|amagic = 0
+|mbns = 0
+|arange = 0
+|rngbns = 0
+|dstab = -21
+|dslash = -21
+|dcrush = -21
+|dmagic = -21
+|dlight = -21
+|dstandard = -21
+|dheavy = -21
+|poisonresistance = 100
+|venomresistance = 100
+|immunecannon = No
+|immunethrall = No
+|id1 = 2790
+|id2 = 2791
+|id3 = 2793
+|id4 = 2795
+|id5 = 5842
+}}
+[[File:Cow chathead.png|left]]
+'''Cows''' are common low [[Combat level|level]] [[monsters]] new players train on. They are one of the first NPCs new players see outside of [[Lumbridge]]. Cows can help new players earn money, [[Cooking]] [[experience]], and [[combat]] experience. The [[cowhide]]s that they [[Drops|drop]] can be tanned to make [[leather]] or [[hard leather]], or they can be sold for [[coins]] to players wanting to raise their [[Crafting]] level. 
+
+While most locations containing cows are crowded, there are some spots usually vacant, like the spot north of the windmill north-west of Lumbridge. Along with cows, you can also find [[Cow calf|cow calves]] and [[dairy cow]]s. Regular cows cannot be milked; attempting to do so using a bucket will display the message {{mes|Only dairy cows are suitable for milking.}}.
+
+==Locations==
+{{LocTableHead}}
+{{LocLine
+|name = Cow
+|location = [[Ardougne]] Farm
+|levels = 2
+|members = Yes
+|mapID = 0
+|plane = 0
+|x:2657,y:3341|x:2658,y:3351|x:2660,y:3344|x:2664,y:3341|x:2664,y:3348|x:2664,y:3352|x:2666,y:3344|x:2670,y:3348|x:2671,y:3342|x:2672,y:3354
+|mtype = pin
+|leagueRegion = kandarin
+}}
+{{LocLine
+|name = Cow
+|location = [[Kebos Lowlands]] - [[Gordon]]'s farm
+|levels = 2
+|members = Yes
+|mapID = 0
+|plane = 0
+|x:1261,y:3692|x:1262,y:3689
+|mtype = pin
+|leagueRegion = kourend
+}}
+{{LocLine
+|name = Cow
+|location = Field south of the [[Champions' Guild]]
+|levels = 2
+|members = No
+|mapID = 0
+|plane = 0
+|x:3155,y:3331|x:3156,y:3342|x:3158,y:3336|x:3160,y:3329|x:3162,y:3335|x:3164,y:3340|x:3169,y:3335|x:3169,y:3341|x:3170,y:3329|x:3173,y:3332|x:3174,y:3341|x:3177,y:3333|x:3180,y:3340|x:3182,y:3329|x:3184,y:3334|x:3184,y:3341|x:3187,y:3336|x:3189,y:3332|x:3195,y:3335|x:3197,y:3331|x:3154,y:3325|x:3155,y:3321|x:3160,y:3318|x:3165,y:3320|x:3165,y:3326|x:3173,y:3323|x:3178,y:3318|x:3182,y:3321|x:3186,y:3326|x:3187,y:3322|x:3188,y:3314|x:3188,y:3318|x:3191,y:3311|x:3194,y:3293|x:3195,y:3287|x:3196,y:3283|x:3196,y:3311|x:3197,y:3291|x:3197,y:3297|x:3197,y:3300|x:3197,y:3316|x:3197,y:3320|x:3200,y:3284|x:3201,y:3295|x:3202,y:3289|x:3203,y:3286|x:3204,y:3293|x:3204,y:3298|x:3206,y:3290|x:3208,y:3294|x:3209,y:3288|x:3209,y:3300|x:3211,y:3291
+|mtype = pin
+|leagueRegion = misthalin
+}}
+{{LocLine
+|name = Cow
+|location = [[Lumbridge]] East farm
+|levels = 2
+|members = No
+|mapID = 0
+|plane = 0
+|x:3254,y:3255|x:3254,y:3258|x:3254,y:3262|x:3258,y:3260|x:3261,y:3259|x:3243,y:3295|x:3244,y:3283|x:3244,y:3289|x:3246,y:3293|x:3247,y:3284|x:3250,y:3293|x:3252,y:3282|x:3252,y:3288|x:3254,y:3267|x:3255,y:3278|x:3256,y:3292|x:3257,y:3286|x:3258,y:3265|x:3261,y:3270|x:3261,y:3282|x:3262,y:3277
+|mtype = pin
+|leagueRegion = misthalin
+}}
+{{LocLine
+|name = Cow
+|location = [[Sinclair Mansion]]
+|levels = 2
+|members = Yes
+|mapID = 0
+|plane = 0
+|x:2733,y:3561
+|mtype = pin
+|leagueRegion = kandarin
+}}
+{{LocLine
+|name = Cow
+|location = [[Nightmare Zone]]
+|levels = 2
+|members = Yes
+|mapID = 0
+|plane = 0
+|x:2604,y:3114
+|mtype = pin
+|leagueRegion = kandarin
+}}
+{{LocLine
+|name = Cow
+|location = North-west of [[Prifddinas]] ([[Gwenith]])
+|levels = 2
+|members = Yes
+|mapID = 0
+|plane = 0
+|x:2189,y:3418|x:2190,y:3415|x:2191,y:3420|x:2192,y:3416|x:2193,y:3419|x:2194,y:3421|x:2195,y:3416
+|mtype = pin
+|leagueRegion = tirannwn
+}}
+{{LocLine
+|name = Cow
+|location = North-west of [[Prifddinas]] ([[Gwenith]]) during [[Song of the Elves]]
+|levels = 2
+|members = Yes
+|mapID = 29
+|plane = 0
+|x:3213,y:6170|x:3214,y:6167|x:3215,y:6172|x:3216,y:6168|x:3217,y:6171|x:3218,y:6173|x:3219,y:6168
+|mtype = pin
+|leagueRegion = tirannwn
+}}
+{{LocLine
+|name = Cow
+|location = North of [[Hosidius]] Town Square
+|levels = 2
+|members = Yes
+|mapID = 0
+|plane = 0
+|x:1747,y:3640|x:1751,y:3636|x:1757,y:3638|x:1758,y:3643|x:1763,y:3638
+|mtype = pin
+|leagueRegion = kourend
+}}
+{{LocLine
+|name = Cow
+|location = [[Crafting Guild]]
+|levels = 2
+|members = No
+|mapID = 0
+|plane = 0
+|x:2917,y:3289|x:2920,y:3285|x:2921,y:3287|x:2924,y:3277|x:2924,y:3288|x:2925,y:3282|x:2926,y:3271|x:2930,y:3269|x:2933,y:3274|x:2936,y:3274
+|mtype = pin
+|leagueRegion = asgarnia
+}}
+{{LocLine
+|name = Cow
+|location = West of [[Nightmare Zone]]
+|levels = 2
+|members = Yes
+|mapID = 0
+|plane = 0
+|x:2580,y:3117|x:2582,y:3122|x:2588,y:3119
+|mtype = pin
+|leagueRegion = kandarin
+}}
+{{LocLine
+|name = Cow
+|location = [[South Falador Farm]]
+|levels = 2
+|members = No
+|mapID = 0
+|plane = 0
+|x:3025,y:3307|x:3029,y:3305|x:3029,y:3311|x:3030,y:3300|x:3033,y:3305|x:3037,y:3306|x:3040,y:3310
+|mtype = pin
+|leagueRegion = asgarnia
+}}
+{{LocLine
+|name = Cow
+|location = [[Kebos Lowlands]] - [[Keith]]'s farm
+|levels = 2
+|members = Yes
+|mapID = 0
+|plane = 0
+|x:1306,y:3713|x:1310,y:3717
+|mtype = pin
+|leagueRegion = kourend
+}}
+{{LocLine
+|name = Cow
+|location = [[Zanaris]]
+|levels = 2
+|members = Yes
+|mapID = 28
+|plane = 0
+|x:2435,y:4442|x:2439,y:4457|x:2441,y:4448
+|mtype = pin
+|leagueRegion = General
+}}
+{{LocLine
+|name = Cow
+|location = [[Isle of Souls]]
+|levels = 2
+|members = Yes
+|mapID = 0
+|plane = 0
+|x:2148,y:2804|x:2150,y:2800|x:2151,y:2807
+|mtype = pin
+|leagueRegion = misthalin
+}}
+{{LocTableBottom}}
+
+==Money making==
+{{Mmgsection|Killing cows and tanning cowhide}}
+
+==Drops==
+{{DropLogProject|jagex=yes}}
+===100%===
+{{DropsTableHead}}
+{{DropsLine|name=Cowhide|quantity=1|rarity=Always}}
+{{DropsLine|name=Raw beef|quantity=1|rarity=Always}}
+{{DropsLine|name=Bones|quantity=1|rarity=Always}}
+{{DropsTableBottom}}
+
+===Tertiary===
+{{DropsTableHead}}
+{{DropsLineClue|type=beginner|rarity=1/128}}
+{{DropsTableBottom}}
+
+==Sound effects==
+{{SFXTableHead}}
+{{SFXLine|file=Cow attack.wav|desc=Attacking}}
+{{SFXLine|file=Cow death.wav|desc=Dying}}
+{{SFXLine|file=Cow hit.wav|desc=Being attacked}}
+{{SFXLine|file=Cow mooing.wav|desc=Mooing}}
+{{SFXTableBottom}}
+
+==Dialogue==
+{{hastranscript|NPC}}
+
+==Changes==
+{{Subject changes header}}
+{{Subject changes
+|date = 25 February 2026
+|update = Cow Boss is Out Today!
+|change = Cows have an additional dialogue upon seeing someone teleport to the Lumbridge cow field with the cowbell amulet.
+}}
+{{Subject changes
+|date = 22 November 2018
+|update = Bird Nest Balancing and PvP Changes
+|change = Cowhides will now appear at the top of the drop pile when killing cows.
+}}
+{{Subject changes
+|date = 20 March 2007
+|update = Cows, Chickens, Rabbits and the Fishing Trawler
+|change = The NPCs were graphically updated again.
+}}
+{{Subject changes
+|date = 11 July 2005
+|update = Farming
+|change =
+* The ability to milk regular cows was removed with the release of [[dairy cow]]s.
+* The NPCs examines were changed from "''It's a dairy cow.''"
+}}
+{{Subject changes
+|date = 22 February 2005
+|update = Wilderness Capes, and Changes
+|change = The NPCs were graphically updated with the rework of Lumbridge and Draynor.
+}}
+{{Subject changes
+|date = 6 December 2004
+|update = Various Small Changes.
+|change = Two of the cows were graphically updated.
+}}
+{{Subject changes footer}}
+===Gallery (historical)===
+<tabber>
+1=
+{|style="text-align: center" cellpadding="15"
+|[[File:Cow (1) (historical v1).png|center|300x150px]]
+|[[File:Cow (1) (historical v2).png|center|300x150px]]
+|[[File:Cow (1) (historical v3).png|center|300x150px]]
+|[[File:Cow (1).png|center|300x150px]]
+|-
+|29 March 2004 –<br/>6 December 2004
+|6 December 2004 –<br/>22 February 2005
+|22 February 2005 –<br/>20 March 2007
+|20 March 2007 –<br/>present
+|}
+|-|
+2=
+{|style="text-align: center" cellpadding="15"
+|[[File:Cow (2) (historical v1).png|center|300x150px]]
+|[[File:Cow (2) (historical v2).png|center|300x150px]]
+|[[File:Cow (2) (historical v3).png|center|300x150px]]
+|[[File:Cow (2).png|center|300x150px]]
+|-
+|1-6 April 2004 –<br/>6 December 2004
+|6 December 2004 –<br/>22 February 2005
+|22 February 2005 –<br/>20 March 2007
+|20 March 2007 –<br/>present
+|}
+|-|
+3=
+{|style="text-align: center" cellpadding="15"
+|[[File:Cow (4) (historical).png|center|300x150px]]
+|[[File:Cow (3).png|center|300x150px]]
+|-
+|22 February 2005 –<br/>20 March 2007
+|20 March 2007 –<br/>present
+|}
+|-|
+Isle of Souls=
+{|style="text-align: center" cellpadding="15"
+|[[File:Cow (3) (historical v1).png|center|300x150px]]
+|[[File:Cow (3) (historical v2).png|center|300x150px]]
+|[[File:Cow (Isle of Souls).png|center|300x150px]]
+|-
+|1-6 April 2004 –<br/>22 February 2005
+|22 February 2005 –<br/>20 March 2007
+|20 March 2007 –<br/>present
+|}
+|-|
+Zanaris=
+{|style="text-align: center" cellpadding="15"
+|[[File:Cow (Zanaris) (historical).png|center|300x150px]]
+|[[File:Cow (Zanaris).png|center|300x150px]]
+|-
+|[[File:Cow (Zanaris) chathead (historical).png|center]]
+|[[File:Cow chathead.png|center]]
+|-
+|27 February 2006 –<br/>20 March 2007
+|20 March 2007 –<br/>present
+|}
+</tabber>
+
+==Trivia==
+*Using an item on a cow prompts the message "The cow doesn't want that." as opposed to the usual "Nothing interesting happens."
+* The Zanaris cow variant had a festive override wearing a [[Santa hat]] and Rudolph nose during the [[2016 Christmas event/Gallery|2016]] Christmas event.
+* The Isle of Souls cow variant’s examine text references the quote “A rose by any other name would smell as sweet” from Romeo and Juliet by William Shakespeare.
+
+==References==
+{{Reflist}}
+
+{{South Falador Farm}}
