@@ -2334,12 +2334,14 @@ public class IronscapePlugin extends Plugin
 					}
 				}
 			}
-			// The shop's ACTUAL keeper (wiki-seeded from the shop infobox
-			// owner field) beats whoever stands nearest the pin — the
-			// Master Farmer wore the compost icon while Richard ran the
-			// farming shop four tiles away. Purchase subs only, same gate
-			// as the anchor.
-			if (!errandOnly && hasPurchaseGoal(current.sub))
+			// The step's ACTUAL keeper (wiki-seeded shop owner, or the
+			// bartender a barcrawl step means) beats whoever stands nearest
+			// the pin — the Master Farmer wore the compost icon while
+			// Richard ran the farming shop four tiles away. No purchase-goal
+			// gate: an entry in shop_npcs.json is curated intent ("this
+			// step is about talking to THIS npc"), and barcrawl drink subs
+			// carry a varp checkpoint instead of a purchase goal.
+			if (!errandOnly)
 			{
 				String keeper = placeManager.shopKeeper(current.step.getId());
 				if (keeper != null)
