@@ -51,6 +51,10 @@ const placeCoords = (name) => {
 // place "fishing guild". The NPC phrase sits between a grind verb/`at` and
 // a nearness word; the place runs to the end of the clause.
 const GRIND = /\b(?:kill(?:ing)?|slay(?:ing)?|safespot(?:ting)?|at|on)\s+((?:[a-z']+\s){0,2}[a-z']+?)e?s?\s+(?:near|beside|by|outside|west of|east of|north of|south of)\s+(?:the\s+)?([a-z' ]+?)(?:\s*[,.(]|$)/i;
+// Grind-at-OBJECT steps ("Train 42 thieving at the fruit stall in a house
+// east of the hosidius marketplace") — the object noun is the wiki page,
+// the step's 📍 tag is the place anchor. Scenery pages use ObjectLocLine.
+const OBJECT_GRIND = /\b(?:train(?:ing)?|thiev(?:e|ing)|steal(?:ing)?)\b[^.]*?\bat\s+the\s+((?:[a-z']+\s){0,2}?[a-z']+\s+stall)\b/i;
 const VERB = /\b(?:kill|killing|slay|slaying|safespot|train(?:ing)?)\b/i;
 
 const rows = [];
@@ -62,13 +66,14 @@ for (const ch of guide.chapters) {
       const id = stepId(text);
       if (annotations.annotations[id]?.target) continue;
       const m = text.match(GRIND);
-      if (!m) continue;
-      const place = m[2].trim();
+      const om = m ? null : text.match(OBJECT_GRIND);
+      if (!m && !om) continue;
+      const place = m ? m[2].trim() : (step.metadata?.location || '');
       const at = placeCoords(place) || placeCoords(step.metadata?.location);
       if (!at) continue;
       rows.push({
         stepId: id, text: text.slice(0, 90),
-        npc: m[1].trim(), place, placeAt: at,
+        npc: (m ? m[1] : om[1]).trim(), place, placeAt: at,
       });
     }
   }
@@ -76,7 +81,11 @@ for (const ch of guide.chapters) {
 
 async function fetchCached(url) {
   fs.mkdirSync(CACHE_DIR, { recursive: true });
-  const cacheFile = path.join(CACHE_DIR, url.replace(/[^a-z0-9.]+/gi, '_'));
+  // Windows filesystems are case-insensitive: "Fruit_stall" (redirect stub)
+  // and "Fruit_Stall" (real page) would share one cache file — a short
+  // case-preserving hash keeps them apart.
+  const cacheFile = path.join(CACHE_DIR, url.replace(/[^a-z0-9.]+/gi, '_')
+    + '_' + crypto.createHash('sha256').update(url).digest('hex').slice(0, 8));
   if (fs.existsSync(cacheFile)) {
     return fs.readFileSync(cacheFile, 'utf8');
   }
@@ -101,9 +110,13 @@ async function rawPage(title, hop = 0) {
 // are dropped — a route target inside a dungeon strands Shortest Path.
 function surfaceClusters(wikitext) {
   const clusters = [];
-  for (const m of wikitext.matchAll(/\{\{LocLine([^{}]*)\}\}/g)) {
+  // NPC pages use {{LocLine}}, scenery pages {{ObjectLocLine}} — same shape.
+  for (const m of wikitext.matchAll(/\{\{(?:Object)?LocLine([^{}]*)\}\}/g)) {
     const body = m[1];
-    if (/\|\s*mapID\s*=/.test(body)) continue;
+    // ObjectLocLine writes an explicit surface mapID=0; only a NON-ZERO
+    // mapID means an interior map we can't route into.
+    const mapId = body.match(/\|\s*mapID\s*=\s*(\d+)/);
+    if (mapId && mapId[1] !== '0') continue;
     const pins = [...body.matchAll(/x:(\d{3,5}),y:(\d{3,5})/g)]
       .map((p) => ({ x: +p[1], y: +p[2] }));
     if (pins.length === 0 || pins.some((p) => p.y >= 8000)) continue;
@@ -111,7 +124,10 @@ function surfaceClusters(wikitext) {
     const cy = Math.round(pins.reduce((s, p) => s + p.y, 0) / pins.length);
     const label = body.match(/\|\s*location\s*=\s*([^\n|]+)/)?.[1]
       ?.replace(/\[\[|\]\]/g, '').trim() || '?';
-    clusters.push({ label, x: cx, y: cy });
+    // pins kept for review: one LocLine can hold SEVERAL distinct spots
+    // (Hosidius has market stalls AND the house pair on one line) — the
+    // centroid then lands between them; the reviewer picks the real tile.
+    clusters.push({ label, x: cx, y: cy, pins });
   }
   return clusters;
 }
@@ -150,6 +166,7 @@ if (process.argv.includes('--apply')) {
       ...row, page: wikitext ? page : null,
       cluster: best?.label || null,
       coords: best ? { x: best.x, y: best.y } : null,
+      pins: best?.pins || null,
       ok: false,
     });
     console.log(`${best ? 'HIT ' : 'miss'} ${row.stepId} "${row.npc}" near "${row.place}"`

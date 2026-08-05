@@ -536,6 +536,11 @@
    "requires": {
     "skill": "THIEVING",
     "level": 42
+   },
+   "target": {
+    "x": 1767,
+    "y": 3598,
+    "plane": 0
    }
   },
   "bc19e291f5": {
