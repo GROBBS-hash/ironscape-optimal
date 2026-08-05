@@ -61,6 +61,24 @@ class StepRow extends JPanel
 	private static final String IN_BANK_HEX = "#ffa000";
 	private static final String MISSING_HEX = "#e57373";
 
+	// "Cards & chips" restyle (owner-picked mockup, 2026-08-05): every
+	// step is a card a shade warmer than the panel, metadata renders as
+	// bordered chips, notes get a boxed NOTE block, and a fully-done card
+	// dims WHOLESALE (paint-time alpha) instead of restyling each child.
+	/** Card face — slightly warm against the #282828 panel. */
+	static final Color CARD_BG = new Color(0x2e, 0x2c, 0x29);
+	private static final Color CARD_EDGE = new Color(0x3c, 0x39, 0x34);
+	private static final int CARD_MARGIN_TOP = 2;
+	private static final int CARD_MARGIN_BOTTOM = 6;
+	/** Inset boxes: chips and the NOTE block. */
+	private static final Color BOX_BG = new Color(0x26, 0x23, 0x1e);
+	private static final Color BOX_EDGE = new Color(0x45, 0x40, 0x3a);
+	private static final Color CHIP_FG = new Color(0xc2, 0xab, 0x7c);
+	private static final Color CHIP_QUEST_FG = new Color(0x8f, 0xbf, 0x8f);
+	private static final Color NOTE_FG = new Color(0xb8, 0xb1, 0xa5);
+	private static final Color NOTE_LABEL_FG = new Color(0x87, 0x7e, 0x6f);
+	private static final Color ITEM_NAME_FG = new Color(0xc9, 0xc4, 0xbc);
+
 	private final GuideStep step;
 	private final RowContext ctx;
 
@@ -76,8 +94,14 @@ class StepRow extends JPanel
 		this.ctx = ctx;
 
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-		setBackground(ColorScheme.DARK_GRAY_COLOR);
-		setBorder(BorderFactory.createEmptyBorder(4, 2, 4, 2));
+		// The card face + edge are painted in paintComponent (a plain
+		// opaque panel would flood its background over the transparent
+		// margin band too); the border is pure spacing: margin + edge +
+		// padding on each side.
+		setOpaque(false);
+		setBackground(CARD_BG);
+		setBorder(BorderFactory.createEmptyBorder(
+			CARD_MARGIN_TOP + 6, 7, CARD_MARGIN_BOTTOM + 6, 7));
 
 		boolean multi = step.getSubSteps().size() > 1;
 		if (multi)
@@ -99,16 +123,11 @@ class StepRow extends JPanel
 		addMetadataChips();
 
 		// Trailing commentary paragraphs — informational, not tickable.
-		// Rendered as width-locked panes, NOT labels: a pane wraps at our
-		// width (an over-wide child stretches every row and clips the whole
-		// panel) and its links ("Safespot location") actually click.
+		// Boxed "NOTE" blocks (cards & chips restyle): the old grey italic
+		// at #808080 sat at ~3.6:1 contrast and vanished (owner complaint).
 		for (List<TextRun> paragraph : step.getAdditionalContent())
 		{
-			// runsHtml, NOT paragraphHtml: a body width style makes
-			// JEditorPane lay text out unwrapped (JLabels honor it, panes
-			// don't) — the pane's locked component width does the wrapping.
-			add(htmlPane(RichText.runsHtml(paragraph, false, null), 22,
-				new Font(Font.DIALOG, Font.ITALIC, 11), ColorScheme.LIGHT_GRAY_COLOR));
+			add(noteBlock(paragraph));
 		}
 	}
 
@@ -117,10 +136,98 @@ class StepRow extends JPanel
 		return step;
 	}
 
+	/** Card face and 1px edge, inset by the transparent margin band. */
+	@Override
+	protected void paintComponent(java.awt.Graphics g)
+	{
+		g.setColor(CARD_BG);
+		g.fillRect(0, CARD_MARGIN_TOP, getWidth(),
+			getHeight() - CARD_MARGIN_TOP - CARD_MARGIN_BOTTOM);
+		g.setColor(CARD_EDGE);
+		g.drawRect(0, CARD_MARGIN_TOP, getWidth() - 1,
+			getHeight() - CARD_MARGIN_TOP - CARD_MARGIN_BOTTOM - 1);
+	}
+
+	/**
+	 * A fully-done step dims WHOLESALE — one alpha over card + children —
+	 * instead of restyling every child grey (which left link colors and
+	 * badge colors each needing their own "done" variant).
+	 */
+	@Override
+	public void paint(java.awt.Graphics g)
+	{
+		if (ctx.getProgress().isCompleted(ctx.getVariant(), step.getId()))
+		{
+			java.awt.Graphics2D g2 = (java.awt.Graphics2D) g.create();
+			g2.setComposite(java.awt.AlphaComposite.SrcOver.derive(0.55f));
+			super.paint(g2);
+			g2.dispose();
+		}
+		else
+		{
+			super.paint(g);
+		}
+	}
+
 	/** Re-read live item counts into every badge (called after inventory/bank changes). */
 	void refreshItemBadges()
 	{
 		badgeRefreshers.forEach(Runnable::run);
+	}
+
+	/**
+	 * One commentary paragraph as a boxed NOTE block: darker inset panel,
+	 * a small NOTE caption, and the text at a readable warm grey — not
+	 * italic, not #808080. A leading "Note:" in the prose is dropped
+	 * because the caption already says it.
+	 */
+	private JPanel noteBlock(List<TextRun> paragraph)
+	{
+		List<TextRun> runs = paragraph;
+		if (!runs.isEmpty())
+		{
+			TextRun first = runs.get(0);
+			java.util.regex.Matcher prefix = java.util.regex.Pattern
+				.compile("^\\s*note\\s*:?\\s*", java.util.regex.Pattern.CASE_INSENSITIVE)
+				.matcher(first.getText());
+			if (prefix.find() && prefix.end() > 0)
+			{
+				runs = new ArrayList<>(paragraph);
+				runs.set(0, new TextRun(first.getText().substring(prefix.end()),
+					first.isBold(), first.isItalic(), first.isUnderline(),
+					first.isStrikethrough(), first.getColorHex(), first.getUrl()));
+			}
+		}
+
+		JLabel caption = new JLabel("NOTE");
+		caption.setFont(new Font(Font.DIALOG, Font.BOLD, 9));
+		caption.setForeground(NOTE_LABEL_FG);
+		caption.setAlignmentX(LEFT_ALIGNMENT);
+		caption.setBorder(BorderFactory.createEmptyBorder(0, 0, 1, 0));
+
+		// Same width-locked pane trick as sub text, so long notes wrap
+		// instead of widening every row; indent 0 — the box provides it.
+		JEditorPane text = htmlPane(RichText.runsHtml(runs, false, null), 0,
+			new Font(Font.DIALOG, Font.PLAIN, 11), NOTE_FG);
+
+		JPanel box = new JPanel();
+		box.setLayout(new BoxLayout(box, BoxLayout.Y_AXIS));
+		box.setBackground(BOX_BG);
+		box.setBorder(BorderFactory.createEmptyBorder(3, 6, 4, 4));
+		box.setAlignmentX(LEFT_ALIGNMENT);
+		box.add(caption);
+		box.add(text);
+
+		// Transparent wrapper carries the sub-text indent; capping max
+		// height stops BoxLayout stretching the box over trailing space.
+		JPanel wrapper = new JPanel(new BorderLayout());
+		wrapper.setOpaque(false);
+		wrapper.setBorder(BorderFactory.createEmptyBorder(3, 22, 1, 0));
+		wrapper.setAlignmentX(LEFT_ALIGNMENT);
+		wrapper.add(box, BorderLayout.CENTER);
+		wrapper.setMaximumSize(new Dimension(Integer.MAX_VALUE,
+			wrapper.getPreferredSize().height));
+		return wrapper;
 	}
 
 	/**
@@ -206,20 +313,46 @@ class StepRow extends JPanel
 			// to a colored have/need count. Vertical list = nothing to wrap.
 			JPanel list = new JPanel();
 			list.setLayout(new BoxLayout(list, BoxLayout.Y_AXIS));
-			list.setBackground(ColorScheme.DARK_GRAY_COLOR);
+			list.setBackground(CARD_BG);
 			list.setAlignmentX(LEFT_ALIGNMENT);
 			list.setBorder(BorderFactory.createEmptyBorder(0, indentPx, 2, 0));
 			list.setToolTipText("<html>Counts inventory + worn + bank (bank as of your last visit)</html>");
 			for (StepAnnotation.ItemNeed need : needs)
 			{
-				JLabel line = new JLabel();
-				line.setFont(new Font(Font.DIALOG, Font.PLAIN, 11));
-				line.setIconTextGap(4);
-				line.setAlignmentX(LEFT_ALIGNMENT);
-				ctx.getItems().attachIcon(need.name, line);
-				Runnable refresh = () -> line.setText(itemLineHtml(need, isBadgeDone(badgeSub)));
+				// Cards & chips restyle: NAME neutral on the left (CENTER
+				// of a BorderLayout, so a long one ellipsizes instead of
+				// widening every row), COUNT bold + colored on the right —
+				// scanning "what am I missing" goes down the right edge,
+				// and the one red count finally stands out because names
+				// no longer shout in the same colors.
+				JLabel name = new JLabel(RichText.escape(need.name));
+				name.setFont(new Font(Font.DIALOG, Font.PLAIN, 11));
+				name.setForeground(ITEM_NAME_FG);
+				name.setIconTextGap(4);
+				ctx.getItems().attachIcon(need.name, name);
+
+				JLabel count = new JLabel();
+				count.setFont(new Font(Font.DIALOG, Font.BOLD, 11));
+
+				Runnable refresh = () -> {
+					count.setText(itemCountHtml(need, isBadgeDone(badgeSub)));
+					name.setForeground(isBadgeDone(badgeSub)
+						? new Color(0x80, 0x80, 0x80) : ITEM_NAME_FG);
+				};
 				refresh.run();
 				badgeRefreshers.add(refresh);
+
+				JPanel line = new JPanel(new BorderLayout(4, 0));
+				line.setOpaque(false);
+				line.setAlignmentX(LEFT_ALIGNMENT);
+				line.add(name, BorderLayout.CENTER);
+				line.add(count, BorderLayout.EAST);
+				// Fixed preferred width so the widest name never becomes
+				// the row that widens the whole column; BoxLayout may
+				// stretch it wider, which just parks counts at the card edge.
+				int lineHeight = Math.max(name.getPreferredSize().height, 20);
+				line.setPreferredSize(new Dimension(TEXT_WIDTH + 56, lineHeight));
+				line.setMaximumSize(new Dimension(Integer.MAX_VALUE, lineHeight));
 
 				// Every item line is clickable: route to its known source
 				// (place/item-source/errand chain), else open its wiki page.
@@ -230,7 +363,8 @@ class StepRow extends JPanel
 				line.setToolTipText("<html>Matches item name \"" + RichText.escape(need.name)
 					+ "\"<br>" + (routable
 						? "Click: route to where you get it"
-						: "Click: open its wiki page") + "</html>");
+						: "Click: open its wiki page")
+					+ "<br>Counts inventory + worn + bank; 🏦 = enough, but it's banked</html>");
 				line.setCursor(java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.HAND_CURSOR));
 				line.addMouseListener(new java.awt.event.MouseAdapter()
 				{
@@ -313,21 +447,21 @@ class StepRow extends JPanel
 			: ctx.getProgress().isSubCompleted(ctx.getVariant(), step, sub);
 	}
 
-	/** One item's colored "name have/need" line, greyed once its row is done. */
-	private String itemLineHtml(StepAnnotation.ItemNeed need, boolean done)
+	/** The colored have/need COUNT of one item line (the name stays neutral). */
+	private String itemCountHtml(StepAnnotation.ItemNeed need, boolean done)
 	{
 		int required = need.quantity == null ? 1 : need.quantity;
 		int have = ctx.getItems().countOf(need.name);
 		int carried = ctx.getItems().carriedCountOf(need.name);
 
-		// green: carrying enough | orange: enough, but some is banked
+		// green: carrying enough | orange + 🏦: enough, but some is banked
 		// | red: not enough anywhere | grey: the step is already done,
 		// so the count is history, not a warning. UNSTACKABLE gathers
 		// bigger than an inventory (130 planks) are green on TOTAL —
 		// carrying them all unnoted is impossible. Stackables (1000 arrow
 		// shafts) fit in one slot, so they count carried like anything else.
 		String color;
-		String note = "";
+		String flag = "";
 		if (done)
 		{
 			color = "#808080";
@@ -340,17 +474,15 @@ class StepRow extends JPanel
 		else if (have >= required)
 		{
 			color = IN_BANK_HEX;
-			note = " (in bank)";
+			flag = "&nbsp;🏦";
 		}
 		else
 		{
 			color = MISSING_HEX;
 		}
-		return "<html><body style='width:120px'><b><font color='" + color + "'>"
-			+ RichText.escape(need.name) + "&nbsp;"
+		return "<html><font color='" + color + "'>"
 			+ ItemTracker.formatCount(have) + "/" + ItemTracker.formatCount(required)
-			+ (note.isEmpty() ? "" : "&nbsp;(in&nbsp;bank)")
-			+ "</font></b></body></html>";
+			+ flag + "</font></html>";
 	}
 
 	/**
@@ -389,7 +521,7 @@ class StepRow extends JPanel
 	{
 		masterBox = new JCheckBox("Step " + (step.getStepIndex() + 1));
 		masterBox.setSelected(ctx.getProgress().isCompleted(ctx.getVariant(), step.getId()) || allSubsTicked());
-		masterBox.setBackground(ColorScheme.DARK_GRAY_COLOR);
+		masterBox.setBackground(CARD_BG);
 		masterBox.setForeground(ColorScheme.BRAND_ORANGE);
 		masterBox.setFont(FontManager.getRunescapeSmallFont());
 		masterBox.setToolTipText(metadataTooltip());
@@ -415,7 +547,7 @@ class StepRow extends JPanel
 		});
 
 		JPanel header = new JPanel(new BorderLayout(4, 0));
-		header.setBackground(ColorScheme.DARK_GRAY_COLOR);
+		header.setBackground(CARD_BG);
 		header.setAlignmentX(LEFT_ALIGNMENT);
 		header.add(masterBox, BorderLayout.CENTER);
 		JPanel buttons = annotationButtons(step.getId());
@@ -484,7 +616,7 @@ class StepRow extends JPanel
 
 		JPanel buttons = new JPanel();
 		buttons.setLayout(new BoxLayout(buttons, BoxLayout.X_AXIS));
-		buttons.setBackground(ColorScheme.DARK_GRAY_COLOR);
+		buttons.setBackground(CARD_BG);
 
 		JButton navigate = null;
 		if (ctx.getNavigateHandler() != null)
@@ -646,52 +778,86 @@ class StepRow extends JPanel
 		{
 			return;
 		}
-		StringBuilder html = new StringBuilder();
+		List<JLabel> chips = new ArrayList<>();
 		if (location != null)
 		{
-			html.append(chipHtml("📍 " + location, location));
+			chips.add(chip("📍 " + location, location, CHIP_FG));
 		}
 		if (quest != null)
 		{
 			boolean completes = "complete".equalsIgnoreCase(step.getMetadata().get("questStatus"));
-			if (location != null)
-			{
-				// A NORMAL space between chips: the pair must be able to
-				// wrap onto two lines ("📍 Falador 📜 The Knight's Sword"
-				// is wider than the panel).
-				html.append("&nbsp; ");
-			}
-			html.append(chipHtml("📜 " + quest + (completes ? " ✓" : ""), quest));
+			chips.add(chip("📜 " + quest + (completes ? " ✓" : ""), quest, CHIP_QUEST_FG));
 		}
-		JEditorPane chips = htmlPane("<html><body>" + html + "</body></html>", 22,
-			new Font(Font.DIALOG, Font.PLAIN, 11), ColorScheme.LIGHT_GRAY_COLOR);
-		chips.setToolTipText("Show the route (needs the Shortest Path plugin)");
-		add(chips);
+
+		// One row when the pair fits the card, otherwise stacked — a
+		// FlowLayout would report single-row height and clip the wrap
+		// ("📍 Falador 📜 The Knight's Sword" is wider than the panel).
+		int combined = 22;
+		for (JLabel c : chips)
+		{
+			combined += c.getPreferredSize().width + 4;
+		}
+		boolean stack = combined > 200;
+		JPanel row = new JPanel();
+		row.setLayout(new BoxLayout(row, stack ? BoxLayout.Y_AXIS : BoxLayout.X_AXIS));
+		row.setOpaque(false);
+		row.setAlignmentX(LEFT_ALIGNMENT);
+		row.setBorder(BorderFactory.createEmptyBorder(4, 22, 1, 0));
+		for (int i = 0; i < chips.size(); i++)
+		{
+			JLabel c = chips.get(i);
+			c.setAlignmentX(LEFT_ALIGNMENT);
+			if (i > 0)
+			{
+				row.add(javax.swing.Box.createRigidArea(new Dimension(4, 3)));
+			}
+			row.add(c);
+		}
+		row.setMaximumSize(new Dimension(Integer.MAX_VALUE, row.getPreferredSize().height));
+		add(row);
 
 		// The Plugin Hub forbids starting Quest Helper FOR the player (the
-		// old reflection handoff), so each quest step says how to do it
-		// themselves instead.
+		// old reflection handoff), so quest steps point at it — ONE compact
+		// line now; the full how-to sentence on every quest step was noise.
 		if (quest != null)
 		{
-			add(htmlPane("<html><body><i>Quest Helper: select “" + RichText.escape(quest)
-					+ "” for click-by-click quest guidance</i></body></html>", 22,
-				new Font(Font.DIALOG, Font.ITALIC, 11), ColorScheme.PROGRESS_COMPLETE_COLOR));
+			JLabel tip = new JLabel("➜ Quest Helper: \"" + quest + "\"");
+			tip.setFont(new Font(Font.DIALOG, Font.PLAIN, 11));
+			tip.setForeground(CHIP_QUEST_FG);
+			tip.setAlignmentX(LEFT_ALIGNMENT);
+			tip.setBorder(BorderFactory.createEmptyBorder(3, 22, 1, 0));
+			tip.setToolTipText("<html>Select \"" + RichText.escape(quest)
+				+ "\" in the Quest Helper plugin for click-by-click quest guidance.<br>"
+				+ "(The Plugin Hub forbids plugins starting it for you.)</html>");
+			add(tip);
 		}
 	}
 
-	/** One chip as a place link — clicks land in the shared hyperlink handler. */
-	private static String chipHtml(String label, String target)
+	/** One bordered chip; clicking routes to its place via Shortest Path. */
+	private JLabel chip(String label, String target, Color fg)
 	{
-		try
+		JLabel chip = new JLabel(label);
+		chip.setFont(new Font(Font.DIALOG, Font.PLAIN, 10));
+		chip.setForeground(fg);
+		chip.setOpaque(true);
+		chip.setBackground(BOX_BG);
+		chip.setBorder(BorderFactory.createCompoundBorder(
+			BorderFactory.createLineBorder(BOX_EDGE, 1),
+			BorderFactory.createEmptyBorder(1, 5, 1, 5)));
+		chip.setCursor(java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.HAND_CURSOR));
+		chip.setToolTipText("Show the route (needs the Shortest Path plugin)");
+		chip.addMouseListener(new java.awt.event.MouseAdapter()
 		{
-			return "<a style='color:#e8a838;text-decoration:none' href='"
-				+ PlaceManager.LINK_PREFIX + java.net.URLEncoder.encode(target, "UTF-8") + "'>"
-				+ RichText.escape(label).replace(" ", "&nbsp;") + "</a>";
-		}
-		catch (UnsupportedEncodingException e)
-		{
-			throw new IllegalStateException(e); // UTF-8 always exists
-		}
+			@Override
+			public void mouseClicked(java.awt.event.MouseEvent e)
+			{
+				if (ctx.getPlaceNavigateHandler() != null)
+				{
+					ctx.getPlaceNavigateHandler().accept(target, step);
+				}
+			}
+		});
+		return chip;
 	}
 
 	/**
@@ -801,7 +967,7 @@ class StepRow extends JPanel
 
 			checkBox = new JCheckBox();
 			checkBox.setSelected(completed);
-			checkBox.setBackground(ColorScheme.DARK_GRAY_COLOR);
+			checkBox.setBackground(CARD_BG);
 			checkBox.addActionListener(e -> {
 				boolean nowCompleted = checkBox.isSelected();
 				ctx.getProgress().setSubCompleted(ctx.getVariant(), step, sub, nowCompleted);
@@ -844,11 +1010,11 @@ class StepRow extends JPanel
 			setHtml(completed);
 
 			JPanel checkBoxWrapper = new JPanel(new BorderLayout());
-			checkBoxWrapper.setBackground(ColorScheme.DARK_GRAY_COLOR);
+			checkBoxWrapper.setBackground(CARD_BG);
 			checkBoxWrapper.add(checkBox, BorderLayout.NORTH);
 
 			panel = new JPanel(new BorderLayout(2, 0));
-			panel.setBackground(ColorScheme.DARK_GRAY_COLOR);
+			panel.setBackground(CARD_BG);
 			panel.setAlignmentX(LEFT_ALIGNMENT);
 			panel.setBorder(BorderFactory.createEmptyBorder(
 				1, sub.getIndentLevel() * INDENT_PER_LEVEL, 1, 0));
@@ -862,7 +1028,7 @@ class StepRow extends JPanel
 			if (buttons != null)
 			{
 				JPanel buttonsWrapper = new JPanel(new BorderLayout());
-				buttonsWrapper.setBackground(ColorScheme.DARK_GRAY_COLOR);
+				buttonsWrapper.setBackground(CARD_BG);
 				buttonsWrapper.add(buttons, BorderLayout.NORTH);
 				panel.add(buttonsWrapper, BorderLayout.EAST);
 			}
