@@ -454,6 +454,51 @@ refresh when "Failed to login" appears.
   WorldPoints + ItemRequirements from Quest Helper source ("Quest Name",
   --item code search via gh, cache gitignored). Hub pin still cf9be08.
 
+- SESSION WAVE 5 (2026-08-05, live play-test, all pushed, main at
+  8f00d68): PLACES FILE DIED from a duplicate "zmi bank" JSON key —
+  Gson throws where lenient parsers shrug, every link/nav/arrival went
+  dark with one swallowed warning; BundledPlacesLoadTest now fails the
+  build on load regressions, PlaceLinkProbe (test main()) answers "why
+  doesn't X linkify". ZMI bank re-anchored at the Ourania Cave surface
+  entrance 2452,3231 (SP can't path into cave interiors — anchor
+  routable points at entrances). Teleport arrivals: text place NULL
+  falls back to the step 📍 tag via getLoose (word-order flips like
+  "battlefield of khazard" vs "Khazard Battlefield"), and a fresh
+  teleport widens the arrive radius to 45 (pads sit at area edges).
+  ERRANDS extended: quest-less steps allowed (active from step start),
+  WAYPOINT stages (item:null, satisfied by proximity ≤12 OR being
+  closer to the NEXT stage — teleport skips can't wedge), ZMI chain
+  seeded (entrance -> warriors 3015,5583 + rune scimitar). NPC
+  matching: species-suffix rule for COMBAT subs only ("a rat" matches
+  "Giant rat", "a bear" "Black bear"; specific-shadows-generic prefers
+  them); nearest-to-anchor nominee STICKY-disabled per sub once text
+  ever matched a scene NPC (dead-warrior gap crowned a Zamorak
+  crafter). Overlays: ModelOutlineRenderer everywhere (QH-crisp
+  silhouettes, no more hull blobs); TravelMenuOverlay highlights
+  matching entries in MenuNew (947, confirmed by the widget-load
+  probe, which logs groups while a travel sub is current) + classic
+  Menu 187 + last-loaded group; "Safespot" label floats over ⌖ tiles
+  when the sub says safespot; ⌖ right-click = remove captured location
+  (local only, releases navHold). Spirit tree: transport NETWORK type
+  in item_sources ("spirit tree" linkifies, click routes to NEAREST of
+  the 5 permanent trees; type "transport" excluded from
+  firstPlaceIn/lastPlaceIn so arrival can't false-tick at the origin
+  tree); "use the spirit tree" subs auto-route to the nearest tree
+  when far from the destination. TOOLS: audit-drops.mjs (combat-
+  acquisition goals vs wiki drop tables, species-page fallback via
+  intitle search — caught rat/bear meat semantics, validated the
+  Zamorak warrior scim); cross-check-quest-kits.mjs (our kit-step
+  annotation items vs QH getItemRequirements, guide-wide; 62 kit items
+  seeded across 28 quests from its first sweep — tentative entries
+  owner will correct in play; in-quest trackables deliberately NOT
+  seeded, they'd sit red forever); qh-lookup cache + wiki cache
+  gitignored. item_ids added: key 293, slayer gloves 6720, willow
+  branches 5933. Item sources seeded: bat bones (Keep Le Faye giant
+  bats), black candle (Catherby candle maker) from QH's Merlin's
+  Crystal WorldPoints. Giant-rat-for-meat confirmed by owner. Hub pin
+  STILL cf9be08 — many play-tested waves unpinned; bump when it next
+  matters.
+
 - The ONLY guide is **GuideVariant.OZIRIS** — Ironman Efficiency Guide
   v4, community "Enhanced 2026" edition from https://ironman.guide/,
   scraped by `tools/scrape-oziris.mjs` (575 steps, 7 sections). The
