@@ -3284,6 +3284,14 @@ public class IronscapePlugin extends Plugin
 			{
 				continue; // unresolvable name: can't count it, don't block on it
 			}
+			String lower = need.name.toLowerCase(Locale.ROOT);
+			if (lower.equals("coins") || lower.equals("gp"))
+			{
+				// GP-cost badges are informational: paying the fare mid-step
+				// drops the count below "need", and arrival at the paid-for
+				// destination must not hang on money already spent.
+				continue;
+			}
 			int required = need.quantity == null ? 1 : need.quantity;
 			int count = itemTracker.bankCountable(need.name, required)
 				? itemTracker.countOf(need.name)

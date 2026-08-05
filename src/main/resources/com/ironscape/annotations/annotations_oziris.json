@@ -1514,14 +1514,26 @@
     "x": 3014,
     "y": 3224,
     "plane": 0
-   }
+   },
+   "items": [
+    {
+     "name": "coins",
+     "quantity": 2000
+    }
+   ]
   },
   "3d7310c1e0": {
    "target": {
     "x": 3210,
     "y": 3252,
     "plane": 0
-   }
+   },
+   "items": [
+    {
+     "name": "coins",
+     "quantity": 506
+    }
+   ]
   },
   "fe6c7ce9d1": {
    "target": {
@@ -1556,14 +1568,26 @@
     "x": 2656,
     "y": 3152,
     "plane": 0
-   }
+   },
+   "items": [
+    {
+     "name": "coins",
+     "quantity": 100
+    }
+   ]
   },
   "7676874ffb": {
    "target": {
     "x": 2645,
     "y": 3360,
     "plane": 0
-   }
+   },
+   "items": [
+    {
+     "name": "coins",
+     "quantity": 8000
+    }
+   ]
   },
   "1846e0c4dc": {
    "target": {
@@ -1584,14 +1608,26 @@
     "x": 2695,
     "y": 3493,
     "plane": 0
-   }
+   },
+   "items": [
+    {
+     "name": "coins",
+     "quantity": 560
+    }
+   ]
   },
   "b6ed006cf7": {
    "target": {
     "x": 2871,
     "y": 2970,
     "plane": 0
-   }
+   },
+   "items": [
+    {
+     "name": "coins",
+     "quantity": 40000
+    }
+   ]
   },
   "c695521f0c": {
    "target": {
@@ -1605,14 +1641,26 @@
     "x": 3505,
     "y": 3499,
     "plane": 0
-   }
+   },
+   "items": [
+    {
+     "name": "coins",
+     "quantity": 170
+    }
+   ]
   },
   "c7df380d64": {
    "target": {
     "x": 2930,
     "y": 10197,
     "plane": 0
-   }
+   },
+   "items": [
+    {
+     "name": "coins",
+     "quantity": 8400
+    }
+   ]
   },
   "b59810d9bc": {
    "target": {
@@ -1626,7 +1674,13 @@
     "x": 2930,
     "y": 10197,
     "plane": 0
-   }
+   },
+   "items": [
+    {
+     "name": "coins",
+     "quantity": 420000
+    }
+   ]
   },
   "70e5cc9e67": {
    "target": {
@@ -4916,6 +4970,174 @@
     "varp": 65,
     "value": 5
    }
+  },
+  "595abf6496": {
+   "items": [
+    {
+     "name": "coins",
+     "quantity": 200
+    }
+   ]
+  },
+  "62593ad63e": {
+   "items": [
+    {
+     "name": "coins",
+     "quantity": 1000
+    }
+   ]
+  },
+  "2e1c4d1557": {
+   "items": [
+    {
+     "name": "coins",
+     "quantity": 1000
+    }
+   ]
+  },
+  "86fde08b26": {
+   "items": [
+    {
+     "name": "coins",
+     "quantity": 200
+    }
+   ]
+  },
+  "1d8c7efbb6": {
+   "items": [
+    {
+     "name": "coins",
+     "quantity": 1500
+    }
+   ]
+  },
+  "84d6f71d36": {
+   "items": [
+    {
+     "name": "coins",
+     "quantity": 304
+    }
+   ]
+  },
+  "1bf35f828a": {
+   "items": [
+    {
+     "name": "coins",
+     "quantity": 224
+    }
+   ]
+  },
+  "8c439f20dc": {
+   "items": [
+    {
+     "name": "coins",
+     "quantity": 2400
+    }
+   ]
+  },
+  "167258a523": {
+   "items": [
+    {
+     "name": "coins",
+     "quantity": 210
+    }
+   ]
+  },
+  "dd66d6db11": {
+   "items": [
+    {
+     "name": "coins",
+     "quantity": 1152000
+    }
+   ]
+  },
+  "b2951d28e5": {
+   "items": [
+    {
+     "name": "coins",
+     "quantity": 32000
+    }
+   ]
+  },
+  "864ba13b05": {
+   "items": [
+    {
+     "name": "coins",
+     "quantity": 2000
+    }
+   ]
+  },
+  "4e6d2a5172": {
+   "items": [
+    {
+     "name": "coins",
+     "quantity": 160
+    }
+   ]
+  },
+  "20d1e38ae4": {
+   "items": [
+    {
+     "name": "coins",
+     "quantity": 1200
+    }
+   ]
+  },
+  "7d846af3e5": {
+   "items": [
+    {
+     "name": "coins",
+     "quantity": 12000
+    }
+   ]
+  },
+  "0faaf22d06": {
+   "items": [
+    {
+     "name": "coins",
+     "quantity": 420
+    }
+   ]
+  },
+  "9acaed623e": {
+   "items": [
+    {
+     "name": "coins",
+     "quantity": 5200
+    }
+   ]
+  },
+  "75ebe72290": {
+   "items": [
+    {
+     "name": "coins",
+     "quantity": 2600
+    }
+   ]
+  },
+  "d84e4cb945": {
+   "items": [
+    {
+     "name": "coins",
+     "quantity": 900000
+    }
+   ]
+  },
+  "9dd253f879": {
+   "items": [
+    {
+     "name": "coins",
+     "quantity": 100000
+    }
+   ]
+  },
+  "930916ba4a": {
+   "items": [
+    {
+     "name": "coins",
+     "quantity": 2100
+    }
+   ]
   }
  }
 }

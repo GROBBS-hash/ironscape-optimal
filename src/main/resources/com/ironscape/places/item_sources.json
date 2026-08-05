@@ -35,6 +35,20 @@
    "y": 9580,
    "plane": 0,
    "note": "Glarial's pebble: ask Golrie in the Tree Gnome Village dungeon (ladder in the maze centre). The key from the off-coloured crate in the east room opens his gate."
+  },
+  "saltpetre": {
+   "display": "Saltpetre",
+   "x": 1700,
+   "y": 3522,
+   "plane": 0,
+   "note": "Saltpetre: dig with a spade at the deposits north-east of the Woodcutting Guild (deposit box in the middle of them)."
+  },
+  "compost": {
+   "display": "Compost",
+   "x": 1763,
+   "y": 3594,
+   "plane": 0,
+   "note": "Compost: buy from Vannah's Farming Stall in Hosidius (sells Compost and Compost packs)."
   }
  }
 }
