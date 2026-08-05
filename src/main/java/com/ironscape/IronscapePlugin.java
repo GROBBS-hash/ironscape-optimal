@@ -838,7 +838,7 @@ public class IronscapePlugin extends Plugin
 	 * battlefield"). Gates place-name arrival ticks.
 	 */
 	private static final java.util.regex.Pattern MOVEMENT_WORD = java.util.regex.Pattern.compile(
-		"\\b(?:go|walk|run|head|return|travel|enter|exit|climb|cross|move|proceed|sail|ride|fly|swim|tele|teleport|tabs?)\\b",
+		"\\b(?:go|walk|run|head|return|travel|enter|exit|climb|cross|move|proceed|sail|ride|fly|swim|tele|teleport|tabs?|charter)\\b",
 		java.util.regex.Pattern.CASE_INSENSITIVE);
 
 	/**
@@ -3206,13 +3206,19 @@ public class IronscapePlugin extends Plugin
 
 		WorldPoint here = player.getWorldLocation();
 		// A ⌖ capture is a precise spot; a place name is a whole town —
-		// entering from any gate should count.
+		// entering from any gate should count. EXCEPT network travel
+		// ("Charter to port sarim", "use the spirit tree"): a capture
+		// there marks the BOARDING point (owner captured the Khazard dock
+		// and the step ticked on arriving at the dock, destination unseen)
+		// — the text's destination is what arrival must prove.
+		boolean networkTravel = CHARTER.matcher(sub.getPlainText()).find()
+			|| SPIRIT_TREE.matcher(sub.getPlainText()).find();
 		StepAnnotation.Target precise = annotationManager.getTarget(sub.getId());
 		if (precise == null)
 		{
 			precise = annotationManager.getTarget(step.getId());
 		}
-		if (precise != null)
+		if (precise != null && !networkTravel)
 		{
 			return here.getPlane() == precise.plane
 				&& here.distanceTo(new WorldPoint(precise.x, precise.y, precise.plane)) <= ARRIVE_RADIUS;

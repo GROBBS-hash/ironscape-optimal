@@ -567,6 +567,58 @@ refresh when "Failed to login" appears.
   "Capture as safespot" (Target.safespot flag) — tile gets the
   floating "Safespot" label on steps whose text never says the word.
 
+- SESSION WAVE 7 (2026-08-05 late night, live play-test, main at
+  fcae7ab): DEATH ROUTING — ActorDeath pins nav on the death tile
+  above everything (Gravestone tile marker, 10-tick re-post, clears
+  within 8 tiles; teleport detector MUTED while a grave waits — the
+  respawn jump must not tick travel subs). CARDS RESTYLE shipped in 3
+  rounds: mockup artifact -> variant C; ACTIVE cards near-black
+  #1f1e1b vs DONE flat grey #2b2b2b + 0.55 alpha (owner wanted the
+  inversion); the REAL clipping culprit after 2 blind rounds was the
+  scroll wrapper — a plain JPanel lays out at PREFERRED width inside
+  a JViewport and HORIZONTAL_SCROLLBAR_NEVER hides the overflow;
+  ViewportWidthPanel (Scrollable, tracksViewportWidth) fixed it and
+  StepRow self-logs "card wider than viewport" naming the widest
+  child. Capitalize display names (ItemTracker.capitalize; skill
+  badges stopped lowercasing) — display only, matching stays
+  lowercase. ROUTE-AWARE TELEPORT HINTS: minigame_landings.json
+  (13 surface landings, interiors use surface exits) — when the
+  frontier target (or gravestone) is >100 tiles and a landing is
+  <60% of player distance, the Grouping click-path lights unprompted;
+  gated on the 20-min cooldown (VarPlayer.LAST_MINIGAME_TELEPORT=888);
+  presence/region learning kills it post-teleport (interiors keep 2D
+  distances huge). SPELL fallback: TELEPORT_SPELLS (standard book,
+  level + LAW runes carried + quest gates; elements unchecked —
+  staves) highlights the spell widget/Magic tab via the same overlay.
+  BARCRAWL bar pins re-seeded to QH's exact bartender WorldPoints
+  (all 10 were door-adjacent); bartenders joined shop_npcs.json
+  (Bartender/Zembo/Kaylee/Blurberry) and the keeper join DROPPED its
+  purchase-goal gate (curated entry = intent; barcrawl subs carry varp
+  checkpoints). CONFIRMED IN PLAY: fight-pit hint end-to-end, stamp
+  tick, bartender outline. WATERFALL WEDGE: "Drop runes outside
+  glarial's tomb" (no quest tag, items consumed) seeded varp 65>=5.
+  CHARTER_DOCKS network (8 docks, spirit-tree treatment) for
+  "Charter to X" subs. QH INTERFERENCE FOUND: Quest.getState runs a
+  CLIENTSCRIPT and the jumped-ahead scan called it ~100x EVERY TICK
+  (+ per-sub subsume calls) — enough script load to break QH pathing
+  (owner had to reload quest state); lastQuestState is now the cache,
+  scan every 5 ticks, all per-tick readers use cachedQuestState.
+  NULODION'S NOTES: kit name was invented ("notes for dwarf cannon",
+  id 3 correct) — sprite fine, counting dead; AUDIT SECTION 4
+  (GoalAuditDumpTest dumps gameval ItemID constants ->
+  build/item-id-constants.tsv; audit-goals verifies every item_ids
+  KEY against its id's constant name, word-form tolerant, VERIFIED
+  allow-list for hand-checked colloquials). ONE OPEN SUSPECT: "big
+  frog leg" -> 7908 RAG_MEDIUM_FROG_BONE — ask owner (wishlist bone
+  vs food). BANK FILTER FREEZE: the section window re-anchored on the
+  live frontier every rebuild — withdrawals auto-ticked steps and the
+  layout jumped mid-banking; frozenFilterStepIds fixes composition at
+  filter activation (live counts, done steps stay green), unfreezes
+  on deactivate/fresh bank open. OPEN TASKS: GP-cost badges on
+  fee/purchase steps (charter fares, compost — seed from wiki);
+  big frog leg verdict; minigame landing + charter dock coords are
+  owner-tentative.
+
 - KIT-SEEDING POLICY (owner, 2026-08-05): quest-kit annotation items
   carry TRUE REQUIREMENTS always; items a quest hands you MID-QUEST
   never (they sit permanently red — misinformation); "nice to have"
