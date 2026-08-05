@@ -536,6 +536,9 @@
     {
      "name": "balls of wool",
      "quantity": 20
+    },
+    {
+     "name": "shears"
     }
    ]
   },
@@ -968,6 +971,9 @@
     {
      "name": "pickaxe",
      "quantity": 1
+    },
+    {
+     "name": "candle"
     }
    ]
   },
@@ -1375,6 +1381,9 @@
     {
      "name": "dramen staff",
      "quantity": 1
+    },
+    {
+     "name": "thread"
     }
    ]
   },
@@ -2163,6 +2172,9 @@
     {
      "name": "spade",
      "quantity": 1
+    },
+    {
+     "name": "cooked meat"
     }
    ]
   },
@@ -2239,6 +2251,9 @@
     {
      "name": "coins",
      "quantity": 50
+    },
+    {
+     "name": "hammer"
     }
    ]
   },
@@ -2287,6 +2302,12 @@
     {
      "name": "pickaxe",
      "quantity": 1
+    },
+    {
+     "name": "tinderbox"
+    },
+    {
+     "name": "candle"
     }
    ]
   },
@@ -2720,6 +2741,9 @@
     {
      "name": "beer glass",
      "quantity": 1
+    },
+    {
+     "name": "dwarven stout"
     }
    ]
   },
@@ -2902,6 +2926,12 @@
     {
      "name": "swamp tar",
      "quantity": 1
+    },
+    {
+     "name": "iron sword"
+    },
+    {
+     "name": "iron arrows"
     }
    ]
   },
@@ -3072,6 +3102,21 @@
     {
      "name": "chisel",
      "quantity": 1
+    },
+    {
+     "name": "guam leaf"
+    },
+    {
+     "name": "marrentill"
+    },
+    {
+     "name": "harralander"
+    },
+    {
+     "name": "empty cup"
+    },
+    {
+     "name": "bowl of hot water"
     }
    ]
   },
@@ -3113,6 +3158,15 @@
     {
      "name": "picture",
      "quantity": 1
+    },
+    {
+     "name": "bucket of milk"
+    },
+    {
+     "name": "chocolate dust"
+    },
+    {
+     "name": "snape grass"
     }
    ]
   },
@@ -3200,6 +3254,12 @@
     {
      "name": "cooked rabbit",
      "quantity": 1
+    },
+    {
+     "name": "shortbow"
+    },
+    {
+     "name": "iron arrows"
     }
    ]
   },
@@ -3233,6 +3293,9 @@
     {
      "name": "bucket",
      "quantity": 1
+    },
+    {
+     "name": "slayer gloves"
     }
    ]
   },
@@ -3350,6 +3413,9 @@
     {
      "name": "bones",
      "quantity": 3
+    },
+    {
+     "name": "tinderbox"
     }
    ]
   },
@@ -3510,6 +3576,18 @@
     {
      "name": "shortbow",
      "quantity": 1
+    },
+    {
+     "name": "air runes"
+    },
+    {
+     "name": "law runes"
+    },
+    {
+     "name": "candle"
+    },
+    {
+     "name": "iron arrows"
     }
    ]
   },
@@ -3530,6 +3608,9 @@
     {
      "name": "rope",
      "quantity": 1
+    },
+    {
+     "name": "tinderbox"
     }
    ]
   },
@@ -3538,6 +3619,12 @@
     {
      "name": "limpwurt root",
      "quantity": 20
+    },
+    {
+     "name": "knife"
+    },
+    {
+     "name": "candle"
     }
    ]
   },
@@ -3647,6 +3734,12 @@
     {
      "name": "raw manta ray",
      "quantity": 1
+    },
+    {
+     "name": "knife"
+    },
+    {
+     "name": "axe"
     }
    ]
   },
@@ -3695,6 +3788,15 @@
     {
      "name": "logs",
      "quantity": 1
+    },
+    {
+     "name": "gold ring"
+    },
+    {
+     "name": "flowers"
+    },
+    {
+     "name": "cake"
     }
    ]
   },
@@ -3727,6 +3829,9 @@
     {
      "name": "saw",
      "quantity": 1
+    },
+    {
+     "name": "prayer potion(4)"
     }
    ]
   },
@@ -3748,6 +3853,15 @@
     {
      "name": "tinderbox",
      "quantity": 1
+    },
+    {
+     "name": "plank"
+    },
+    {
+     "name": "shortbow"
+    },
+    {
+     "name": "iron arrows"
     }
    ]
   },
@@ -3776,6 +3890,15 @@
     {
      "name": "rune essence",
      "quantity": 20
+    },
+    {
+     "name": "candle"
+    },
+    {
+     "name": "rope"
+    },
+    {
+     "name": "law runes"
     }
    ]
   },
@@ -3824,6 +3947,9 @@
     {
      "name": "jangerberries",
      "quantity": 1
+    },
+    {
+     "name": "candle"
     }
    ]
   },
@@ -3921,6 +4047,9 @@
     {
      "name": "death rune",
      "quantity": 1
+    },
+    {
+     "name": "astral runes"
     }
    ]
   },
@@ -3982,6 +4111,9 @@
     {
      "name": "coin",
      "quantity": 1
+    },
+    {
+     "name": "bucket of water"
     }
    ]
   },
@@ -4134,6 +4266,15 @@
     {
      "name": "thread",
      "quantity": 1
+    },
+    {
+     "name": "red dye"
+    },
+    {
+     "name": "blue dye"
+    },
+    {
+     "name": "yellow dye"
     }
    ]
   },
@@ -4150,6 +4291,9 @@
     {
      "name": "knife",
      "quantity": 1
+    },
+    {
+     "name": "axe"
     }
    ]
   },
@@ -4546,6 +4690,12 @@
     {
      "name": "bar",
      "quantity": 1
+    },
+    {
+     "name": "law runes"
+    },
+    {
+     "name": "air runes"
     }
    ]
   },
@@ -4622,6 +4772,47 @@
     {
      "name": "spade",
      "quantity": 1
+    }
+   ]
+  },
+  "e79ef96e9b": {
+   "items": [
+    {
+     "name": "papyrus"
+    },
+    {
+     "name": "ball of wool"
+    },
+    {
+     "name": "empty sack"
+    },
+    {
+     "name": "candle"
+    },
+    {
+     "name": "yellow dye"
+    },
+    {
+     "name": "red dye"
+    },
+    {
+     "name": "silk"
+    },
+    {
+     "name": "bowl"
+    },
+    {
+     "name": "logs"
+    },
+    {
+     "name": "tinderbox"
+    },
+    {
+     "name": "willow branches"
+    },
+    {
+     "name": "potato",
+     "quantity": 10
     }
    ]
   }
