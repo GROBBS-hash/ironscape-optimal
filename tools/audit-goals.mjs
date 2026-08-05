@@ -172,7 +172,11 @@ if (!fs.existsSync(constantsTsv)) {
   // differs from the constant: extend as new ones are confirmed.
   // (First sweep 2026-08-05: every flag hand-checked against the wiki —
   // these are correct ids under colloquial/abbreviated constant names.)
-  const VERIFIED = new Set(['agility pots', 'b gloves', 'black wizards hat',
+  // (2026-08-06: 'big frog leg' -> 7908 RAG_MEDIUM_FROG_BONE confirmed by
+  // owner against the wiki — the Rag & Bone Man wishlist bone from Big
+  // frogs in Lumbridge Swamp; Jagex's constant calls the size "medium".)
+  const VERIFIED = new Set(['big frog leg',
+    'agility pots', 'b gloves', 'black wizards hat',
     'blurite sword', 'bronze arrowtips', 'buckets of slime', 'cadava potion',
     'digsite pendants', 'dragon defender', 'fally teletab', "green d'hide top",
     'helm of neitiznot', 'house teletabs', 'jugs of vinegar', 'key imprint',
