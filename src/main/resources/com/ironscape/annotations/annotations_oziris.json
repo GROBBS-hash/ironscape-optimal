@@ -5212,6 +5212,13 @@
      "quantity": 1
     }
    ]
+  },
+  "ae8a853fb6:0": {
+   "requires": {
+    "varbit": 1850,
+    "value": 3,
+    "label": "chest unlocked"
+   }
   }
  }
 }
