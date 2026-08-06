@@ -85,6 +85,17 @@ public class PlaceManager
 			bundled.size(), local.size(), questGivers.size(), shopKeepers.size());
 	}
 
+	/** The NPC who sells this item, by name, or null. */
+	public synchronized String sourceVendor(String name)
+	{
+		Place place = local.get(key(name));
+		if (place == null)
+		{
+			place = bundled.get(key(name));
+		}
+		return place == null ? null : place.vendor;
+	}
+
 	/** The scene object vending this item (lowercase), or null. */
 	public synchronized String sourceObject(String name)
 	{
@@ -543,5 +554,11 @@ public class PlaceManager
 		 * counterpart of the shopkeeper outline.
 		 */
 		String object;
+		/**
+		 * Item sources only: the NPC who sells it, BY NAME ("Diango") —
+		 * named outlines never fall back to nearest-to-pin (a Market
+		 * Guard walked past the stall and wore the card icon).
+		 */
+		String vendor;
 	}
 }

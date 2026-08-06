@@ -2632,6 +2632,28 @@ public class IronscapePlugin extends Plugin
 			{
 				npcNames.add(errand.npc.toLowerCase(Locale.ROOT));
 			}
+			// Item-source VENDORS join the same way ("teleports" names
+			// Diango): the seller outlines by name, and the nearest-to-pin
+			// nominee never gets a vote (a Market Guard wore the card icon).
+			if (!errandOnly)
+			{
+				List<GoalDetector.ItemGoal> vendorGoals = itemGoalsBySub.get(current.sub.getId());
+				if (vendorGoals != null)
+				{
+					for (GoalDetector.ItemGoal goal : vendorGoals)
+					{
+						if (itemTracker.countOf(goal.getItemName()) >= goal.getQuantity())
+						{
+							continue;
+						}
+						String vendor = placeManager.sourceVendor(goal.getItemName());
+						if (vendor != null)
+						{
+							npcNames.add(vendor.toLowerCase(Locale.ROOT));
+						}
+					}
+				}
+			}
 			// A specific name shadows a generic one it contains: "milk the
 			// dairy cow" matches the NPCs "Dairy cow" AND "Cow", but the
 			// guide means the specific one — without this every regular cow

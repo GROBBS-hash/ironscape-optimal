@@ -50,7 +50,8 @@
    "x": 1763,
    "y": 3594,
    "plane": 0,
-   "note": "Compost: buy from Vannah's Farming Stall in Hosidius (sells Compost and Compost packs)."
+   "note": "Compost: buy from Vannah's Farming Stall in Hosidius (sells Compost and Compost packs).",
+   "vendor": "Vannah"
   },
   "buckets of milk": {
    "display": "Buckets of milk",
@@ -82,14 +83,16 @@
    "x": 3081,
    "y": 3247,
    "plane": 0,
-   "note": "Teleport cards: buy from Diango in the Draynor market — they charge the Chronicle (one teleport per card)."
+   "note": "Teleport cards: buy from Diango in the Draynor market — they charge the Chronicle (one teleport per card).",
+   "vendor": "Diango"
   },
   "teleport cards": {
    "display": "Teleport cards",
    "x": 3081,
    "y": 3247,
    "plane": 0,
-   "note": "Teleport cards: buy from Diango in the Draynor market — they charge the Chronicle (one teleport per card)."
+   "note": "Teleport cards: buy from Diango in the Draynor market — they charge the Chronicle (one teleport per card).",
+   "vendor": "Diango"
   }
  }
 }
