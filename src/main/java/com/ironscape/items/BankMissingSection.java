@@ -112,6 +112,45 @@ public class BankMissingSection
 			return;
 		}
 
+		// The BANKMAIN build script sizes the container's child array to the
+		// live item count — a WITHDRAWAL shrinks it and silently drops the
+		// highest-index children, which are our pooled widgets. Every pass
+		// after that talked to dead widgets: one more icon vanished per
+		// withdrawal and counts froze on stale text (owner screenshots,
+		// 2026-08-06). If anything pooled fell out of the container,
+		// recreate the whole pool fresh this pass.
+		java.util.Set<Widget> liveChildren = new java.util.HashSet<>();
+		for (Widget child : container.getDynamicChildren())
+		{
+			if (child != null)
+			{
+				liveChildren.add(child);
+			}
+		}
+		boolean stale = false;
+		for (Widget widget : textPool)
+		{
+			if (!liveChildren.contains(widget))
+			{
+				stale = true;
+				break;
+			}
+		}
+		for (Widget widget : iconPool)
+		{
+			if (stale || !liveChildren.contains(widget))
+			{
+				stale = true;
+				break;
+			}
+		}
+		if (stale)
+		{
+			log.info("bank filter pools went stale (container resized) — recreating");
+			textPool.clear();
+			iconPool.clear();
+		}
+
 		// Index the REAL bank item widgets by their item NAME — including
 		// currently hidden ones (items on other tabs). Owned items are laid
 		// out by MOVING these into our sections, so their withdraw menu
