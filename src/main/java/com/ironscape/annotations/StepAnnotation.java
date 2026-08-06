@@ -97,6 +97,13 @@ public class StepAnnotation
 		 * ladder, so a 12-tile stage self-satisfied on arrival downstairs.
 		 */
 		public Integer radius;
+		/**
+		 * On the FIRST stage only: the chain guides even while the step's
+		 * quest is NOT_STARTED — for PREP steps that craft hand-ins before
+		 * the quest begins (Prince Ali's paste/wig/imprint run). Without
+		 * it a quest-tagged chain waits for the quest to start.
+		 */
+		public Boolean preQuest;
 	}
 
 	public static class Link

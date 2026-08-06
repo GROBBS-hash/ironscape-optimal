@@ -628,10 +628,17 @@ public class IronscapePlugin extends Plugin
 		// quest-start guidance is the right pointer). Quest-LESS steps
 		// ("run to ZMI bank and safespot...") have no such conflict —
 		// their errand chain guides from the moment the step is current.
+		// A chain whose first stage says preQuest guides regardless: PREP
+		// steps craft their hand-ins BEFORE the quest begins. (Cached
+		// state — Quest.getState runs a clientscript, and this is per-tick.)
 		Quest quest = stepQuest(current);
-		if (quest != null && quest.getState(client) == QuestState.NOT_STARTED)
+		if (quest != null && cachedQuestState(quest) == QuestState.NOT_STARTED)
 		{
-			return null;
+			List<StepAnnotation.Errand> chain = errandChain(current.step, current.sub);
+			if (chain.isEmpty() || !Boolean.TRUE.equals(chain.get(0).preQuest))
+			{
+				return null;
+			}
 		}
 		return unsatisfiedErrandStage(current.step, current.sub);
 	}

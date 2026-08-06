@@ -5428,6 +5428,32 @@
      "optional": true
     }
    ]
+  },
+  "a4ecfb06ea:0": {
+   "errands": [
+    {
+     "x": 3086,
+     "y": 3257,
+     "plane": 0,
+     "item": "skin paste",
+     "preQuest": true,
+     "note": "Hand Aggie the ashes, pot of flour, bucket of water and redberries — she mixes the skin paste."
+    },
+    {
+     "x": 3097,
+     "y": 3257,
+     "plane": 0,
+     "item": "wig",
+     "note": "Give Ned 3 balls of wool to knit a wig, then use the YELLOW DYE on it."
+    },
+    {
+     "x": 3127,
+     "y": 3244,
+     "plane": 0,
+     "item": "key imprint",
+     "note": "Start Prince Ali Rescue first (Hassan then Osman, Al Kharid palace), then talk to Lady Keli here and press her key into the soft clay. Keep the imprint — Osman wants it plus a bronze bar."
+    }
+   ]
   }
  }
 }
