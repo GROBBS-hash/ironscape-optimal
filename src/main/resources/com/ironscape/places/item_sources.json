@@ -52,17 +52,17 @@
   },
   "buckets of milk": {
    "display": "Buckets of milk",
-   "x": 3172,
-   "y": 3317,
+   "x": 3219,
+   "y": 9623,
    "plane": 0,
-   "note": "Buckets of milk: no shop sells these — bring empty buckets and milk the Dairy cow at the farm north of Lumbridge (one milking per bucket)."
+   "note": "Buckets of milk: buy from the Culinaromancer's Chest in the Lumbridge Castle basement (trapdoor in the castle kitchen) — unlocked by starting RFD. It also stocks eggs and pots of flour."
   },
   "bucket of milk": {
    "display": "Bucket of milk",
-   "x": 3172,
-   "y": 3317,
+   "x": 3219,
+   "y": 9623,
    "plane": 0,
-   "note": "Buckets of milk: no shop sells these — bring empty buckets and milk the Dairy cow at the farm north of Lumbridge (one milking per bucket)."
+   "note": "Buckets of milk: buy from the Culinaromancer's Chest in the Lumbridge Castle basement (trapdoor in the castle kitchen) — unlocked by starting RFD. It also stocks eggs and pots of flour."
   }
  }
 }
