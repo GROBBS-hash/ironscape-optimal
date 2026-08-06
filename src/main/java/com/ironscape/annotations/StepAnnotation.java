@@ -120,6 +120,12 @@ public class StepAnnotation
 		public String name;
 		/** How many are needed; null means 1. */
 		public Integer quantity;
+		/**
+		 * Keep-if-you-get-it, not a requirement ("keep robes, opal and
+		 * buttons"): the badge shows a muted "(optional)" tag and an unmet
+		 * count stays grey, never alarm red.
+		 */
+		public Boolean optional;
 	}
 
 	public static class Target

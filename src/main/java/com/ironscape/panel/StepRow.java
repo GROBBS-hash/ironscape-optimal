@@ -367,7 +367,12 @@ class StepRow extends JPanel
 				// scanning "what am I missing" goes down the right edge,
 				// and the one red count finally stands out because names
 				// no longer shout in the same colors.
-				JLabel name = new JLabel(RichText.escape(ItemTracker.capitalize(need.name)));
+				// "(optional)" marks keep-if-you-get-it items — never
+				// requirements, so the tag and an unmet count stay muted.
+				JLabel name = new JLabel(Boolean.TRUE.equals(need.optional)
+					? "<html>" + RichText.escape(ItemTracker.capitalize(need.name))
+						+ " <font color='#877e6f'>(optional)</font></html>"
+					: RichText.escape(ItemTracker.capitalize(need.name)));
 				name.setFont(new Font(Font.DIALOG, Font.PLAIN, 11));
 				name.setForeground(ITEM_NAME_FG);
 				name.setIconTextGap(4);
@@ -524,7 +529,9 @@ class StepRow extends JPanel
 		}
 		else
 		{
-			color = MISSING_HEX;
+			// An optional item you don't have is not a problem — muted
+			// grey, never the alarm red of a real requirement.
+			color = Boolean.TRUE.equals(need.optional) ? "#877e6f" : MISSING_HEX;
 		}
 		return "<html><font color='" + color + "'>"
 			+ ItemTracker.formatCount(have) + "/" + ItemTracker.formatCount(required)

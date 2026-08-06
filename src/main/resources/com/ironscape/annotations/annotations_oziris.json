@@ -5329,19 +5329,48 @@
    "items": [
     {
      "name": "ham shirt",
-     "quantity": 1
+     "quantity": 1,
+     "optional": true
     },
     {
      "name": "ham robe",
-     "quantity": 1
+     "quantity": 1,
+     "optional": true
+    },
+    {
+     "name": "ham hood",
+     "quantity": 1,
+     "optional": true
+    },
+    {
+     "name": "ham cloak",
+     "quantity": 1,
+     "optional": true
+    },
+    {
+     "name": "ham logo",
+     "quantity": 1,
+     "optional": true
+    },
+    {
+     "name": "ham gloves",
+     "quantity": 1,
+     "optional": true
+    },
+    {
+     "name": "ham boots",
+     "quantity": 1,
+     "optional": true
     },
     {
      "name": "uncut opal",
-     "quantity": 1
+     "quantity": 1,
+     "optional": true
     },
     {
      "name": "buttons",
-     "quantity": 1
+     "quantity": 1,
+     "optional": true
     }
    ]
   }
