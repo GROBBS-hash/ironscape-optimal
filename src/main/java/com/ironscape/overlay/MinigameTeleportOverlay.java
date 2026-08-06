@@ -180,12 +180,13 @@ public class MinigameTeleportOverlay extends Overlay
 
 		// Spellbook open: its Minigame Teleport button is the shortest path
 		// from here — clicking it opens the Grouping flow we then guide.
+		// Labeled: the button is generic, the recommendation isn't.
 		for (int componentId : SPELLBOOK_MINIGAME_TELEPORTS)
 		{
 			Widget spell = client.getWidget(componentId);
 			if (spell != null && !spell.isHidden())
 			{
-				highlight(graphics, spell);
+				highlightLabeled(graphics, spell, minigame);
 				return null;
 			}
 		}
@@ -195,14 +196,18 @@ public class MinigameTeleportOverlay extends Overlay
 		Widget channels = client.getWidget(InterfaceID.SideChannels.UNIVERSE);
 		if (channels != null && !channels.isHidden())
 		{
-			highlight(graphics, client.getWidget(InterfaceID.SideChannels.TAB_3));
+			highlightLabeled(graphics, client.getWidget(InterfaceID.SideChannels.TAB_3), minigame);
 			return null;
 		}
 
 		// Neither route's panel is open: light up BOTH ways in — the
 		// grouping side tab and the magic side tab both lead to the
-		// minigame teleport.
-		highlightFirstVisible(graphics, SIDE_TAB_CANDIDATES);
+		// minigame teleport. The label names the destination minigame.
+		Widget sideTab = firstVisible(SIDE_TAB_CANDIDATES);
+		if (sideTab != null)
+		{
+			highlightLabeled(graphics, sideTab, minigame);
+		}
 		highlightFirstVisible(graphics, MAGIC_TAB_CANDIDATES);
 		return null;
 	}
@@ -227,15 +232,20 @@ public class MinigameTeleportOverlay extends Overlay
 
 	private void highlightFirstVisible(Graphics2D graphics, int[] componentIds)
 	{
+		highlight(graphics, firstVisible(componentIds));
+	}
+
+	private Widget firstVisible(int[] componentIds)
+	{
 		for (int componentId : componentIds)
 		{
 			Widget widget = client.getWidget(componentId);
 			if (widget != null && !widget.isHidden())
 			{
-				highlight(graphics, widget);
-				return;
+				return widget;
 			}
 		}
+		return null;
 	}
 
 	private void renderInsideGrouping(Graphics2D graphics, String minigame)
@@ -366,5 +376,31 @@ public class MinigameTeleportOverlay extends Overlay
 		graphics.setColor(HIGHLIGHT);
 		graphics.setStroke(new BasicStroke(2));
 		graphics.draw(bounds);
+	}
+
+	/**
+	 * Highlight plus the RECOMMENDATION's name floated beside the box —
+	 * a bare green square on the Minigame Teleport button reads as
+	 * "minigame, trust me"; the player deserves to know WHICH one before
+	 * clicking in (owner report: thought it disagreed with his own plan).
+	 */
+	private void highlightLabeled(Graphics2D graphics, Widget widget, String label)
+	{
+		if (widget == null || widget.isHidden())
+		{
+			return;
+		}
+		highlight(graphics, widget);
+		Rectangle bounds = widget.getBounds();
+		graphics.setFont(net.runelite.client.ui.FontManager.getRunescapeBoldFont());
+		int width = graphics.getFontMetrics().stringWidth(label);
+		// Left of the box when it hugs the right edge (side tabs), else above.
+		int tx = bounds.x + bounds.width + 6 + width > graphics.getClipBounds().width
+			? bounds.x - width - 6 : bounds.x;
+		int ty = bounds.y - 4 < 12 ? bounds.y + bounds.height + 14 : bounds.y - 4;
+		graphics.setColor(Color.BLACK);
+		graphics.drawString(label, tx + 1, ty + 1);
+		graphics.setColor(HIGHLIGHT);
+		graphics.drawString(label, tx, ty);
 	}
 }
