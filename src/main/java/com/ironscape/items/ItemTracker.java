@@ -322,6 +322,16 @@ public class ItemTracker
 		{
 			key = "teleport card";
 		}
+		// Rune Mysteries' hand-ins are "Research package" and "Research
+		// notes" in-game; kits call them by the quest's name (owner-hit).
+		if (key.equals("rune mysteries notes"))
+		{
+			key = "research notes";
+		}
+		if (key.equals("rune mysteries package"))
+		{
+			key = "research package";
+		}
 		// Prince Ali's colloquials: the crafted items are literally named
 		// "Paste" and "Key print" — the guide (and everyone) says otherwise.
 		if (key.equals("skin paste"))

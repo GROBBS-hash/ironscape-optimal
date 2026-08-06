@@ -1605,6 +1605,10 @@ public class IronscapePlugin extends Plugin
 		// there ate the very tick the position jump would be detected on —
 		// travel subs never ticked across a loading screen. Only a real
 		// (re)connect needs the grace window and fresh xp baselines.
+		// One line per transition: the real-login detection has burned us
+		// with silent misfires (login resume never arming) — the log
+		// settles which sequence this client actually fires.
+		log.info("game state: {} -> {}", lastGameState, event.getGameState());
 		if (event.getGameState() == GameState.LOGGED_IN
 			&& lastGameState != GameState.LOADING)
 		{
@@ -4209,6 +4213,9 @@ public class IronscapePlugin extends Plugin
 	{
 		if (!config.autoNavigate())
 		{
+			// A silent no-op here looked like a broken router in play —
+			// one deduped line tells the session log the truth.
+			logNavDecision("auto-navigate is disabled in the plugin config");
 			return;
 		}
 		clientThread.invokeLater(() -> {

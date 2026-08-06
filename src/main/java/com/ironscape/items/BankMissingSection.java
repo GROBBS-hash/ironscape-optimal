@@ -68,6 +68,9 @@ public class BankMissingSection
 	/** Real bank widgets we moved/restyled last pass, to restore on the next. */
 	private final java.util.Set<Widget> movedWidgets = new java.util.HashSet<>();
 
+	/** Last logged pass shape, so the diagnosis line only prints on change. */
+	private String lastShape;
+
 	private final net.runelite.client.game.ItemManager itemManager;
 
 	@Inject
@@ -305,6 +308,18 @@ public class BankMissingSection
 				y += column > 0 ? ROW_SPACING : 0;
 			}
 			y += 6; // breathing room between sections
+		}
+
+		// Self-diagnosis for the vanishing-icon reports: one line per pass
+		// whenever the composition changes — if icons vanish WITHOUT a new
+		// line, the bank redrew without this pass running at all.
+		String shape = sections.size() + " sections, " + kept.size() + " moved, "
+			+ iconsUsed + " ghosts, " + textsUsed + " texts, "
+			+ liveChildren.size() + " container children";
+		if (!shape.equals(lastShape))
+		{
+			lastShape = shape;
+			log.info("bank filter pass: {}", shape);
 		}
 
 		// NOW take the rest of the container over: hide everything the
