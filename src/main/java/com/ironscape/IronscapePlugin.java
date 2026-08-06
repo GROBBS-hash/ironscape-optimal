@@ -2366,7 +2366,9 @@ public class IronscapePlugin extends Plugin
 						continue;
 					}
 					WorldPoint source = placeManager.get(goal.getItemName());
-					if (source != null)
+					// Object-vendor sources (a chest, a dig spot) never
+					// nominate: the nearest NPC is a bystander.
+					if (source != null && placeManager.sourceNominatesNpc(goal.getItemName()))
 					{
 						shopAnchor = source;
 						break;

@@ -85,6 +85,17 @@ public class PlaceManager
 			bundled.size(), local.size(), questGivers.size(), shopKeepers.size());
 	}
 
+	/** False when this source's vendor is an OBJECT — no NPC nomination. */
+	public synchronized boolean sourceNominatesNpc(String name)
+	{
+		Place place = local.get(key(name));
+		if (place == null)
+		{
+			place = bundled.get(key(name));
+		}
+		return place == null || !Boolean.FALSE.equals(place.npc);
+	}
+
 	/** The item source's how-to note, or null for ordinary places. */
 	public synchronized String note(String name)
 	{
@@ -486,5 +497,12 @@ public class PlaceManager
 		int plane;
 		/** Item sources only: HOW to get it, chatted when the link routes. */
 		String note;
+		/**
+		 * Item sources only, false = the vendor is an OBJECT (a chest, a
+		 * dig spot) — the nearest-NPC anchor must not crown a bystander
+		 * (the Lumbridge Cook wore the milk icon for the Culinaromancer's
+		 * Chest). Null/absent = NPC nomination allowed.
+		 */
+		Boolean npc;
 	}
 }
