@@ -3309,7 +3309,7 @@
     "y": 3221,
     "plane": 0
    },
-   "note": "The fruit blast must be MADE — a premade fr' blast does NOT count.\n1. Funch's Fine Groceries (Grand Tree): cocktail shaker + glass + lemon, orange, pineapple. Or free once from Blurberry: talk, read his cocktail guide, talk again.\n2. Mix the three fruits, then add lemon slices (6 Cooking).\n3. Use the ashes ON the fruit blast (dirty blast), hand the Cook all five items.\n4. Enter through the LARGE double doors — the cutscene unlocks the chest. The kitchen side door does nothing.",
+   "note": "The fruit blast must be MADE — a premade fr' blast does NOT count.\n1. Funch's Fine Groceries (Grand Tree): cocktail shaker + glass + 2 lemons, orange, pineapple (one lemon is cut into slices with a knife). Or free once from Blurberry: talk, read his cocktail guide, talk again.\n2. Mix the three fruits, then add lemon slices (6 Cooking).\n3. Use the ashes ON the fruit blast (dirty blast), hand the Cook all five items.\n4. Enter through the LARGE double doors — the cutscene unlocks the chest. The kitchen side door does nothing.",
    "items": [
     {
      "name": "eye of newt",
@@ -3329,6 +3329,30 @@
     },
     {
      "name": "fruit blast",
+     "quantity": 1
+    },
+    {
+     "name": "cocktail shaker",
+     "quantity": 1
+    },
+    {
+     "name": "cocktail glass",
+     "quantity": 1
+    },
+    {
+     "name": "lemon",
+     "quantity": 2
+    },
+    {
+     "name": "orange",
+     "quantity": 1
+    },
+    {
+     "name": "pineapple",
+     "quantity": 1
+    },
+    {
+     "name": "knife",
      "quantity": 1
     }
    ]
