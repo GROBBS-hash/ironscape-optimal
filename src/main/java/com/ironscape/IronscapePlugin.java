@@ -209,6 +209,17 @@ public class IronscapePlugin extends Plugin
 	private static final java.util.regex.Pattern TAB_PHRASE = java.util.regex.Pattern.compile(
 		"\\b([a-z]+(?:\\s+[a-z]+)?\\s+(?:tele)?tab)s?\\b", java.util.regex.Pattern.CASE_INSENSITIVE);
 
+	/**
+	 * The sub PRESCRIBES its own transport ("Home tele, Lumby", "charter to
+	 * port sarim") — route-aware first-leg hints must stand down: suggesting
+	 * Shades of Mort'ton as a shortcut toward a free home teleport misleads.
+	 * ("telegrab" stays unmatched: tele needs a word boundary after it.)
+	 */
+	private static final java.util.regex.Pattern PRESCRIBED_TRANSPORT =
+		java.util.regex.Pattern.compile("\\btele(?:port|tab)?s?\\b|\\btabs?\\b"
+			+ "|\\bcharter\\b|\\bglider\\b|\\bfairy rings?\\b|\\bspirit trees?\\b"
+			+ "|\\bcanoes?\\b|\\bboat\\b|\\bship\\b|\\bsail\\b");
+
 	/** Live scene objects (ore rocks) the current sub is about; overlay-outlined. */
 	private volatile List<net.runelite.api.GameObject> objectTargets = java.util.Collections.emptyList();
 
@@ -2053,10 +2064,17 @@ public class IronscapePlugin extends Plugin
 				{
 					WorldPoint routeTarget = deathPoint != null ? deathPoint
 						: targetFor(current.step, current.sub);
+					// A sub that names its own transport gets no alternative
+					// first-leg suggestions — the guide already said how to
+					// travel (the gravestone case stays: the death route has
+					// no prescribed transport).
+					boolean prescribed = deathPoint == null
+						&& PRESCRIBED_TRANSPORT.matcher(
+							current.sub.getPlainText().toLowerCase(Locale.ROOT)).find();
 					// The free Grouping teleport first — but not while its
 					// 20-minute cooldown runs (owner watched the hint point
 					// at a teleport the game refused).
-					String towards = minigameTeleportOnCooldown()
+					String towards = prescribed || minigameTeleportOnCooldown()
 						? null : minigameTowards(routeTarget);
 					if (towards != null)
 					{
@@ -2073,7 +2091,7 @@ public class IronscapePlugin extends Plugin
 					}
 					// Else: a spellbook teleport (Varrock etc.) as the first
 					// leg — the overlay highlights the spell.
-					if (activeMinigameTarget == null)
+					if (activeMinigameTarget == null && !prescribed)
 					{
 						TeleportSpell spell = spellTeleportTowards(routeTarget);
 						activeSpellTeleport = spell == null ? -1 : spell.component;
