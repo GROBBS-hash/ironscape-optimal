@@ -5753,6 +5753,30 @@
     "value": 1,
     "label": "Fremmy hard"
    }
+  },
+  "9437f6d520:0": {
+   "errands": [
+    {
+     "x": 3103,
+     "y": 9576,
+     "plane": 0,
+     "routeX": 3104,
+     "routeY": 3162,
+     "routePlane": 0,
+     "note": "Climb down the Wizards' Tower ladder to the basement."
+    },
+    {
+     "x": 3120,
+     "y": 9567,
+     "plane": 0,
+     "item": "ghost's skull",
+     "radius": 3,
+     "note": "Search the ALTAR in the south-east room — grab the skull and run; a skeleton spawns."
+    }
+   ]
+  },
+  "9437f6d520": {
+   "note": "The skull is under the Wizards' Tower: ladder down, altar in the south-east room. Searching it spawns a skeleton — grab the skull and go; no need to fight."
   }
  }
 }
