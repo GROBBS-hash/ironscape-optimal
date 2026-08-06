@@ -5544,6 +5544,94 @@
     "plane": 0
    },
    "note": "Read the inscription on the Altar of Thrantax (Chaos Temple south-east of Varrock) for the magic words: Snarthon Candtrick Termanto. Picking the wrong words in the fight resets them."
+  },
+  "ad2f853a95": {
+   "items": [
+    {
+     "name": "knife",
+     "quantity": 1
+    },
+    {
+     "name": "candle",
+     "quantity": 1
+    }
+   ],
+   "note": "Temple of Ikov dungeon, north of East Ardougne. Bring a light source and a knife: down the ladder, west stairs, cut the web, boots on the floor."
+  },
+  "ad2f853a95:0": {
+   "errands": [
+    {
+     "x": 2677,
+     "y": 9805,
+     "plane": 0,
+     "routeX": 2677,
+     "routeY": 3405,
+     "routePlane": 0,
+     "items": [
+      "knife",
+      "candle"
+     ],
+     "note": "Climb down the ladder — bring a LIGHT SOURCE and a knife."
+    },
+    {
+     "x": 2651,
+     "y": 9805,
+     "plane": 0,
+     "item": "boots of lightness",
+     "note": "Take the west stairs down, cut the web with the knife, and grab the Boots of lightness."
+    }
+   ]
+  },
+  "c7454771db": {
+   "items": [
+    {
+     "name": "sickle mould",
+     "quantity": 1
+    },
+    {
+     "name": "holy mould",
+     "quantity": 1
+    }
+   ],
+   "note": "At a furnace: the silver sickle needs a SICKLE MOULD, the unstrung symbol a HOLY MOULD. Keep 3 silver bars unsmithed."
+  },
+  "e1e3e1645a": {
+   "target": {
+    "x": 3286,
+    "y": 3180,
+    "plane": 0
+   },
+   "note": "Osman patrols outside the Al Kharid palace — hand him the key imprint and a bronze bar; he has the duplicate key made."
+  },
+  "e3b3e2d4f2": {
+   "items": [
+    {
+     "name": "knife",
+     "quantity": 1
+    },
+    {
+     "name": "bucket",
+     "quantity": 2
+    }
+   ],
+   "note": "USE the knife on the pointy evergreen-style tree with 2 empty buckets in your pack — one fill per bucket. Most trees around Falador east bank work."
+  },
+  "7a218d4e32": {
+   "target": {
+    "x": 3210,
+    "y": 3222,
+    "plane": 1
+   },
+   "note": "Duke Horacio, 1st floor of Lumbridge Castle — ask him about a shield against dragonbreath."
+  },
+  "c0da397db1": {
+   "items": [
+    {
+     "name": "knife",
+     "quantity": 1
+    }
+   ],
+   "note": "Entrana's monks CONFISCATE weapons and armour at the Port Sarim dock — runes and tools are fine.\nThe Dramen tree is in the Entrana dungeon: kill the Tree Spirit with magic for an axe, chop 5 branches, then use the KNIFE on branches (31 Crafting) to fletch the two staffs."
   }
  }
 }
