@@ -180,7 +180,7 @@ if (!fs.existsSync(constantsTsv)) {
   // ('skin paste' -> 2424 SKINPASTE displays as "Paste"; 'key imprint'
   // -> 2423 KEYPRINT as "Key print" — PAR's colloquials, owner-hit.)
   const VERIFIED = new Set(['big frog leg', 'rusty sword', 'buttons',
-    'skin paste', 'key imprint',
+    'skin paste', 'key imprint', 'teleport card',
     'agility pots', 'b gloves', 'black wizards hat',
     'blurite sword', 'bronze arrowtips', 'buckets of slime', 'cadava potion',
     'digsite pendants', 'dragon defender', 'fally teletab', "green d'hide top",
