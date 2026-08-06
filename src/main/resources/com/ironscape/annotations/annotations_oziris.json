@@ -3309,7 +3309,29 @@
     "y": 3217,
     "plane": 0
    },
-   "note": "The banquet cutscene triggers at the dining room's LARGE double doors on the west side (Quest Helper's door step) — the kitchen side door skips it."
+   "note": "Hand the Cook all five items first (use the ashes ON the fruit blast to make the dirty blast), THEN enter through the LARGE double doors — the banquet cutscene unlocks the chest; the kitchen side door does nothing.",
+   "items": [
+    {
+     "name": "eye of newt",
+     "quantity": 1
+    },
+    {
+     "name": "greenman's ale",
+     "quantity": 1
+    },
+    {
+     "name": "rotten tomato",
+     "quantity": 1
+    },
+    {
+     "name": "ashes",
+     "quantity": 1
+    },
+    {
+     "name": "fruit blast",
+     "quantity": 1
+    }
+   ]
   },
   "d20cb8cc05": {
    "items": [
