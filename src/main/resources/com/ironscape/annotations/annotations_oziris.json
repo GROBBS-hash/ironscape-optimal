@@ -5683,6 +5683,76 @@
     "bit": 1,
     "label": "lap done"
    }
+  },
+  "cdc44128dd:0": {
+   "requires": {
+    "varp": 1196,
+    "bit": 19,
+    "label": "diary task"
+   }
+  },
+  "d5f01af695:0": {
+   "requires": {
+    "varp": 1186,
+    "bit": 9,
+    "label": "diary task"
+   }
+  },
+  "48db8d23b1:0": {
+   "requires": {
+    "varp": 1194,
+    "bit": 9,
+    "label": "diary task"
+   }
+  },
+  "573dc27831:0": {
+   "requires": {
+    "varbit": 3572,
+    "value": 1,
+    "label": "diary task"
+   }
+  },
+  "9c7af4ef66:0": {
+   "requires": {
+    "varp": 1186,
+    "bit": 2,
+    "label": "diary task"
+   }
+  },
+  "41184c1680:0": {
+   "requires": {
+    "varp": 1180,
+    "bit": 3,
+    "label": "diary task"
+   }
+  },
+  "e0cf374a7d:0": {
+   "requiresAll": [
+    {
+     "varp": 1176,
+     "bit": 7,
+     "label": "dying tree"
+    },
+    {
+     "varp": 1176,
+     "bit": 4,
+     "label": "plank"
+    }
+   ]
+  },
+  "8397af5a03:0": {
+   "requires": {
+    "varbit": 4479,
+    "value": 1,
+    "label": "Varrock easy"
+   }
+  },
+  "f8223c13bd:0": {
+   "requires": {
+    "varbit": 4493,
+    "value": 1,
+    "label": "Fremmy hard"
+   }
   }
  }
 }

@@ -1,0 +1,2602 @@
+{
+ "Ardougne Easy": [
+  {
+   "task": "AlecksEmporium",
+   "varp": 1196,
+   "bit": 11,
+   "desc": "View Aleck's Hunter Emporium in Yanille."
+  },
+  {
+   "task": "IdentifySword",
+   "varp": 1196,
+   "bit": 7,
+   "desc": "Have Tindel Marchant identify a rusty sword for you. Note: there is about a 1% chance this fails and you'll need another sword and more coins."
+  },
+  {
+   "task": "FishingTrawler",
+   "varp": 1196,
+   "bit": 5,
+   "desc": "Go out fishing on the Fishing Trawler."
+  },
+  {
+   "task": "ProbitaPet",
+   "varp": 1196,
+   "bit": 12,
+   "desc": "Check what pets you have insured with Probita in East Ardougne (right-click her to Check)."
+  },
+  {
+   "task": "EastArdyAltar",
+   "varp": 1196,
+   "bit": 4,
+   "desc": "Use the altar in East Ardougne's church (requires less than full Prayer points)."
+  },
+  {
+   "task": "SellSilk",
+   "varp": 1196,
+   "bit": 2,
+   "desc": "Sell silk to the Silk trader in East Ardougne for 60 coins each."
+  },
+  {
+   "task": "StealCake",
+   "varp": 1196,
+   "bit": 1,
+   "desc": "Steal a cake from the East Ardougne market stalls."
+  },
+  {
+   "task": "EssMine",
+   "varp": 1196,
+   "bit": 0,
+   "desc": "Have Wizard Cromperty teleport you to the Rune essence mine."
+  },
+  {
+   "task": "EnterCombatCamp",
+   "varp": 1196,
+   "bit": 6,
+   "desc": "Enter the Combat Training Camp north of West Ardougne."
+  },
+  {
+   "task": "WildyLever",
+   "varp": 1196,
+   "bit": 9,
+   "desc": "Use the Ardougne lever to teleport to the Wilderness (you may pull the lever there to return). This will take you to DEEP Wilderness, bank anything you aren't willing to lose."
+  }
+ ],
+ "Ardougne Medium": [
+  {
+   "task": "UniPen",
+   "varp": 1196,
+   "bit": 13,
+   "desc": "Enter the unicorn pen in Ardougne Zoo using Fairy rings (BIS)."
+  },
+  {
+   "task": "GrapYan",
+   "varp": 1196,
+   "bit": 14,
+   "desc": "Grapple up Yanille's south wall."
+  },
+  {
+   "task": "ArdyStraw",
+   "varp": 1196,
+   "bit": 15,
+   "desc": "Plant and harvest the strawberries from the north Ardougne allotment. "
+  },
+  {
+   "task": "TPArdy",
+   "varp": 1196,
+   "bit": 16,
+   "desc": "Cast Teleport to Ardougne spell."
+  },
+  {
+   "task": "BalloonCW",
+   "varp": 1196,
+   "bit": 17,
+   "desc": "Use a nearby Hot Air Ballon to travel to Castle Wars."
+  },
+  {
+   "task": "ClaimSand",
+   "varp": 1196,
+   "bit": 18,
+   "desc": "Fill a bucket with sand using Bert's sand pit."
+  },
+  {
+   "task": "FishOnPlatform",
+   "varp": 1196,
+   "bit": 19,
+   "desc": "Catch any fish on the Fishing Platform."
+  },
+  {
+   "task": "PickMasterFarmer",
+   "varp": 1196,
+   "bit": 20,
+   "desc": "Pickpocket the master farmer north of East Ardougne."
+  },
+  {
+   "task": "CaveNightshade",
+   "varp": 1196,
+   "bit": 21,
+   "desc": "Pickup the Cave nightshade."
+  },
+  {
+   "task": "KillSwordchick",
+   "varp": 1196,
+   "bit": 23,
+   "desc": "Activate the Symbol of Life and kill the Swordchick."
+  },
+  {
+   "task": "IbanUpgrade",
+   "varp": 1196,
+   "bit": 24,
+   "desc": "Talk to the Dark mage in West Ardougne to upgrade your staff."
+  },
+  {
+   "task": "NecroTower",
+   "varp": 1196,
+   "bit": 25,
+   "desc": "Visit the island east of the Necromancer Tower (AIR)."
+  },
+  {
+   "task": "CWBallon",
+   "varbit": 2869,
+   "value": 1,
+   "desc": null
+  },
+  {
+   "task": "CWBallon2",
+   "varbit": 2869,
+   "value": 0,
+   "desc": null
+  }
+ ],
+ "Ardougne Hard": [
+  {
+   "task": "Recharge",
+   "varp": 1196,
+   "bit": 26,
+   "desc": "Recharge some jewellery at the Totem pole in the Legends' Guild."
+  },
+  {
+   "task": "MagicGuild",
+   "varp": 1196,
+   "bit": 27,
+   "desc": "Enter the Magic Guild."
+  },
+  {
+   "task": "StealChest",
+   "varp": 1196,
+   "bit": 28,
+   "desc": "Attempt to steal from a chest in Ardougne Castle."
+  },
+  {
+   "task": "MonkeyCage",
+   "varp": 1196,
+   "bit": 29,
+   "desc": "Talk to a Monkey minder with the Karamja monkey greegree equipped."
+  },
+  {
+   "task": "TPWatchtower",
+   "varp": 1196,
+   "bit": 30,
+   "desc": "Teleport to the Watchtower."
+  },
+  {
+   "task": "RedSally",
+   "varp": 1196,
+   "bit": 31,
+   "desc": "Catch a Red Salamander."
+  },
+  {
+   "task": "PalmTree",
+   "varp": 1197,
+   "bit": 0,
+   "desc": "Check the health of a palm tree near Tree Gnome Village. "
+  },
+  {
+   "task": "PoisonIvy",
+   "varp": 1197,
+   "bit": 1,
+   "desc": "Plant and harvest poison ivy in the Ardougne Monastery bush patch. "
+  },
+  {
+   "task": "MithPlate",
+   "varp": 1197,
+   "bit": 2,
+   "desc": "Smith a Mithril platebody in Yanille."
+  },
+  {
+   "task": "YanPOH",
+   "varp": 1197,
+   "bit": 3,
+   "desc": "Enter your house from the portal in Yanille."
+  },
+  {
+   "task": "DragSquare",
+   "varp": 1197,
+   "bit": 4,
+   "desc": "Smith a Dragon sq shield in West Ardougne."
+  },
+  {
+   "task": "DeathRune",
+   "varp": 1197,
+   "bit": 5,
+   "desc": "Craft some death runes from essence."
+  },
+  {
+   "task": "YanHouse",
+   "varbit": 2187,
+   "value": 6,
+   "desc": null
+  },
+  {
+   "task": "YanHouse2",
+   "varbit": 2187,
+   "value": 6,
+   "desc": null
+  }
+ ],
+ "Ardougne Elite": [
+  {
+   "task": "TrawlerRay",
+   "varp": 1197,
+   "bit": 6,
+   "desc": "Catch a manta ray in the Fishing Trawler and cook it in Port Khazard."
+  },
+  {
+   "task": "YanAgi",
+   "varp": 1197,
+   "bit": 7,
+   "desc": "Lockpick the door to the Yanille Agility Dungeon."
+  },
+  {
+   "task": "PickHero",
+   "varp": 1197,
+   "bit": 9,
+   "desc": "Pickpocket a Hero in East Ardougne."
+  },
+  {
+   "task": "RuneCrossbow",
+   "varp": 1197,
+   "bit": 8,
+   "desc": "String the rune crossbow (u)."
+  },
+  {
+   "task": "ImbueSalve",
+   "varp": 1197,
+   "bit": 10,
+   "desc": "Imbue a salve amulet at Nightmare Zone."
+  },
+  {
+   "task": "PickTorstol",
+   "varp": 1197,
+   "bit": 11,
+   "desc": "Plant and harvest the Torstol from the north Ardougne herb patch. "
+  },
+  {
+   "task": "ArdyRooftops",
+   "varp": 1197,
+   "bit": 12,
+   "desc": "Complete a lap of Ardougne's rooftop agility course."
+  },
+  {
+   "task": "IceBarrage",
+   "varp": 1197,
+   "bit": 13,
+   "desc": "Cast Ice Barrage on a Player within Castle Wars."
+  }
+ ],
+ "Desert Easy": [
+  {
+   "task": "GoldWarbler",
+   "varp": 1198,
+   "bit": 1,
+   "desc": "Catch a Golden Warbler in the Uzer hunter area."
+  },
+  {
+   "task": "FiveClay",
+   "varp": 1198,
+   "bit": 2,
+   "desc": "Mine five clay in the north east of the desert."
+  },
+  {
+   "task": "EnterKalph",
+   "varp": 1198,
+   "bit": 3,
+   "desc": "Use the rope on the entrance and enter the Kalphite Hive."
+  },
+  {
+   "task": "EnterDesert",
+   "varp": 1198,
+   "bit": 4,
+   "desc": "Enter the desert."
+  },
+  {
+   "task": "KillVulture",
+   "varp": 1198,
+   "bit": 5,
+   "desc": "Kill a vulture."
+  },
+  {
+   "task": "NardahHerb",
+   "varp": 1198,
+   "bit": 6,
+   "desc": "Have Zahur in Nardah clean a grimy herb for you."
+  },
+  {
+   "task": "CollectCacti",
+   "varp": 1198,
+   "bit": 7,
+   "desc": "Pickup and drop cacti until task is completed"
+  },
+  {
+   "task": "SellArtefact",
+   "varp": 1198,
+   "bit": 8,
+   "desc": "Talk to Simon Templeton and sell your artefact."
+  },
+  {
+   "task": "OpenSarc",
+   "varp": 1198,
+   "bit": 9,
+   "desc": "Open the sarcophagus in the first room."
+  },
+  {
+   "task": "CutCactus",
+   "varp": 1198,
+   "bit": 10,
+   "desc": "Cut Kharidian cacti and fill up your waterskin. You may need to cut multiple cacti before you "
+  },
+  {
+   "task": "MagicCarpet",
+   "varp": 1198,
+   "bit": 11,
+   "desc": "Talk to the rug merchant and travel to Pollnivneach."
+  }
+ ],
+ "Desert Medium": [
+  {
+   "task": "AgiPyramid",
+   "varp": 1198,
+   "bit": 12,
+   "desc": "Climb the Agility Pyramid and collect the pyramid top. Be sure to click continue in the dialog."
+  },
+  {
+   "task": "DesertLizard",
+   "varp": 1198,
+   "bit": 13,
+   "desc": "Use an Ice cooler on a low hp Lizard in the desert."
+  },
+  {
+   "task": "OrangeSally",
+   "varp": 1198,
+   "bit": 14,
+   "desc": "Setup a net trap and catch an Orange Salamander in the Uzer hunting area."
+  },
+  {
+   "task": "PhoenixFeather",
+   "varp": 1198,
+   "bit": 15,
+   "desc": "Pluck a feather from a Desert Phoenix."
+  },
+  {
+   "task": "MagicCarpet",
+   "varp": 1198,
+   "bit": 16,
+   "desc": "Talk to the rug merchant and travel to Uzer."
+  },
+  {
+   "task": "EagleTravel",
+   "varp": 1198,
+   "bit": 17,
+   "desc": "Use a rope on the Desert Eagle to travel to the Desert area."
+  },
+  {
+   "task": "PrayElidinis",
+   "varp": 1198,
+   "bit": 18,
+   "desc": "Pray at the Elidinis Statuette in Nardah. If it doesn't complete expend some prayer points then try again."
+  },
+  {
+   "task": "CombatPot",
+   "varp": 1198,
+   "bit": 19,
+   "desc": "Create a combat potion in the desert. Note: Do not be within a city."
+  },
+  {
+   "task": "TPEnakhra",
+   "varp": 1198,
+   "bit": 20,
+   "desc": null
+  },
+  {
+   "task": "VisitGenie",
+   "varp": 1198,
+   "bit": 21,
+   "desc": "Visit the genie."
+  },
+  {
+   "task": "TPPollnivneach",
+   "varp": 1198,
+   "bit": 22,
+   "desc": null
+  },
+  {
+   "task": "ChopTeak",
+   "varp": 1198,
+   "bit": 23,
+   "desc": "Chop some teak logs near Uzer."
+  }
+ ],
+ "Desert Hard": [
+  {
+   "task": "MenaThug",
+   "varp": 1198,
+   "bit": 24,
+   "desc": "Knockout and pickpocket a Menaphite thug."
+  },
+  {
+   "task": "Granite",
+   "varp": 1198,
+   "bit": 25,
+   "desc": "Mine granite in the mine south of the Bandit Camp."
+  },
+  {
+   "task": "RefillWaterskin",
+   "varp": 1198,
+   "bit": 26,
+   "desc": "Refill an empty waterskin using the Lunar spell Humidify in the Desert "
+  },
+  {
+   "task": "KalphQueen",
+   "varp": 1198,
+   "bit": 27,
+   "desc": "Climb down the tunnel entrance that leads to the Kalphite Queen and kill her."
+  },
+  {
+   "task": "PollRooftop",
+   "varp": 1198,
+   "bit": 28,
+   "desc": "Climb on the basket and complete a lap of the Pollnivneach Rooftop course."
+  },
+  {
+   "task": "KillDust",
+   "varp": 1198,
+   "bit": 29,
+   "desc": "Kill a Dust devil with a slayer helm equipped."
+  },
+  {
+   "task": "AncientMagicks",
+   "varp": 1198,
+   "bit": 30,
+   "desc": "Pray at the altar."
+  },
+  {
+   "task": "KillLocustRider",
+   "varp": 1198,
+   "bit": 31,
+   "desc": "Kill a Locust rider with keris."
+  },
+  {
+   "task": "BurnYew",
+   "varp": 1199,
+   "bit": 0,
+   "desc": "Burn yew logs on the balcony. "
+  },
+  {
+   "task": "MithPlatebody",
+   "varp": 1199,
+   "bit": 1,
+   "desc": "Make a Mithril platebody in Nardah."
+  }
+ ],
+ "Desert Elite": [
+  {
+   "task": "WildPie",
+   "varp": 1199,
+   "bit": 2,
+   "desc": "Cook a wild pie on the clay oven in Nardah."
+  },
+  {
+   "task": "IceBarrage",
+   "varp": 1199,
+   "bit": 4,
+   "desc": "Cast Ice barrage against any foe in the Desert (away from any city). You must not splash."
+  },
+  {
+   "task": "DragonDarts",
+   "varp": 1199,
+   "bit": 5,
+   "desc": "Fletch a dragon dart."
+  },
+  {
+   "task": "TalkKQHead",
+   "varp": 1199,
+   "bit": 6,
+   "desc": "Mount and then talk to a Kalphite Queen head in your POH. The 50k "
+  },
+  {
+   "task": "GrandGoldChest",
+   "varp": 1199,
+   "bit": 7,
+   "desc": "Loot the grand gold chest."
+  },
+  {
+   "task": "RestorePrayer",
+   "varp": 1199,
+   "bit": 8,
+   "desc": "Pray at the altar in Sophanem restoring at least 85 prayer points."
+  }
+ ],
+ "Falador Easy": [
+  {
+   "task": "FamilyCrest",
+   "varp": 1186,
+   "bit": 0,
+   "desc": null
+  },
+  {
+   "task": "ClimbedWall",
+   "varp": 1186,
+   "bit": 1,
+   "desc": null
+  },
+  {
+   "task": "SarahFarmingShop",
+   "varp": 1186,
+   "bit": 2,
+   "desc": null
+  },
+  {
+   "task": "GotHaircut",
+   "varp": 1186,
+   "bit": 3,
+   "desc": null
+  },
+  {
+   "task": "FilledWater",
+   "varp": 1186,
+   "bit": 4,
+   "desc": null
+  },
+  {
+   "task": "KilledDuck",
+   "varp": 1186,
+   "bit": 5,
+   "desc": null
+  },
+  {
+   "task": "MindTiara",
+   "varp": 1186,
+   "bit": 6,
+   "desc": null
+  },
+  {
+   "task": "Entrana",
+   "varp": 1186,
+   "bit": 7,
+   "desc": null
+  },
+  {
+   "task": "MotherloadMine",
+   "varp": 1186,
+   "bit": 8,
+   "desc": null
+  },
+  {
+   "task": "GotSecurityBook",
+   "varp": 1186,
+   "bit": 9,
+   "desc": null
+  },
+  {
+   "task": "BluriteLimbs",
+   "varp": 1186,
+   "bit": 10,
+   "desc": null
+  }
+ ],
+ "Falador Medium": [
+  {
+   "task": "LitLantern",
+   "varp": 1186,
+   "bit": 11,
+   "desc": null
+  },
+  {
+   "task": "TelegrabbedWine",
+   "varp": 1186,
+   "bit": 12,
+   "desc": null
+  },
+  {
+   "task": "UnlockedCrystalChest",
+   "varp": 1186,
+   "bit": 13,
+   "desc": null
+  },
+  {
+   "task": "PlacedScarecrow",
+   "varp": 1186,
+   "bit": 14,
+   "desc": null
+  },
+  {
+   "task": "KilledMogre",
+   "varp": 1186,
+   "bit": 15,
+   "desc": null
+  },
+  {
+   "task": "VisitRatPits",
+   "varp": 1186,
+   "bit": 16,
+   "desc": "Climb down the manhole in Port Sarim to visit the Rat Pits."
+  },
+  {
+   "task": "GrappleNorthWall",
+   "varp": 1186,
+   "bit": 17,
+   "desc": null
+  },
+  {
+   "task": "PickpocketGuard",
+   "varp": 1186,
+   "bit": 18,
+   "desc": "Pickpocket a guard inside of Falador. If this doesn't complete, pickpocket a guard closer to the plinth."
+  },
+  {
+   "task": "PrayAtAltar",
+   "varp": 1186,
+   "bit": 20,
+   "desc": "Equip your Initiate armor and pray at the Altar of Guthix in Taverley"
+  },
+  {
+   "task": "MineGold",
+   "varp": 1186,
+   "bit": 21,
+   "desc": "Mine a gold ore."
+  },
+  {
+   "task": "DwarfShortcut",
+   "varp": 1186,
+   "bit": 22,
+   "desc": "Squeeze through the crevice in the Dwarven Mines"
+  },
+  {
+   "task": "ChopBurnWillowTav",
+   "varp": 1186,
+   "bit": 23,
+   "desc": null
+  },
+  {
+   "task": "BasketFalLoom",
+   "varp": 1186,
+   "bit": 24,
+   "desc": null
+  },
+  {
+   "task": "TeleportFalador",
+   "varp": 1186,
+   "bit": 25,
+   "desc": null
+  }
+ ],
+ "Falador Hard": [
+  {
+   "task": "CraftedMindRunes",
+   "varp": 1186,
+   "bit": 26,
+   "desc": null
+  },
+  {
+   "task": "ChangedFamilyCrest",
+   "varp": 1186,
+   "bit": 27,
+   "desc": null
+  },
+  {
+   "task": "KilledMole",
+   "varp": 1186,
+   "bit": 28,
+   "desc": null
+  },
+  {
+   "task": "KilledWyvern",
+   "varp": 1186,
+   "bit": 29,
+   "desc": null
+  },
+  {
+   "task": "CompleteAgiCourse",
+   "varp": 1186,
+   "bit": 30,
+   "desc": "Complete a lap of the Falador Agility Course"
+  },
+  {
+   "task": "EnterMiningGuildWithProspector",
+   "varp": 1186,
+   "bit": 31,
+   "desc": null
+  },
+  {
+   "task": "KilledBlueDragon",
+   "varp": 1187,
+   "bit": 0,
+   "desc": null
+  },
+  {
+   "task": "CrackedWallSafe",
+   "varp": 1187,
+   "bit": 1,
+   "desc": null
+  },
+  {
+   "task": "PraySarimAltarProsy",
+   "varp": 1187,
+   "bit": 2,
+   "desc": null
+  },
+  {
+   "task": "EnterWarriorsGuild",
+   "varp": 1187,
+   "bit": 3,
+   "desc": "Enter the Warriors Guild, in Burthorpe. You can get here faster by teleporting with a combat bracelet or a games necklace."
+  },
+  {
+   "task": "DwarvenHelmetDwarvenMines",
+   "varp": 1187,
+   "bit": 4,
+   "desc": null
+  }
+ ],
+ "Falador Elite": [
+  {
+   "task": "CraftedAirRunes",
+   "varp": 1187,
+   "bit": 5,
+   "desc": null
+  },
+  {
+   "task": "PurchasedWhite2hSword",
+   "varp": 1187,
+   "bit": 6,
+   "desc": null
+  },
+  {
+   "task": "GotMagicRoots",
+   "varp": 1187,
+   "bit": 7,
+   "desc": null
+  },
+  {
+   "task": "PerformedSkillCapeEmote",
+   "varp": 1187,
+   "bit": 8,
+   "desc": null
+  },
+  {
+   "task": "JumpedOverStrangeFloor",
+   "varp": 1187,
+   "bit": 9,
+   "desc": null
+  },
+  {
+   "task": "MadeSaraBrew",
+   "varp": 1187,
+   "bit": 10,
+   "desc": null
+  }
+ ],
+ "Fremennik Easy": [
+  {
+   "task": "CatchCerulean",
+   "varp": 1184,
+   "bit": 1,
+   "desc": "Catch a Cerulean Twitch in the Rellekka Hunter area."
+  },
+  {
+   "task": "ChangeBoots",
+   "varp": 1184,
+   "bit": 2,
+   "desc": "Change your boots at Yrsa's Shoe Store."
+  },
+  {
+   "task": "KilledCrabs",
+   "varp": 1184,
+   "bit": 3,
+   "desc": "Kill 5 Rock crabs."
+  },
+  {
+   "task": "CraftTiara",
+   "varp": 1184,
+   "bit": 4,
+   "desc": "Craft a tiara in Rellekka."
+  },
+  {
+   "task": "BrowseStonemason",
+   "varp": 1184,
+   "bit": 5,
+   "desc": "Browse the Stonemason's Shop."
+  },
+  {
+   "task": "CollectSnapeGrass",
+   "varp": 1184,
+   "bit": 6,
+   "desc": "Collect 5 snape grass on Waterbirth Island. Speak with Jarvald to return to Rellekka when complete."
+  },
+  {
+   "task": "StealStall",
+   "varp": 1184,
+   "bit": 7,
+   "desc": "Steal from the bakery stall."
+  },
+  {
+   "task": "FillBucket",
+   "varp": 1184,
+   "bit": 8,
+   "desc": "Fill a bucket at the Rellekka well."
+  },
+  {
+   "task": "EnterTrollStronghold",
+   "varp": 1184,
+   "bit": 9,
+   "desc": "Enter the Troll Stronghold."
+  },
+  {
+   "task": "ChopAndBurnOak",
+   "varp": 1184,
+   "bit": 10,
+   "desc": null
+  }
+ ],
+ "Fremennik Medium": [
+  {
+   "task": "SlayBrineRat",
+   "varp": 1184,
+   "bit": 11,
+   "desc": "Kill a brine rat then roll the boulder and exit the cave.."
+  },
+  {
+   "task": "SnowyHunter",
+   "varp": 1184,
+   "bit": 12,
+   "desc": "Use rope on the Polar Eagle to travel to the Snowy Hunter area."
+  },
+  {
+   "task": "MineCoal",
+   "varp": 1184,
+   "bit": 13,
+   "desc": "Mine some coal."
+  },
+  {
+   "task": "StealFish",
+   "varp": 1184,
+   "bit": 14,
+   "desc": "Steal from the Rellekka fish stall."
+  },
+  {
+   "task": "TravelMisc",
+   "varp": 1184,
+   "bit": 15,
+   "desc": "Use a fairy ring and travel to (CIP)."
+  },
+  {
+   "task": "SnowyKnight",
+   "varp": 1184,
+   "bit": 17,
+   "desc": null
+  },
+  {
+   "task": "PetRockPOH",
+   "varp": 1184,
+   "bit": 18,
+   "desc": "Use a pet rock on your pet house in your menagerie in your player owned house and then pick it up off the GROUND."
+  },
+  {
+   "task": "Lighthouse",
+   "varp": 1184,
+   "bit": 19,
+   "desc": "Keep current protection and continue through the cave."
+  },
+  {
+   "task": "MineGold",
+   "varp": 1184,
+   "bit": 20,
+   "desc": "Mine the nearby gold. Remove helmet to escape area."
+  }
+ ],
+ "Fremennik Hard": [
+  {
+   "task": "TPTroll",
+   "varp": 1184,
+   "bit": 21,
+   "desc": null
+  },
+  {
+   "task": "CatchKyatt",
+   "varp": 1184,
+   "bit": 23,
+   "desc": "Place logs over a pit in the hunter area, and poke a kyatt with a teasing stick. "
+  },
+  {
+   "task": "MixSuperDef",
+   "varp": 1184,
+   "bit": 24,
+   "desc": "Mix a Super defence potion within the Fremennik Province (only near Rellekka)."
+  },
+  {
+   "task": "StealGem",
+   "varp": 1184,
+   "bit": 25,
+   "desc": "Steal from the gem stall."
+  },
+  {
+   "task": "CraftShield",
+   "varp": 1184,
+   "bit": 26,
+   "desc": "Craft a shield on the woodcutting stump."
+  },
+  {
+   "task": "MineAddy",
+   "varp": 1184,
+   "bit": 27,
+   "desc": "Mine 5 Adamantite ores."
+  },
+  {
+   "task": "MiscSupport",
+   "varp": 1184,
+   "bit": 28,
+   "desc": "Rake the herb and flax patch until 100% support."
+  },
+  {
+   "task": "TPWaterbirth",
+   "varp": 1184,
+   "bit": 29,
+   "desc": null
+  },
+  {
+   "task": "FreeBlast",
+   "varp": 1184,
+   "bit": 30,
+   "desc": "Speak with the Foreman."
+  }
+ ],
+ "Fremennik Elite": [
+  {
+   "task": "DagKings",
+   "varp": 1184,
+   "bit": 31,
+   "desc": "Kill each of the Dagannoth Kings."
+  },
+  {
+   "task": "AstralRunes",
+   "varp": 1185,
+   "bit": 0,
+   "desc": "Craft 56 astral runes"
+  },
+  {
+   "task": "DragonAmulet",
+   "varp": 1185,
+   "bit": 1,
+   "desc": "Smelt a dragonstone amulet on the clay forge."
+  },
+  {
+   "task": "RellRooftop",
+   "varp": 1185,
+   "bit": 2,
+   "desc": "Complete a lap of the Rellekka Rooftop course."
+  },
+  {
+   "task": "GodwarsGenerals",
+   "varp": 1185,
+   "bit": 3,
+   "desc": "Get kills for a faction then kill its respective general."
+  },
+  {
+   "task": "SpiritualMage",
+   "varp": 1185,
+   "bit": 4,
+   "desc": "Kill a spiritual mage"
+  }
+ ],
+ "Kandarin Easy": [
+  {
+   "task": "CatchMackerel",
+   "varp": 1178,
+   "bit": 1,
+   "desc": "Fish on Catherby beach at the Big Net fishing spots for a mackerel."
+  },
+  {
+   "task": "BuyCandle",
+   "varp": 1178,
+   "bit": 2,
+   "desc": "Buy a candle from the candle maker in Catherby."
+  },
+  {
+   "task": "CollectFlax",
+   "varp": 1178,
+   "bit": 3,
+   "desc": "Pick 5 flax at the flax field west of Catherby."
+  },
+  {
+   "task": "PlayOrgan",
+   "varp": 1178,
+   "bit": 4,
+   "desc": "Play the organ in Seers' Village Church."
+  },
+  {
+   "task": "PlantJute",
+   "varp": 1178,
+   "bit": 5,
+   "desc": "Plant 3 jute seeds in the hops patch north west of Seers' Village."
+  },
+  {
+   "task": "CupTea",
+   "varp": 1178,
+   "bit": 6,
+   "desc": "Talk with Galahad west of McGrubor's Wood until he gives you some tea."
+  },
+  {
+   "task": "KillEle",
+   "varp": 1178,
+   "bit": 7,
+   "desc": null
+  },
+  {
+   "task": "PetFish",
+   "varp": 1178,
+   "bit": 8,
+   "desc": "Speak with Harry in the Catherby Fishing Shop to get a tiny net."
+  },
+  {
+   "task": "BuyStew",
+   "varp": 1178,
+   "bit": 9,
+   "desc": "Talk with the bartender in Seers' Village and buy a stew."
+  },
+  {
+   "task": "TalkSherlock",
+   "varp": 1178,
+   "bit": 10,
+   "desc": "Speak with Sherlock west of Catherby."
+  },
+  {
+   "task": "LogShortcut",
+   "varp": 1178,
+   "bit": 11,
+   "desc": "Cross the log shortcut near to Galahad."
+  }
+ ],
+ "Kandarin Medium": [
+  {
+   "task": "BarbAgi",
+   "varp": 1178,
+   "bit": 12,
+   "desc": "Complete a lap of the Barbarian Outpost agility course."
+  },
+  {
+   "task": "SuperAnti",
+   "varp": 1178,
+   "bit": 13,
+   "desc": "Create a super antipoison potion."
+  },
+  {
+   "task": "EnterRange",
+   "varp": 1178,
+   "bit": 14,
+   "desc": "Enter the Ranging Guild."
+  },
+  {
+   "task": "GrapOb",
+   "varp": 1178,
+   "bit": 15,
+   "desc": "Grapple across!"
+  },
+  {
+   "task": "CatchCookBass",
+   "varp": 1178,
+   "bit": 16,
+   "desc": null
+  },
+  {
+   "task": "TPCam",
+   "varp": 1178,
+   "bit": 17,
+   "desc": null
+  },
+  {
+   "task": "StringMaple",
+   "varp": 1178,
+   "bit": 18,
+   "desc": "String a maple shortbow."
+  },
+  {
+   "task": "PickLimp",
+   "varp": 1178,
+   "bit": 19,
+   "desc": null
+  },
+  {
+   "task": "MindHelm",
+   "varp": 1178,
+   "bit": 20,
+   "desc": null
+  },
+  {
+   "task": "FireGiant",
+   "varp": 1178,
+   "bit": 21,
+   "desc": "Kill a Fire giant."
+  },
+  {
+   "task": "BarbAss",
+   "varp": 1178,
+   "bit": 22,
+   "desc": "Complete a wave of Barbarian Assault. If it's your first time here, speak with Captain Cain for the "
+  },
+  {
+   "task": "StealHemen",
+   "varp": 1178,
+   "bit": 23,
+   "desc": "Steal from the chest in Hemenster."
+  },
+  {
+   "task": "TravelMcGrubor",
+   "varp": 1178,
+   "bit": 24,
+   "desc": "Take a fairy ring to McGrubor's Woods (ALS)"
+  },
+  {
+   "task": "MineCoal",
+   "varp": 1178,
+   "bit": 25,
+   "desc": "Mine coal near the Coal Trucks."
+  }
+ ],
+ "Kandarin Hard": [
+  {
+   "task": "CatchSturgeon",
+   "varp": 1178,
+   "bit": 26,
+   "desc": "Catch a leaping Sturgeon south of Barbarian Assault."
+  },
+  {
+   "task": "SeersRooftop",
+   "varp": 1178,
+   "bit": 27,
+   "desc": "Complete a lap of the Seers' village Rooftop course."
+  },
+  {
+   "task": "YewLong",
+   "varp": 1178,
+   "bit": 28,
+   "desc": "Cut some yew logs near Seers' Village. Make sure to use the knife on the ones you cut."
+  },
+  {
+   "task": "PietyCourt",
+   "varp": 1178,
+   "bit": 29,
+   "desc": "Activate piety then enter the Seers' Village courthouse."
+  },
+  {
+   "task": "WaterOrb",
+   "varp": 1178,
+   "bit": 30,
+   "desc": "Use the charge water orb spell on the obelisk."
+  },
+  {
+   "task": "BurnMaple",
+   "varp": 1178,
+   "bit": 31,
+   "desc": "Burn some maple logs with a bow."
+  },
+  {
+   "task": "ShadowHound",
+   "varp": 1179,
+   "bit": 0,
+   "desc": "Kill a shadow hound."
+  },
+  {
+   "task": "MithrilDrag",
+   "varp": 1179,
+   "bit": 1,
+   "desc": "Kill a mithril dragon."
+  },
+  {
+   "task": "BuyGranite",
+   "varp": 1179,
+   "bit": 2,
+   "desc": "Buy and equip a granite body from Commander Connad. (Requires at least 1 Penance Queen kill)"
+  },
+  {
+   "task": "FancyStone",
+   "varp": 1179,
+   "bit": 3,
+   "desc": "TALK to the estate agent to redecorate your house to Fancy Stone. Must be done through dialog."
+  },
+  {
+   "task": "AddySpear",
+   "varp": 1179,
+   "bit": 4,
+   "desc": "Smith an adamant spear on the barbarian anvil south of Barbarian Assault."
+  }
+ ],
+ "Kandarin Elite": [
+  {
+   "task": "barb5",
+   "varp": 1179,
+   "bit": 5,
+   "desc": "Click one of the blackboards around Barbarian Assault!"
+  },
+  {
+   "task": "PickDwarf",
+   "varp": 1179,
+   "bit": 6,
+   "desc": null
+  },
+  {
+   "task": "5Shark",
+   "varp": 1179,
+   "bit": 7,
+   "desc": null
+  },
+  {
+   "task": "StamMix",
+   "varp": 1179,
+   "bit": 8,
+   "desc": "Create a stamina mix."
+  },
+  {
+   "task": "RuneHasta",
+   "varp": 1179,
+   "bit": 9,
+   "desc": "Smith a rune hasta on the barbarian anvil near Otto."
+  },
+  {
+   "task": "Pyre",
+   "varp": 1179,
+   "bit": 10,
+   "desc": "Construct a pyre ship from magic logs."
+  },
+  {
+   "task": "TPCath",
+   "varp": 1179,
+   "bit": 11,
+   "desc": null
+  },
+  {
+   "task": "Heal",
+   "varbit": 3255,
+   "value": 4,
+   "desc": null
+  },
+  {
+   "task": "Atk",
+   "varbit": 3251,
+   "value": 4,
+   "desc": null
+  },
+  {
+   "task": "Def",
+   "varbit": 3252,
+   "value": 4,
+   "desc": null
+  },
+  {
+   "task": "Col",
+   "varbit": 3254,
+   "value": 4,
+   "desc": null
+  }
+ ],
+ "Karamja Easy": [
+  {
+   "task": "PickedBananas",
+   "varbit": 3566,
+   "value": 4,
+   "desc": null
+  },
+  {
+   "task": "SwungOnRope",
+   "varbit": 3567,
+   "value": 0,
+   "desc": null
+  },
+  {
+   "task": "MinedGold",
+   "varbit": 3568,
+   "value": 0,
+   "desc": null
+  },
+  {
+   "task": "GoneToSarim",
+   "varbit": 3569,
+   "value": 0,
+   "desc": null
+  },
+  {
+   "task": "GoneToArdougne",
+   "varbit": 3570,
+   "value": 0,
+   "desc": null
+  },
+  {
+   "task": "GoneToCairn",
+   "varbit": 3571,
+   "value": 0,
+   "desc": null
+  },
+  {
+   "task": "Fished",
+   "varbit": 3572,
+   "value": 0,
+   "desc": null
+  },
+  {
+   "task": "PickedUpSeaweed",
+   "varbit": 3573,
+   "value": 4,
+   "desc": null
+  },
+  {
+   "task": "EnteredFightCave",
+   "varbit": 3574,
+   "value": 0,
+   "desc": null
+  },
+  {
+   "task": "KilledJogre",
+   "varbit": 3575,
+   "value": 0,
+   "desc": null
+  }
+ ],
+ "Karamja Medium": [
+  {
+   "task": "ClaimedTicket",
+   "varbit": 3579,
+   "value": 0,
+   "desc": null
+  },
+  {
+   "task": "EnteredWall",
+   "varbit": 3580,
+   "value": 0,
+   "desc": null
+  },
+  {
+   "task": "EnteredCrandor",
+   "varbit": 3581,
+   "value": 0,
+   "desc": null
+  },
+  {
+   "task": "UsedCart",
+   "varbit": 3582,
+   "value": 0,
+   "desc": null
+  },
+  {
+   "task": "Earned100",
+   "varbit": 3583,
+   "value": 0,
+   "desc": null
+  },
+  {
+   "task": "CookedSpider",
+   "varbit": 3584,
+   "value": 0,
+   "desc": null
+  },
+  {
+   "task": "MinedRedRopaz",
+   "varbit": 3585,
+   "value": 0,
+   "desc": null
+  },
+  {
+   "task": "CutTeak",
+   "varbit": 3586,
+   "value": 0,
+   "desc": "Chop a teak tree down either in"
+  },
+  {
+   "task": "CutMahog",
+   "varbit": 3587,
+   "value": 0,
+   "desc": null
+  },
+  {
+   "task": "CaughtKarambwan",
+   "varbit": 3588,
+   "value": 0,
+   "desc": null
+  },
+  {
+   "task": "ExchangedGems",
+   "varbit": 3589,
+   "value": 0,
+   "desc": null
+  },
+  {
+   "task": "UsedGlider",
+   "varbit": 3590,
+   "value": 0,
+   "desc": null
+  },
+  {
+   "task": "GrownFruitTree",
+   "varbit": 3591,
+   "value": 0,
+   "desc": null
+  },
+  {
+   "task": "TrappedGraahk",
+   "varbit": 3592,
+   "value": 0,
+   "desc": null
+  },
+  {
+   "task": "CutVine",
+   "varbit": 3593,
+   "value": 0,
+   "desc": null
+  },
+  {
+   "task": "CrossedLava",
+   "varbit": 3594,
+   "value": 0,
+   "desc": null
+  },
+  {
+   "task": "ClimbedStairs",
+   "varbit": 3595,
+   "value": 0,
+   "desc": null
+  },
+  {
+   "task": "TraveledToKhazard",
+   "varbit": 3596,
+   "value": 0,
+   "desc": null
+  },
+  {
+   "task": "CharteredFromShipyard",
+   "varbit": 3597,
+   "value": 0,
+   "desc": null
+  }
+ ],
+ "Karamja Hard": [
+  {
+   "task": "BecomeChampion",
+   "varbit": 3600,
+   "value": 0,
+   "desc": "Win in the Fight Pits in the "
+  },
+  {
+   "task": "KilledZek",
+   "varbit": 3601,
+   "value": 0,
+   "desc": null
+  },
+  {
+   "task": "EatenWrap",
+   "varbit": 3602,
+   "value": 0,
+   "desc": null
+  },
+  {
+   "task": "CraftedNature",
+   "varbit": 3603,
+   "value": 0,
+   "desc": null
+  },
+  {
+   "task": "CookedKarambwan",
+   "varbit": 3604,
+   "value": 0,
+   "desc": null
+  },
+  {
+   "task": "KilledDeathwing",
+   "varbit": 3605,
+   "value": 0,
+   "desc": null
+  },
+  {
+   "task": "UsedShortcut",
+   "varbit": 3606,
+   "value": 0,
+   "desc": null
+  },
+  {
+   "task": "CollectedLeaves",
+   "varbit": 3607,
+   "value": 4,
+   "desc": null
+  },
+  {
+   "task": "AssignedTask",
+   "varbit": 3608,
+   "value": 0,
+   "desc": null
+  },
+  {
+   "task": "KilledDragon",
+   "varbit": 3609,
+   "value": 0,
+   "desc": null
+  }
+ ],
+ "Karamja Elite": [
+  {
+   "task": "CraftedRunes",
+   "varp": 1200,
+   "bit": 1,
+   "desc": null
+  },
+  {
+   "task": "EquippedCape",
+   "varp": 1200,
+   "bit": 2,
+   "desc": null
+  },
+  {
+   "task": "CheckedPalm",
+   "varp": 1200,
+   "bit": 3,
+   "desc": null
+  },
+  {
+   "task": "MadePotion",
+   "varp": 1200,
+   "bit": 4,
+   "desc": null
+  },
+  {
+   "task": "CheckedCalquat",
+   "varp": 1200,
+   "bit": 5,
+   "desc": null
+  }
+ ],
+ "Lumbridge Easy": [
+  {
+   "task": "DrayAgi",
+   "varp": 1194,
+   "bit": 1,
+   "desc": "Complete a lap of the Draynor Rooftop Course."
+  },
+  {
+   "task": "KillCaveBug",
+   "varp": 1194,
+   "bit": 2,
+   "desc": "Kill a Cave Bug."
+  },
+  {
+   "task": "Sedridor",
+   "varp": 1194,
+   "bit": 3,
+   "desc": "Teleport to the Rune essence mine via Sedridor."
+  },
+  {
+   "task": "WaterRune",
+   "varp": 1194,
+   "bit": 4,
+   "desc": "Craft water runes."
+  },
+  {
+   "task": "Hans",
+   "varp": 1194,
+   "bit": 5,
+   "desc": "Talk to Hans to learn your age."
+  },
+  {
+   "task": "Pickpocket",
+   "varp": 1194,
+   "bit": 6,
+   "desc": "Pickpocket a man or woman infront of Lumbridge Castle."
+  },
+  {
+   "task": "Oak",
+   "varp": 1194,
+   "bit": 7,
+   "desc": null
+  },
+  {
+   "task": "KillZombie",
+   "varp": 1194,
+   "bit": 8,
+   "desc": "Kill a zombie."
+  },
+  {
+   "task": "FishAnchovies",
+   "varp": 1194,
+   "bit": 9,
+   "desc": "Fish for anchovies in Al-Kharid."
+  },
+  {
+   "task": "Bread",
+   "varp": 1194,
+   "bit": 10,
+   "desc": "Cook bread on the cooking range in Lumbridge Castle."
+  },
+  {
+   "task": "Iron",
+   "varp": 1194,
+   "bit": 11,
+   "desc": null
+  },
+  {
+   "task": "EnterHAM",
+   "varp": 1194,
+   "bit": 12,
+   "desc": "Lock pick and enter the HAM hideout."
+  }
+ ],
+ "Lumbridge Medium": [
+  {
+   "task": "AlKharidRooftop",
+   "varp": 1194,
+   "bit": 13,
+   "desc": "Complete the Al Kharid Rooftop Course."
+  },
+  {
+   "task": "GrappleLum",
+   "varp": 1194,
+   "bit": 14,
+   "desc": "Grapple across the River Lum."
+  },
+  {
+   "task": "UpgradeDevice",
+   "varp": 1194,
+   "bit": 15,
+   "desc": "Buy an Ava's Accumulator from Ava in the Draynor Manor."
+  },
+  {
+   "task": "WizardFairy",
+   "varp": 1194,
+   "bit": 16,
+   "desc": "Take the nearest fairy ring and travel to the Wizards' Tower (DIS)."
+  },
+  {
+   "task": "TPlumb",
+   "varp": 1194,
+   "bit": 17,
+   "desc": null
+  },
+  {
+   "task": "CatchSalmon",
+   "varp": 1194,
+   "bit": 18,
+   "desc": "Catch a salmon in the River Lum."
+  },
+  {
+   "task": "CraftCoif",
+   "varp": 1194,
+   "bit": 19,
+   "desc": "Craft a coif."
+  },
+  {
+   "task": "ChopWillow",
+   "varp": 1194,
+   "bit": 20,
+   "desc": "Chop some Willow logs in Draynor Village."
+  },
+  {
+   "task": "PickGardener",
+   "varp": 1194,
+   "bit": 21,
+   "desc": "Pickpocket Martin the Master Gardener in Draynor Village."
+  },
+  {
+   "task": "ChaeldarTask",
+   "varp": 1194,
+   "bit": 22,
+   "desc": "Get a slayer task from Chaeldar in Zanaris."
+  },
+  {
+   "task": "PuroImp",
+   "varp": 1194,
+   "bit": 23,
+   "desc": "Catch an essence or eclectic impling in Puro-Puro."
+  },
+  {
+   "task": "CraftLava",
+   "varp": 1194,
+   "bit": 24,
+   "desc": "Use an earth talisman on the fire altar."
+  }
+ ],
+ "Lumbridge Hard": [
+  {
+   "task": "BonesToPeachesPalace",
+   "varp": 1194,
+   "bit": 25,
+   "desc": "Cast bones to peaches."
+  },
+  {
+   "task": "JuttingWall",
+   "varp": 1194,
+   "bit": 26,
+   "desc": "Squeeze-through the jutting wall."
+  },
+  {
+   "task": "Cosmics",
+   "varp": 1194,
+   "bit": 27,
+   "desc": "Craft 56 cosmic runes."
+  },
+  {
+   "task": "WakaToEdge",
+   "varp": 1194,
+   "bit": 28,
+   "desc": "Use the canoe station in lumbridge to make a Waka and travel to Edgeville."
+  },
+  {
+   "task": "HundredTears",
+   "varp": 1194,
+   "bit": 29,
+   "desc": "Talk to Juna to start collecting tears. You MUST collect 100 or more and only have one try a week."
+  },
+  {
+   "task": "TrainToKeld",
+   "varp": 1194,
+   "bit": 30,
+   "desc": "Board the train and wait for it to leave."
+  },
+  {
+   "task": "BarrowsGloves",
+   "varp": 1194,
+   "bit": 31,
+   "desc": "Purchase the barrows gloves from the bank chest. Right click and select 'Buy-items'."
+  },
+  {
+   "task": "Belladonna",
+   "varp": 1195,
+   "bit": 0,
+   "desc": "Grow and pick some belladonna from the Draynor Manor farming patch. "
+  },
+  {
+   "task": "LightMiningHelm",
+   "varp": 1195,
+   "bit": 1,
+   "desc": "Light your mining helmet."
+  },
+  {
+   "task": "SmiteAltar",
+   "varp": 1195,
+   "bit": 2,
+   "desc": "Pray at the altar at the Emir's Arena with smite active."
+  },
+  {
+   "task": "PowerAmmy",
+   "varp": 1195,
+   "bit": 3,
+   "desc": "Enchant the strung diamond amulet."
+  }
+ ],
+ "Lumbridge Elite": [
+  {
+   "task": "RichChest",
+   "varp": 1195,
+   "bit": 4,
+   "desc": "Lockpick the chest."
+  },
+  {
+   "task": "Movario",
+   "varp": 1195,
+   "bit": 5,
+   "desc": "Pickpocket Movario near the end of the agility course."
+  },
+  {
+   "task": "ChopMagic",
+   "varp": 1195,
+   "bit": 6,
+   "desc": "Chop some magic logs near the Magic Training Arena."
+  },
+  {
+   "task": "AddyPlatebody",
+   "varp": 1195,
+   "bit": 7,
+   "desc": "Smith a adamant platebody at the anvil in Draynor Sewer."
+  },
+  {
+   "task": "WaterRunes",
+   "varp": 1195,
+   "bit": 8,
+   "desc": "Craft water runes."
+  },
+  {
+   "task": "QCEmote",
+   "varp": 1195,
+   "bit": 9,
+   "desc": null
+  }
+ ],
+ "Morytania Easy": [
+  {
+   "task": "CraftSnelm",
+   "varp": 1180,
+   "bit": 1,
+   "desc": "Craft a snelm in Morytania. Note: Do not be in the swamp when completing "
+  },
+  {
+   "task": "CookSnail",
+   "varp": 1180,
+   "bit": 2,
+   "desc": "Cook a thin snail in Port Phasmatys."
+  },
+  {
+   "task": "Mazchna",
+   "varp": 1180,
+   "bit": 3,
+   "desc": "Get a slayer task from Mazchna."
+  },
+  {
+   "task": "KillBanshee",
+   "varp": 1180,
+   "bit": 4,
+   "desc": "Kill a banshee."
+  },
+  {
+   "task": "SbottTan",
+   "varp": 1180,
+   "bit": 5,
+   "desc": "Tan a hide using Sbott's services."
+  },
+  {
+   "task": "EnterSwamp",
+   "varp": 1180,
+   "bit": 6,
+   "desc": "Enter the Mort Myre Swamp."
+  },
+  {
+   "task": "KillGhoul",
+   "varp": 1180,
+   "bit": 7,
+   "desc": "Kill a ghoul in Morytania."
+  },
+  {
+   "task": "PlaceScarecrow",
+   "varp": 1180,
+   "bit": 8,
+   "desc": "Place a scarecrow at the Morytania flower patch, West of Port Phasmatys."
+  },
+  {
+   "task": "OfferBonemeal",
+   "varp": 1180,
+   "bit": 9,
+   "desc": "Worship the ectofuntus."
+  },
+  {
+   "task": "KillWerewolf",
+   "varp": 1180,
+   "bit": 10,
+   "desc": "Kill any attackable NPC in Canifis with the wolfbane dagger."
+  },
+  {
+   "task": "RestorePrayer",
+   "varp": 1180,
+   "bit": 11,
+   "desc": "Pray at the altar."
+  }
+ ],
+ "Morytania Medium": [
+  {
+   "task": "SwampLizard",
+   "varp": 1180,
+   "bit": 12,
+   "desc": "Catch a swamp lizard."
+  },
+  {
+   "task": "CanifisAgi",
+   "varp": 1180,
+   "bit": 13,
+   "desc": "Complete a lap of the Canifis Rooftop Course."
+  },
+  {
+   "task": "HollowTree",
+   "varp": 1180,
+   "bit": 14,
+   "desc": "Chop some bark off the hollow tree south of Port phasmatys."
+  },
+  {
+   "task": "DragontoothIsland",
+   "varp": 1180,
+   "bit": 15,
+   "desc": "Talk to the Ghost captain at Port Phasmatys to travel to Dragontooth Island."
+  },
+  {
+   "task": "TerrorDog",
+   "varp": 1180,
+   "bit": 16,
+   "desc": "Kill a terror dog. You can enter the room with the diary if you need a safe zone."
+  },
+  {
+   "task": "TroubleBrewing",
+   "varp": 1180,
+   "bit": 17,
+   "desc": "Start playing Trouble brewing. You don't need to win. You will need to empty your inventory and unequip "
+  },
+  {
+   "task": "SwampBoaty",
+   "varp": 1180,
+   "bit": 18,
+   "desc": "Board the Swamp boaty at the Hollows."
+  },
+  {
+   "task": "CannonBall",
+   "varp": 1180,
+   "bit": 19,
+   "desc": "Make a batch of cannonballs at Port Phasmatys."
+  },
+  {
+   "task": "FeverSpider",
+   "varp": 1180,
+   "bit": 20,
+   "desc": "Kill a Fever spider."
+  },
+  {
+   "task": "EctophialTP",
+   "varp": 1180,
+   "bit": 21,
+   "desc": "Use your Ectophial to teleport to Port Phasmatys."
+  },
+  {
+   "task": "GuthBalance",
+   "varp": 1180,
+   "bit": 22,
+   "desc": "Mix a Guthix balance potion while in Morytania."
+  }
+ ],
+ "Morytania Hard": [
+  {
+   "task": "Kharyrll",
+   "varp": 1180,
+   "bit": 23,
+   "desc": "Enter the Kharyrll portal in your POH. Through a Portal Chamber or "
+  },
+  {
+   "task": "AdvancedSpikes",
+   "varp": 1180,
+   "bit": 24,
+   "desc": "Climb the advanced spike chain. Go down and back up if you rip your hands as you climb."
+  },
+  {
+   "task": "HarvestWatermelon",
+   "varp": 1180,
+   "bit": 25,
+   "desc": "Plant and harvest watermelon on Harmony Island. It takes 80 minutes to fully grow. "
+  },
+  {
+   "task": "BurnMaho",
+   "varp": 1180,
+   "bit": 26,
+   "desc": "Burn mahogany logs on the island."
+  },
+  {
+   "task": "HardTempleTrekk",
+   "varp": 1180,
+   "bit": 27,
+   "desc": "Complete a Hard Temple Trek. Alternatively complete a Hard Burgh de Rott Ramble. You can use Route 1 to"
+  },
+  {
+   "task": "CaveHorror",
+   "varp": 1180,
+   "bit": 28,
+   "desc": "Kill a Cave horror."
+  },
+  {
+   "task": "BittercapMush",
+   "varp": 1180,
+   "bit": 29,
+   "desc": "Plant and harvest the bittercap mushrooms in Canifis. It takes 4 hours to fully grow."
+  },
+  {
+   "task": "PietyAltar",
+   "varp": 1180,
+   "bit": 30,
+   "desc": "Pray at the altar with Piety activated."
+  },
+  {
+   "task": "BridgeSalve",
+   "varp": 1181,
+   "bit": 1,
+   "desc": "Use the shortcut to get to the bridge. This achievement only works one-way, so you must go from "
+  },
+  {
+   "task": "MithOre",
+   "varp": 1181,
+   "bit": 2,
+   "desc": "Mine the mithril ore in the north-east of the area."
+  }
+ ],
+ "Morytania Elite": [
+  {
+   "task": "BareHandShark",
+   "varp": 1181,
+   "bit": 3,
+   "desc": "Bare hand fish a shark in Burgh de Rott."
+  },
+  {
+   "task": "CremateShade",
+   "varp": 1181,
+   "bit": 4,
+   "desc": "Place the pyre logs and shade remains on the funeral pyre and light them with a tinderbox"
+  },
+  {
+   "task": "FertilizeHerb",
+   "varp": 1181,
+   "bit": 5,
+   "desc": "Cast Fertile Soil on the herb patch in Morytania."
+  },
+  {
+   "task": "CraftBlackDhideBody",
+   "varp": 1181,
+   "bit": 6,
+   "desc": "Craft a black dragon hide body."
+  },
+  {
+   "task": "AbyssalDemon",
+   "varp": 1181,
+   "bit": 7,
+   "desc": "Kill an Abyssal demon."
+  },
+  {
+   "task": "BarrowsChest",
+   "varp": 1181,
+   "bit": 8,
+   "desc": "Loot the chest wearing a complete set of barrows gear."
+  }
+ ],
+ "Varrock Easy": [
+  {
+   "task": "Thessalia",
+   "varp": 1176,
+   "bit": 1,
+   "desc": "Browse Thessalia's store."
+  },
+  {
+   "task": "Aubury",
+   "varp": 1176,
+   "bit": 2,
+   "desc": "Teleport to the essence mine via Aubury."
+  },
+  {
+   "task": "Iron",
+   "varp": 1176,
+   "bit": 3,
+   "desc": "Mine iron south-east of Varrock."
+  },
+  {
+   "task": "Plank",
+   "varp": 1176,
+   "bit": 4,
+   "desc": "Make a regular plank at the sawmill."
+  },
+  {
+   "task": "StrongholdSecond",
+   "varp": 1176,
+   "bit": 5,
+   "desc": null
+  },
+  {
+   "task": "Fence",
+   "varp": 1176,
+   "bit": 6,
+   "desc": "Jump the fence south of Varrock."
+  },
+  {
+   "task": "DyingTree",
+   "varp": 1176,
+   "bit": 7,
+   "desc": "Chop down a dying tree in the sawmill area."
+  },
+  {
+   "task": "News",
+   "varp": 1176,
+   "bit": 8,
+   "desc": "Speak with Benny in the Varrock Square to purchase a newspaper."
+  },
+  {
+   "task": "DogBone",
+   "varp": 1176,
+   "bit": 9,
+   "desc": "Give the stray dog a bone. If the dog isn't nearby consider changing worlds."
+  },
+  {
+   "task": "Bowl",
+   "varp": 1176,
+   "bit": 10,
+   "desc": "Put the unfired bowl in the oven."
+  },
+  {
+   "task": "Kudos",
+   "varp": 1176,
+   "bit": 11,
+   "desc": "Speak to Curator Haig Halen."
+  },
+  {
+   "task": "EarthRune",
+   "varp": 1176,
+   "bit": 12,
+   "desc": "Craft an earth rune."
+  },
+  {
+   "task": "Trout",
+   "varp": 1176,
+   "bit": 13,
+   "desc": "Fish a trout in the River Lum at Barbarian Village."
+  },
+  {
+   "task": "TeaStall",
+   "varp": 1176,
+   "bit": 14,
+   "desc": "Steal from the tea stall in Varrock."
+  },
+  {
+   "task": "MoreKudos",
+   "varbit": 3637,
+   "value": 50,
+   "desc": "Get more kudos from either quests, miniquests, or turning in fossils."
+  }
+ ],
+ "Varrock Medium": [
+  {
+   "task": "ApothStr",
+   "varp": 1176,
+   "bit": 15,
+   "desc": "Speak with the apothecary to create a strength potion."
+  },
+  {
+   "task": "Champs",
+   "varp": 1176,
+   "bit": 16,
+   "desc": "Enter the Champions' Guild."
+  },
+  {
+   "task": "CatColour",
+   "varp": 1176,
+   "bit": 18,
+   "desc": null
+  },
+  {
+   "task": "GESpirit",
+   "varp": 1176,
+   "bit": 19,
+   "desc": null
+  },
+  {
+   "task": "StrongholdEmote",
+   "varp": 1176,
+   "bit": 20,
+   "desc": null
+  },
+  {
+   "task": "Tolna",
+   "varp": 1176,
+   "bit": 21,
+   "desc": "Enter the Tolna dungeon."
+  },
+  {
+   "task": "TPDigsite",
+   "varp": 1176,
+   "bit": 22,
+   "desc": null
+  },
+  {
+   "task": "TPVarrock",
+   "varp": 1176,
+   "bit": 23,
+   "desc": null
+  },
+  {
+   "task": "Vannaka",
+   "varp": 1176,
+   "bit": 24,
+   "desc": "Get a task from Vannaka."
+  },
+  {
+   "task": "Maho20",
+   "varp": 1176,
+   "bit": 25,
+   "desc": "Make 20 mahogany planks at the sawmill in ONE run."
+  },
+  {
+   "task": "WhiteFruit",
+   "varp": 1176,
+   "bit": 26,
+   "desc": "Pick a white tree fruit at Varrock Castle."
+  },
+  {
+   "task": "Balloon",
+   "varp": 1176,
+   "bit": 27,
+   "desc": "Use the basket east of Varrock to fly to any available destination."
+  },
+  {
+   "task": "VarrAgi",
+   "varp": 1176,
+   "bit": 28,
+   "desc": "Complete a lap of the Varrock rooftop course."
+  },
+  {
+   "task": "Flap",
+   "varbit": 2309,
+   "value": 1,
+   "desc": null
+  },
+  {
+   "task": "Slap",
+   "varbit": 2310,
+   "value": 1,
+   "desc": null
+  },
+  {
+   "task": "Idea",
+   "varbit": 2311,
+   "value": 1,
+   "desc": null
+  },
+  {
+   "task": "Stamp",
+   "varbit": 2312,
+   "value": 1,
+   "desc": null
+  },
+  {
+   "task": "VarrBalloon",
+   "varbit": 2872,
+   "value": 0,
+   "desc": null
+  },
+  {
+   "task": "VarrBalloon2",
+   "varbit": 2872,
+   "value": 1,
+   "desc": null
+  }
+ ],
+ "Varrock Hard": [
+  {
+   "task": "SpottyCape",
+   "varp": 1176,
+   "bit": 29,
+   "desc": "Equip the spottier cape."
+  },
+  {
+   "task": "153Kudos",
+   "varp": 1176,
+   "bit": 30,
+   "desc": null
+  },
+  {
+   "task": "WakkaEdge",
+   "varp": 1176,
+   "bit": 31,
+   "desc": "Make a Waka at the canoe station in Edgeville."
+  },
+  {
+   "task": "PaddewwaTP",
+   "varp": 1177,
+   "bit": 0,
+   "desc": "Cast teleport to Paddewwa."
+  },
+  {
+   "task": "SkullSceptre",
+   "varp": 1177,
+   "bit": 1,
+   "desc": "Right-click on the Skull sceptre and select 'Invoke' to teleport to the stronghold."
+  },
+  {
+   "task": "YewChurch",
+   "varp": 1177,
+   "bit": 2,
+   "desc": null
+  },
+  {
+   "task": "FancyStone",
+   "varp": 1177,
+   "bit": 3,
+   "desc": "Talk to the estate agent to redecorate your house to fancy stone."
+  },
+  {
+   "task": "YewRoots",
+   "varp": 1177,
+   "bit": 4,
+   "desc": null
+  },
+  {
+   "task": "SmiteAltar",
+   "varp": 1177,
+   "bit": 5,
+   "desc": null
+  },
+  {
+   "task": "Pipe",
+   "varp": 1177,
+   "bit": 6,
+   "desc": null
+  }
+ ],
+ "Varrock Elite": [
+  {
+   "task": "SuperCombat",
+   "varp": 1177,
+   "bit": 7,
+   "desc": "Create a super combat potion."
+  },
+  {
+   "task": "PlankMake",
+   "varp": 1177,
+   "bit": 8,
+   "desc": "Cast plank make until you've made 20 mahogany planks."
+  },
+  {
+   "task": "SummerPie",
+   "varp": 1177,
+   "bit": 9,
+   "desc": "Cook the summer pie."
+  },
+  {
+   "task": "RuneDart",
+   "varp": 1177,
+   "bit": 10,
+   "desc": "Use feathers on the rune dart tips."
+  },
+  {
+   "task": "100Earth",
+   "varp": 1177,
+   "bit": 11,
+   "desc": null
+  }
+ ],
+ "Wilderness Easy": [
+  {
+   "task": "LowAlch",
+   "varp": 1192,
+   "bit": 1,
+   "desc": "Cast Low Alchemy on anything."
+  },
+  {
+   "task": "WildyLever",
+   "varp": 1192,
+   "bit": 2,
+   "desc": "Pull the Lever in Edgeville. This will take you to DEEP Wilderness, bank anything you aren't willing to lose."
+  },
+  {
+   "task": "ChaosAltar",
+   "varp": 1192,
+   "bit": 3,
+   "desc": "Pray at the Chaos Altar."
+  },
+  {
+   "task": "ChaosTemple",
+   "varp": 1192,
+   "bit": 4,
+   "desc": "Enter the chaos altar north of Edgeville with a chaos talisman/tiara, or enter it through the Abyss."
+  },
+  {
+   "task": "KillMammoth",
+   "varp": 1192,
+   "bit": 5,
+   "desc": "Kill a Mammoth in the Wilderness."
+  },
+  {
+   "task": "EarthWarrior",
+   "varp": 1192,
+   "bit": 6,
+   "desc": "Kill an Earth warrior in the north of the Edgeville Wilderness Dungeon."
+  },
+  {
+   "task": "DemonicPrayer",
+   "varp": 1192,
+   "bit": 7,
+   "desc": "Stand in the Demonic Ruins until the ruins automatically restore a prayer point for you. You must be at "
+  },
+  {
+   "task": "EnterKBDLair",
+   "varp": 1192,
+   "bit": 8,
+   "desc": "Climb down the ladder that leads to the King Black Dragon Lair."
+  },
+  {
+   "task": "SpiderEggs",
+   "varp": 1192,
+   "bit": 9,
+   "desc": "Pickup 5 red spider eggs in the Edgeville "
+  },
+  {
+   "task": "IronOre",
+   "varp": 1192,
+   "bit": 10,
+   "desc": "Mine iron in the Wilderness."
+  },
+  {
+   "task": "EnterAbyss",
+   "varp": 1192,
+   "bit": 11,
+   "desc": "Speak with the Mage of Zamorak in the Wilderness to teleport to the Abyss."
+  },
+  {
+   "task": "EquipTeamCape",
+   "varp": 1192,
+   "bit": 12,
+   "desc": "Equip a team cape. If you already have one on, re-equip it."
+  }
+ ],
+ "Wilderness Medium": [
+  {
+   "task": "MineMith",
+   "varp": 1192,
+   "bit": 13,
+   "desc": "Mine mithril in the Wilderness."
+  },
+  {
+   "task": "EntYew",
+   "varp": 1192,
+   "bit": 14,
+   "desc": "Kill an Ent in the wilderness and cut yew logs from its trunk after killing it."
+  },
+  {
+   "task": "WildyGodWars",
+   "varp": 1192,
+   "bit": 15,
+   "desc": null
+  },
+  {
+   "task": "WildyAgi",
+   "varp": 1192,
+   "bit": 16,
+   "desc": "Complete a lap of the Wilderness Agility Course."
+  },
+  {
+   "task": "KillGreenDrag",
+   "varp": 1192,
+   "bit": 18,
+   "desc": "Kill a Green dragon in the Wilderness Slayer Cave."
+  },
+  {
+   "task": "KillAnkou",
+   "varp": 1192,
+   "bit": 19,
+   "desc": "Kill an Ankou in the Wilderness Slayer Cave."
+  },
+  {
+   "task": "EarthOrb",
+   "varp": 1192,
+   "bit": 20,
+   "desc": "Cast charge earth orb on the Obelisk of Earth."
+  },
+  {
+   "task": "WildyGWBloodveld",
+   "varp": 1192,
+   "bit": 21,
+   "desc": "Kill a Bloodveld in the Wilderness God Wars Dungeon."
+  },
+  {
+   "task": "EmblemTrader",
+   "varp": 1192,
+   "bit": 22,
+   "desc": "Speak with the Emblem Trader."
+  },
+  {
+   "task": "GoldHelm",
+   "varp": 1192,
+   "bit": 23,
+   "desc": "Smith the gold helmet in the Resource Area. "
+  },
+  {
+   "task": "MuddyChest",
+   "varp": 1192,
+   "bit": 24,
+   "desc": "Use a Muddy key on the chest in the Lava Maze."
+  }
+ ],
+ "Wilderness Hard": [
+  {
+   "task": "GodSpells",
+   "varp": 1192,
+   "bit": 25,
+   "desc": "Cast one of the 3 god spells against another player in the "
+  },
+  {
+   "task": "AirOrb",
+   "varp": 1192,
+   "bit": 26,
+   "desc": "Cast charge air orb on the Obelisk of Air."
+  },
+  {
+   "task": "BlackSally",
+   "varp": 1192,
+   "bit": 27,
+   "desc": "Set a trap and catch a Black salamander in the Wilderness."
+  },
+  {
+   "task": "AddyScim",
+   "varp": 1192,
+   "bit": 28,
+   "desc": "Smith an Adamant scimitar in the Resource Area."
+  },
+  {
+   "task": "LavaDrag",
+   "varp": 1192,
+   "bit": 29,
+   "desc": "Kill a Lava dragon and bury the bones on Lava Dragon Isle."
+  },
+  {
+   "task": "ChaosEle",
+   "varp": 1192,
+   "bit": 30,
+   "desc": "Kill the Chaos Elemental."
+  },
+  {
+   "task": "ThreeBosses",
+   "varp": 1192,
+   "bit": 31,
+   "desc": "Kill Crazy archaeologist, Chaos Fanatic, and Scorpia. You must complete this task "
+  },
+  {
+   "task": "TrollWildy",
+   "varp": 1193,
+   "bit": 0,
+   "desc": "Take the agility shortcut from Trollheim to the Wilderness."
+  },
+  {
+   "task": "SprirtualWarrior",
+   "varp": 1193,
+   "bit": 1,
+   "desc": "Kill a Spiritual Warrior in the Wilderness God Wars Dungeon."
+  },
+  {
+   "task": "RawLavaEel",
+   "varp": 1193,
+   "bit": 2,
+   "desc": "Fish a raw lava eel in the Lava Maze."
+  }
+ ],
+ "Wilderness Elite": [
+  {
+   "task": "ThreeBosses",
+   "varp": 1193,
+   "bit": 3,
+   "desc": "Kill Callisto, Venenatis, and Vet'ion. You must complete this task fully before continuing the other "
+  },
+  {
+   "task": "TPGhorrock",
+   "varp": 1193,
+   "bit": 5,
+   "desc": "Teleport to Ghorrock."
+  },
+  {
+   "task": "DarkCrab",
+   "varp": 1193,
+   "bit": 7,
+   "desc": "Fish a dark crab in the Resource Area."
+  },
+  {
+   "task": "RuneScim",
+   "varp": 1193,
+   "bit": 8,
+   "desc": "Smith a runite scimitar in the Resource Area."
+  },
+  {
+   "task": "RoguesChest",
+   "varp": 1193,
+   "bit": 9,
+   "desc": "Steal from the chest in Rogues' Castle."
+  },
+  {
+   "task": "SpiritMage",
+   "varp": 1193,
+   "bit": 10,
+   "desc": "Kill a Spiritual Mage in the Wilderness God Wars Dungeon."
+  },
+  {
+   "task": "MagicLogs",
+   "varp": 1193,
+   "bit": 11,
+   "desc": "Chop some magic logs."
+  }
+ ]
+}
