@@ -1919,10 +1919,23 @@
     },
     {
      "name": "coins",
-     "quantity": 20
+     "quantity": 65
+    },
+    {
+     "name": "onion",
+     "quantity": 10
+    },
+    {
+     "name": "woad leaf",
+     "quantity": 8
     }
    ],
-   "note": "Make Red dye: 3x Redberries + 5x Coins each."
+   "note": "Aggie the witch makes dyes — USE an ingredient on her to skip all dialogue and batch them.\nRed dye: 3x Redberries + 5 coins each.\nYellow dye: 2x Onions + 5 coins each.\nBlue dye: 2x Woad leaves + 5 coins each.",
+   "target": {
+    "x": 3086,
+    "y": 3257,
+    "plane": 0
+   }
   },
   "1874f7b692": {
    "items": [
