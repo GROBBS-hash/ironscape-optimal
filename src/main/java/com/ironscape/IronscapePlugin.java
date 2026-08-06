@@ -4722,6 +4722,60 @@ public class IronscapePlugin extends Plugin
 	}
 
 	/**
+	 * Boss quests that count toward Nightmare Zone's 5-quest entry gate
+	 * (the wiki's eligible-quest list, 2026-08-06).
+	 */
+	private static final Quest[] NMZ_BOSS_QUESTS = {
+		Quest.THE_ASCENT_OF_ARCEUUS, Quest.CONTACT, Quest.THE_CORSAIR_CURSE,
+		Quest.THE_DEPTHS_OF_DESPAIR, Quest.DESERT_TREASURE_I, Quest.DRAGON_SLAYER_I,
+		Quest.DREAM_MENTOR, Quest.FAIRYTALE_I__GROWING_PAINS, Quest.FAMILY_CREST,
+		Quest.FIGHT_ARENA, Quest.THE_FREMENNIK_ISLES, Quest.GETTING_AHEAD,
+		Quest.THE_GRAND_TREE, Quest.THE_GREAT_BRAIN_ROBBERY, Quest.GRIM_TALES,
+		Quest.HAUNTED_MINE, Quest.HOLY_GRAIL, Quest.HORROR_FROM_THE_DEEP,
+		Quest.IN_SEARCH_OF_THE_MYREQUE, Quest.LEGENDS_QUEST, Quest.LOST_CITY,
+		Quest.LUNAR_DIPLOMACY, Quest.MONKEY_MADNESS_I, Quest.MOUNTAIN_DAUGHTER,
+		Quest.MY_ARMS_BIG_ADVENTURE, Quest.ONE_SMALL_FAVOUR, Quest.RECIPE_FOR_DISASTER,
+		Quest.ROVING_ELVES, Quest.SHADOW_OF_THE_STORM, Quest.SHILO_VILLAGE,
+		Quest.SONG_OF_THE_ELVES, Quest.TALE_OF_THE_RIGHTEOUS, Quest.TREE_GNOME_VILLAGE,
+		Quest.TROLL_ROMANCE, Quest.TROLL_STRONGHOLD, Quest.VAMPYRE_SLAYER,
+		Quest.WHAT_LIES_BELOW, Quest.WITCHS_HOUSE,
+	};
+
+	/**
+	 * Entry gates for the minigames whose GROUPING TELEPORT is locked
+	 * behind account state — a hint must never point at a teleport the
+	 * game will refuse (NMZ scored second-best for the Grand Tree while
+	 * the picker showed it locked for the owner). Unlisted = usable.
+	 */
+	private boolean minigameLandingAvailable(String name)
+	{
+		Player me = client.getLocalPlayer();
+		switch (name.toLowerCase(Locale.ROOT))
+		{
+			case "nightmare zone":
+				int bosses = 0;
+				for (Quest quest : NMZ_BOSS_QUESTS)
+				{
+					if (cachedQuestState(quest) == QuestState.FINISHED)
+					{
+						bosses++;
+					}
+				}
+				return bosses >= 5;
+			case "pest control":
+			case "soul wars":
+				return me != null && me.getCombatLevel() >= 40;
+			case "shades of mort'ton":
+				return cachedQuestState(Quest.SHADES_OF_MORTTON) == QuestState.FINISHED;
+			case "trouble brewing":
+				return cachedQuestState(Quest.CABIN_FEVER) == QuestState.FINISHED
+					&& client.getRealSkillLevel(Skill.COOKING) >= 40;
+			default:
+				return true;
+		}
+	}
+
+	/**
 	 * The best first leg toward `target`, minigame landings and CASTABLE
 	 * spellbook teleports (magic level, law runes carried, quest unlocks)
 	 * competing on EFFECTIVE distance — or null when walking is
@@ -4746,6 +4800,10 @@ public class IronscapePlugin extends Plugin
 		{
 			for (Map.Entry<String, WorldPoint> entry : minigameLandings.entrySet())
 			{
+				if (!minigameLandingAvailable(entry.getKey()))
+				{
+					continue;
+				}
 				int d = effectiveDistance(entry.getValue(), target);
 				if (d < bestDistance)
 				{
