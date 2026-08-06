@@ -33,15 +33,18 @@ if (!fs.existsSync(tsv)) {
   process.exit(1);
 }
 
-// One make-step -> its product goal (first goal on a "make ..." sub).
-const products = new Map(); // subId -> {name, qty, text}
+// One make-step -> ALL its product goals: "Make 4 red, 4 blue, 5
+// yellow dye" needs every recipe, not just the first (first-only left
+// the owner ingredient-less on blue and yellow).
+const products = new Map(); // subId -> [{name, qty, text}, ...]
 for (const line of fs.readFileSync(tsv, 'utf8').split('\n')) {
   if (!line.startsWith('ITEM\t')) continue;
   const [, subId, qty, name, , text] = line.split('\t');
   if (!/\bmake\b/i.test(text)) continue;
-  if (!products.has(subId)) products.set(subId, { name, qty: +qty, text });
+  if (!products.has(subId)) products.set(subId, []);
+  products.get(subId).push({ name, qty: +qty, text });
 }
-console.log(`${products.size} make-step product(s) found`);
+console.log(`${products.size} make-step(s) found`);
 
 async function fetchRecipe(page) {
   await sleep(REQUEST_DELAY_MS);
@@ -89,22 +92,35 @@ const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1);
 const annotations = JSON.parse(fs.readFileSync(ANNOTATIONS_FILE, 'utf8'));
 let applied = 0;
 let notes = 0;
-for (const [subId, product] of products) {
+for (const [subId, subProducts] of products) {
   const stepId = subId.split(':')[0];
   const existing = annotations.annotations[stepId]?.items || [];
-  const mats = await ingredients(product.name);
-  if (!mats) {
-    console.log(`miss  ${subId} "${product.name}" (no wiki recipe) | ${product.text.slice(0, 60)}`);
+  // Accumulate mats across ALL the sub's products FIRST (shared mats
+  // sum: 13 dyes = 65 coins), then merge against existing annotations.
+  const totals = new Map(); // mat name -> total quantity
+  const noteLines = [];
+  for (const product of subProducts) {
+    const mats = await ingredients(product.name);
+    if (!mats) {
+      console.log(`miss  ${subId} "${product.name}" (no wiki recipe) | ${product.text.slice(0, 60)}`);
+      continue;
+    }
+    for (const m of mats) {
+      const key = m.name.toLowerCase();
+      totals.set(key, (totals.get(key) || 0) + m.quantity * product.qty);
+    }
+    noteLines.push(`Make ${cap(product.name)}: `
+      + mats.map((m) => `${m.quantity}x ${cap(m.name)}`).join(' + ')
+      + (product.qty > 1 ? ' each.' : '.'));
+  }
+  if (totals.size === 0) {
     continue;
   }
-  // Method NOTE from the per-item recipe ("Make Soft clay: 1x Clay + 1x
-  // Bucket of water each") — the guide prose assumes you know the method.
-  // Hand-authored notes are never overwritten.
-  if (!annotations.annotations[stepId]?.note) {
-    const noteText = `Make ${cap(product.name)}: `
-      + mats.map((m) => `${m.quantity}x ${cap(m.name)}`).join(' + ')
-      + (product.qty > 1 ? ' each.' : '.');
-    console.log(`NOTE  ${subId} ${noteText}`);
+  // Method NOTE, one line per product recipe. Hand-authored notes are
+  // never overwritten.
+  if (!annotations.annotations[stepId]?.note && noteLines.length) {
+    const noteText = noteLines.join('\n');
+    console.log(`NOTE  ${subId} ${noteText.replace(/\n/g, ' | ')}`);
     if (!process.argv.includes('--dry-run')) {
       annotations.annotations[stepId] = {
         ...(annotations.annotations[stepId] || {}),
@@ -113,17 +129,35 @@ for (const [subId, product] of products) {
       notes++;
     }
   }
-  const scaled = mats.map((m) => ({
-    name: m.name.toLowerCase(),
-    quantity: m.quantity * product.qty,
-  })).filter((m) => !existing.some((e) => (e.name || '').toLowerCase() === m.name));
+  // EXISTING annotation items that are this step's mats gain the
+  // ingredient flag too (earlier runs predate it) — the panel indents
+  // them under the products with a carried-only count.
+  let flagged = 0;
+  for (const e of existing) {
+    if (totals.has((e.name || '').toLowerCase()) && !e.ingredient) {
+      if (!process.argv.includes('--dry-run')) {
+        e.ingredient = true;
+      }
+      flagged++;
+    }
+  }
+  if (flagged > 0) {
+    console.log(`FLAG  ${subId} ${flagged} existing item(s) marked ingredient`);
+    if (!process.argv.includes('--dry-run')) {
+      annotations.annotations[stepId].items = existing;
+      applied++;
+    }
+  }
+  const scaled = [...totals.entries()]
+    .map(([name, quantity]) => ({ name, quantity, ingredient: true }))
+    .filter((m) => !existing.some((e) => (e.name || '').toLowerCase() === m.name));
   if (!scaled.length) {
-    console.log(`skip  ${subId} "${product.name}" (items already annotated)`);
+    console.log(`skip  ${subId} (items already annotated)`);
     continue;
   }
-  console.log(`HIT   ${subId} "${product.name}" x${product.qty} -> `
+  console.log(`HIT   ${subId} -> `
     + scaled.map((m) => `${m.name} x${m.quantity}`).join(', ')
-    + ` | ${product.text.slice(0, 50)}`);
+    + ` | ${subProducts[0].text.slice(0, 50)}`);
   if (!process.argv.includes('--dry-run')) {
     annotations.annotations[stepId] = {
       ...(annotations.annotations[stepId] || {}),

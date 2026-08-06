@@ -367,11 +367,14 @@ class StepRow extends JPanel
 				// scanning "what am I missing" goes down the right edge,
 				// and the one red count finally stands out because names
 				// no longer shout in the same colors.
-				// "(optional)" marks keep-if-you-get-it items — never
-				// requirements, so the tag and an unmet count stay muted.
-				JLabel name = new JLabel(Boolean.TRUE.equals(need.optional)
+				// "(optional)" marks keep-if-you-get-it items; "(ingredient)"
+				// marks materials for the step's PRODUCTS (redberries under
+				// the dyes) — both muted so requirements keep the spotlight.
+				String tag = Boolean.TRUE.equals(need.optional) ? "(optional)"
+					: Boolean.TRUE.equals(need.ingredient) ? "(ingredient)" : null;
+				JLabel name = new JLabel(tag != null
 					? "<html>" + RichText.escape(ItemTracker.capitalize(need.name))
-						+ " <font color='#877e6f'>(optional)</font></html>"
+						+ " <font color='#877e6f'>" + tag + "</font></html>"
 					: RichText.escape(ItemTracker.capitalize(need.name)));
 				name.setFont(new Font(Font.DIALOG, Font.PLAIN, 11));
 				name.setForeground(ITEM_NAME_FG);
@@ -392,6 +395,11 @@ class StepRow extends JPanel
 				JPanel line = new JPanel(new BorderLayout(4, 0));
 				line.setOpaque(false);
 				line.setAlignmentX(LEFT_ALIGNMENT);
+				// Ingredients indent under the products they make.
+				if (Boolean.TRUE.equals(need.ingredient))
+				{
+					line.setBorder(BorderFactory.createEmptyBorder(0, 14, 0, 0));
+				}
 				line.add(name, BorderLayout.CENTER);
 				line.add(count, BorderLayout.EAST);
 				// Fixed preferred width so the widest name never becomes
@@ -502,7 +510,12 @@ class StepRow extends JPanel
 	private String itemCountHtml(StepAnnotation.ItemNeed need, boolean done)
 	{
 		int required = need.quantity == null ? 1 : need.quantity;
-		int have = ctx.getItems().countOf(need.name);
+		// INGREDIENTS are consumed at the making spot — bank stock is
+		// useless mid-Aggie, so their count is what's in your hands
+		// (6,924 bank coins showed "enough" for a 65-coin dye run).
+		boolean ingredient = Boolean.TRUE.equals(need.ingredient);
+		int have = ingredient
+			? ctx.getItems().carriedCountOf(need.name) : ctx.getItems().countOf(need.name);
 		int carried = ctx.getItems().carriedCountOf(need.name);
 
 		// green: carrying enough | orange + 🏦: enough, but some is banked

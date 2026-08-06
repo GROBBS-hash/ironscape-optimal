@@ -592,7 +592,8 @@
      "name": "redberries",
      "quantity": null
     }
-   ]
+   ],
+   "note": "Three crafted hand-ins, all near Draynor:\nSkin paste: take the ashes, pot of flour, bucket of water and redberries to Aggie — she mixes it on the spot.\nWig: give Ned 3 balls of wool to knit a wig, then use the yellow dye on it.\nKey imprint: needs the quest STARTED — talk to Lady Keli at the jail camp east of Draynor, ask about the key, and press it into the soft clay. Keep the imprint: Osman wants it plus a bronze bar."
   },
   "a3da4e08f5": {
    "items": [
@@ -1160,7 +1161,8 @@
     },
     {
      "name": "soft clay",
-     "quantity": null
+     "quantity": null,
+     "ingredient": true
     },
     {
      "name": "wizard mind bomb",
@@ -1428,15 +1430,18 @@
    "items": [
     {
      "name": "vial of water",
-     "quantity": 1
+     "quantity": 1,
+     "ingredient": true
     },
     {
      "name": "toadflax",
-     "quantity": 1
+     "quantity": 1,
+     "ingredient": true
     },
     {
      "name": "toad's legs",
-     "quantity": 1
+     "quantity": 1,
+     "ingredient": true
     }
    ],
    "note": "Make Agility pots: 1x Vial of water + 1x Toadflax + 1x Toad's legs."
@@ -1698,11 +1703,13 @@
    "items": [
     {
      "name": "ruby necklace",
-     "quantity": 1
+     "quantity": 1,
+     "ingredient": true
     },
     {
      "name": "cosmic rune",
-     "quantity": 1
+     "quantity": 1,
+     "ingredient": true
     }
    ],
    "note": "Make Digsite pendants: 1x Ruby necklace + 1x Cosmic rune."
@@ -1716,11 +1723,13 @@
    "items": [
     {
      "name": "bucket of sand",
-     "quantity": 1
+     "quantity": 1,
+     "ingredient": true
     },
     {
      "name": "soda ash",
-     "quantity": 1
+     "quantity": 1,
+     "ingredient": true
     }
    ],
    "note": "Make Molten glass: 1x Bucket of sand + 1x Soda ash."
@@ -1847,15 +1856,18 @@
    "items": [
     {
      "name": "snape grass",
-     "quantity": 1
+     "quantity": 1,
+     "ingredient": true
     },
     {
      "name": "chocolate dust",
-     "quantity": 1
+     "quantity": 1,
+     "ingredient": true
     },
     {
      "name": "bucket of milk",
-     "quantity": 1
+     "quantity": 1,
+     "ingredient": true
     }
    ],
    "note": "Make Hangover cure: 1x Snape grass + 1x Chocolate dust + 1x Bucket of milk."
@@ -1864,11 +1876,13 @@
    "items": [
     {
      "name": "logs",
-     "quantity": 1
+     "quantity": 1,
+     "ingredient": true
     },
     {
      "name": "coins",
-     "quantity": 100
+     "quantity": 100,
+     "ingredient": true
     },
     {
      "name": "axe",
@@ -1881,19 +1895,23 @@
    "items": [
     {
      "name": "redberries",
-     "quantity": 1
+     "quantity": 1,
+     "ingredient": true
     },
     {
      "name": "pot of flour",
-     "quantity": 1
+     "quantity": 1,
+     "ingredient": true
     },
     {
      "name": "bucket of water",
-     "quantity": 1
+     "quantity": 1,
+     "ingredient": true
     },
     {
      "name": "pie dish",
-     "quantity": 1
+     "quantity": 1,
+     "ingredient": true
     }
    ],
    "note": "Make Redberry pie: 1x Redberries + 1x Pot of flour + 1x Bucket of water + 1x Pie dish."
@@ -1902,11 +1920,13 @@
    "items": [
     {
      "name": "clay",
-     "quantity": 5
+     "quantity": 5,
+     "ingredient": true
     },
     {
      "name": "bucket of water",
-     "quantity": 5
+     "quantity": 5,
+     "ingredient": true
     }
    ],
    "note": "Make Soft clay: 1x Clay + 1x Bucket of water each."
@@ -1915,19 +1935,23 @@
    "items": [
     {
      "name": "redberries",
-     "quantity": 12
+     "quantity": 12,
+     "ingredient": true
     },
     {
      "name": "coins",
-     "quantity": 65
+     "quantity": 65,
+     "ingredient": true
     },
     {
      "name": "onion",
-     "quantity": 10
+     "quantity": 10,
+     "ingredient": true
     },
     {
      "name": "woad leaf",
-     "quantity": 8
+     "quantity": 8,
+     "ingredient": true
     }
    ],
    "note": "Aggie the witch makes dyes — USE an ingredient on her to skip all dialogue and batch them.\nRed dye: 3x Redberries + 5 coins each.\nYellow dye: 2x Onions + 5 coins each.\nBlue dye: 2x Woad leaves + 5 coins each.",
@@ -1941,11 +1965,13 @@
    "items": [
     {
      "name": "bucket of sand",
-     "quantity": 5
+     "quantity": 5,
+     "ingredient": true
     },
     {
      "name": "soda ash",
-     "quantity": 5
+     "quantity": 5,
+     "ingredient": true
     }
    ],
    "note": "Make Molten glass: 1x Bucket of sand + 1x Soda ash each."
@@ -1954,11 +1980,13 @@
    "items": [
     {
      "name": "emerald ring",
-     "quantity": 2
+     "quantity": 2,
+     "ingredient": true
     },
     {
      "name": "cosmic rune",
-     "quantity": 2
+     "quantity": 2,
+     "ingredient": true
     }
    ],
    "note": "Make Dueling rings: 1x Emerald ring + 1x Cosmic rune each."
@@ -1967,11 +1995,13 @@
    "items": [
     {
      "name": "cowhide",
-     "quantity": 1
+     "quantity": 1,
+     "ingredient": true
     },
     {
      "name": "coins",
-     "quantity": 1
+     "quantity": 1,
+     "ingredient": true
     }
    ],
    "note": "Make Soft leather: 1x Cowhide + 1x Coins."
@@ -1980,7 +2010,8 @@
    "items": [
     {
      "name": "cooked meat",
-     "quantity": 1
+     "quantity": 1,
+     "ingredient": true
     },
     {
      "name": "potato",
@@ -1988,7 +2019,8 @@
     },
     {
      "name": "bowl of water",
-     "quantity": 1
+     "quantity": 1,
+     "ingredient": true
     }
    ],
    "note": "Make Stew: 1x Potato + 1x Cooked meat + 1x Bowl of water."
@@ -1997,11 +2029,13 @@
    "items": [
     {
      "name": "sapphire amulet",
-     "quantity": 1
+     "quantity": 1,
+     "ingredient": true
     },
     {
      "name": "cosmic rune",
-     "quantity": 1
+     "quantity": 1,
+     "ingredient": true
     }
    ],
    "note": "Make Amulet of magic: 1x Sapphire amulet + 1x Cosmic rune."
@@ -2010,7 +2044,8 @@
    "items": [
     {
      "name": "molten glass",
-     "quantity": 2
+     "quantity": 2,
+     "ingredient": true
     }
    ],
    "note": "Make Lantern lenses: 1x Molten glass each."
@@ -2019,15 +2054,18 @@
    "items": [
     {
      "name": "mith grapple tip",
-     "quantity": 1
+     "quantity": 1,
+     "ingredient": true
     },
     {
      "name": "mithril bolts",
-     "quantity": 1
+     "quantity": 1,
+     "ingredient": true
     },
     {
      "name": "rope",
-     "quantity": 1
+     "quantity": 1,
+     "ingredient": true
     }
    ],
    "note": "Make Mithril grapple: 1x Mith grapple tip + 1x Mithril bolts + 1x Rope."
@@ -2036,19 +2074,23 @@
    "items": [
     {
      "name": "golovanova fruit top",
-     "quantity": 1
+     "quantity": 1,
+     "ingredient": true
     },
     {
      "name": "pot of flour",
-     "quantity": 1
+     "quantity": 1,
+     "ingredient": true
     },
     {
      "name": "bucket of water",
-     "quantity": 1
+     "quantity": 1,
+     "ingredient": true
     },
     {
      "name": "pie dish",
-     "quantity": 1
+     "quantity": 1,
+     "ingredient": true
     }
    ],
    "note": "Make Botanical pies: 1x Golovanova fruit top + 1x Pot of flour + 1x Bucket of water + 1x Pie dish."

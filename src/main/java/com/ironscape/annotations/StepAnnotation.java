@@ -126,6 +126,12 @@ public class StepAnnotation
 		 * count stays grey, never alarm red.
 		 */
 		public Boolean optional;
+		/**
+		 * A material for the step's PRODUCTS (redberries for the dyes),
+		 * not the deliverable itself — the badge indents under the
+		 * products with a muted "(ingredient)" tag.
+		 */
+		public Boolean ingredient;
 	}
 
 	public static class Target
