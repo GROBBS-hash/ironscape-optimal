@@ -4421,7 +4421,10 @@ public class IronscapePlugin extends Plugin
 		{
 			return null;
 		}
-		boolean allOwned = true;
+		// ANY banked shortfall justifies the stop — items you don't own at
+		// all don't cancel it (the missing notes vetoed a bank the player
+		// stood beside while the beads sat inside). Once withdrawn, the
+		// shortfall clears and routing continues to the destination.
 		boolean anyBankedShortfall = false;
 		for (String[] need : needs)
 		{
@@ -4432,15 +4435,10 @@ public class IronscapePlugin extends Plugin
 			{
 				continue;
 			}
-			allOwned &= itemTracker.countOf(name) >= quantity;
 			anyBankedShortfall |= itemTracker.carriedCountOf(name) < quantity
 				&& itemTracker.countOf(name) >= quantity;
 		}
-		if (allOwned && anyBankedShortfall)
-		{
-			return nearestBank();
-		}
-		return null;
+		return anyBankedShortfall ? nearestBank() : null;
 	}
 
 	/** The target of the first incomplete sub-step, scanning at most a few ahead. */
