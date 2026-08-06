@@ -3334,6 +3334,17 @@ public class IronscapePlugin extends Plugin
 		// — the text's destination is what arrival must prove.
 		boolean networkTravel = CHARTER.matcher(sub.getPlainText()).find()
 			|| SPIRIT_TREE.matcher(sub.getPlainText()).find();
+		// Arrival — precise ⌖ or place radius — only ever PROVES subs that
+		// are themselves movement instructions ("Walk north to Fred's
+		// farm"). An action that merely happens somewhere ("Kill a chicken
+		// ... at Fred's farm", "Pickpocket HAM members" with a hideout ⌖)
+		// must not tick just because the player showed up — the owner hit
+		// this twice; the second time the ⌖ branch sat ABOVE this gate.
+		if (!travelGoalSubs.contains(sub.getId())
+			&& !MOVEMENT_WORD.matcher(sub.getPlainText()).find())
+		{
+			return false;
+		}
 		StepAnnotation.Target precise = annotationManager.getTarget(sub.getId());
 		if (precise == null)
 		{
@@ -3343,16 +3354,6 @@ public class IronscapePlugin extends Plugin
 		{
 			return here.getPlane() == precise.plane
 				&& here.distanceTo(new WorldPoint(precise.x, precise.y, precise.plane)) <= ARRIVE_RADIUS;
-		}
-		// Place-name arrival (a whole-town radius) only PROVES subs that
-		// are themselves movement instructions ("Walk north to Fred's
-		// farm"). An action that merely happens somewhere ("Kill a
-		// chicken ... at Fred's farm") must not tick just because the
-		// player showed up (owner hit this at Fred's farm).
-		if (!travelGoalSubs.contains(sub.getId())
-			&& !MOVEMENT_WORD.matcher(sub.getPlainText()).find())
-		{
-			return false;
 		}
 		// Travel subs end at their LAST place mention (the destination);
 		// everything else anchors on the first ("Talk to Reldo" -> Reldo).

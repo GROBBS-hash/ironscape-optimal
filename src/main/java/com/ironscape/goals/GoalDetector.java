@@ -698,6 +698,21 @@ public final class GoalDetector
 		"\\b(?:kill|safespot|slay|fight|defeat)\\s+(?:a|an|the)?\\s*(\\d+)?\\s*([a-z' ]+?)(?:\\s+with\\b[^,.]*?)?\\s+for\\s+(?:it'?s\\s+|its\\s+|their\\s+|the\\s+)?meat\\b",
 		Pattern.CASE_INSENSITIVE);
 
+	/**
+	 * "Pickpocket HAM members for a rusty sword" — the goal is the named
+	 * LOOT itself. Only fires when the tail resolves to a real item
+	 * (addIfValid validates), so "kill wizards for xp" stays manual.
+	 */
+	private static final Pattern LOOT_FOR_ITEM = Pattern.compile(
+		"\\b(?:pickpocket|steal from|thieve|kill|slay|safespot)\\b[^,.]*?\\s+for\\s+"
+			+ "(?:a|an|the)?\\s*(\\d+)?\\s*([a-z' ]+?)(?:\\s*[,.(]|$)",
+		Pattern.CASE_INSENSITIVE);
+
+	/** "for a ..." tails that are never loot (first sweep 2026-08-06). */
+	private static final java.util.Set<String> LOOT_STOP = java.util.Set.of(
+		"hours", "couple of hours", "minutes", "while", "bit", "bone",
+		"xp", "exp", "money", "cash", "profit");
+
 	private static final java.util.Map<String, String> MEAT_BY_NPC = java.util.Map.of(
 		"chicken", "raw chicken",
 		"cow", "raw beef",
@@ -751,6 +766,36 @@ public final class GoalDetector
 			{
 				addIfValid(out, step, sub, kill.group(1) == null ? "1" : kill.group(1),
 					meat, seen, false);
+			}
+			return false;
+		}
+
+		// "... for a rusty sword": the named loot is the goal. Mirrors the
+		// meat rule's early return — a rejected tail stays a manual
+		// checkbox rather than feeding the pair scan an NPC name.
+		Matcher loot = LOOT_FOR_ITEM.matcher(text);
+		if (loot.find())
+		{
+			String tail = loot.group(2).trim().toLowerCase(Locale.ROOT);
+			// Real loot names are short ("rusty sword") — a rambling tail
+			// ("couple of hours just to get some low level seeds...") is
+			// prose, and addIfValid would shred it into a garbage goal.
+			// Quest names aren't loot either ("...for Merlin's crystal"),
+			// and generic "bone" names a Rag & Bone wishlist skull with no
+			// bundled id yet.
+			boolean questName = false;
+			for (net.runelite.api.Quest quest : net.runelite.api.Quest.values())
+			{
+				if (quest.getName().equalsIgnoreCase(tail))
+				{
+					questName = true;
+					break;
+				}
+			}
+			if (tail.split(" ").length <= 3 && !questName && !LOOT_STOP.contains(tail))
+			{
+				addIfValid(out, step, sub, loot.group(1) == null ? "1" : loot.group(1),
+					tail, seen, false);
 			}
 			return false;
 		}

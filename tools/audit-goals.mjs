@@ -175,7 +175,9 @@ if (!fs.existsSync(constantsTsv)) {
   // (2026-08-06: 'big frog leg' -> 7908 RAG_MEDIUM_FROG_BONE confirmed by
   // owner against the wiki — the Rag & Bone Man wishlist bone from Big
   // frogs in Lumbridge Swamp; Jagex's constant calls the size "medium".)
-  const VERIFIED = new Set(['big frog leg',
+  // ('rusty sword' -> 686 DIGSITESWORD: the HAM-pickpocket Rusty sword
+  // debuted with The Dig Site, hence the constant name.)
+  const VERIFIED = new Set(['big frog leg', 'rusty sword', 'buttons',
     'agility pots', 'b gloves', 'black wizards hat',
     'blurite sword', 'bronze arrowtips', 'buckets of slime', 'cadava potion',
     'digsite pendants', 'dragon defender', 'fally teletab', "green d'hide top",

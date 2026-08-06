@@ -5324,6 +5324,26 @@
      "radius": 3
     }
    ]
+  },
+  "0fb2494e8a": {
+   "items": [
+    {
+     "name": "ham shirt",
+     "quantity": 1
+    },
+    {
+     "name": "ham robe",
+     "quantity": 1
+    },
+    {
+     "name": "uncut opal",
+     "quantity": 1
+    },
+    {
+     "name": "buttons",
+     "quantity": 1
+    }
+   ]
   }
  }
 }
