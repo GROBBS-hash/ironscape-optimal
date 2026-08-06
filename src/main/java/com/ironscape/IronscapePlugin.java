@@ -2092,7 +2092,14 @@ public class IronscapePlugin extends Plugin
 					// must aim there too, not at the sub's own ⌖ ten tiles
 					// away (the hint sat dark while SP suggested a teleport).
 					StepAnnotation.Errand hintErrand = activeErrand();
-					WorldPoint routeTarget = deathPoint != null ? deathPoint
+					// Chain complete = nav is HOLDING at the destination —
+					// no first-leg hints either (from the basement, the
+					// surface trapdoor reads as 6,400 tiles away and the
+					// hint offered a Lumbridge teleport one ladder below it).
+					boolean chainHolding = hintErrand == null
+						&& !errandChain(current.step, current.sub).isEmpty();
+					WorldPoint routeTarget = chainHolding ? null
+						: deathPoint != null ? deathPoint
 						: hintErrand != null
 							? errandRoutePoint(hintErrand)
 							: targetFor(current.step, current.sub);
@@ -3807,6 +3814,7 @@ public class IronscapePlugin extends Plugin
 	private List<net.runelite.api.GameObject> findWantedRocks(Current current)
 	{
 		java.util.Set<String> rockNames = new java.util.HashSet<>();
+		java.util.Set<String> vendorNames = new java.util.HashSet<>();
 		List<GoalDetector.ItemGoal> wanted = itemGoalsBySub.get(current.sub.getId());
 		if (wanted != null)
 		{
@@ -3825,13 +3833,15 @@ public class IronscapePlugin extends Plugin
 				{
 					rockNames.add(rock);
 				}
-				// The goal's item source may name its vending OBJECT (the
-				// Culinaromancer's Chest) — the object-vendor counterpart
-				// of the shopkeeper outline.
+				// The goal's item source may name its vending OBJECT — the
+				// object-vendor counterpart of the shopkeeper outline. Kept
+				// SEPARATE from rockNames: the RFD chest is just "Chest",
+				// and matching by name alone would light every decorative
+				// chest in the scene — only the NEAREST match outlines.
 				String vendor = placeManager.sourceObject(goal.getItemName());
 				if (vendor != null)
 				{
-					rockNames.add(vendor);
+					vendorNames.add(vendor);
 				}
 			}
 		}
@@ -3847,11 +3857,15 @@ public class IronscapePlugin extends Plugin
 		// outlines the stalls themselves, same as rocks for a mining sub.
 		rockNames.addAll(objectGrindNames(
 			current.sub.getPlainText().toLowerCase(Locale.ROOT)));
-		if (rockNames.isEmpty())
+		if (rockNames.isEmpty() && vendorNames.isEmpty())
 		{
 			return java.util.Collections.emptyList();
 		}
+		Player scanMe = client.getLocalPlayer();
+		WorldPoint here = scanMe == null ? null : scanMe.getWorldLocation();
 		java.util.LinkedHashSet<net.runelite.api.GameObject> found = new java.util.LinkedHashSet<>();
+		net.runelite.api.GameObject nearestVendor = null;
+		int vendorBest = Integer.MAX_VALUE;
 		net.runelite.api.Tile[][][] tiles = client.getTopLevelWorldView().getScene().getTiles();
 		int plane = client.getTopLevelWorldView().getPlane();
 		for (net.runelite.api.Tile[] row : tiles[plane])
@@ -3869,12 +3883,29 @@ public class IronscapePlugin extends Plugin
 						continue;
 					}
 					String name = liveObjectName(object.getId());
-					if (name != null && rockNames.contains(name))
+					if (name == null)
+					{
+						continue;
+					}
+					if (rockNames.contains(name))
 					{
 						found.add(object);
 					}
+					else if (here != null && vendorNames.contains(name))
+					{
+						int d = object.getWorldLocation().distanceTo2D(here);
+						if (d < vendorBest)
+						{
+							vendorBest = d;
+							nearestVendor = object;
+						}
+					}
 				}
 			}
+		}
+		if (nearestVendor != null)
+		{
+			found.add(nearestVendor);
 		}
 		return new java.util.ArrayList<>(found);
 	}
@@ -4823,6 +4854,13 @@ public class IronscapePlugin extends Plugin
 	{
 		Player me = client.getLocalPlayer();
 		if (me == null || target == null)
+		{
+			return null;
+		}
+		// Dungeons live at y+6400: a surface target read from underground
+		// (or vice versa) makes every 2D distance fiction — no hint beats
+		// a wrong one ("teleport to Lumbridge" while one ladder below it).
+		if (Math.abs(me.getWorldLocation().getY() - target.getY()) > 4000)
 		{
 			return null;
 		}

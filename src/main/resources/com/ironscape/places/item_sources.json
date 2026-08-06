@@ -59,7 +59,7 @@
    "plane": 0,
    "note": "Buckets of milk: buy from the Culinaromancer's Chest — climb down the TRAPDOOR here in the castle kitchen (Shortest Path can't draw into the basement; this pin is the trapdoor). The chest also stocks eggs and pots of flour.",
    "npc": false,
-   "object": "culinaromancer's chest"
+   "object": "chest"
   },
   "bucket of milk": {
    "display": "Bucket of milk",
@@ -68,7 +68,7 @@
    "plane": 0,
    "note": "Buckets of milk: buy from the Culinaromancer's Chest — climb down the TRAPDOOR here in the castle kitchen (Shortest Path can't draw into the basement; this pin is the trapdoor). The chest also stocks eggs and pots of flour.",
    "npc": false,
-   "object": "culinaromancer's chest"
+   "object": "chest"
   },
   "fruit blast": {
    "display": "Fruit blast",
