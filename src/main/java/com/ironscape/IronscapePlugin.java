@@ -723,6 +723,48 @@ public class IronscapePlugin extends Plugin
 		return null;
 	}
 
+	/**
+	 * QH-style dialog highlighting: while an errand stage carrying dialog
+	 * choices is active, matching options in the chat menu recolor blue.
+	 * Runs on widget load AND per tick — the menu rebuilds on every
+	 * dialog advance and the recolor must survive it. Client thread.
+	 */
+	private void highlightStageDialog()
+	{
+		StepAnnotation.Errand stage = activeErrand();
+		if (stage == null || stage.dialog == null || stage.dialog.isEmpty())
+		{
+			return;
+		}
+		net.runelite.api.widgets.Widget options = client.getWidget(
+			net.runelite.api.gameval.InterfaceID.Chatmenu.OPTIONS);
+		if (options == null || options.isHidden())
+		{
+			return;
+		}
+		net.runelite.api.widgets.Widget[] children = options.getDynamicChildren();
+		if (children == null)
+		{
+			return;
+		}
+		for (net.runelite.api.widgets.Widget child : children)
+		{
+			String text = child == null ? null : child.getText();
+			if (text == null)
+			{
+				continue;
+			}
+			for (String want : stage.dialog)
+			{
+				if (text.equalsIgnoreCase(want))
+				{
+					child.setTextColor(0x1a1aff);
+					break;
+				}
+			}
+		}
+	}
+
 	/** Where the route (and marker) points for this stage — the routable entrance when set. */
 	private static WorldPoint errandRoutePoint(StepAnnotation.Errand stage)
 	{
@@ -1785,6 +1827,14 @@ public class IronscapePlugin extends Plugin
 			travelMenuGroup = event.getGroupId();
 			log.info("travel-menu probe: widget group {} loaded while travel sub current",
 				event.getGroupId());
+		}
+		// Chat options opening: recolor the stage's dialog choices right
+		// away (one tick late looks laggy); deferred a frame so the
+		// option children exist.
+		if (event.getGroupId()
+			== net.runelite.api.gameval.InterfaceID.Chatmenu.UNIVERSE >> 16)
+		{
+			clientThread.invokeLater(this::highlightStageDialog);
 		}
 	}
 

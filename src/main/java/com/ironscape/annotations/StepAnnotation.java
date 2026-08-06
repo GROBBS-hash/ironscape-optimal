@@ -114,6 +114,11 @@ public class StepAnnotation
 		 * in the inventory (QH-style) instead of the whole step kit.
 		 */
 		public java.util.List<String> items;
+		/**
+		 * Chat options to pick while this stage is active — recolored
+		 * blue in the dialog menu, Quest Helper-style. Exact option text.
+		 */
+		public java.util.List<String> dialog;
 	}
 
 	public static class Link
