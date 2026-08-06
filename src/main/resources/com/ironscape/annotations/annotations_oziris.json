@@ -5304,6 +5304,25 @@
      "note": "Enter the dining room — the banquet cutscene fires (any door works once the Cook has the items) and unlocks the chest."
     }
    ]
+  },
+  "703e4b8117:0": {
+   "errands": [
+    {
+     "x": 3209,
+     "y": 9616,
+     "plane": 0,
+     "routeX": 3209,
+     "routeY": 3216,
+     "routePlane": 0,
+     "note": "Climb down the trapdoor here in the castle kitchen."
+    },
+    {
+     "x": 3219,
+     "y": 9623,
+     "plane": 0,
+     "note": "Buy 7 buckets of milk from the Culinaromancer's Chest (it also stocks eggs and pots of flour)."
+    }
+   ]
   }
  }
 }

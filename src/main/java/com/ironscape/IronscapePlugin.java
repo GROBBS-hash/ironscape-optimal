@@ -712,6 +712,15 @@ public class IronscapePlugin extends Plugin
 		return null;
 	}
 
+	/** Where the route (and marker) points for this stage — the routable entrance when set. */
+	private static WorldPoint errandRoutePoint(StepAnnotation.Errand stage)
+	{
+		return stage.routeX != null && stage.routeY != null
+			? new WorldPoint(stage.routeX, stage.routeY,
+				stage.routePlane == null ? 0 : stage.routePlane)
+			: new WorldPoint(stage.x, stage.y, stage.plane);
+	}
+
 	/** Sticky-satisfaction key for one errand stage (item, var, or waypoint). */
 	private static String errandStageKey(GuideStep step, StepAnnotation.Errand stage)
 	{
@@ -2083,7 +2092,7 @@ public class IronscapePlugin extends Plugin
 					StepAnnotation.Errand hintErrand = activeErrand();
 					WorldPoint routeTarget = deathPoint != null ? deathPoint
 						: hintErrand != null
-							? new WorldPoint(hintErrand.x, hintErrand.y, hintErrand.plane)
+							? errandRoutePoint(hintErrand)
 							: targetFor(current.step, current.sub);
 					// A sub that names its own transport gets no alternative
 					// first-leg suggestions — the guide already said how to
@@ -2285,8 +2294,7 @@ public class IronscapePlugin extends Plugin
 			// stage. Idempotent when the route is already right.
 			maybeNavigateToNext();
 		}
-		WorldPoint errandPoint = errand == null ? null
-			: new WorldPoint(errand.x, errand.y, errand.plane);
+		WorldPoint errandPoint = errand == null ? null : errandRoutePoint(errand);
 		if (spot == null && errandPoint != null && config.showTargetMarker())
 		{
 			spot = errandPoint;
@@ -4070,7 +4078,7 @@ public class IronscapePlugin extends Plugin
 			if (errand != null)
 			{
 				eventBus.post(new PluginMessage("shortestpath", "path",
-					Map.of("target", new WorldPoint(errand.x, errand.y, errand.plane))));
+					Map.of("target", errandRoutePoint(errand))));
 				return;
 			}
 			// Player jumped ahead to a later step's quest: ANY route we

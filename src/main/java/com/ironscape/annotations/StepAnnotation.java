@@ -82,6 +82,15 @@ public class StepAnnotation
 		public Integer varbit;
 		public Integer varp;
 		public Integer value;
+		/**
+		 * Where the ROUTE points when it differs from the satisfaction
+		 * point: Shortest Path can't draw into interiors, so a basement
+		 * stage routes to the surface trapdoor (routeX/Y/Plane) while
+		 * satisfaction still waits for x/y — reached only downstairs.
+		 */
+		public Integer routeX;
+		public Integer routeY;
+		public Integer routePlane;
 	}
 
 	public static class Link
