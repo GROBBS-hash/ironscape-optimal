@@ -317,6 +317,16 @@ public class ItemTracker
 		{
 			key = "coins";
 		}
+		// Prince Ali's colloquials: the crafted items are literally named
+		// "Paste" and "Key print" — the guide (and everyone) says otherwise.
+		if (key.equals("skin paste"))
+		{
+			key = "paste";
+		}
+		if (key.equals("key imprint"))
+		{
+			key = "key print";
+		}
 		// "few cakes" / "plenty of stews" are cakes and stews — annotation
 		// item names carry the guide's quantifier words; strip them like
 		// the goal detector does or the count never matches anything.
