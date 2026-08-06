@@ -4277,6 +4277,20 @@ public class IronscapePlugin extends Plugin
 		{
 			return new WorldPoint(target.x, target.y, target.plane);
 		}
+		// An UNSTARTED quest goal routes to the quest's START point — the
+		// same pin the quest-start marker floats at. The 📍 fallback routed
+		// "Start RFD" to the generic Lumbridge pin outside the castle
+		// instead of the Cook in the dining room.
+		GoalDetector.QuestGoal questGoal = questGoalBySub.get(sub.getId());
+		if (questGoal != null
+			&& cachedQuestState(questGoal.getQuest()) == QuestState.NOT_STARTED)
+		{
+			WorldPoint questStart = placeManager.get(questGoal.getQuest().getName());
+			if (questStart != null)
+			{
+				return questStart;
+			}
+		}
 		// A travel sub's destination is the LAST place it names.
 		WorldPoint inText = travelGoalSubs.contains(sub.getId())
 			? placeManager.lastPlaceIn(sub.getPlainText())
