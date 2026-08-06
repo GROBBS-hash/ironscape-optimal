@@ -2076,23 +2076,26 @@ public class IronscapePlugin extends Plugin
 				// the distance math.
 				if (key == null || !GROUPING_MINIGAMES.contains(key))
 				{
+					// An active errand stage IS the journey — Shortest Path
+					// routes to it (the Grand Tree), so the first-leg hint
+					// must aim there too, not at the sub's own ⌖ ten tiles
+					// away (the hint sat dark while SP suggested a teleport).
+					StepAnnotation.Errand hintErrand = activeErrand();
 					WorldPoint routeTarget = deathPoint != null ? deathPoint
-						: targetFor(current.step, current.sub);
+						: hintErrand != null
+							? new WorldPoint(hintErrand.x, hintErrand.y, hintErrand.plane)
+							: targetFor(current.step, current.sub);
 					// A sub that names its own transport gets no alternative
 					// first-leg suggestions — the guide already said how to
-					// travel (the gravestone case stays: the death route has
-					// no prescribed transport).
-					boolean prescribed = deathPoint == null
+					// travel. Death routes and errand legs prescribe nothing.
+					boolean prescribed = deathPoint == null && hintErrand == null
 						&& PRESCRIBED_TRANSPORT.matcher(
 							current.sub.getPlainText().toLowerCase(Locale.ROOT)).find();
-					// The free Grouping teleport first — but not while its
-					// 20-minute cooldown runs (owner watched the hint point
-					// at a teleport the game refused).
-					String towards = prescribed || minigameTeleportOnCooldown()
-						? null : minigameTowards(routeTarget);
-					if (towards != null)
+					FirstLeg leg = prescribed ? null
+						: firstLegTowards(routeTarget, !minigameTeleportOnCooldown());
+					if (leg != null && leg.minigame != null)
 					{
-						String towardsKey = towards.toLowerCase(Locale.ROOT).replace('’', '\'');
+						String towardsKey = leg.minigame.toLowerCase(Locale.ROOT).replace('’', '\'');
 						java.util.Set<Integer> confirmed = minigameRegions.get(towardsKey);
 						Player me = client.getLocalPlayer();
 						boolean there = towardsKey.equals(minigamePresence)
@@ -2100,20 +2103,11 @@ public class IronscapePlugin extends Plugin
 								&& confirmed.contains(me.getWorldLocation().getRegionID()));
 						if (!there)
 						{
-							activeMinigameTarget = towards;
+							activeMinigameTarget = leg.minigame;
 						}
 					}
-					// Else: a spellbook teleport (Varrock etc.) as the first
-					// leg — the overlay highlights the spell.
-					if (activeMinigameTarget == null && !prescribed)
-					{
-						TeleportSpell spell = spellTeleportTowards(routeTarget);
-						activeSpellTeleport = spell == null ? -1 : spell.component;
-					}
-					else
-					{
-						activeSpellTeleport = -1;
-					}
+					activeSpellTeleport = activeMinigameTarget == null
+						&& leg != null && leg.spell != null ? leg.spell.component : -1;
 				}
 				else
 				{
@@ -4688,27 +4682,81 @@ public class IronscapePlugin extends Plugin
 			58, 2, new WorldPoint(2547, 3113, 0), Quest.WATCHTOWER),
 	};
 
+	/** One chosen first leg toward a far target: a Grouping minigame OR a spell. */
+	private static final class FirstLeg
+	{
+		final String minigame;
+		final TeleportSpell spell;
+
+		FirstLeg(String minigame, TeleportSpell spell)
+		{
+			this.minigame = minigame;
+			this.spell = spell;
+		}
+	}
+
 	/**
-	 * The best CASTABLE standard teleport toward `target` (magic level,
-	 * law runes carried, quest unlocks), or null when walking or another
-	 * transport is comparable. Same shape as minigameTowards.
+	 * Straight-line distance, unless riding the spirit-tree network is
+	 * shorter: the five permanent trees interconnect, so a point near ANY
+	 * tree effectively reaches the tree nearest the target — Varrock
+	 * teleport + the GE tree beats every direct landing for the Grand
+	 * Tree. Needs Tree Gnome Village done; before that the trees won't
+	 * talk to you. The +20 charges a couple of clicks for the ride so a
+	 * tree hop never beats a landing that's already close.
 	 */
-	private TeleportSpell spellTeleportTowards(WorldPoint target)
+	private int effectiveDistance(WorldPoint from, WorldPoint target)
+	{
+		int direct = from.distanceTo2D(target);
+		if (cachedQuestState(Quest.TREE_GNOME_VILLAGE) != QuestState.FINISHED)
+		{
+			return direct;
+		}
+		int toTree = Integer.MAX_VALUE;
+		int fromTree = Integer.MAX_VALUE;
+		for (WorldPoint tree : SPIRIT_TREES)
+		{
+			toTree = Math.min(toTree, from.distanceTo2D(tree));
+			fromTree = Math.min(fromTree, tree.distanceTo2D(target));
+		}
+		return Math.min(direct, toTree + fromTree + 20);
+	}
+
+	/**
+	 * The best first leg toward `target`, minigame landings and CASTABLE
+	 * spellbook teleports (magic level, law runes carried, quest unlocks)
+	 * competing on EFFECTIVE distance — or null when walking is
+	 * comparable: the winner must be under 60% of the player's own
+	 * effective distance, and the journey >100 tiles.
+	 */
+	private FirstLeg firstLegTowards(WorldPoint target, boolean minigameAvailable)
 	{
 		Player me = client.getLocalPlayer();
 		if (me == null || target == null)
 		{
 			return null;
 		}
-		int playerDistance = me.getWorldLocation().distanceTo2D(target);
+		int playerDistance = effectiveDistance(me.getWorldLocation(), target);
 		if (playerDistance <= 100)
 		{
 			return null;
 		}
+		int bestDistance = (int) (playerDistance * 0.6);
+		String bestMinigame = null;
+		if (minigameAvailable)
+		{
+			for (Map.Entry<String, WorldPoint> entry : minigameLandings.entrySet())
+			{
+				int d = effectiveDistance(entry.getValue(), target);
+				if (d < bestDistance)
+				{
+					bestDistance = d;
+					bestMinigame = entry.getKey();
+				}
+			}
+		}
+		TeleportSpell bestSpell = null;
 		int magic = client.getRealSkillLevel(Skill.MAGIC);
 		int laws = itemTracker.carriedCountOf("law runes");
-		TeleportSpell best = null;
-		int bestDistance = (int) (playerDistance * 0.6);
 		for (TeleportSpell spell : TELEPORT_SPELLS)
 		{
 			if (magic < spell.level || laws < spell.laws)
@@ -4720,47 +4768,16 @@ public class IronscapePlugin extends Plugin
 			{
 				continue;
 			}
-			int d = spell.destination.distanceTo2D(target);
+			int d = effectiveDistance(spell.destination, target);
 			if (d < bestDistance)
 			{
 				bestDistance = d;
-				best = spell;
+				bestSpell = spell;
+				bestMinigame = null;
 			}
 		}
-		return best;
-	}
-
-	/**
-	 * The Grouping minigame whose landing makes the best first leg toward
-	 * `target`, or null when walking/other transport is comparable: the
-	 * landing must be under 60% of the player's own distance, and the
-	 * journey must be long enough (>100 tiles) that menuing through the
-	 * Grouping tab beats just walking.
-	 */
-	private String minigameTowards(WorldPoint target)
-	{
-		Player me = client.getLocalPlayer();
-		if (me == null || target == null)
-		{
-			return null;
-		}
-		int playerDistance = me.getWorldLocation().distanceTo2D(target);
-		if (playerDistance <= 100)
-		{
-			return null;
-		}
-		String best = null;
-		int bestDistance = (int) (playerDistance * 0.6);
-		for (Map.Entry<String, WorldPoint> entry : minigameLandings.entrySet())
-		{
-			int d = entry.getValue().distanceTo2D(target);
-			if (d < bestDistance)
-			{
-				bestDistance = d;
-				best = entry.getKey();
-			}
-		}
-		return best;
+		return bestMinigame == null && bestSpell == null
+			? null : new FirstLeg(bestMinigame, bestSpell);
 	}
 
 	/** The minigame-teleport name matching this place name, or null. */
