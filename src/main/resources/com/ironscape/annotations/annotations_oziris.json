@@ -5632,6 +5632,22 @@
     }
    ],
    "note": "Entrana's monks CONFISCATE weapons and armour at the Port Sarim dock — runes and tools are fine.\nThe Dramen tree is in the Entrana dungeon: kill the Tree Spirit with magic for an axe, chop 5 branches, then use the KNIFE on branches (31 Crafting) to fletch the two staffs."
+  },
+  "687e1cb589": {
+   "items": [
+    {
+     "name": "bowl",
+     "quantity": 1
+    },
+    {
+     "name": "leather gloves",
+     "quantity": 1
+    }
+   ],
+   "note": "Wear GLOVES to pick nettles (they grow in the swampy patches — bare hands sting you).\nFill the bowl with water, add the nettles, then cook the nettle-water on a RANGE (not a fire) for the nettle tea Ghosts Ahoy wants."
+  },
+  "1c7c46e02d": {
+   "note": "Ectofuntus, north of Port Phasmatys: grind each bone in the TOP-floor grinder (one empty POT per bone), fetch buckets of SLIME from the pool below, then worship — 5 ecto-tokens per bone.\nEach worship consumes 1 ground bone + 1 bucket of slime."
   }
  }
 }
