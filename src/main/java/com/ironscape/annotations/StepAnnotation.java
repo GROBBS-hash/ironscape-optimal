@@ -73,6 +73,15 @@ public class StepAnnotation
 		public String item;
 		/** Optional reminder text; defaults to naming the item. */
 		public String note;
+		/**
+		 * Var-GATED stage (instead of item/proximity): satisfied only once
+		 * the varbit/varp reaches `value`. Stages inside a quest sequence
+		 * ("hand the Cook the items" -> var 2, "watch the cutscene" -> 3)
+		 * sit tiles apart — proximity can't order them, quest progress can.
+		 */
+		public Integer varbit;
+		public Integer varp;
+		public Integer value;
 	}
 
 	public static class Link

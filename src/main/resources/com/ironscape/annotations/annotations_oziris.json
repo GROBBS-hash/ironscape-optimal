@@ -5247,7 +5247,32 @@
     "varbit": 1850,
     "value": 3,
     "label": "chest unlocked"
-   }
+   },
+   "errands": [
+    {
+     "x": 3208,
+     "y": 3220,
+     "plane": 2,
+     "item": "fruit blast",
+     "note": "Withdraw the Cook's five items: eye of newt, greenman's ale, rotten tomato, ashes, fruit blast."
+    },
+    {
+     "x": 3207,
+     "y": 3214,
+     "plane": 0,
+     "varbit": 1850,
+     "value": 2,
+     "note": "Use the ashes ON the fruit blast (making the dirty blast), then hand the Cook all five items."
+    },
+    {
+     "x": 3213,
+     "y": 3221,
+     "plane": 0,
+     "varbit": 1850,
+     "value": 3,
+     "note": "Enter through the LARGE double doors — the banquet cutscene unlocks the chest."
+    }
+   ]
   }
  }
 }

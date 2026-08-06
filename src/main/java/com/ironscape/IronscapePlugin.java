@@ -662,7 +662,16 @@ public class IronscapePlugin extends Plugin
 		{
 			StepAnnotation.Errand stage = chain.get(i);
 			boolean satisfied;
-			if (stage.item != null)
+			if (stage.value != null && (stage.varbit != null || stage.varp != null))
+			{
+				// Var-gated stage: quest progress orders stages that sit
+				// tiles apart (Cook -> large doors), where proximity can't.
+				int varValue = stage.varbit != null
+					? client.getVarbitValue(stage.varbit)
+					: client.getVarpValue(stage.varp);
+				satisfied = varValue >= stage.value;
+			}
+			else if (stage.item != null)
 			{
 				// Intermediate stages count CARRIED only: quest keys are
 				// all literally named "Key", and an unrelated one in the
@@ -703,9 +712,14 @@ public class IronscapePlugin extends Plugin
 		return null;
 	}
 
-	/** Sticky-satisfaction key for one errand stage (item or waypoint). */
+	/** Sticky-satisfaction key for one errand stage (item, var, or waypoint). */
 	private static String errandStageKey(GuideStep step, StepAnnotation.Errand stage)
 	{
+		if (stage.value != null && (stage.varbit != null || stage.varp != null))
+		{
+			return step.getId() + "|var:"
+				+ (stage.varbit != null ? stage.varbit : "p" + stage.varp) + ">=" + stage.value;
+		}
 		return step.getId() + "|"
 			+ (stage.item != null ? stage.item : "wp:" + stage.x + "," + stage.y);
 	}
@@ -4074,12 +4088,34 @@ public class IronscapePlugin extends Plugin
 			if (questHelperOwnsGuidance())
 			{
 				Current questCurrent = findCurrent();
+				// An explicit ⌖ on the step (bundled or player-captured)
+				// IS the step's destination — the loose 📍 area sent the
+				// player to the courtyard while their pin sat on the RFD
+				// dining-hall doors.
+				WorldPoint area = null;
+				if (questCurrent != null)
+				{
+					StepAnnotation.Target pinned =
+						annotationManager.getTarget(questCurrent.sub.getId());
+					if (pinned == null)
+					{
+						pinned = annotationManager.getTarget(questCurrent.step.getId());
+					}
+					if (pinned != null)
+					{
+						area = new WorldPoint(pinned.x, pinned.y, pinned.plane);
+					}
+				}
 				String location = questCurrent == null
 					? null : questCurrent.step.getMetadata().get("location");
-				WorldPoint area = location == null ? null : placeManager.getLoose(location);
+				if (area == null && location != null)
+				{
+					area = placeManager.getLoose(location);
+				}
 				if (area != null)
 				{
-					logNavDecision("routing to step area " + location + " (quest owns guidance)");
+					logNavDecision("routing to step area " + (location == null ? area : location)
+						+ " (quest owns guidance)");
 					eventBus.post(new PluginMessage("shortestpath", "path", Map.of("target", area)));
 				}
 				else
