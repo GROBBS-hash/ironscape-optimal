@@ -85,6 +85,17 @@ public class PlaceManager
 			bundled.size(), local.size(), questGivers.size(), shopKeepers.size());
 	}
 
+	/** The scene object vending this item (lowercase), or null. */
+	public synchronized String sourceObject(String name)
+	{
+		Place place = local.get(key(name));
+		if (place == null)
+		{
+			place = bundled.get(key(name));
+		}
+		return place == null ? null : place.object;
+	}
+
 	/** False when this source's vendor is an OBJECT — no NPC nomination. */
 	public synchronized boolean sourceNominatesNpc(String name)
 	{
@@ -236,6 +247,23 @@ public class PlaceManager
 	 */
 	public synchronized WorldPoint firstPlaceIn(String text)
 	{
+		return firstPlaceIn(text, false);
+	}
+
+	/**
+	 * firstPlaceIn for the SHOPKEEPER anchor: additionally skips
+	 * object-vendor sources (npc:false — a chest, a dig spot), so their
+	 * doorway bystanders never get nominated (the Cook wore the milk
+	 * icon because "buckets of milk" in the step text matched the
+	 * trapdoor source).
+	 */
+	public synchronized WorldPoint firstNominatingPlaceIn(String text)
+	{
+		return firstPlaceIn(text, true);
+	}
+
+	private synchronized WorldPoint firstPlaceIn(String text, boolean forNpcNomination)
+	{
 		if (namePattern == null)
 		{
 			return null;
@@ -255,6 +283,10 @@ public class PlaceManager
 			// START next to one, so auto-targeting (and arrival detection!)
 			// would misfire on the spot the player is leaving from.
 			if ("transport".equals(place.type))
+			{
+				continue;
+			}
+			if (forNpcNomination && Boolean.FALSE.equals(place.npc))
 			{
 				continue;
 			}
@@ -504,5 +536,12 @@ public class PlaceManager
 		 * Chest). Null/absent = NPC nomination allowed.
 		 */
 		Boolean npc;
+		/**
+		 * Item sources only: the SCENE OBJECT that vends the item
+		 * (lowercase, e.g. "culinaromancer's chest") — outlined with the
+		 * goal item overhead while the goal is unmet, the object-vendor
+		 * counterpart of the shopkeeper outline.
+		 */
+		String object;
 	}
 }

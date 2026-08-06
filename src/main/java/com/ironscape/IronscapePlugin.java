@@ -1190,6 +1190,7 @@ public class IronscapePlugin extends Plugin
 		overlayManager.add(targetTileOverlay);
 		objectTargetOverlay.setObjectsSupplier(() -> objectTargets);
 		objectTargetOverlay.setLabelSupplier(() -> objectActionsLabel);
+		objectTargetOverlay.setItemIconSupplier(() -> currentSubItemIcon);
 		overlayManager.add(objectTargetOverlay);
 		inventoryItemHintOverlay.setItemIdsSupplier(() -> inventoryHintItemIds);
 		overlayManager.add(inventoryItemHintOverlay);
@@ -2357,8 +2358,11 @@ public class IronscapePlugin extends Plugin
 			// to nominate a shopkeeper (it outlined random passers-by at
 			// the town center). And only for PURCHASE subs: "do Wintertodt
 			// until 200k cash" has an item goal too, and its camp pin was
-			// nominating pyromancers (who then wore coin stacks).
-			shopAnchor = placeManager.firstPlaceIn(current.sub.getPlainText());
+			// nominating pyromancers (who then wore coin stacks). The
+			// NOMINATING variant skips object-vendor sources — "buckets of
+			// milk" in the text matched the trapdoor pin and the Cook wore
+			// the milk icon.
+			shopAnchor = placeManager.firstNominatingPlaceIn(current.sub.getPlainText());
 		}
 		if (shopAnchor == null && current != null)
 		{
@@ -3808,18 +3812,26 @@ public class IronscapePlugin extends Plugin
 		{
 			for (GoalDetector.ItemGoal goal : wanted)
 			{
-				String rock = ROCK_BY_ORE.get(goal.getItemName().toLowerCase(Locale.ROOT));
-				if (rock == null)
-				{
-					continue;
-				}
 				boolean gather = itemTracker.bankCountable(goal.getItemName(), goal.getQuantity());
 				int count = gather
 					? itemTracker.countOf(goal.getItemName())
 					: itemTracker.carriedCountOf(goal.getItemName());
-				if (count < goal.getQuantity())
+				if (count >= goal.getQuantity())
+				{
+					continue;
+				}
+				String rock = ROCK_BY_ORE.get(goal.getItemName().toLowerCase(Locale.ROOT));
+				if (rock != null)
 				{
 					rockNames.add(rock);
+				}
+				// The goal's item source may name its vending OBJECT (the
+				// Culinaromancer's Chest) — the object-vendor counterpart
+				// of the shopkeeper outline.
+				String vendor = placeManager.sourceObject(goal.getItemName());
+				if (vendor != null)
+				{
+					rockNames.add(vendor);
 				}
 			}
 		}

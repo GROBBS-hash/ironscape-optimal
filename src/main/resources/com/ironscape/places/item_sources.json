@@ -42,7 +42,8 @@
    "y": 3522,
    "plane": 0,
    "note": "Saltpetre: dig with a spade at the deposits north-east of the Woodcutting Guild (deposit box in the middle of them).",
-   "npc": false
+   "npc": false,
+   "object": "saltpetre"
   },
   "compost": {
    "display": "Compost",
@@ -57,7 +58,8 @@
    "y": 3216,
    "plane": 0,
    "note": "Buckets of milk: buy from the Culinaromancer's Chest — climb down the TRAPDOOR here in the castle kitchen (Shortest Path can't draw into the basement; this pin is the trapdoor). The chest also stocks eggs and pots of flour.",
-   "npc": false
+   "npc": false,
+   "object": "culinaromancer's chest"
   },
   "bucket of milk": {
    "display": "Bucket of milk",
@@ -65,7 +67,8 @@
    "y": 3216,
    "plane": 0,
    "note": "Buckets of milk: buy from the Culinaromancer's Chest — climb down the TRAPDOOR here in the castle kitchen (Shortest Path can't draw into the basement; this pin is the trapdoor). The chest also stocks eggs and pots of flour.",
-   "npc": false
+   "npc": false,
+   "object": "culinaromancer's chest"
   },
   "fruit blast": {
    "display": "Fruit blast",

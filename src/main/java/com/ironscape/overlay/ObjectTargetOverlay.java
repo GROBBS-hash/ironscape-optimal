@@ -30,18 +30,33 @@ public class ObjectTargetOverlay extends Overlay
 	private static final Color OUTLINE = new Color(0, 255, 255);
 
 	private final ModelOutlineRenderer outlineRenderer;
+	private final net.runelite.api.Client client;
+	private final net.runelite.client.game.ItemManager itemManager;
 
 	private Supplier<List<GameObject>> objectsSupplier = Collections::emptyList;
 
 	/** Progress label floated over each object ("1,234 to go"); null = none. */
 	private Supplier<String> labelSupplier = () -> null;
 
+	/** Goal item id floated over each object (the chest wears the milk); -1 = none. */
+	private Supplier<Integer> itemIconSupplier = () -> -1;
+	private int cachedItemId = -1;
+	private java.awt.image.BufferedImage cachedItemImage;
+
 	@Inject
-	public ObjectTargetOverlay(ModelOutlineRenderer outlineRenderer)
+	public ObjectTargetOverlay(ModelOutlineRenderer outlineRenderer,
+		net.runelite.api.Client client, net.runelite.client.game.ItemManager itemManager)
 	{
 		this.outlineRenderer = outlineRenderer;
+		this.client = client;
+		this.itemManager = itemManager;
 		setPosition(OverlayPosition.DYNAMIC);
 		setLayer(OverlayLayer.ABOVE_SCENE);
+	}
+
+	public void setItemIconSupplier(Supplier<Integer> itemIconSupplier)
+	{
+		this.itemIconSupplier = itemIconSupplier;
 	}
 
 	/** Live scene objects to outline; empty = hidden. */
@@ -64,6 +79,12 @@ public class ObjectTargetOverlay extends Overlay
 			return null;
 		}
 		String label = labelSupplier.get();
+		Integer itemId = itemIconSupplier.get();
+		if (itemId != null && itemId > 0 && itemId != cachedItemId)
+		{
+			cachedItemId = itemId;
+			cachedItemImage = itemManager.getImage(itemId);
+		}
 		// The in-game bold font in white over a black shadow — the same
 		// treatment RuneLite's own overlays use; small cyan text vanished
 		// against stall produce.
@@ -71,6 +92,15 @@ public class ObjectTargetOverlay extends Overlay
 		for (GameObject object : objects)
 		{
 			outlineRenderer.drawOutline(object, 2, OUTLINE, 2);
+			if (itemId != null && itemId > 0 && cachedItemImage != null)
+			{
+				net.runelite.api.Point at = net.runelite.api.Perspective.getCanvasImageLocation(
+					client, object.getLocalLocation(), cachedItemImage, 220);
+				if (at != null)
+				{
+					graphics.drawImage(cachedItemImage, at.getX(), at.getY(), null);
+				}
+			}
 			if (label != null && !label.isEmpty())
 			{
 				net.runelite.api.Point at = object.getCanvasTextLocation(graphics, label, 120);
