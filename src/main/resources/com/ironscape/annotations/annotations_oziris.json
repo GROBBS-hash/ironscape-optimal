@@ -5470,6 +5470,80 @@
      ]
     }
    ]
+  },
+  "a2b95390ef": {
+   "target": {
+    "x": 3114,
+    "y": 3163,
+    "plane": 1
+   },
+   "note": "Wizard Traiborn on the 1st floor of the Wizards' Tower trades 25 bones for his key part. Kill the chickens outside or wizards inside if short."
+  },
+  "fc59be4ce0": {
+   "target": {
+    "x": 3222,
+    "y": 3399,
+    "plane": 0
+   },
+   "items": [
+    {
+     "name": "beer",
+     "quantity": 1
+    }
+   ],
+   "note": "Dr Harlow in the Blue Moon Inn hands over the stake — buy him a BEER from the bar first. Keep the stake and bring a hammer for Draynor Manor."
+  },
+  "d03a26dec5": {
+   "target": {
+    "x": 2493,
+    "y": 3488,
+    "plane": 1
+   },
+   "note": "All three are sold by Heckel Funch, upstairs east of Blurberry's Bar in the Grand Tree."
+  },
+  "a8014d6a77": {
+   "note": "Bat bones: giant bats outside Keep Le Faye.\nBlack candle: the candle maker in Catherby.\nMordred: fight him upstairs in Keep Le Faye — Quest Helper guides the fight."
+  },
+  "a8014d6a77:0": {
+   "errands": [
+    {
+     "x": 2757,
+     "y": 3401,
+     "plane": 0,
+     "item": "bat bones",
+     "note": "Kill a Giant bat outside Keep Le Faye for the bat bones."
+    },
+    {
+     "x": 2797,
+     "y": 3440,
+     "plane": 0,
+     "item": "black candle",
+     "npc": "Candle maker",
+     "note": "The Catherby candle maker hands over the black candle — insist when he warns you."
+    }
+   ]
+  },
+  "56645c98cd": {
+   "target": {
+    "x": 3016,
+    "y": 3247,
+    "plane": 0
+   },
+   "items": [
+    {
+     "name": "bread",
+     "quantity": 1
+    }
+   ],
+   "note": "Give the beggar outside the jewellery store BREAD — it's the Lady of the Lake's test, and she grants Excalibur for passing."
+  },
+  "efe63d31a5": {
+   "target": {
+    "x": 3260,
+    "y": 3381,
+    "plane": 0
+   },
+   "note": "Read the inscription on the Altar of Thrantax (Chaos Temple south-east of Varrock) for the magic words: Snarthon Candtrick Termanto. Picking the wrong words in the fight resets them."
   }
  }
 }
