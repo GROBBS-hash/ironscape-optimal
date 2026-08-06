@@ -4276,6 +4276,19 @@ public class IronscapePlugin extends Plugin
 			if (questHelperOwnsGuidance())
 			{
 				Current questCurrent = findCurrent();
+				// The quest kit sitting in the BANK outranks the step area:
+				// arriving at the Wizards' Tower beadless helps nobody.
+				if (questCurrent != null)
+				{
+					WorldPoint kitBank = bankFirstTarget(questCurrent);
+					if (kitBank != null)
+					{
+						logNavDecision("routing to a bank first — the step's kit is banked");
+						eventBus.post(new PluginMessage("shortestpath", "path",
+							Map.of("target", kitBank)));
+						return;
+					}
+				}
 				// An explicit ⌖ on the step (bundled or player-captured)
 				// IS the step's destination — the loose 📍 area sent the
 				// player to the courtyard while their pin sat on the RFD
@@ -4373,6 +4386,63 @@ public class IronscapePlugin extends Plugin
 			? quest : null;
 	}
 
+	/**
+	 * A bank to visit FIRST when the sub's kit is owned-but-banked, else
+	 * null. Checks TEXT goals and ANNOTATION items both — quest kits are
+	 * annotations, so the old text-only check went blind the day kits
+	 * were seeded ("Finish Imp catcher" with every bead in the bank
+	 * routed straight to the Wizards' Tower). Coins are wealth, not
+	 * cargo; optional items and bank-countable bulk never gate.
+	 */
+	private WorldPoint bankFirstTarget(Current current)
+	{
+		java.util.List<String[]> needs = new java.util.ArrayList<>();
+		List<GoalDetector.ItemGoal> goals = itemGoalsBySub.get(current.sub.getId());
+		if (goals != null)
+		{
+			for (GoalDetector.ItemGoal goal : goals)
+			{
+				needs.add(new String[]{goal.getItemName(), String.valueOf(goal.getQuantity())});
+			}
+		}
+		for (String annotationId : new String[]{current.step.getId(), current.sub.getId()})
+		{
+			for (StepAnnotation.ItemNeed need : annotationManager.getItems(annotationId))
+			{
+				if (Boolean.TRUE.equals(need.optional))
+				{
+					continue;
+				}
+				needs.add(new String[]{need.name,
+					String.valueOf(need.quantity == null ? 1 : need.quantity)});
+			}
+		}
+		if (needs.isEmpty())
+		{
+			return null;
+		}
+		boolean allOwned = true;
+		boolean anyBankedShortfall = false;
+		for (String[] need : needs)
+		{
+			String name = need[0];
+			int quantity = Integer.parseInt(need[1]);
+			if (ItemTracker.nameMatchesGoal("coins", name)
+				|| itemTracker.bankCountable(name, quantity))
+			{
+				continue;
+			}
+			allOwned &= itemTracker.countOf(name) >= quantity;
+			anyBankedShortfall |= itemTracker.carriedCountOf(name) < quantity
+				&& itemTracker.countOf(name) >= quantity;
+		}
+		if (allOwned && anyBankedShortfall)
+		{
+			return nearestBank();
+		}
+		return null;
+	}
+
 	/** The target of the first incomplete sub-step, scanning at most a few ahead. */
 	private WorldPoint findNextTarget()
 	{
@@ -4384,24 +4454,10 @@ public class IronscapePlugin extends Plugin
 
 		// If the frontier sub-step needs items that sit in the BANK, the
 		// journey starts at a bank, not at the step's destination.
-		List<GoalDetector.ItemGoal> frontierItems = itemGoalsBySub.get(window.get(0).sub.getId());
-		if (frontierItems != null)
+		WorldPoint bankFirst = bankFirstTarget(window.get(0));
+		if (bankFirst != null)
 		{
-			boolean allOwned = true;
-			boolean allCarried = true;
-			for (GoalDetector.ItemGoal goal : frontierItems)
-			{
-				allOwned &= itemTracker.countOf(goal.getItemName()) >= goal.getQuantity();
-				allCarried &= itemTracker.carriedCountOf(goal.getItemName()) >= goal.getQuantity();
-			}
-			if (allOwned && !allCarried)
-			{
-				WorldPoint bank = nearestBank();
-				if (bank != null)
-				{
-					return bank;
-				}
-			}
+			return bankFirst;
 		}
 
 		// "Use the spirit tree and go to X": the journey STARTS at the
