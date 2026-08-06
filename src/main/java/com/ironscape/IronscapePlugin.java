@@ -3829,10 +3829,19 @@ public class IronscapePlugin extends Plugin
 				{
 					continue;
 				}
-				String rock = ROCK_BY_ORE.get(goal.getItemName().toLowerCase(Locale.ROOT));
+				String plain = goal.getItemName().toLowerCase(Locale.ROOT);
+				String rock = ROCK_BY_ORE.get(plain);
 				if (rock != null)
 				{
 					rockNames.add(rock);
+				}
+				// Pick-plants share their item's name — "Onion" plants for
+				// the onion goal, cabbage, flax. A goal with no same-named
+				// scene object simply matches nothing.
+				rockNames.add(plain);
+				if (plain.endsWith("s"))
+				{
+					rockNames.add(plain.substring(0, plain.length() - 1));
 				}
 				// The goal's item source may name its vending OBJECT — the
 				// object-vendor counterpart of the shopkeeper outline. Kept
