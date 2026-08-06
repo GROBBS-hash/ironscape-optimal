@@ -2339,7 +2339,13 @@ public class IronscapePlugin extends Plugin
 		// priority; the ≤4-tile rule below keeps town-center points from
 		// outlining random passers-by. An active errand's spot anchors the
 		// same way (Golrie gets the outline, the pebble floats overhead).
-		WorldPoint shopAnchor = spot != null ? spot : errandPoint;
+		// Mid-quest with an errand active, ONLY the errand stage nominates
+		// (Golrie at his gate) — the sub's own ⌖ is a PLACE there (the RFD
+		// dining-hall doors), and anchoring on it crowned whatever NPC
+		// wandered past the doors with an outline and a quest icon.
+		WorldPoint shopAnchor = errand != null && questHelperOwnsGuidance()
+			? errandPoint
+			: (spot != null ? spot : errandPoint);
 		if (shopAnchor == null && current != null && hasPurchaseGoal(current.sub))
 		{
 			// Text places only — the step's 📍 town tag is far too coarse
