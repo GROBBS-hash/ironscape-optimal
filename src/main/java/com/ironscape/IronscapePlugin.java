@@ -557,6 +557,9 @@ public class IronscapePlugin extends Plugin
 	/** True while the current sub says "home tele(port)" — spellbook hint. */
 	private volatile boolean homeTeleportHint;
 
+	/** Route-aware: the FREE home teleport is the best first leg. */
+	private volatile boolean routeHomeTeleportHint;
+
 	/** "Home tele to lumby" / "Home teleport, run north..." */
 	private static final java.util.regex.Pattern HOME_TELEPORT = java.util.regex.Pattern.compile(
 		"\\bhome\\s+tele(?:port)?\\b", java.util.regex.Pattern.CASE_INSENSITIVE);
@@ -1176,7 +1179,8 @@ public class IronscapePlugin extends Plugin
 	private void registerUi()
 	{
 		minigameTeleportOverlay.setTargetSupplier(() -> activeMinigameTarget);
-		minigameTeleportOverlay.setHomeTeleportSupplier(() -> homeTeleportHint);
+		minigameTeleportOverlay.setHomeTeleportSupplier(
+			() -> homeTeleportHint || routeHomeTeleportHint);
 		minigameTeleportOverlay.setSpellTeleportSupplier(() -> activeSpellTeleport);
 		overlayManager.add(minigameTeleportOverlay);
 		travelMenuOverlay.setWordsSupplier(() -> travelMenuWords);
@@ -2058,6 +2062,7 @@ public class IronscapePlugin extends Plugin
 		// route-aware branch sets it, so stale values must not linger when
 		// an earlier branch wins.
 		activeSpellTeleport = -1;
+		routeHomeTeleportHint = false;
 		if (!config.showTeleportHints())
 		{
 			activeMinigameTarget = null;
@@ -2133,10 +2138,13 @@ public class IronscapePlugin extends Plugin
 					}
 					activeSpellTeleport = activeMinigameTarget == null
 						&& leg != null && leg.spell != null ? leg.spell.component : -1;
+					routeHomeTeleportHint = activeMinigameTarget == null
+						&& leg != null && leg.home;
 				}
 				else
 				{
 					activeSpellTeleport = -1;
+					routeHomeTeleportHint = false;
 				}
 				if (key != null && GROUPING_MINIGAMES.contains(key))
 				{
@@ -4741,6 +4749,13 @@ public class IronscapePlugin extends Plugin
 		return System.currentTimeMillis() - lastUseMinutes * 60_000L < 20 * 60_000L;
 	}
 
+	/** The free home teleport's 30-minute cooldown (varp 892, same scheme). */
+	private boolean homeTeleportOnCooldown()
+	{
+		int lastUseMinutes = client.getVarpValue(net.runelite.api.VarPlayer.LAST_HOME_TELEPORT);
+		return System.currentTimeMillis() - lastUseMinutes * 60_000L < 30 * 60_000L;
+	}
+
 	/**
 	 * One standard-spellbook teleport: where it lands, what it takes to
 	 * cast, and the spell's widget for the overlay to point at. Element
@@ -4790,18 +4805,23 @@ public class IronscapePlugin extends Plugin
 			58, 2, new WorldPoint(2547, 3113, 0), Quest.WATCHTOWER),
 	};
 
-	/** One chosen first leg toward a far target: a Grouping minigame OR a spell. */
+	/** One chosen first leg toward a far target: a Grouping minigame, a spell, or the free home teleport. */
 	private static final class FirstLeg
 	{
 		final String minigame;
 		final TeleportSpell spell;
+		final boolean home;
 
-		FirstLeg(String minigame, TeleportSpell spell)
+		FirstLeg(String minigame, TeleportSpell spell, boolean home)
 		{
 			this.minigame = minigame;
 			this.spell = spell;
+			this.home = home;
 		}
 	}
+
+	/** Where the free (standard-book) home teleport lands. */
+	private static final WorldPoint HOME_TELEPORT_LANDING = new WorldPoint(3222, 3218, 0);
 
 	/**
 	 * Straight-line distance, unless riding the spirit-tree network is
@@ -4910,6 +4930,19 @@ public class IronscapePlugin extends Plugin
 			return null;
 		}
 		int bestDistance = (int) (playerDistance * 0.6);
+		// The FREE home teleport competes first (SP suggests it; we never
+		// did — the owner stood in Draynor with SP saying "home teleport"
+		// and our overlay dark). Free beats paid on ties, so it leads.
+		boolean bestHome = false;
+		if (!homeTeleportOnCooldown())
+		{
+			int d = effectiveDistance(HOME_TELEPORT_LANDING, target);
+			if (d < bestDistance)
+			{
+				bestDistance = d;
+				bestHome = true;
+			}
+		}
 		String bestMinigame = null;
 		if (minigameAvailable)
 		{
@@ -4924,6 +4957,7 @@ public class IronscapePlugin extends Plugin
 				{
 					bestDistance = d;
 					bestMinigame = entry.getKey();
+					bestHome = false;
 				}
 			}
 		}
@@ -4947,10 +4981,11 @@ public class IronscapePlugin extends Plugin
 				bestDistance = d;
 				bestSpell = spell;
 				bestMinigame = null;
+				bestHome = false;
 			}
 		}
-		return bestMinigame == null && bestSpell == null
-			? null : new FirstLeg(bestMinigame, bestSpell);
+		return bestMinigame == null && bestSpell == null && !bestHome
+			? null : new FirstLeg(bestMinigame, bestSpell, bestHome);
 	}
 
 	/** The minigame-teleport name matching this place name, or null. */
