@@ -76,6 +76,20 @@
    "y": 3488,
    "plane": 1,
    "note": "Fruit blast: a PREMADE fr' blast does NOT work for RFD — mix your own (6 Cooking): buy cocktail shaker, cocktail glass, lemon, orange and pineapple from Funch's Fine Groceries east of Blurberry's Bar (Grand Tree), mix the fruits, add lemon slices. Blurberry gives the ingredients free once: talk, read his cocktail guide, talk again."
+  },
+  "teleports": {
+   "display": "Teleports",
+   "x": 3081,
+   "y": 3247,
+   "plane": 0,
+   "note": "Teleport cards: buy from Diango in the Draynor market — they charge the Chronicle (one teleport per card)."
+  },
+  "teleport cards": {
+   "display": "Teleport cards",
+   "x": 3081,
+   "y": 3247,
+   "plane": 0,
+   "note": "Teleport cards: buy from Diango in the Draynor market — they charge the Chronicle (one teleport per card)."
   }
  }
 }
