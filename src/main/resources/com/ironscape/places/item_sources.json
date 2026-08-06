@@ -63,6 +63,13 @@
    "y": 9623,
    "plane": 0,
    "note": "Buckets of milk: buy from the Culinaromancer's Chest in the Lumbridge Castle basement (trapdoor in the castle kitchen) — unlocked by starting RFD. It also stocks eggs and pots of flour."
+  },
+  "fruit blast": {
+   "display": "Fruit blast",
+   "x": 2493,
+   "y": 3488,
+   "plane": 1,
+   "note": "Fruit blast: a PREMADE fr' blast does NOT work for RFD — mix your own (6 Cooking): buy cocktail shaker, cocktail glass, lemon, orange and pineapple from Funch's Fine Groceries east of Blurberry's Bar (Grand Tree), mix the fruits, add lemon slices. Blurberry gives the ingredients free once: talk, read his cocktail guide, talk again."
   }
  }
 }
