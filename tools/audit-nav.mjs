@@ -18,6 +18,13 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const RES = path.join(__dirname, '../src/main/resources/com/ironscape');
 const guide = JSON.parse(fs.readFileSync(path.join(RES, 'guide/guide_data_oziris.json'), 'utf8'));
 const places = JSON.parse(fs.readFileSync(path.join(RES, 'places/places.json'), 'utf8')).places;
+// Item sources share the place namespace in PlaceManager — their displays
+// linkify and route exactly like places, so they count as coverage.
+const sources = JSON.parse(
+  fs.readFileSync(path.join(RES, 'places/item_sources.json'), 'utf8')).places;
+Object.entries(sources).forEach(([k, v]) => {
+  if (!places[k]) places[k] = v;
+});
 const annotations = JSON.parse(
   fs.readFileSync(path.join(RES, 'annotations/annotations_oziris.json'), 'utf8')).annotations;
 
@@ -29,10 +36,11 @@ const displays = Object.values(places).map((p) => p.display)
   .sort((a, b) => b.length - a.length);
 const placePattern = new RegExp('\\b(?:' + displays.map(tolerant).join('|') + ')\\b', 'i');
 
-// Step ids (or "stepId:sub" keys) that have a ⌖ target annotation.
+// Step ids (or "stepId:sub" keys) with a ⌖ target OR an errand chain —
+// a chain routes every leg itself, the strongest coverage there is.
 const targeted = new Set();
 for (const [key, ann] of Object.entries(annotations)) {
-  if (ann.target) targeted.add(key.split(':')[0]);
+  if (ann.target || (ann.errands && ann.errands.length)) targeted.add(key.split(':')[0]);
 }
 
 const runText = (runs) => (runs || []).map((r) => r.text).join('');

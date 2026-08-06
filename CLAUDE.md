@@ -637,6 +637,72 @@ refresh when "Failed to login" appears.
   charter docks + gp costs owner-tentative; hub pin still a07a1eb —
   bump after a calm session on this build.
 
+- SESSION WAVE 8 (2026-08-06, all-day live play-test, ~50 commits):
+  ERRAND CHAINS V2 — stages gained: varbit/varp+value GATES (quest
+  progress orders stages proximity can't: RFD Cook varp 1850>=2 ->
+  doors >=3; PAR Osman varp 273>=20 unlocks crafting), preQuest flag
+  (prep chains guide before quest start), route/satisfaction SPLIT
+  (routeX/Y/Plane: SP can't draw into interiors — route the surface
+  trapdoor, satisfy at the ladder bottom; milk chest, boots of
+  lightness, ghost's skull), per-stage radius (chest sat 10 tiles
+  from the ladder inside the default 12), npc (NAMED outline — Aggie
+  mid-wander; named beats nearest everywhere now), items (stage-
+  focused inventory hints, QH-style), dialog (chat options recolor
+  blue via Chatmenu.OPTIONS, QH strings); waypoint stages never
+  nominate NPCs; chain-complete = nav HOLD + no first-leg hints.
+  Chains seeded: RFD start (fruit blast must be MADE — premade
+  fails; owner-captured doors 3213,3221 = QH's exact tile), milk
+  (Culinaromancer chest = object "Chest", vendor outline nearest-
+  only + goal-item icon overhead on ObjectTargetOverlay), PAR prep
+  (Aggie/Ned/Keli + dialogs), Mordred (bat bones + black candle),
+  boots of lightness, ghost's skull. FIRST-LEG HINTS rewritten:
+  errand-aware target, spirit-tree EFFECTIVE distance (5-tree
+  network, +20 toll, TGV-gated), minigame/spell/FREE-home-teleport
+  (varp 892, 30min) COMPETE, per-minigame entry gates (NMZ 5-of-38
+  boss quests, PC/SW cb40, Shades quest, TB CabinFever+40cook),
+  labeled highlight names the pick, no hints across the dungeon
+  y-offset (basement "teleport to Lumbridge" fiction), prescribed-
+  transport subs get no suggestions. NAV: unstarted quest goals
+  route to the quest-start pin in targetFor; QH-owns branch honors
+  explicit ⌖; BANK-FIRST reads annotation kits + runs mid-quest +
+  fires on ANY banked shortfall (unowned items don't veto); login
+  resume (navOnLoginPending post-grace) — OPEN: one session showed
+  total nav silence with config ON; game-state transition + config
+  logs shipped, read next session's log. DIARY TASKS (Tier 3
+  RETIRED): seed-diary-tasks.mjs mines QH's 40 diary helpers into a
+  420-task atlas (varp-bit + varbit not-form flipped to >=1), draft/
+  pick/apply; 10 checkpoints live incl. first requiresAll (dying
+  tree + plank both bits) and tier-complete gates (Varrock easy
+  4479, Fremmy hard 4493). NOTES: annotation `note` renders as NOTE
+  block, \n lines, bold "Topic:" lead-ins; seed-recipes MULTI-
+  product (shared mats sum: 13 dyes = 65 coins) + ingredient flag
+  (indented "(ingredient)", CARRIED-ONLY counts — bank coins lied)
+  + optional flag ("(optional)", grey unmet, never gates; full HAM
+  clothing set). DETECTORS: LOOT_FOR_ITEM ("pickpocket X for a
+  rusty sword"; 3-word tail cap + Quest-enum + stop-list guards);
+  arrival gate moved ABOVE the ⌖ branch (HAM hideout false-ticked
+  on entry); grind-object outlines (STALL_PHRASE + pick-plants
+  share their item's name — onions/cabbage/flax) + XP_PER_ACTION
+  "N to go" label (fruit stall 28.5, wiki training-guide cross-check
+  lives in seed-npc-spots drafts as guideContext; {{ObjectLocLine}}
+  + Windows case-collision cache fix). NAME ALIASES (colloquial vs
+  real): skin paste->Paste 2424, key imprint->Key print 2423, rune
+  mysteries notes/package->Research notes/package, teleports->
+  Teleport card 13658, + rusty sword 686 DIGSITESWORD, buttons 688.
+  item_sources grew vendor (String NPC name -> named outline;
+  Diango, Vannah) and npc:false (object vendors skip ALL nomination
+  incl. firstNominatingPlaceIn on purchase text). Pins: lumbridge ->
+  castle courtyard 3222,3218; dye step = Aggie 3086,3257 + 3-recipe
+  kit; Traiborn/Harlow/Funch/beggar/Thrantax/Osman/Duke ⌖s.
+  audit-nav now counts errands + item sources as coverage (169/575
+  uncovered, near-route clean, rest grinds/Various). OPEN: nav
+  silence root cause; bank filter vanishing icons (composition log
+  shipped — if icons vanish with no new line, the bank redrew
+  without our pass); deliberate death test; Imp Catcher kit's
+  rune-mysteries-notes intent (tower-trip convenience vs prune);
+  onion-gate pin uncaptured; hub pin at b8c994d (pre-feature-storm)
+  — bump ONLY after a calm session on this build.
+
 - KIT-SEEDING POLICY (owner, 2026-08-05): quest-kit annotation items
   carry TRUE REQUIREMENTS always; items a quest hands you MID-QUEST
   never (they sit permanently red — misinformation); "nice to have"
