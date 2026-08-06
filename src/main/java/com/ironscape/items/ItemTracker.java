@@ -317,6 +317,11 @@ public class ItemTracker
 		{
 			key = "coins";
 		}
+		// "Buy 20 teleports for chronicle": the item is a "Teleport card".
+		if (key.equals("teleports") || key.equals("teleport cards"))
+		{
+			key = "teleport card";
+		}
 		// Prince Ali's colloquials: the crafted items are literally named
 		// "Paste" and "Key print" — the guide (and everyone) says otherwise.
 		if (key.equals("skin paste"))
