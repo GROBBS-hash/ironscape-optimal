@@ -2567,6 +2567,13 @@ public class IronscapePlugin extends Plugin
 				}
 				break;
 			}
+			// An errand stage that NAMES its NPC outlines them by name —
+			// named beats nearest, so Aggie stays lit even mid-wander
+			// while the bystander on her tile stays dark.
+			if (errand != null && errand.npc != null)
+			{
+				npcNames.add(errand.npc.toLowerCase(Locale.ROOT));
+			}
 			// A specific name shadows a generic one it contains: "milk the
 			// dairy cow" matches the NPCs "Dairy cow" AND "Cow", but the
 			// guide means the specific one — without this every regular cow
@@ -3936,6 +3943,16 @@ public class IronscapePlugin extends Plugin
 	private java.util.Set<Integer> findStepInventoryItems(Current current)
 	{
 		java.util.List<String> wanted = new java.util.ArrayList<>();
+		// QH-style stage focus: an active errand stage that NAMES its
+		// hand-ins narrows the inventory outline to just those (only the
+		// paste ingredients glow at Aggie, not the whole step kit). No
+		// stage item list = the default full-step highlight below.
+		StepAnnotation.Errand stage = activeErrand();
+		if (stage != null && stage.items != null && !stage.items.isEmpty())
+		{
+			wanted.addAll(stage.items);
+			return hintIdsFor(wanted);
+		}
 		for (StepAnnotation.ItemNeed need : annotationManager.getItems(current.step.getId()))
 		{
 			wanted.add(need.name);
@@ -3964,6 +3981,12 @@ public class IronscapePlugin extends Plugin
 				wanted.add(full.substring(full.indexOf(' ') + 1));
 			}
 		}
+		return hintIdsFor(wanted);
+	}
+
+	/** Inventory slot item ids whose names match any wanted name. */
+	private java.util.Set<Integer> hintIdsFor(java.util.List<String> wanted)
+	{
 		if (wanted.isEmpty())
 		{
 			return java.util.Collections.emptySet();

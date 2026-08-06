@@ -104,6 +104,16 @@ public class StepAnnotation
 		 * it a quest-tagged chain waits for the quest to start.
 		 */
 		public Boolean preQuest;
+		/**
+		 * The NPC this stage is about, outlined BY NAME — the nearest-NPC
+		 * fallback crowned a bystander when Aggie wandered off her tile.
+		 */
+		public String npc;
+		/**
+		 * The hand-ins for THIS stage: while it's active, only these glow
+		 * in the inventory (QH-style) instead of the whole step kit.
+		 */
+		public java.util.List<String> items;
 	}
 
 	public static class Link
