@@ -136,12 +136,12 @@ class StepRow extends JPanel
 			add(noteBlock(paragraph));
 		}
 		// An annotation method note ("Soft clay: use a bucket of water on
-		// clay") renders in the same boxed NOTE style as authored notes.
+		// clay") renders in the same boxed NOTE style as authored notes,
+		// with light structure: bold topic lead-ins, space between lines.
 		String annotationNote = ctx.getAnnotations().getNote(step.getId());
 		if (annotationNote != null && !annotationNote.isEmpty())
 		{
-			add(noteBlock(List.of(new TextRun(annotationNote,
-				false, false, false, false, null, null))));
+			add(noteBlock(noteRuns(annotationNote)));
 		}
 	}
 
@@ -215,6 +215,36 @@ class StepRow extends JPanel
 	void refreshItemBadges()
 	{
 		badgeRefreshers.forEach(Runnable::run);
+	}
+
+	/**
+	 * Light formatting for AUTHORED notes: a "Topic: rest" line renders
+	 * the topic bold, and a blank line separates lines — a multi-recipe
+	 * note read as one dense grey slab without it (owner report).
+	 */
+	private static List<TextRun> noteRuns(String note)
+	{
+		List<TextRun> runs = new ArrayList<>();
+		String[] lines = note.split("\n");
+		java.util.regex.Pattern topic = java.util.regex.Pattern.compile("^([^:]{2,32}):\\s*(.*)$");
+		for (int i = 0; i < lines.length; i++)
+		{
+			java.util.regex.Matcher m = topic.matcher(lines[i]);
+			if (m.matches())
+			{
+				runs.add(new TextRun(m.group(1) + ": ", true, false, false, false, null, null));
+				runs.add(new TextRun(m.group(2), false, false, false, false, null, null));
+			}
+			else
+			{
+				runs.add(new TextRun(lines[i], false, false, false, false, null, null));
+			}
+			if (i < lines.length - 1)
+			{
+				runs.add(new TextRun("\n\n", false, false, false, false, null, null));
+			}
+		}
+		return runs;
 	}
 
 	/**
