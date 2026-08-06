@@ -593,7 +593,7 @@
      "quantity": null
     }
    ],
-   "note": "Three crafted hand-ins, all near Draynor:\nSkin paste: take the ashes, pot of flour, bucket of water and redberries to Aggie — she mixes it on the spot.\nWig: give Ned 3 balls of wool to knit a wig, then use the yellow dye on it.\nKey imprint: needs the quest STARTED — talk to Lady Keli at the jail camp east of Draynor, ask about the key, and press it into the soft clay. Keep the imprint: Osman wants it plus a bronze bar."
+   "note": "Start the quest first (Hassan in the Al Kharid palace), then Osman outside — the crafting below is LOCKED until his briefing.\nSkin paste: ashes + pot of flour + bucket of water + redberries to Aggie.\nWig: 3 balls of wool to Ned, then use the yellow dye on it.\nKey imprint: press Lady Keli's key into the soft clay at the jail camp. Keep it — Osman wants it plus a bronze bar."
   },
   "a3da4e08f5": {
    "items": [
@@ -5432,42 +5432,50 @@
   "a4ecfb06ea:0": {
    "errands": [
     {
+     "x": 3286,
+     "y": 3180,
+     "plane": 0,
+     "varp": 273,
+     "value": 20,
+     "npc": "Osman",
+     "note": "Talk to Osman north of the Al Kharid palace gate — the disguise crafting is locked until he briefs you."
+    },
+    {
      "x": 3086,
      "y": 3257,
      "plane": 0,
      "item": "skin paste",
-     "preQuest": true,
-     "note": "Hand Aggie the ashes, pot of flour, bucket of water and redberries — she mixes the skin paste.",
      "npc": "Aggie",
      "items": [
       "ashes",
       "pot of flour",
       "bucket of water",
       "redberries"
-     ]
+     ],
+     "note": "Hand Aggie the ashes, pot of flour, bucket of water and redberries — she mixes the skin paste."
     },
     {
      "x": 3097,
      "y": 3257,
      "plane": 0,
      "item": "wig",
-     "note": "Give Ned 3 balls of wool to knit a wig, then use the YELLOW DYE on it.",
      "npc": "Ned",
      "items": [
       "balls of wool",
       "yellow dye"
-     ]
+     ],
+     "note": "Give Ned 3 balls of wool to knit a wig, then use the YELLOW DYE on it."
     },
     {
      "x": 3127,
      "y": 3244,
      "plane": 0,
      "item": "key imprint",
-     "note": "Start Prince Ali Rescue first (Hassan then Osman, Al Kharid palace), then talk to Lady Keli here and press her key into the soft clay. Keep the imprint — Osman wants it plus a bronze bar.",
      "npc": "Lady Keli",
      "items": [
       "soft clay"
-     ]
+     ],
+     "note": "Talk to Lady Keli at the jail camp and press her key into the soft clay. Keep the imprint — Osman wants it plus a bronze bar."
     }
    ]
   },
