@@ -49,6 +49,20 @@
    "y": 3594,
    "plane": 0,
    "note": "Compost: buy from Vannah's Farming Stall in Hosidius (sells Compost and Compost packs)."
+  },
+  "buckets of milk": {
+   "display": "Buckets of milk",
+   "x": 3172,
+   "y": 3317,
+   "plane": 0,
+   "note": "Buckets of milk: no shop sells these — bring empty buckets and milk the Dairy cow at the farm north of Lumbridge (one milking per bucket)."
+  },
+  "bucket of milk": {
+   "display": "Bucket of milk",
+   "x": 3172,
+   "y": 3317,
+   "plane": 0,
+   "note": "Buckets of milk: no shop sells these — bring empty buckets and milk the Dairy cow at the farm north of Lumbridge (one milking per bucket)."
   }
  }
 }

@@ -1174,7 +1174,8 @@
      "name": "silk",
      "quantity": null
     }
-   ]
+   ],
+   "note": "Make Unfired bowl: 1x Soft clay."
   },
   "a5defbd89a": {
    "requires": {
@@ -1437,7 +1438,8 @@
      "name": "toad's legs",
      "quantity": 1
     }
-   ]
+   ],
+   "note": "Make Agility pots: 1x Vial of water + 1x Toadflax + 1x Toad's legs."
   },
   "052270c199": {
    "requires": {
@@ -1702,7 +1704,8 @@
      "name": "cosmic rune",
      "quantity": 1
     }
-   ]
+   ],
+   "note": "Make Digsite pendants: 1x Ruby necklace + 1x Cosmic rune."
   },
   "6c2213b929": {
    "target": {
@@ -1719,7 +1722,8 @@
      "name": "soda ash",
      "quantity": 1
     }
-   ]
+   ],
+   "note": "Make Molten glass: 1x Bucket of sand + 1x Soda ash."
   },
   "8a9b304848": {
    "gearCheck": {
@@ -1853,7 +1857,8 @@
      "name": "bucket of milk",
      "quantity": 1
     }
-   ]
+   ],
+   "note": "Make Hangover cure: 1x Snape grass + 1x Chocolate dust + 1x Bucket of milk."
   },
   "e0cf374a7d": {
    "items": [
@@ -1869,7 +1874,8 @@
      "name": "axe",
      "quantity": 1
     }
-   ]
+   ],
+   "note": "Make Regular plank: 1x Logs + 100x Coins."
   },
   "6d95f6a51c": {
    "items": [
@@ -1889,7 +1895,8 @@
      "name": "pie dish",
      "quantity": 1
     }
-   ]
+   ],
+   "note": "Make Redberry pie: 1x Redberries + 1x Pot of flour + 1x Bucket of water + 1x Pie dish."
   },
   "fed4e27cd1": {
    "items": [
@@ -1901,7 +1908,8 @@
      "name": "bucket of water",
      "quantity": 5
     }
-   ]
+   ],
+   "note": "Make Soft clay: 1x Clay + 1x Bucket of water each."
   },
   "35144e9afb": {
    "items": [
@@ -1913,7 +1921,8 @@
      "name": "coins",
      "quantity": 20
     }
-   ]
+   ],
+   "note": "Make Red dye: 3x Redberries + 5x Coins each."
   },
   "1874f7b692": {
    "items": [
@@ -1925,7 +1934,8 @@
      "name": "soda ash",
      "quantity": 5
     }
-   ]
+   ],
+   "note": "Make Molten glass: 1x Bucket of sand + 1x Soda ash each."
   },
   "9594bb2c0e": {
    "items": [
@@ -1937,7 +1947,8 @@
      "name": "cosmic rune",
      "quantity": 2
     }
-   ]
+   ],
+   "note": "Make Dueling rings: 1x Emerald ring + 1x Cosmic rune each."
   },
   "c296768132": {
    "items": [
@@ -1949,7 +1960,8 @@
      "name": "coins",
      "quantity": 1
     }
-   ]
+   ],
+   "note": "Make Soft leather: 1x Cowhide + 1x Coins."
   },
   "a6c22a24cb": {
    "items": [
@@ -1965,7 +1977,8 @@
      "name": "bowl of water",
      "quantity": 1
     }
-   ]
+   ],
+   "note": "Make Stew: 1x Potato + 1x Cooked meat + 1x Bowl of water."
   },
   "c141c97e3c": {
    "items": [
@@ -1977,7 +1990,8 @@
      "name": "cosmic rune",
      "quantity": 1
     }
-   ]
+   ],
+   "note": "Make Amulet of magic: 1x Sapphire amulet + 1x Cosmic rune."
   },
   "b1e5f2f318": {
    "items": [
@@ -1985,7 +1999,8 @@
      "name": "molten glass",
      "quantity": 2
     }
-   ]
+   ],
+   "note": "Make Lantern lenses: 1x Molten glass each."
   },
   "e5a15dcfca": {
    "items": [
@@ -2001,7 +2016,8 @@
      "name": "rope",
      "quantity": 1
     }
-   ]
+   ],
+   "note": "Make Mithril grapple: 1x Mith grapple tip + 1x Mithril bolts + 1x Rope."
   },
   "6dd58a829e": {
    "items": [
@@ -2021,7 +2037,8 @@
      "name": "pie dish",
      "quantity": 1
     }
-   ]
+   ],
+   "note": "Make Botanical pies: 1x Golovanova fruit top + 1x Pot of flour + 1x Bucket of water + 1x Pie dish."
   },
   "cdc44128dd": {
    "items": [

@@ -135,6 +135,14 @@ class StepRow extends JPanel
 		{
 			add(noteBlock(paragraph));
 		}
+		// An annotation method note ("Soft clay: use a bucket of water on
+		// clay") renders in the same boxed NOTE style as authored notes.
+		String annotationNote = ctx.getAnnotations().getNote(step.getId());
+		if (annotationNote != null && !annotationNote.isEmpty())
+		{
+			add(noteBlock(List.of(new TextRun(annotationNote,
+				false, false, false, false, null, null))));
+		}
 	}
 
 	GuideStep getStep()

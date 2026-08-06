@@ -45,6 +45,13 @@ public class StepAnnotation
 	public Link link;
 
 	/**
+	 * Method commentary the guide's own prose lacks ("Soft clay: use a
+	 * bucket of water on clay") — rendered as a boxed NOTE block under the
+	 * step, same style as the guide's authored notes.
+	 */
+	public String note;
+
+	/**
 	 * Mid-quest side pickups ("Do Tree gnome village, get Glarial's
 	 * pebble on the way"). Quest Helper owns the quest flow but knows
 	 * nothing about the errand — while the sub's quest is IN_PROGRESS,

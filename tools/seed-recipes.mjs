@@ -84,8 +84,11 @@ async function ingredients(product, depth = 0) {
   return out.length ? out : null;
 }
 
+const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1);
+
 const annotations = JSON.parse(fs.readFileSync(ANNOTATIONS_FILE, 'utf8'));
 let applied = 0;
+let notes = 0;
 for (const [subId, product] of products) {
   const stepId = subId.split(':')[0];
   const existing = annotations.annotations[stepId]?.items || [];
@@ -94,12 +97,28 @@ for (const [subId, product] of products) {
     console.log(`miss  ${subId} "${product.name}" (no wiki recipe) | ${product.text.slice(0, 60)}`);
     continue;
   }
+  // Method NOTE from the per-item recipe ("Make Soft clay: 1x Clay + 1x
+  // Bucket of water each") — the guide prose assumes you know the method.
+  // Hand-authored notes are never overwritten.
+  if (!annotations.annotations[stepId]?.note) {
+    const noteText = `Make ${cap(product.name)}: `
+      + mats.map((m) => `${m.quantity}x ${cap(m.name)}`).join(' + ')
+      + (product.qty > 1 ? ' each.' : '.');
+    console.log(`NOTE  ${subId} ${noteText}`);
+    if (!process.argv.includes('--dry-run')) {
+      annotations.annotations[stepId] = {
+        ...(annotations.annotations[stepId] || {}),
+        note: noteText,
+      };
+      notes++;
+    }
+  }
   const scaled = mats.map((m) => ({
     name: m.name.toLowerCase(),
     quantity: m.quantity * product.qty,
   })).filter((m) => !existing.some((e) => (e.name || '').toLowerCase() === m.name));
   if (!scaled.length) {
-    console.log(`skip  ${subId} "${product.name}" (already annotated)`);
+    console.log(`skip  ${subId} "${product.name}" (items already annotated)`);
     continue;
   }
   console.log(`HIT   ${subId} "${product.name}" x${product.qty} -> `
@@ -113,7 +132,7 @@ for (const [subId, product] of products) {
     applied++;
   }
 }
-if (applied > 0) {
+if (applied > 0 || notes > 0) {
   fs.writeFileSync(ANNOTATIONS_FILE, JSON.stringify(annotations, null, 1) + '\n');
 }
-console.log(`\napplied ingredient lists to ${applied} step(s)`);
+console.log(`\napplied ingredient lists to ${applied} step(s), notes to ${notes}`);

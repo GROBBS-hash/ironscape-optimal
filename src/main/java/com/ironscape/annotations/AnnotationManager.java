@@ -132,6 +132,18 @@ public class AnnotationManager
 		return b == null ? null : b.link;
 	}
 
+	/** Method note rendered like a guide NOTE block; null = none. */
+	public synchronized String getNote(String annotationId)
+	{
+		StepAnnotation l = local.get(annotationId);
+		if (l != null && l.note != null)
+		{
+			return l.note;
+		}
+		StepAnnotation b = bundled.get(annotationId);
+		return b == null ? null : b.note;
+	}
+
 	/** "N of any item from a set" check (warm clothing); null = none. */
 	public synchronized StepAnnotation.GearCheck getGearCheck(String annotationId)
 	{
