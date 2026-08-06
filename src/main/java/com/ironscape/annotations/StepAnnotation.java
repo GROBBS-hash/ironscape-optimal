@@ -91,6 +91,12 @@ public class StepAnnotation
 		public Integer routeX;
 		public Integer routeY;
 		public Integer routePlane;
+		/**
+		 * Waypoint satisfaction radius (default 12). Small rooms need a
+		 * tight one: the Culinaromancer's Chest sits 10 tiles from the
+		 * ladder, so a 12-tile stage self-satisfied on arrival downstairs.
+		 */
+		public Integer radius;
 	}
 
 	public static class Link

@@ -687,8 +687,9 @@ public class IronscapePlugin extends Plugin
 				// to the warriors): satisfied by getting there — or by
 				// being closer to the NEXT stage than to it (a teleport
 				// skipped it; it served its purpose either way).
+				int radius = stage.radius != null ? stage.radius : 12;
 				satisfied = here != null
-					&& (here.distanceTo2D(new WorldPoint(stage.x, stage.y, stage.plane)) <= 12
+					&& (here.distanceTo2D(new WorldPoint(stage.x, stage.y, stage.plane)) <= radius
 						|| (i + 1 < chain.size()
 							&& here.distanceTo2D(new WorldPoint(chain.get(i + 1).x,
 								chain.get(i + 1).y, chain.get(i + 1).plane))
@@ -2341,13 +2342,15 @@ public class IronscapePlugin extends Plugin
 		// priority; the ≤4-tile rule below keeps town-center points from
 		// outlining random passers-by. An active errand's spot anchors the
 		// same way (Golrie gets the outline, the pebble floats overhead).
-		// Mid-quest with an errand active, ONLY the errand stage nominates
-		// (Golrie at his gate) — the sub's own ⌖ is a PLACE there (the RFD
-		// dining-hall doors), and anchoring on it crowned whatever NPC
-		// wandered past the doors with an outline and a quest icon.
-		WorldPoint shopAnchor = errand != null && questHelperOwnsGuidance()
-			? errandPoint
-			: (spot != null ? spot : errandPoint);
+		// With an errand active, ONLY an ITEM stage nominates — Golrie
+		// wears the pebble because the NPC is the point of the stage. A
+		// WAYPOINT stage is a travel leg: whoever happens to stand at it
+		// (the Cook by the kitchen trapdoor) must not wear the goal item.
+		// The sub's own ⌖ never anchors while a chain is driving — it's a
+		// PLACE then (the RFD dining-hall doors), not a vendor.
+		WorldPoint shopAnchor = errand != null
+			? (errand.item != null ? errandPoint : null)
+			: spot;
 		if (shopAnchor == null && current != null && hasPurchaseGoal(current.sub))
 		{
 			// Text places only — the step's 📍 town tag is far too coarse
@@ -4079,6 +4082,18 @@ public class IronscapePlugin extends Plugin
 			{
 				eventBus.post(new PluginMessage("shortestpath", "path",
 					Map.of("target", errandRoutePoint(errand))));
+				return;
+			}
+			// Chain COMPLETE but the sub's own goal isn't (standing at the
+			// chest, milks not yet bought): any route now points AWAY from
+			// the destination the chain just delivered — hold here until
+			// the sub ticks.
+			Current chainCurrent = findCurrent();
+			if (chainCurrent != null
+				&& !errandChain(chainCurrent.step, chainCurrent.sub).isEmpty())
+			{
+				logNavDecision("errand chain complete — holding until the sub's goal ticks");
+				eventBus.post(new PluginMessage("shortestpath", "clear"));
 				return;
 			}
 			// Player jumped ahead to a later step's quest: ANY route we

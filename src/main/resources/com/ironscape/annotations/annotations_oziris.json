@@ -5320,7 +5320,8 @@
      "x": 3219,
      "y": 9623,
      "plane": 0,
-     "note": "Buy 7 buckets of milk from the Culinaromancer's Chest (it also stocks eggs and pots of flour)."
+     "note": "Buy 7 buckets of milk from the Culinaromancer's Chest (it also stocks eggs and pots of flour).",
+     "radius": 3
     }
    ]
   }
