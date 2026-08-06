@@ -3309,7 +3309,7 @@
     "y": 3221,
     "plane": 0
    },
-   "note": "Hand the Cook all five items (use the ashes ON the fruit blast to make the dirty blast), THEN enter through the LARGE double doors — the banquet cutscene unlocks the chest; the kitchen side door does nothing. The fruit blast must be MADE, a premade fr' blast does NOT count: buy cocktail shaker + glass + lemon, orange and pineapple from Funch's Fine Groceries by Blurberry's Bar (Grand Tree), mix the fruits, add lemon slices — 6 Cooking. Blurberry gives the ingredients free once (talk, read his cocktail guide, talk again). Click the Fruit blast badge to route there.",
+   "note": "The fruit blast must be MADE — a premade fr' blast does NOT count.\n1. Funch's Fine Groceries (Grand Tree): cocktail shaker + glass + lemon, orange, pineapple. Or free once from Blurberry: talk, read his cocktail guide, talk again.\n2. Mix the three fruits, then add lemon slices (6 Cooking).\n3. Use the ashes ON the fruit blast (dirty blast), hand the Cook all five items.\n4. Enter through the LARGE double doors — the cutscene unlocks the chest. The kitchen side door does nothing.",
    "items": [
     {
      "name": "eye of newt",
