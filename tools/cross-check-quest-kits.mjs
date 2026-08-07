@@ -169,6 +169,16 @@ for (const [quest, id] of kitStepByQuest) {
   const qhOnly = qhOnlyAll.filter(isTradeable);
   const untradeable = qhOnlyAll.filter((n) => !isTradeable(n));
   const oursOnly = only(oursNorm, qhNorm);
+  // OUR kit item that QH never requires AND whose name shows up in the
+  // helper's step text with a CONSUME verb ("use the bucket of water on
+  // the drain") is likely spent MID-QUEST — on the finishing step it
+  // sits permanently red (Demon Slayer's bones, owner-hit). Review list.
+  const CONSUME_VERB = /\b(?:use|pour|give|hand|add|put|insert|place|empty|combine)\b/i;
+  const consumeStrings = [...java.matchAll(/"((?:[^"\\]|\\.)*)"/g)]
+    .map((m) => m[1].toLowerCase())
+    .filter((s) => s.length > 15 && CONSUME_VERB.test(s));
+  const staleSuspects = oursOnly.filter((n) =>
+    consumeStrings.some((s) => s.includes(normalize(n))));
   if (!qhOnly.length && !oursOnly.length && !untradeable.length) continue;
   flaggedQuests++;
   console.log(`\n${quest} [${id}]`);
@@ -176,6 +186,7 @@ for (const [quest, id] of kitStepByQuest) {
   if (untradeable.length) console.log(`  (untradeable, likely in-quest: ${untradeable.join(', ')})`);
   if (inQuest.size) console.log(`  (obtained in-quest, ignored: ${[...inQuest].join(', ')})`);
   if (oursOnly.length) console.log(`  ours only:        ${oursOnly.join(', ')}`);
+  if (staleSuspects.length) console.log(`  STALE? consumed mid-quest: ${staleSuspects.join(', ')}`);
 }
 console.log(`\n${checked} quests checked (${skipped} without a matching QH file), `
   + `${flaggedQuests} with differences`);
