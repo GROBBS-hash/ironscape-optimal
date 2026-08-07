@@ -3301,6 +3301,14 @@ public class IronscapePlugin extends Plugin
 			{
 				return false;
 			}
+			// The chain defines "done" when one exists: the scrying orb
+			// (an item goal) ticked the step at the Chaos Temple while the
+			// chain's Aubury/essence-mine leg was still ahead. Goals only
+			// count once every stage is satisfied.
+			if (errandPending)
+			{
+				return false;
+			}
 			for (GoalDetector.ItemGoal goal : itemGoals)
 			{
 				// Carried only, so banked items don't tick "grab X" — EXCEPT
