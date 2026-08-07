@@ -703,6 +703,41 @@ refresh when "Failed to login" appears.
   onion-gate pin uncaptured; hub pin at b8c994d (pre-feature-storm)
   — bump ONLY after a calm session on this build.
 
+- SESSION WAVE 9 (2026-08-07, morning play-test): LOGIN RESUME ROOT
+  CAUSE FIXED — fresh logins run LOGGING_IN -> LOADING -> LOGGED_IN,
+  so the old "lastGameState != LOADING" real-login test NEVER fired
+  on fresh logins (grace, baselines and the resume were all silently
+  skipped since forever); real logins now tracked via a sawLoggingIn
+  flag, log-proven working. CHAIN RULE: an unsatisfied errand chain
+  blocks the sub's ITEM-GOAL ticks too (the scrying orb ticked at the
+  Chaos Temple with the essence-mine leg ahead) — the chain defines
+  "done". Chains seeded: Enter-the-Abyss orb (Varrock mage 3259,3383
+  -> Aubury route/essence-mine ~2920,4830 satisfaction, dialogs),
+  R&J Apothecary (3195,3405, berries item-hints, dialogs), Traiborn
+  key (LOOT_FOR gained give|hand: the KEY 2401 is the goal, bones
+  x25 ingredient badge). Dialog recolor needs the PER-TICK reapply
+  (chat menus rebuild children without a widget-load). Chronicle
+  worn-slot teleport hint (equipment tab STONE4 -> Wornitems.SLOT5,
+  labeled). KIT CORRECTIONS (finishing steps must list what the
+  FINALE needs, not the quest-wide wiki list): Demon Slayer = 3x
+  silverlight key (bones/coin/bucket were consumed on earlier key
+  legs — permanently red); R&J = cadava potion (berries spent at the
+  Apothecary); transient Message pruned (Romeo eats it — policy).
+  seed-quest-gear-notes.mjs: QH's generic Bring/Recommended gear
+  guidance (combat gear/food/potions — the class the kit JUNK filter
+  drops) appended as notes on 39 quest kit steps. cross-check gained
+  a STALE? flag (ours-only + consume-verb in QH text) — REVIEW AID:
+  bring-then-consume-in-finale items are GOOD kit entries; only
+  earlier-step-consumed ones prune. Ids/aliases: message 755, cadava
+  potion 756, pirate message 433, scrying orb 5519, silverlight/
+  demon slayer key 2401, research notes/package aliases. Junk
+  "Tutorial Island" 3100,3100 pin removed (a real route went there).
+  Varrock pin -> square 3212,3424. OPEN: bank filter vanishing icons
+  (composition self-log armed, NO repro captured yet — bank with the
+  filter on and mine the log); deliberate death test; onion-gate
+  capture; hub pin at b8c994d, now ~70 commits behind — bump after a
+  calm session.
+
 - KIT-SEEDING POLICY (owner, 2026-08-05): quest-kit annotation items
   carry TRUE REQUIREMENTS always; items a quest hands you MID-QUEST
   never (they sit permanently red — misinformation); "nice to have"
