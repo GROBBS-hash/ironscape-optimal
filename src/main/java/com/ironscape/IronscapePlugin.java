@@ -557,6 +557,13 @@ public class IronscapePlugin extends Plugin
 	/** True while the current sub says "home tele(port)" — spellbook hint. */
 	private volatile boolean homeTeleportHint;
 
+	/** Worn-slot component to highlight for an equipped-item teleport; -1 none. */
+	private volatile int activeEquippedTeleport = -1;
+
+	/** "Chronicle tele" / "chronicle tele and buy a kitten" — the worn Chronicle. */
+	private static final java.util.regex.Pattern CHRONICLE_TELE =
+		java.util.regex.Pattern.compile("\\bchronicle\\s+tele", java.util.regex.Pattern.CASE_INSENSITIVE);
+
 	/** Route-aware: the FREE home teleport is the best first leg. */
 	private volatile boolean routeHomeTeleportHint;
 
@@ -1224,6 +1231,8 @@ public class IronscapePlugin extends Plugin
 		minigameTeleportOverlay.setHomeTeleportSupplier(
 			() -> homeTeleportHint || routeHomeTeleportHint);
 		minigameTeleportOverlay.setSpellTeleportSupplier(() -> activeSpellTeleport);
+		minigameTeleportOverlay.setEquippedTeleportSupplier(() -> activeEquippedTeleport);
+		minigameTeleportOverlay.setEquippedTeleportLabelSupplier(() -> "Chronicle");
 		overlayManager.add(minigameTeleportOverlay);
 		travelMenuOverlay.setWordsSupplier(() -> travelMenuWords);
 		travelMenuOverlay.setGroupSupplier(() -> travelMenuGroup);
@@ -2283,6 +2292,11 @@ public class IronscapePlugin extends Plugin
 		homeTeleportHint = config.showTeleportHints() && current != null
 			&& activeMinigameTarget == null
 			&& HOME_TELEPORT.matcher(current.sub.getPlainText()).find();
+		// "Chronicle tele": the teleport lives on the WORN Chronicle
+		// (shield slot) — highlight the equipment click path.
+		activeEquippedTeleport = config.showTeleportHints() && current != null
+			&& CHRONICLE_TELE.matcher(current.sub.getPlainText()).find()
+			? net.runelite.api.gameval.InterfaceID.Wornitems.SLOT5 : -1;
 
 		// Travel menus (spirit trees, gliders — interface 187): the word
 		// set the overlay matches list entries against. Sub text + the

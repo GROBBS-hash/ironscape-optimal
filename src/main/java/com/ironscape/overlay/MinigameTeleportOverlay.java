@@ -75,6 +75,16 @@ public class MinigameTeleportOverlay extends Overlay
 	};
 
 	/**
+	 * The Worn Equipment side tab per layout — the first click toward an
+	 * EQUIPPED item's teleport (the Chronicle in the shield slot).
+	 */
+	private static final int[] EQUIPMENT_TAB_CANDIDATES = {
+		InterfaceID.Toplevel.STONE4,
+		InterfaceID.ToplevelOsrsStretch.STONE4,
+		InterfaceID.ToplevelPreEoc.STONE4,
+	};
+
+	/**
 	 * Each spellbook's Home Teleport spell — for "Home tele to Lumbridge"
 	 * steps: highlight the spell if the book is open, else the Magic tab.
 	 */
@@ -95,6 +105,22 @@ public class MinigameTeleportOverlay extends Overlay
 
 	/** Set by the plugin: spellbook teleport component the route wants, or -1. */
 	private Supplier<Integer> spellTeleportSupplier = () -> -1;
+
+	/** Worn-slot component of an equipped-item teleport (the Chronicle), or -1. */
+	private Supplier<Integer> equippedTeleportSupplier = () -> -1;
+
+	/** Label for the equipped teleport ("Chronicle"); null = generic. */
+	private Supplier<String> equippedTeleportLabelSupplier = () -> null;
+
+	public void setEquippedTeleportSupplier(Supplier<Integer> supplier)
+	{
+		this.equippedTeleportSupplier = supplier;
+	}
+
+	public void setEquippedTeleportLabelSupplier(Supplier<String> supplier)
+	{
+		this.equippedTeleportLabelSupplier = supplier;
+	}
 
 	@Inject
 	public MinigameTeleportOverlay(Client client)
@@ -139,6 +165,28 @@ public class MinigameTeleportOverlay extends Overlay
 				else
 				{
 					highlightFirstVisible(graphics, MAGIC_TAB_CANDIDATES);
+				}
+				return null;
+			}
+			// Equipped-item teleport ("Chronicle tele"): the worn slot when
+			// the equipment panel is open, else the Worn Equipment tab.
+			Integer wornSlot = equippedTeleportSupplier.get();
+			if (wornSlot != null && wornSlot != -1)
+			{
+				String slotLabel = equippedTeleportLabelSupplier.get();
+				String label = slotLabel == null ? "Teleport" : slotLabel;
+				Widget slot = client.getWidget(wornSlot);
+				if (slot != null && !slot.isHidden())
+				{
+					highlightLabeled(graphics, slot, label);
+				}
+				else
+				{
+					Widget tab = firstVisible(EQUIPMENT_TAB_CANDIDATES);
+					if (tab != null)
+					{
+						highlightLabeled(graphics, tab, label);
+					}
 				}
 				return null;
 			}
