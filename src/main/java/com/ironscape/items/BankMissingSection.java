@@ -23,7 +23,7 @@ import net.runelite.api.widgets.WidgetType;
  * every bank layout pass while the filter is active; hidden otherwise.
  *
  * All of it must run on the client thread (the plugin calls update()
- * from the BANKMAIN_BUILD script post-fire).
+ * from BANKMAIN_FINISHBUILDING, deferred to the end of the tick).
  */
 @Slf4j
 @Singleton
@@ -57,19 +57,42 @@ public class BankMissingSection
 	private final ItemTracker itemTracker;
 
 	/**
-	 * Widgets we created inside the bank items container, for reuse.
-	 * Separate pools per widget type — a child's type is fixed at
-	 * creation, so TEXT and GRAPHIC widgets can't swap roles between
-	 * rebuilds.
+	 * Every widget WE added to the bank container, in creation order, so
+	 * the next pass can tear them down. No pooling: see create().
 	 */
-	private final List<Widget> textPool = new ArrayList<>();
-	private final List<Widget> iconPool = new ArrayList<>();
+	private final java.util.Set<Widget> addedWidgets = new java.util.LinkedHashSet<>();
 
 	/** Real bank widgets we moved/restyled last pass, to restore on the next. */
 	private final java.util.Set<Widget> movedWidgets = new java.util.HashSet<>();
 
+	/** Where the bank originally had each moved widget: widget -> {x, y}. */
+	private final Map<Widget, int[]> movedHome = new java.util.HashMap<>();
+
+	/** Native widgets WE hid, so turning the filter off can show them again. */
+	private final java.util.Set<Widget> hiddenByUs = new java.util.LinkedHashSet<>();
+
 	/** Last logged pass shape, so the diagnosis line only prints on change. */
 	private String lastShape;
+
+	/** Last per-item branch record, so only CHANGES print. */
+	private String lastTrace;
+
+	/** Real bank items the last COMPLETED pass saw (see the not-ready guard). */
+	private int lastNativeCount;
+
+	/** Bank item widgets carrying an actual item right now. */
+	private static int countPopulatedItems(Widget container)
+	{
+		int populated = 0;
+		for (Widget child : container.getDynamicChildren())
+		{
+			if (child != null && child.getItemId() > 0 && child.getItemQuantity() > 0)
+			{
+				populated++;
+			}
+		}
+		return populated;
+	}
 
 	private final net.runelite.client.game.ItemManager itemManager;
 
@@ -89,39 +112,89 @@ public class BankMissingSection
 	 */
 	public void update(boolean show, List<Section> sections)
 	{
-		for (Widget widget : textPool)
+		// NOT-READY GUARD, and it must come BEFORE anything below touches
+		// the pools. BANKMAIN_BUILD fires TWICE around a withdrawal: the
+		// first time the child array has already been resized but the item
+		// widgets carry no itemId yet. Laying out from that snapshot found
+		// zero real items and drew EVERY icon as a ghost for one frame —
+		// the "icons move/disappear as I withdraw" reports. The owner's
+		// captured log, one withdrawal:
+		//   pass: 9 moved,  2 ghosts, 1461 children
+		//   pools went stale (container resized) — recreating
+		//   pass: 0 moved, 11 ghosts, 1438 children   <-- this frame
+		//   pass: 10 moved, 1 ghosts, 1466 children
+		// Skipping leaves the previous layout alone and the very next
+		// build (milliseconds later) lays out properly. Guarded on having
+		// seen items before, so a genuinely EMPTY bank still renders.
+		Widget itemContainer = client.getWidget(InterfaceID.Bankmain.ITEMS);
+		if (show && !sections.isEmpty() && itemContainer != null
+			&& lastNativeCount > 0 && countPopulatedItems(itemContainer) == 0)
 		{
-			widget.setHidden(true);
+			log.info("bank filter: container not populated yet — keeping the last pass");
+			return;
 		}
-		for (Widget widget : iconPool)
+
+		// Tear down last pass's widgets rather than re-styling them.
+		if (itemContainer != null)
 		{
-			widget.setHidden(true);
+			removeAddedWidgets(itemContainer);
 		}
-		// Undo last pass's cosmetic change to the REAL widgets we moved, in
-		// case the native build doesn't reset it — a coin stack with no
-		// number in the normal bank view would look like a bug.
+		// Put the NATIVE grid back exactly as we found it: original x/y for
+		// every widget we moved, and un-hide everything we hid.
+		//
+		// This used to be unnecessary — we ran DURING the bank build, so the
+		// client's own layout overwrote us afterwards ("nothing is
+		// permanently lost"). Running at TICK END means our changes now
+		// land last and STICK: with the filter off, reopening the bank
+		// showed only the step's items, still sitting in our layout, and
+		// nothing else. Restoring is our job now.
 		for (Widget widget : movedWidgets)
 		{
 			widget.setItemQuantityMode(1);
+			int[] home = movedHome.get(widget);
+			if (home != null)
+			{
+				widget.setOriginalX(home[0]);
+				widget.setOriginalY(home[1]);
+				widget.revalidate();
+			}
 		}
 		movedWidgets.clear();
+		movedHome.clear();
+		if (!hiddenByUs.isEmpty())
+		{
+			for (Widget widget : hiddenByUs)
+			{
+				try
+				{
+					widget.setHidden(false);
+					widget.revalidate();
+				}
+				catch (RuntimeException ignored)
+				{
+					// destroyed by the client's own rebuild
+				}
+			}
+			hiddenByUs.clear();
+		}
 		if (!show || sections.isEmpty())
 		{
+			if (itemContainer != null)
+			{
+				itemContainer.revalidate();
+			}
 			return;
 		}
-		Widget container = client.getWidget(InterfaceID.Bankmain.ITEMS);
+		Widget container = itemContainer;
 		if (container == null)
 		{
 			return;
 		}
 
-		// The BANKMAIN build script sizes the container's child array to the
-		// live item count — a WITHDRAWAL shrinks it and silently drops the
-		// highest-index children, which are our pooled widgets. Every pass
-		// after that talked to dead widgets: one more icon vanished per
-		// withdrawal and counts froze on stale text (owner screenshots,
-		// 2026-08-06). If anything pooled fell out of the container,
-		// recreate the whole pool fresh this pass.
+		// The stale-pool detection that used to live here is GONE: it only
+		// existed because we reused widgets across passes and the bank's
+		// rebuild could drop them out from under us. Building fresh every
+		// pass makes the whole question moot.
 		java.util.Set<Widget> liveChildren = new java.util.HashSet<>();
 		for (Widget child : container.getDynamicChildren())
 		{
@@ -129,29 +202,6 @@ public class BankMissingSection
 			{
 				liveChildren.add(child);
 			}
-		}
-		boolean stale = false;
-		for (Widget widget : textPool)
-		{
-			if (!liveChildren.contains(widget))
-			{
-				stale = true;
-				break;
-			}
-		}
-		for (Widget widget : iconPool)
-		{
-			if (stale || !liveChildren.contains(widget))
-			{
-				stale = true;
-				break;
-			}
-		}
-		if (stale)
-		{
-			log.info("bank filter pools went stale (container resized) — recreating");
-			textPool.clear();
-			iconPool.clear();
 		}
 
 		// Index the REAL bank item widgets by their item NAME — including
@@ -171,7 +221,16 @@ public class BankMissingSection
 				nativeByName.putIfAbsent(name, child);
 			}
 		}
+		// How many real bank items this pass could see — the not-ready guard
+		// above compares against it, so "0 now, plenty last time" reads as
+		// a half-built container rather than an empty bank.
+		lastNativeCount = nativeByName.size();
 		java.util.Set<Widget> kept = new java.util.HashSet<>();
+		// Per-item branch record, logged when it CHANGES: "name=moved" (the
+		// real bank widget), "=ghost" (our drawn copy), "=skip" (no icon id,
+		// so the slot collapses), "!" = still short. Two blind fixes went
+		// past this bug; the log names the item and the branch now.
+		List<String> trace = new java.util.ArrayList<>();
 
 		int y = 10;
 
@@ -187,7 +246,8 @@ public class BankMissingSection
 			// bucket pack from the gene..." leaves the player guessing.
 			for (String line : wrapTitle(section.title))
 			{
-				Widget header = reuse(container, textPool, textsUsed++, WidgetType.TEXT);
+				Widget header = create(container, WidgetType.TEXT);
+				textsUsed++;
 				header.setText(line);
 				header.setTextColor(HEADER_COLOR);
 				header.setFontId(FontID.PLAIN_11);
@@ -209,6 +269,11 @@ public class BankMissingSection
 				int itemId = itemTracker.iconIdFor(entry.getKey());
 				if (itemId <= 0)
 				{
+					// SKIPPED entirely — no icon, no count, and no column
+					// taken, so every later item slides up a slot. If this
+					// ever flips mid-session it IS the "icons move and go
+					// invisible" report; the trace below names it.
+					trace.add(entry.getKey() + "=skip");
 					continue; // untradeable/unknown name: no icon to show
 				}
 				int need = entry.getValue();
@@ -252,10 +317,29 @@ public class BankMissingSection
 						}
 					}
 				}
+				// You cannot MOVE the bank widget of an item you own none of.
+				// The loose fallback above (families, canonical drift) scans
+				// every bank item and takes the first fuzzy hit, then CLAIMS
+				// it via `kept` — so "plague sample", owned 0, was stealing a
+				// real stack's widget from the item that needed it. Bank child
+				// order changes on every withdrawal, so a different item got
+				// robbed each pass: that is the shuffling-and-vanishing icons.
+				// Owning none means ghost, always.
+				if (banked != null && itemTracker.countOf(entry.getKey()) <= 0)
+				{
+					banked = null;
+				}
+				trace.add(entry.getKey()
+					+ (banked != null && !kept.contains(banked) ? "=moved" : "=ghost")
+					+ (met ? "" : "!"));
 				if (banked != null && !kept.contains(banked))
 				{
 					kept.add(banked);
 					movedWidgets.add(banked);
+					// Remember where the bank had it, so turning the filter
+					// off can put it back.
+					movedHome.putIfAbsent(banked,
+						new int[]{banked.getOriginalX(), banked.getOriginalY()});
 					banked.setOriginalX(x);
 					banked.setOriginalY(y);
 					// The native stack number draws over the icon's top —
@@ -269,7 +353,8 @@ public class BankMissingSection
 				}
 				else
 				{
-					Widget icon = reuse(container, iconPool, iconsUsed++, WidgetType.GRAPHIC);
+					Widget icon = create(container, WidgetType.GRAPHIC);
+					iconsUsed++;
 					icon.setItemId(itemId);
 					icon.setItemQuantity(need);
 					icon.setItemQuantityMode(0); // the have/need line says it all
@@ -284,7 +369,8 @@ public class BankMissingSection
 				}
 
 				// Quest Helper-style count under the icon: "have/need".
-				Widget count = reuse(container, textPool, textsUsed++, WidgetType.TEXT);
+				Widget count = create(container, WidgetType.TEXT);
+				textsUsed++;
 				count.setText(compact(have) + "/" + compact(need));
 				count.setTextColor(met ? COUNT_MET_COLOR : COUNT_SHORT_COLOR);
 				count.setFontId(FontID.PLAIN_11);
@@ -315,11 +401,18 @@ public class BankMissingSection
 		// line, the bank redrew without this pass running at all.
 		String shape = sections.size() + " sections, " + kept.size() + " moved, "
 			+ iconsUsed + " ghosts, " + textsUsed + " texts, "
-			+ liveChildren.size() + " container children";
+			+ liveChildren.size() + " container children, "
+			+ lastNativeCount + " native items";
 		if (!shape.equals(lastShape))
 		{
 			lastShape = shape;
 			log.info("bank filter pass: {}", shape);
+		}
+		String traceLine = String.join(" ", trace);
+		if (!traceLine.equals(lastTrace))
+		{
+			lastTrace = traceLine;
+			log.info("bank filter items: {}", traceLine);
 		}
 
 		// NOW take the rest of the container over: hide everything the
@@ -328,13 +421,13 @@ public class BankMissingSection
 		// filter view looks the same. The next build redraws the native
 		// children, and this pass runs again after it, so nothing is
 		// permanently lost.
-		java.util.Set<Widget> ours = new java.util.HashSet<>(textPool);
-		ours.addAll(iconPool);
+		java.util.Set<Widget> ours = addedWidgets;
 		for (Widget child : container.getDynamicChildren())
 		{
 			if (!ours.contains(child) && !kept.contains(child) && !child.isHidden())
 			{
 				child.setHidden(true);
+				hiddenByUs.add(child); // so the filter can be undone
 			}
 		}
 
@@ -410,21 +503,73 @@ public class BankMissingSection
 	}
 
 	/** Reuse the pool's n-th widget, or create it on first need. */
-	private static Widget reuse(Widget container, List<Widget> pool, int index, int type)
+	/**
+	 * A FRESH child every pass — Quest Helper's lifecycle, and the answer
+	 * to the icons that kept blanking. The old version reused pooled
+	 * widgets by index, so each one carried whatever the previous pass had
+	 * set on it: opacity above all. A slot that held a missing item
+	 * (opacity 120) and was then reused for an owned one relied on
+	 * setOpacity(0) restoring it, and in practice the icon simply went
+	 * blank. QH never re-styles a used widget; it throws them away and
+	 * builds again, which is why its bank tab is stable.
+	 */
+	private Widget create(Widget container, int type)
 	{
-		if (index < pool.size())
-		{
-			return pool.get(index);
-		}
 		Widget widget = container.createChild(-1, type);
-		pool.add(widget);
+		addedWidgets.add(widget);
 		return widget;
+	}
+
+	/**
+	 * Drop last pass's widgets before building again (QH's
+	 * removeAddedWidgets). Only the TRAILING run that is entirely ours is
+	 * truncated — QH truncates to a child count captured once, which would
+	 * delete real bank slots for us if the container ever grew.
+	 */
+	private void removeAddedWidgets(Widget container)
+	{
+		if (addedWidgets.isEmpty())
+		{
+			return;
+		}
+		Widget[] children = container.getChildren();
+		if (children != null)
+		{
+			int keep = children.length;
+			while (keep > 0 && addedWidgets.contains(children[keep - 1]))
+			{
+				keep--;
+			}
+			if (keep < children.length)
+			{
+				container.setChildren(java.util.Arrays.copyOf(children, keep));
+				container.revalidate();
+			}
+		}
+		// Anything of ours the bank's own rebuild already dropped, or that
+		// isn't in the trailing run, just gets hidden.
+		for (Widget widget : addedWidgets)
+		{
+			try
+			{
+				widget.setHidden(true);
+			}
+			catch (RuntimeException ignored)
+			{
+				// already destroyed by the client's rebuild
+			}
+		}
+		addedWidgets.clear();
 	}
 
 	/** The bank interface was rebuilt from scratch: our widgets are gone. */
 	public void invalidate()
 	{
-		textPool.clear();
-		iconPool.clear();
+		addedWidgets.clear();
+		// The client rebuilt these too — the recorded positions and hidden
+		// flags belong to widgets that no longer exist.
+		movedWidgets.clear();
+		movedHome.clear();
+		hiddenByUs.clear();
 	}
 }

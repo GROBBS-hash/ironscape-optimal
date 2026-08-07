@@ -472,6 +472,44 @@ exist; whether they compose into a route-position ledger is unknown. Ask before 
 - Three items are prior work misread as bugs: **P2-04** (deliberate), **P2-01** (seeder exists), **P0-05**
   (designed behaviour). Check the Prior work line before coding.
 - Test account has 292 QP — ideal for P0-03, poor for fresh-account ordering tests.
+### BANK FILTER — mostly fixed 2026-08-08, ONE case left
+
+**Fixed and confirmed in play:** icons no longer move or vanish while WITHDRAWING, and turning the filter off
+restores the native bank.
+
+Root cause was the widget lifecycle, found by copying Quest Helper (owner's suggestion — `QuestBankTab.java`):
+1. **Timing.** We hooked `BANKMAIN_BUILD` and laid out inline, i.e. *during* the bank's own build. QH hooks
+   **`BANKMAIN_FINISHBUILDING`** and defers with **`clientThread.invokeAtTickEnd`**. Ours now does both.
+2. **Pooling.** We reused widgets by index, so each carried the previous pass's state — **opacity above all**.
+   A slot that had been a faded ghost, reused for an owned item, relied on `setOpacity(0)` restoring it and
+   just went blank. That is why the blanks were always the items the player was CARRYING (ghost branch,
+   `met == true`) while unowned items rendered fine. QH never re-styles a used widget: it truncates its
+   children away and builds fresh. Ours now does too, and the **stale-pool machinery from wave 8 is gone**.
+3. **Widget stealing.** The fuzzy `nameMatchesGoal` fallback let an item you own NONE of claim a real bank
+   widget (`plague sample=moved!` at 0/1) and `kept` it, robbing the item that needed it — and since
+   `nativeByName` follows bank child order, a different item got robbed each pass. Owning none now always
+   means ghost.
+4. **Composition churn.** Within a step, items were dropped when `subDone && !stillMet`, so withdrawing made
+   items enter/leave the `LinkedHashMap` and everything after them shifted. Wave 7 froze which STEPS show;
+   `frozenSections` now freezes the ITEMS too. Counts stay live.
+5. **Teardown.** Restoring moved widgets' x/y and un-hiding what we hid is now OUR job — a regression from
+   (1), since running at tick end means our changes land last and stick. Before, the client's own build
+   overwrote them ("nothing is permanently lost" — no longer true).
+
+**STILL BROKEN: deposits.** Items you DEPOSIT while the filter is on render as unclickable ghosts until you
+toggle the filter off and on. The client has no item widgets for them yet (log: 292 native items right after
+"deposit all", 298 after reopening) and **a deposit triggers no bank build at all** — zero layout passes
+between the deposit and the next manual toggle.
+
+Two fixes tried and REVERTED, both ineffective: `bankSearch.layoutBank()` on the bank container change, then
+`reset(true) + layoutBank()` (the exact pair the manual toggle uses). Neither produced a `FINISHBUILDING`.
+Nothing is wired in now, deliberately — a forced relayout per deposit costs a rebuild and fixes nothing.
+**Next idea:** find what the manual toggle does that these calls don't (the toggle path also flips `active`
+and goes through `deactivate(true)` first) — or hook a different event than `ItemContainerChanged`.
+Diagnostics are in place: `bank filter items:` logs every item's branch (`moved`/`ghost`/`skip`) on change.
+
+---
+
 - **Bank filter vanishing icons — REPRO CAPTURED 2026-08-07.** The wave-8 self-log caught it while the owner
   withdrew with the filter on:
   ```

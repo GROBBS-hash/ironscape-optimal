@@ -1753,6 +1753,13 @@ public class IronscapePlugin extends Plugin
 			// Banking, not giving: cancel any consumption signal.
 			lastBankEventTick = tickCounter;
 			recentConsumeTicks = 0;
+			// OPEN BUG (see BACKLOG "bank filter, deposits"): items you
+			// DEPOSIT while the filter is on render as unclickable ghosts
+			// until the filter is toggled off and on. Two attempts failed
+			// here — bankSearch.layoutBank(), then reset(true)+layoutBank()
+			// on this event — so nothing is wired in on purpose rather than
+			// leaving a forced relayout that costs a rebuild per deposit
+			// and fixes nothing.
 		}
 		else if (itemTracker.lastRebuildConsumedCarried()
 			&& tickCounter - lastBankEventTick > 2 && loginGraceTicks == 0)
@@ -1981,7 +1988,16 @@ public class IronscapePlugin extends Plugin
 			bankFilterButton.deactivate(false);
 		}
 
-		if (event.getScriptId() == net.runelite.api.ScriptID.BANKMAIN_BUILD)
+		// FINISHBUILDING, not BANKMAIN_BUILD — Quest Helper's hook, and the
+		// reason its bank tab is rock solid. BUILD fires while the grid is
+		// still being assembled, so we kept laying out over half-populated
+		// containers (icons blank for a frame, real widgets and ghosts
+		// swapping places as items were withdrawn). FINISHBUILDING fires
+		// when the bank is done, and the layout is then deferred to the END
+		// OF THE TICK so nothing runs inside the client's own script — the
+		// same deferral this file already needed for UPDATE_SCROLLBAR after
+		// two hard freezes.
+		if (event.getScriptId() == net.runelite.api.ScriptID.BANKMAIN_FINISHBUILDING)
 		{
 			// Filter view active (button, or a keyword typed by hand): the
 			// native grid is blanked (see bankSearchFilter) and EVERY
@@ -1996,10 +2012,13 @@ public class IronscapePlugin extends Plugin
 			}
 			else
 			{
-				// Filter off: next activation re-anchors on the live frontier.
+				// Filter off: next activation re-anchors on the live frontier
+				// and rebuilds the sections from scratch.
 				frozenFilterStepIds = null;
+				frozenSections = null;
 			}
-			bankMissingSection.update(filterView, sections);
+			List<com.ironscape.items.BankMissingSection.Section> pass = sections;
+			clientThread.invokeAtTickEnd(() -> bankMissingSection.update(filterView, pass));
 		}
 	}
 
@@ -3106,8 +3125,24 @@ public class IronscapePlugin extends Plugin
 	 */
 	private List<String> frozenFilterStepIds;
 
+	/**
+	 * The sections themselves, also fixed at activation. Freezing which
+	 * STEPS show (above) was only half the job: WITHIN a step, an item is
+	 * dropped once its sub is done and you no longer meet the count, so
+	 * withdrawing made items enter and leave the list and every icon after
+	 * them shifted a slot — "the bank is still changing as I withdraw".
+	 * The counts are re-read live on every pass, so freezing composition
+	 * costs nothing but the reshuffle.
+	 */
+	private List<com.ironscape.items.BankMissingSection.Section> frozenSections;
+
 	private void refreshUpcomingNeeds()
 	{
+		if (frozenSections != null)
+		{
+			upcomingSections = frozenSections;
+			return;
+		}
 		if (bankFilterCacheTick == tickCounter)
 		{
 			return;
@@ -3189,6 +3224,7 @@ public class IronscapePlugin extends Plugin
 			sections.add(section);
 		}
 		upcomingSections = sections;
+		frozenSections = sections;
 		bankFilterCacheTick = tickCounter;
 	}
 
