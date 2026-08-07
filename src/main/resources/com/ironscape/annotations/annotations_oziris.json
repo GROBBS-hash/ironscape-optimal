@@ -2149,6 +2149,24 @@
      "name": "pickaxe",
      "quantity": 1
     }
+   ],
+   "errands": [
+    {
+     "x": 3259,
+     "y": 3383,
+     "plane": 0,
+     "item": "scrying orb",
+     "npc": "Mage of Zamorak",
+     "note": "The VARROCK Mage of Zamorak stands at the Chaos Temple by the rune shop — he hands over the scrying orb."
+    },
+    {
+     "x": 3253,
+     "y": 3401,
+     "plane": 0,
+     "npc": "Aubury",
+     "radius": 4,
+     "note": "Have Aubury teleport you to the essence mine with the orb in your pack (charge 1/3)."
+    }
    ]
   },
   "573dc27831": {
