@@ -2498,6 +2498,19 @@ public class IronscapePlugin extends Plugin
 			{
 				hay.append(' ').append(locationTag);
 			}
+			// The stop the step MEANS but never names. "Spirit tree to ardy"
+			// + 📍 "Ardougne" share no word with the menu's "Battlefield of
+			// Khazard", so the overlay had nothing to match and highlighted
+			// nothing — the SS-07-works / SS-08-doesn't split.
+			for (String annotationId : new String[]{current.sub.getId(), current.step.getId()})
+			{
+				String via = annotationManager.getTravelVia(annotationId);
+				if (via != null)
+				{
+					hay.append(' ').append(via);
+					break;
+				}
+			}
 			menuWords = new java.util.HashSet<>();
 			for (String token : hay.toString().toLowerCase(Locale.ROOT)
 				.replace('’', '\'').split("[^a-z0-9']+"))
@@ -4836,6 +4849,13 @@ public class IronscapePlugin extends Plugin
 		{
 			for (GoalDetector.ItemGoal goal : goals)
 			{
+				// The quest hands this one over, so there is nothing in any
+				// bank to withdraw and no stop to justify.
+				if (annotationManager.isGranted(goal.getItemName(),
+					current.step.getId(), current.sub.getId()))
+				{
+					continue;
+				}
 				needs.add(new String[]{goal.getItemName(), String.valueOf(goal.getQuantity())});
 			}
 		}
@@ -4843,7 +4863,7 @@ public class IronscapePlugin extends Plugin
 		{
 			for (StepAnnotation.ItemNeed need : annotationManager.getItems(annotationId))
 			{
-				if (Boolean.TRUE.equals(need.optional))
+				if (Boolean.TRUE.equals(need.optional) || Boolean.TRUE.equals(need.granted))
 				{
 					continue;
 				}

@@ -348,6 +348,13 @@ class StepRow extends JPanel
 					StepAnnotation.ItemNeed need = new StepAnnotation.ItemNeed();
 					need.name = goal.getItemName();
 					need.quantity = goal.getQuantity();
+					// A goal beats an annotation of the same name (see the
+					// merge below), so a quest-granted item detected from
+					// step text would lose its flag and go back to showing
+					// a red shortfall. Carry that one flag over.
+					need.granted = ctx.getAnnotations()
+						.isGranted(goal.getItemName(), annotationId, goalSubId)
+						? Boolean.TRUE : null;
 					needs.add(need);
 				}
 			}
@@ -401,7 +408,8 @@ class StepRow extends JPanel
 				// marks materials for the step's PRODUCTS (redberries under
 				// the dyes) — both muted so requirements keep the spotlight.
 				String tag = Boolean.TRUE.equals(need.optional) ? "(optional)"
-					: Boolean.TRUE.equals(need.ingredient) ? "(ingredient)" : null;
+					: Boolean.TRUE.equals(need.ingredient) ? "(ingredient)"
+					: Boolean.TRUE.equals(need.granted) ? "(from the quest)" : null;
 				JLabel name = new JLabel(tag != null
 					? "<html>" + RichText.escape(ItemTracker.capitalize(need.name))
 						+ " <font color='#877e6f'>" + tag + "</font></html>"
@@ -575,7 +583,11 @@ class StepRow extends JPanel
 				? ItemTracker.formatCount(carried)
 				: ItemTracker.formatCount(have) + (have > 0 ? "&nbsp;🏦" : "");
 			return "<html><font color='" + (done ? "#808080"
-				: carried > 0 ? SATISFIED_HEX : have > 0 ? IN_BANK_HEX : MISSING_HEX) + "'>"
+				: carried > 0 ? SATISFIED_HEX
+				: have > 0 ? IN_BANK_HEX
+				// Quest-granted and not carried yet is the NORMAL state
+				// before the quest hands it over — muted, not red.
+				: Boolean.TRUE.equals(need.granted) ? "#877e6f" : MISSING_HEX) + "'>"
 				+ text + "</font></html>";
 		}
 		if (done)
@@ -595,8 +607,12 @@ class StepRow extends JPanel
 		else
 		{
 			// An optional item you don't have is not a problem — muted
-			// grey, never the alarm red of a real requirement.
-			color = Boolean.TRUE.equals(need.optional) ? "#877e6f" : MISSING_HEX;
+			// grey, never the alarm red of a real requirement. Nor is one
+			// the quest is about to hand you: red there reads as "go and
+			// fetch this", which is the misinformation the kit policy is
+			// about.
+			color = Boolean.TRUE.equals(need.optional) || Boolean.TRUE.equals(need.granted)
+				? "#877e6f" : MISSING_HEX;
 		}
 		return "<html><font color='" + color + "'>"
 			+ ItemTracker.formatCount(have) + "/" + ItemTracker.formatCount(required)

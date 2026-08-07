@@ -673,11 +673,13 @@
     },
     {
      "name": "bark sample",
-     "quantity": null
+     "quantity": null,
+     "granted": true
     },
     {
      "name": "translation notes",
-     "quantity": null
+     "quantity": null,
+     "granted": true
     },
     {
      "name": "barcrawl card",
@@ -866,7 +868,8 @@
    "items": [
     {
      "name": "brooch",
-     "quantity": null
+     "quantity": null,
+     "granted": true
     },
     {
      "name": "scrying orb",
@@ -5954,18 +5957,29 @@
    "items": [
     {
      "name": "liquid honey",
-     "quantity": 1
+     "quantity": 1,
+     "granted": true
     },
     {
      "name": "ethenea",
-     "quantity": 1
+     "quantity": 1,
+     "granted": true
     },
     {
      "name": "sulphuric broline",
-     "quantity": 1
+     "quantity": 1,
+     "granted": true
+    },
+    {
+     "name": "plague sample",
+     "quantity": 1,
+     "granted": true
     }
    ],
    "note": "Elena hands over the plague sample AND all three vials when you return her distillator — that is where this step ends and Quest Helper should be left behind. Wiki order: sneak into West Ardougne -> mourner HQ (rotten apple, medical gown, kill a mourner for the key, distillator from the crate) -> return to Elena with 3+ free inventory slots. The vials go to Chancy/Da Vinci/Hops OUTSIDE the Rimmington chemist on the NEXT steps."
+  },
+  "22d68e6e8f:0": {
+   "travelVia": "Battlefield of Khazard"
   }
  }
 }

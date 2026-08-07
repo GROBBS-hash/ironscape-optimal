@@ -132,6 +132,52 @@ public class AnnotationManager
 		return b == null || b.items == null ? Collections.emptyList() : b.items;
 	}
 
+	/**
+	 * The network stop this step really means, or null. See
+	 * {@link StepAnnotation#travelVia}.
+	 */
+	public synchronized String getTravelVia(String annotationId)
+	{
+		StepAnnotation l = local.get(annotationId);
+		if (l != null && l.travelVia != null)
+		{
+			return l.travelVia;
+		}
+		StepAnnotation b = bundled.get(annotationId);
+		return b == null ? null : b.travelVia;
+	}
+
+	/**
+	 * Is this item one the quest HANDS the player, under any of the given
+	 * annotation keys (step and sub)? See {@link StepAnnotation.ItemNeed#granted}.
+	 * Names match case-insensitively, exactly as they were seeded.
+	 *
+	 * @param annotationIds keys to look under; nulls are skipped
+	 */
+	public synchronized boolean isGranted(String itemName, String... annotationIds)
+	{
+		if (itemName == null)
+		{
+			return false;
+		}
+		for (String annotationId : annotationIds)
+		{
+			if (annotationId == null)
+			{
+				continue;
+			}
+			for (StepAnnotation.ItemNeed need : getItems(annotationId))
+			{
+				if (Boolean.TRUE.equals(need.granted) && need.name != null
+					&& need.name.equalsIgnoreCase(itemName))
+				{
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
 	/** External reference link for a step; null = none. */
 	public synchronized StepAnnotation.Link getLink(String annotationId)
 	{

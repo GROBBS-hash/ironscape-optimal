@@ -52,6 +52,24 @@ public class StepAnnotation
 	public String note;
 
 	/**
+	 * The NETWORK STOP to actually take, when the step names a destination
+	 * the network doesn't serve. "Spirit tree to ardy" — there is no
+	 * Ardougne spirit tree; the stop is Battlefield of Khazard, then you
+	 * run north (owner: "i know the step doesnt label it like this but for
+	 * our overlay and shortestpath thats the one we want").
+	 *
+	 * Its words join the travel-menu word set, so TravelMenuOverlay
+	 * highlights the right list entry. Word-SET matching means the menu's
+	 * exact phrasing doesn't matter.
+	 *
+	 * NOT arrival proof. A ⌖ on a network-travel sub already marks the
+	 * BOARDING point, and only the step's text destination or 📍 tag
+	 * proves you arrived (wave 7) — naming the stop you board toward must
+	 * not start ticking the step at the stop instead of the destination.
+	 */
+	public String travelVia;
+
+	/**
 	 * Mid-quest side pickups ("Do Tree gnome village, get Glarial's
 	 * pebble on the way"). Quest Helper owns the quest flow but knows
 	 * nothing about the errand — while the sub's quest is IN_PROGRESS,
@@ -164,6 +182,21 @@ public class StepAnnotation
 		 * products with a muted "(ingredient)" tag.
 		 */
 		public Boolean ingredient;
+		/**
+		 * The QUEST HANDS YOU this item — Elena's plague sample, the Grand
+		 * Tree's bark sample. You cannot fetch it from a bank or a shop, so
+		 * a red "0/1" is misinformation and a bank detour for it is wrong
+		 * (KIT-SEEDING POLICY, owner 2026-08-05). Renders muted with a
+		 * "(from the quest)" tag and never routes.
+		 *
+		 * The item is still listed, and still auto-ticks when it lands:
+		 * knowing the quest will give it to you is useful, being told to go
+		 * shopping for it is not. Set it on a name a DETECTED goal already
+		 * covers and the flag carries onto the goal (see StepRow's merge) —
+		 * that is how the plague sample, which no seeder produced, is
+		 * reachable at all.
+		 */
+		public Boolean granted;
 	}
 
 	public static class Target
