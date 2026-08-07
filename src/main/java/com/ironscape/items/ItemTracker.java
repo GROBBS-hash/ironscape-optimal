@@ -322,6 +322,11 @@ public class ItemTracker
 		{
 			key = "teleport card";
 		}
+		// Traiborn's bone-payment key is a "Silverlight key" (Demon Slayer).
+		if (key.equals("demon slayer key"))
+		{
+			key = "silverlight key";
+		}
 		// Rune Mysteries' hand-ins are "Research package" and "Research
 		// notes" in-game; kits call them by the quest's name (owner-hit).
 		if (key.equals("rune mysteries notes"))

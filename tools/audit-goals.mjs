@@ -181,6 +181,7 @@ if (!fs.existsSync(constantsTsv)) {
   // -> 2423 KEYPRINT as "Key print" — PAR's colloquials, owner-hit.)
   const VERIFIED = new Set(['big frog leg', 'rusty sword', 'buttons',
     'skin paste', 'key imprint', 'teleport card',
+    'silverlight key', 'demon slayer key',
     'agility pots', 'b gloves', 'black wizards hat',
     'blurite sword', 'bronze arrowtips', 'buckets of slime', 'cadava potion',
     'digsite pendants', 'dragon defender', 'fally teletab', "green d'hide top",

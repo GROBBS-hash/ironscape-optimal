@@ -5505,7 +5505,14 @@
     "y": 3163,
     "plane": 1
    },
-   "note": "Wizard Traiborn on the 1st floor of the Wizards' Tower trades 25 bones for his key part. Kill the chickens outside or wizards inside if short."
+   "note": "Wizard Traiborn on the 1st floor of the Wizards' Tower trades 25 bones for his key part. Kill the chickens outside or wizards inside if short.",
+   "items": [
+    {
+     "name": "bones",
+     "quantity": 25,
+     "ingredient": true
+    }
+   ]
   },
   "fc59be4ce0": {
    "target": {

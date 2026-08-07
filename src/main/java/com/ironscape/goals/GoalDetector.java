@@ -704,7 +704,7 @@ public final class GoalDetector
 	 * (addIfValid validates), so "kill wizards for xp" stays manual.
 	 */
 	private static final Pattern LOOT_FOR_ITEM = Pattern.compile(
-		"\\b(?:pickpocket|steal from|thieve|kill|slay|safespot)\\b[^,.]*?\\s+for\\s+"
+		"\\b(?:pickpocket|steal from|thieve|kill|slay|safespot|give|hand)\\b[^,.]*?\\s+for\\s+"
 			+ "(?:a|an|the)?\\s*(\\d+)?\\s*([a-z' ]+?)(?:\\s*[,.(]|$)",
 		Pattern.CASE_INSENSITIVE);
 

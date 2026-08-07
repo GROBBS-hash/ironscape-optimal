@@ -2793,6 +2793,10 @@ public class IronscapePlugin extends Plugin
 		inventoryHintItemIds = config.showInventoryHints() && current != null
 			? findStepInventoryItems(current)
 			: java.util.Collections.emptySet();
+		// Chat menus rebuild their option children WITHOUT reloading the
+		// widget group — the widget-load hook alone missed every rebuilt
+		// menu (owner: "options not showing"). Reapply per tick; cheap.
+		highlightStageDialog();
 		currentSubIsQuest = current != null && questGoalBySub.containsKey(current.sub.getId());
 
 		updateStepOverlay();
