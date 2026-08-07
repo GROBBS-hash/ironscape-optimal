@@ -801,26 +801,35 @@ public class IronscapePlugin extends Plugin
 	 */
 	private void highlightStageDialog()
 	{
-		List<String> wanted = null;
+		java.util.Set<String> wanted = new java.util.LinkedHashSet<>();
 		StepAnnotation.Errand stage = activeErrand();
 		if (stage != null && stage.dialog != null && !stage.dialog.isEmpty())
 		{
-			wanted = stage.dialog;
+			wanted.addAll(stage.dialog);
 		}
-		else
+		Current current = findCurrent();
+		if (current != null)
 		{
 			// Sub-keyed first, then the step — same precedence as ⌖ targets.
-			Current current = findCurrent();
-			if (current != null)
+			wanted.addAll(annotationManager.getDialog(current.sub.getId()));
+			wanted.addAll(annotationManager.getDialog(current.step.getId()));
+
+			// GENERIC quest options, no seeding required. Hand-authoring a
+			// dialog list per quest step is Quest Helper's job and we will
+			// never match it, but the options that actually matter are the
+			// same three everywhere, so cover them for free: the owner hit a
+			// plain "Your quest." sitting unhighlighted mid-Biohazard.
+			// Only while the step's quest is genuinely in progress, so an
+			// unrelated NPC offering "Your quest." stays untouched.
+			Quest quest = stepQuest(current);
+			if (quest != null && cachedQuestState(quest) == QuestState.IN_PROGRESS)
 			{
-				wanted = annotationManager.getDialog(current.sub.getId());
-				if (wanted.isEmpty())
-				{
-					wanted = annotationManager.getDialog(current.step.getId());
-				}
+				wanted.add("Your quest");
+				wanted.add(quest.getName());
+				wanted.add("Talk about " + quest.getName());
 			}
 		}
-		if (wanted == null || wanted.isEmpty())
+		if (wanted.isEmpty())
 		{
 			return;
 		}
@@ -844,13 +853,33 @@ public class IronscapePlugin extends Plugin
 			}
 			for (String want : wanted)
 			{
-				if (text.equalsIgnoreCase(want))
+				if (dialogOptionMatches(text, want))
 				{
 					child.setTextColor(0x1a1aff);
 					break;
 				}
 			}
 		}
+	}
+
+	/**
+	 * Does this chat option mean the wanted one? Exact matching was too
+	 * brittle for the generic quest options: the menu renders "Your quest."
+	 * with a trailing stop, sometimes wrapped in colour tags, and a seeded
+	 * string copied out of Quest Helper rarely carries the punctuation.
+	 * Compare on letters and digits only.
+	 */
+	private static boolean dialogOptionMatches(String optionText, String wanted)
+	{
+		return dialogKey(optionText).equals(dialogKey(wanted));
+	}
+
+	private static String dialogKey(String text)
+	{
+		return net.runelite.client.util.Text.removeTags(text)
+			.replace('’', '\'')
+			.replaceAll("[^\\p{Alnum}]+", "")
+			.toLowerCase(Locale.ROOT);
 	}
 
 	/** Where the route (and marker) points for this stage — the routable entrance when set. */
