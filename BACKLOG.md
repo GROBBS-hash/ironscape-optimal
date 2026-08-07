@@ -473,6 +473,52 @@ exist; whether they compose into a route-position ledger is unknown. Ask before 
 
 ---
 
+## NEXT SESSION — start here (written 2026-08-08, end of wave 11)
+
+Everything below is from live play; the first two were reported and diagnosed but NOT finished.
+
+### 1. P0-04 teleport destination proof — **written, uncommitted, never play-tested**
+`src/main/java/com/ironscape/IronscapePlugin.java` has an uncommitted change in the working tree.
+It compiles and tests pass. **Play-test it, then commit it.**
+
+The travel-goal branch ticked any travel sub that happened to be current while `recentTeleportTicks > 0`,
+without checking where the jump landed. Brimstail's teleport into the essence mine ticked the ess-mine
+region checkpoint, the loop cascaded, and "Use mind bomb and camelot tele" completed from inside the mine
+with Camelot 1,300 tiles away. Fix requires the landing to be within `TELEPORT_ARRIVE_RADIUS` of the sub's
+destination, via a new shared `travelDestination()` helper so the jump path and the arrival path resolve
+the destination identically. Unresolvable destination falls through to the arrival check rather than
+ticking on the jump.
+
+### 2. Boat steps tick on the deck, before the gangplank (owner, 2026-08-08)
+"Take the boat back to Ardy" ticks on arrival while the player is still ON the ship. You must cross the
+gangplank to be on land, so navigation "bricks" — Shortest Path is routing from a deck tile.
+
+Same branch as (1), but the destination fix does NOT help: the deck is well within the radius of Ardougne.
+Owner's suggestion, and the right signal: gate boat subs on the **"Cross gangplank" object click**
+(`onMenuOptionClicked` already tracks object clicks for minigame presence).
+
+**Check before wiring:** whether any boat route in the guide drops you straight onto the dock with no plank
+to cross. If one does, gating on the plank would wedge that step forever. There are only 5 boat steps
+(`Take the boat to Great Kourend`, `Take boat to Port Sarim`, `Take the boat from Ardy docks to
+Rimmington`, `Take the boat back to Ardy`, `Ardy cloak tele and take the boat from Ardy to brimhaven`).
+
+### 3. Wizard Cromperty not outlined on the ess-mine step (owner, 2026-08-08)
+Same class as P0-06 and a one-line data fix: add him to `places/shop_npcs.json` keyed to the "Visit Ardy
+ess mines" step. The ⌖ pin at 2684,3323 exists; the nearest-NPC fallback just isn't nominating him.
+
+### 4. 21 quest-kit items awaiting the owner's ruling
+`node tools/audit-quest-granted.mjs`. All on quest FINISHING steps, so they are judgement calls, not
+defects — wave 9's rule is that a finishing step lists what the FINALE needs. Demon Slayer's
+`silverlight key x3` is the owner's own correction and was deliberately left alone. The question per item:
+does a muted "(from the quest)" read better than red?
+
+### 5. Still unverified from wave 11
+- the handoff banner + notification (never seen one fire — needs a step to finish mid-quest)
+- `Customs officer` on the Musa Point -> Port Sarim boat (tentative name, still far off in the route)
+- the ASCII glyph sweep on messages nobody has triggered yet (death, gravestone, on-the-way pickup)
+
+---
+
 ## Execution order
 
 **Phase 0 — investigate (no code)**

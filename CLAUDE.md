@@ -738,6 +738,78 @@ refresh when "Failed to login" appears.
   capture; hub pin at b8c994d, now ~70 commits behind — bump after a
   calm session.
 
+- SESSION WAVE 11 (2026-08-08, live play-test, main at `105a0ff`, pushed):
+  **BANK FILTER DEPOSITS — ROOT CAUSE WAS US.** Our `bankSearchFilter`
+  callback answered **0 ("hide") for every slot**, and the decompiled
+  `BankMainBuild.rs2asm` shows that answer is permission to lay the slot out
+  AT ALL (`invoke 279 ~bankmain_filteritem` -> `if_icmpne` skips the slot
+  before `cc_setobject`). A rejected slot never gets a widget, so widgets
+  that existed when the filter came on survived (WITHDRAW looked fine) but a
+  DEPOSITED item got none — nothing to move, so an unclickable ghost. Answer
+  **1** instead; `BankMissingSection` already hides what it doesn't move,
+  which is what makes the view clean. Every forced-rebuild attempt failed
+  because the re-run asked the same callback again. CONFIRMED IN PLAY.
+  Diagnostics: pass line carries `N/M widgets populated, via <trigger>`
+  and `STALE`. **Two counts are NOT comparable** — a healthy bank runs ~30
+  stacks ahead of its widgets (302/330 working), so `populated < container`
+  fires constantly; STALE now means the narrow per-item thing (a ghost drawn
+  for an item the container really holds, exact aliases only).
+  **TOOL-01 BUILT** (`tools/audit-quest-granted.mjs`): reads
+  `build/goal-audit.tsv` so it sees DETECTOR output the seeders never touch
+  (the plague sample is a text goal — `cross-check-quest-kits` could never
+  have caught it), checks each demanded item against QH's two lists
+  (`getItemRequirements()` = bring, other `ItemRequirement`s = tracked
+  in-quest). **Tradeability is the discriminator**; without it QH's short
+  bring-lists flag rope/planks/buckets/coins. Caught P0-02 (`bark sample` on
+  the Grand Tree start step) independently. 21 findings left, ALL on quest
+  FINISHING steps = owner review, not defects.
+  **NEW ANNOTATION FIELDS**: `ItemNeed.granted` (quest hands it to you —
+  muted "(from the quest)", never routes, still lists and auto-ticks; a
+  DETECTED goal inherits the flag through StepRow's merge, which is the only
+  way to reach one); `travelVia` (the network stop a step means but never
+  names — "Spirit tree to ardy" = Battlefield of Khazard; feeds
+  `travelMenuWords`, NOT arrival proof); `Errand.given` (stage stands down
+  once the item LEAVES your hands, and skips the usual cascade since
+  hand-ins are independent).
+  **BIOHAZARD**: 3-stage hand-in chain on the touch-paper step (Hops
+  <-sulphuric broline, Chancy<-liquid honey, Da Vinci<-ethenea) at
+  **Rimmington 2928,3220** — the wiki lists Chancy/Da Vinci at BOTH
+  Rimmington and Varrock 3271,3388 (they carry the chemicals past the
+  Varrock guards), and QH's step text describes the LATER visit. Owner beat
+  QH on this. NO varp checkpoint: varp 68 stays **12** across the whole
+  smuggling phase (measured in play) — wave 9's chain rule is the gate.
+  Adding a checkpoint had OVERRIDDEN a case the plugin already handled.
+  **HANDOFF** ("stop following Quest Helper"): never fired for anyone ever —
+  gated on `isFrontierStep(step)` AFTER `advancePositionTo()` moved the
+  frontier past it; uses the pre-mutation `atFrontier` now, and no longer
+  needs `handedOffQuest`. Plus `QuestHandoffOverlay` (green viewport banner,
+  ~18s, expires rather than needing dismissal) + `Notifier`, config
+  `showHandoffBanner`. **GLYPH SWEEP**: the game font has no check
+  mark/return arrow/crosshair/em dash — they render "?" (owner saw
+  "IRONSCAPE: ? Start biohazard"). All chat messages ASCII + colour now.
+  **DIALOGUE**: matching compares letters+digits only (exact match missed
+  "Your quest." even when seeded — some seeded entries were probably failing
+  silently); generic options ("Your quest", the quest name, "Talk about X")
+  highlight with NO seeding while the quest is IN_PROGRESS. CONFIRMED.
+  **TRAVEL NPCs** (P0-06) into `shop_npcs.json` (already the curated
+  named-NPC roster): Captain Barnaby x3 (wiki: Ardougne/Brimhaven/Rimmington
+  30gp), Trader Crewmember x4, Veos, Customs officer (TENTATIVE).
+  CONFIRMED: Ardy docks -> Rimmington.
+  **CHECKPOINT DIAGNOSTIC**: `checkpoint <sub>: varp 68=12 (need 14)` on
+  change — QH's `loadSteps()` only lists values IT handles, so thresholds
+  are guesswork without it.
+  **UNCOMMITTED, compiles + tests pass, NOT play-tested**: P0-04 teleport
+  destination proof — the travel-goal branch ticked any travel sub while a
+  teleport was warm, so Brimstail's jump into the ess mine ticked "Use mind
+  bomb and camelot tele" from 1,300 tiles away. Now the jump must land at
+  the sub's destination (shared `travelDestination()` helper so the jump and
+  arrival paths can't disagree).
+  **PROCESS**: never run ANY gradle command while the dev client is live —
+  `gradlew test` rewrote `build/classes` under it and the panel died with
+  `NoClassDefFoundError: StepRow$SubRowUi` ("the whole guide disappeared").
+  Never launch with a bare `&` — it detaches from tracking and left THREE
+  clients running.
+
 - SESSION WAVE 10 (2026-08-07, live play-test): **INSTANCED REGIONS** —
   every position read went through `Actor#getWorldLocation`, which inside
   a dynamic region returns THAT COPY's coordinates; `fromLocalInstance`
