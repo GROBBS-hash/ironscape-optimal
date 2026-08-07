@@ -341,6 +341,28 @@ project has fought repeatedly. Revisit only with a specific report.
 **Still open:** where the wiki DOES give a count the seeder reads it, but `~400 [[Coins]]` (Ghosts Ahoy)
 loses its number to the tilde. Minor next to the above.
 
+**Quest-granted items — mechanism added 2026-08-08, NOT YET PLAY-TESTED.** New annotation flag
+`ItemNeed.granted`: the quest hands you this, so there is nothing to fetch. Renders muted with a
+"(from the quest)" tag instead of alarm red, and never justifies a bank stop. It still lists and still
+auto-ticks when the item lands — knowing the quest will give it to you is useful, being sent shopping for
+it is not.
+
+Reaching DETECTED goals (the plague sample came from step text, not a seeder) works by declaring the flag
+on an annotation entry of the same name: `StepRow`'s merge already lets a goal shadow a same-named
+annotation item, so the goal now inherits that one flag on the way through.
+
+Seeded on the three quest-START steps, where the item provably cannot exist yet:
+- Biohazard `27405fdda8:0` — plague sample, liquid honey, ethenea, sulphuric broline (the note already on
+  that step says Elena hands over all four)
+- The Grand Tree `8e5edf7f76` — bark sample, translation notes (this is P0-02)
+- The Lost Tribe `13f33630f0` — brooch
+
+**Left for the owner: 21 items on quest FINISHING steps** (`node tools/audit-quest-granted.mjs`). These are
+judgement calls, not defects — wave 9's rule is that a finishing step lists what the FINALE needs, and
+bring-then-consume-in-finale items are good entries. Demon Slayer's `silverlight key x3` is in the list and
+was an explicit owner correction, so nothing there was touched. The question per item is whether seeing it
+greyed as "(from the quest)" beats seeing it red.
+
 **Related, same step, two more faults:**
 - **`Plague sample 0/1` sits permanently red.** It's a TEXT-detected goal from "get the plague sample", and
   the sample is handed to you DURING Biohazard. This is the KIT-SEEDING POLICY / D2 case exactly ("items a
@@ -416,7 +438,28 @@ steps distinctly so the progress file reveals which steps detection is failing o
 
 ---
 
-### TOOL-01 — Kit satisfiability audit
+### TOOL-01 — Kit satisfiability audit — **BUILT 2026-08-08** (`tools/audit-quest-granted.mjs`)
+
+Scoped to the fault that was actually reported rather than a full route-position ledger: it flags items the
+plugin will DEMAND on a quest step **that the quest itself hands you**. Reads `build/goal-audit.tsv` (the
+plugin's real resolved goals, so it sees detector output the seeders never touch — the plague sample is a
+detected goal, which is why `cross-check-quest-kits` could never have caught it) plus annotation items, and
+checks each against Quest Helper: `getItemRequirements()` = what you BRING, other `ItemRequirement`s = what
+it tracks DURING the quest.
+
+**Tradeability is the discriminator.** Without it the audit is mostly false positives — QH's bring-list is
+often short (Royal Trouble returns just `coalOrPickaxe` + `combatGear`), so "QH tracks it but doesn't ask
+for it" alone flagged rope, planks, buckets and coins. An item an ironman can buy or bank is satisfiable by
+definition; only untradeable ones can sit permanently red. Family roots ("pickaxe", "bar") count as
+tradeable, and coins are hand-listed since the GE mapping omits them.
+
+It also independently caught **P0-02 / INV-E** — `bark sample` on the Grand Tree START step, the SS-04/05
+case this item was written to catch before play.
+
+Items already marked `granted` drop out, so the output converges to "not yet reviewed".
+
+**Open question from the original entry — does the guide model what a step GRANTS? — was not needed.** QH's
+own two-list structure answers it per quest.
 **Prior work:** six audit tools already exist in the same family — `audit-goals`, `audit-nav`, `audit-shops`,
 `audit-drops`, `audit-arrivals`, `cross-check-quest-kits` (which already has a STALE? flag), plus
 `GoalAuditDumpTest` and `BundledAnnotationKeysTest`.
@@ -496,17 +539,82 @@ Root cause was the widget lifecycle, found by copying Quest Helper (owner's sugg
    (1), since running at tick end means our changes land last and stick. Before, the client's own build
    overwrote them ("nothing is permanently lost" — no longer true).
 
-**STILL BROKEN: deposits.** Items you DEPOSIT while the filter is on render as unclickable ghosts until you
-toggle the filter off and on. The client has no item widgets for them yet (log: 292 native items right after
-"deposit all", 298 after reopening) and **a deposit triggers no bank build at all** — zero layout passes
-between the deposit and the next manual toggle.
+**DEPOSITS — fix written 2026-08-08, NOT YET PLAY-TESTED.**
 
-Two fixes tried and REVERTED, both ineffective: `bankSearch.layoutBank()` on the bank container change, then
-`reset(true) + layoutBank()` (the exact pair the manual toggle uses). Neither produced a `FINISHBUILDING`.
-Nothing is wired in now, deliberately — a forced relayout per deposit costs a rebuild and fixes nothing.
-**Next idea:** find what the manual toggle does that these calls don't (the toggle path also flips `active`
-and goes through `deactivate(true)` first) — or hook a different event than `ItemContainerChanged`.
-Diagnostics are in place: `bank filter items:` logs every item's branch (`moved`/`ghost`/`skip`) on change.
+Symptom: items you DEPOSIT while the filter is on render as unclickable ghosts until you toggle the filter
+off and on.
+
+**One premise recorded here was wrong, and it sent two fixes at the wrong target.** "A deposit triggers no
+bank build at all" was inferred from an absence of log lines — but `bank filter pass:` and `bank filter
+items:` only print when their content *changes*. Re-reading the session log:
+
+```
+00:45:07  pass: 10 sections, 3 moved, 13 ghosts, ..., 291 native items   <- last withdrawal
+00:45:09  items: (every item now "!", i.e. carried counts dropped)       <- the deposit
+          ^ an "items:" line with NO "pass:" line = a pass DID run and the shape
+            was byte-identical: still 291 native items
+```
+
+`bankMissingSection.update()` has exactly one caller — the `BANKMAIN_FINISHBUILDING` hook. So a deposit
+**does** trigger a build and our pass **does** run. What it reads is a container whose item widgets still
+show the pre-deposit set, so the deposited item has no widget to move and can only be drawn as a ghost.
+
+Why the two reverted attempts did nothing: `BankSearch.layoutBank()` runs the bank's inv-transmit script
+**synchronously** (`client.runScript`, no deferral — confirmed in RuneLite's source). Called inline from
+`onItemContainerChanged` that is the same script-engine re-entrancy that hard-froze the client twice before.
+Both attempts were also aimed at forcing a rebuild that was already happening.
+
+**What is wired in now:** no client rebuild. A bank container change sets `bankRelayoutTicks = 3`, and
+`onGameTick` re-runs OUR layout at tick end for those ticks — the pass that lands after the widgets
+repopulate turns the ghosts back into real, withdrawable ones. If a pass still measures a mismatch on the
+last tick of that window, and only then, `layoutBank()` is called via `clientThread.invokeLater` (a clean
+stack) as a fallback. So the forced rebuild costs nothing unless the plugin has *observed* the state that
+needs it.
+
+**Diagnostic:** the pass line carries `N/M widgets populated, via <trigger>` plus `STALE` when the true
+condition holds.
+
+**ROOT CAUSE FOUND 2026-08-08, AND IT WAS US.** Our `bankSearchFilter` callback answered **0 ("hide") for
+every slot** while the filter was on. The decompiled build script (`BankMainBuild.rs2asm`) shows that answer
+is permission to lay the slot out at all:
+
+```
+filtertest:
+  invoke 279          ; ~bankmain_filteritem -> our callback
+  if_icmpne LABEL972  ; answer != 1 -> skip the slot ENTIRELY
+LABEL929:
+  cc_sethide / cc_setobject / cc_setposition
+```
+
+A rejected slot never reaches `cc_setobject`, so the client never gives that item a widget. Widgets that
+already existed when the filter came on survived — which is exactly why WITHDRAWING looked fine and only
+DEPOSITS broke: a deposited item needs a NEW widget, and we were refusing it one. With nothing to move, the
+item could only be drawn as an unclickable ghost.
+
+It also explains why every attempt to force a rebuild failed, including the guarded one: the re-run asked
+our callback again and got the same "hide". Confirmed in play — `forcing a rebuild` left native items at
+**291 of 330**, unchanged.
+
+Fix: answer **1** (lay it out). Blanking was never this callback's job; `BankMissingSection` hides every
+native child it didn't move, which is what actually produces the clean view. The forced-rebuild fallback is
+removed as proven useless.
+
+**Also learned and fixed: do NOT compare the two counts.** A healthy bank runs ~30 stacks ahead of its populated widgets — `302/330` on a freshly
+activated, fully working filter — so `populated < inContainer` is the NORMAL state and a fallback gated on
+it fires constantly (it did, twice, and the forced rebuild changed nothing because nothing was missing).
+
+The condition that actually matters is per item and narrow: **we drew a ghost for something the bank
+container really holds.** That is the deposit symptom exactly — the item is back in the bank, the client
+has not given it a widget, so it renders unclickable with no tooltip. `lastPassStale` now means that, using
+the same alias/family matching as the widget join, so the two can only ever disagree about the WIDGET.
+
+**Still unverified:** whether the tick-end relayout fixes the deposit. The `via bank-change` passes do run,
+so the plumbing works, but the run died before the deposit (see the class-loading note below) and no
+post-deposit pass was captured. Owner's live report that deposits still ghost is from that same broken run.
+
+**Do not rebuild while the dev client is running.** `gradlew test` rewrote `build/classes` under a live
+client and the panel died with `NoClassDefFoundError: com/ironscape/panel/StepRow$SubRowUi` — the guide
+"disappeared" (progress intact, only one section drawn). Not a plugin bug; restart clears it.
 
 ---
 
