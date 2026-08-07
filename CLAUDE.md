@@ -758,3 +758,6 @@ refresh when "Failed to login" appears.
   authored keys survive re-scrapes). Progress key `progress_OZIRIS`.
 - Guide is ~1000 steps across three chapters. Panel performance matters —
   don't naively render every step as a live Swing component at once.
+
+Pending work is tracked in BACKLOG.md. Screenshots referenced as SS-NN are in docs/screenshots/.
+Run the INV-01..INV-03 investigation tasks before starting implementation.
