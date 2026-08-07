@@ -43,6 +43,90 @@ public class GoalAuditDumpTest
 		}
 	}
 
+	/**
+	 * How would each MOVEMENT-shaped sub prove arrival? TEXT = a place
+	 * name in the sub's own text resolves; PIN = only the step's 📍 tag
+	 * resolves (the fallback that anchored 'go to ess mines' on Gnome
+	 * Stronghold — the ORIGIN — and false-ticked); NONE = nothing
+	 * resolves, the sub can only be ticked manually. tools/audit-arrivals.mjs
+	 * turns the PIN rows into the review list.
+	 */
+	@Test
+	public void dumpArrivalResolution() throws Exception
+	{
+		Guide guide = new GuideLoader(new Gson()).load(GuideVariant.OZIRIS);
+		com.ironscape.places.PlaceManager places =
+			new com.ironscape.places.PlaceManager(new Gson(), new File("no-local-places.json"));
+		places.load();
+		GoalDetector.Goals goals = GoalDetector.detect(guide);
+		java.util.Set<String> subsWithItems = new java.util.HashSet<>();
+		for (GoalDetector.ItemGoal goal : goals.getItemGoals())
+		{
+			subsWithItems.add(goal.getSub().getId());
+		}
+		// Annotation keys whose completion is owned elsewhere: a ⌖ target
+		// (precise arrival), an errand chain, or a varbit/varp/region
+		// checkpoint. Raw-parse the bundled file — this dump runs without
+		// a client.
+		java.util.Set<String> owned = new java.util.HashSet<>();
+		try (java.io.InputStream in = GoalAuditDumpTest.class.getResourceAsStream(
+			"/com/ironscape/annotations/annotations_oziris.json"))
+		{
+			com.google.gson.JsonObject file = new Gson().fromJson(
+				new java.io.InputStreamReader(in, StandardCharsets.UTF_8),
+				com.google.gson.JsonObject.class);
+			for (java.util.Map.Entry<String, com.google.gson.JsonElement> entry
+				: file.getAsJsonObject("annotations").entrySet())
+			{
+				com.google.gson.JsonObject ann = entry.getValue().getAsJsonObject();
+				boolean checkpoint = ann.has("requires")
+					&& (ann.getAsJsonObject("requires").has("varbit")
+						|| ann.getAsJsonObject("requires").has("varp")
+						|| ann.getAsJsonObject("requires").has("region"));
+				if (ann.has("target") || ann.has("errands") || checkpoint)
+				{
+					owned.add(entry.getKey());
+				}
+			}
+		}
+		// Keep in sync with IronscapePlugin.MOVEMENT_WORD + the
+		// CHARTER/SPIRIT_TREE network-travel phrasing.
+		java.util.regex.Pattern movement = java.util.regex.Pattern.compile(
+			"\\b(?:go|walk|run|head|return|travel|enter|exit|climb|cross|move|proceed|sail|ride|fly|swim|tele|teleport|tabs?|charter)\\b|spirit tree",
+			java.util.regex.Pattern.CASE_INSENSITIVE);
+		File out = new File("build/arrival-audit.tsv");
+		out.getParentFile().mkdirs();
+		try (PrintWriter writer = new PrintWriter(out, StandardCharsets.UTF_8))
+		{
+			for (com.ironscape.guide.GuideStep step : guide.getAllSteps())
+			{
+				String location = step.getMetadata().get("location");
+				for (com.ironscape.guide.SubStep sub : step.getSubSteps())
+				{
+					String text = sub.getPlainText();
+					if (!movement.matcher(text).find()
+						|| subsWithItems.contains(sub.getId())
+						|| owned.contains(sub.getId()) || owned.contains(step.getId()))
+					{
+						continue;
+					}
+					net.runelite.api.coords.WorldPoint fromText = places.lastPlaceIn(text);
+					if (fromText == null)
+					{
+						fromText = places.firstPlaceIn(text);
+					}
+					net.runelite.api.coords.WorldPoint fromPin =
+						location == null ? null : places.getLoose(location);
+					String source = fromText != null ? "TEXT" : fromPin != null ? "PIN" : "NONE";
+					writer.println("ARRIVAL\t" + sub.getId()
+						+ "\t" + source
+						+ "\t" + (location == null ? "" : location)
+						+ "\t" + text.trim().replaceAll("[\\t\\r\\n]+", " "));
+				}
+			}
+		}
+	}
+
 	@Test
 	public void dumpGoals() throws Exception
 	{
