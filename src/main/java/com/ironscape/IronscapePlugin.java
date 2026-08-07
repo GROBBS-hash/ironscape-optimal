@@ -1594,8 +1594,11 @@ public class IronscapePlugin extends Plugin
 		evaluateAutoCompletion();
 	}
 
-	/** Previous game state — LOADING->LOGGED_IN is a region load, not a login. */
+	/** Previous game state, logged per transition for diagnosis. */
 	private GameState lastGameState;
+
+	/** Set on LOGGING_IN; the next LOGGED_IN is a real (re)connect. */
+	private boolean sawLoggingIn;
 
 	@Subscribe
 	public void onGameStateChanged(GameStateChanged event)
@@ -1609,9 +1612,18 @@ public class IronscapePlugin extends Plugin
 		// with silent misfires (login resume never arming) — the log
 		// settles which sequence this client actually fires.
 		log.info("game state: {} -> {}", lastGameState, event.getGameState());
-		if (event.getGameState() == GameState.LOGGED_IN
-			&& lastGameState != GameState.LOADING)
+		// A REAL (re)connect passes through LOGGING_IN; a teleport or
+		// region load is just LOADING -> LOGGED_IN. The old lastGameState
+		// != LOADING test never fired on FRESH logins — the diagnosis log
+		// proved the sequence is LOGGING_IN -> LOADING -> LOGGED_IN, so
+		// the final hop looks exactly like a teleport.
+		if (event.getGameState() == GameState.LOGGING_IN)
 		{
+			sawLoggingIn = true;
+		}
+		if (event.getGameState() == GameState.LOGGED_IN && sawLoggingIn)
+		{
+			sawLoggingIn = false;
 			loginGraceTicks = 10;
 			navOnLoginPending = true; // fire nav once the grace window ends
 			lastXpBySkill.clear(); // next account/session sets fresh baselines
