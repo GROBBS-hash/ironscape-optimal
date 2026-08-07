@@ -2157,7 +2157,17 @@
      "plane": 0,
      "item": "scrying orb",
      "npc": "Mage of Zamorak",
-     "note": "The VARROCK Mage of Zamorak stands at the Chaos Temple by the rune shop — he hands over the scrying orb."
+     "note": "The VARROCK Mage of Zamorak stands at the Chaos Temple by the rune shop — he hands over the scrying orb.",
+     "dialog": [
+      "Where do you get your runes from?",
+      "Maybe I could make it worth your while?",
+      "Yes, but I can still help you as well.",
+      "I did it so that I could then steal their secrets.",
+      "Deal.",
+      "But I'm a loyal servant of Zamorak as well!",
+      "Okay, fine. I don't really serve Zamorak.",
+      "Because I can still help you."
+     ]
     },
     {
      "x": 3253,
@@ -2165,7 +2175,10 @@
      "plane": 0,
      "npc": "Aubury",
      "radius": 4,
-     "note": "Have Aubury teleport you to the essence mine with the orb in your pack (charge 1/3)."
+     "note": "Have Aubury teleport you to the essence mine with the orb in your pack (charge 1/3).",
+     "dialog": [
+      "Can you teleport me to the Rune Essence Mine?"
+     ]
     }
    ]
   },
