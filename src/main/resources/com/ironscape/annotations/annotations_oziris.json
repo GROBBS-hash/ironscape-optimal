@@ -2197,6 +2197,11 @@
     }
    ]
   },
+  "06b3df5fd7:0": {
+   "requires": {
+    "region": 11595
+   }
+  },
   "bb4aa764f4": {
    "items": [
     {
@@ -2204,6 +2209,11 @@
      "quantity": 1
     }
    ]
+  },
+  "bb4aa764f4:0": {
+   "requires": {
+    "region": 11595
+   }
   },
   "573dc27831": {
    "items": [

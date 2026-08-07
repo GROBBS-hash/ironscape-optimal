@@ -3129,9 +3129,18 @@ public class IronscapePlugin extends Plugin
 				List<StepRequirement> subReqs = subRequirements.get(current.sub.getId());
 				if (subReqs != null && hasVarCheckpoint(subReqs))
 				{
-					if (requirementsMet(subReqs))
+					// Region checkpoints are POSITION proofs, not monotonic
+					// state: frontier-sub-only (passing through the region
+					// for another reason must not tick a later window step)
+					// and the annotation items must be in hand — "go to the
+					// ess mine WITH the orb" is only done with the orb.
+					boolean positional = hasRegionCheckpoint(subReqs);
+					boolean eligible = !positional
+						|| (current.step == frontierStep
+							&& annotationItemsCarried(current.step, current.sub));
+					if (eligible && requirementsMet(subReqs))
 					{
-						completeSubGoal(current.step, current.sub, "quest checkpoint (varbit/varp)");
+						completeSubGoal(current.step, current.sub, "quest checkpoint (varbit/varp/region)");
 						completedSomething = true;
 						break;
 					}
@@ -3707,6 +3716,11 @@ public class IronscapePlugin extends Plugin
 			List<StepRequirement> parsed = new ArrayList<>();
 			for (com.ironscape.annotations.StepAnnotation.Requirement requires : requirementList)
 			{
+				if (requires.region != null)
+				{
+					parsed.add(new StepRequirement(requires.region));
+					continue;
+				}
 				if (requires.varbit != null || requires.varp != null)
 				{
 					if (requires.value != null || requires.bit != null)
@@ -3788,12 +3802,29 @@ public class IronscapePlugin extends Plugin
 		}
 	}
 
-	/** Does the list carry a varbit/varp checkpoint (vs only skill levels)? */
+	/** Does the list carry a varbit/varp/region checkpoint (vs only skill levels)? */
 	private static boolean hasVarCheckpoint(List<StepRequirement> requirements)
 	{
 		for (StepRequirement requirement : requirements)
 		{
-			if (requirement.varbit != null || requirement.varp != null)
+			if (requirement.varbit != null || requirement.varp != null
+				|| requirement.region != null)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Position checkpoints (region) are arrival-class evidence, not
+	 * monotonic game state — they get the frontier-only treatment.
+	 */
+	private static boolean hasRegionCheckpoint(List<StepRequirement> requirements)
+	{
+		for (StepRequirement requirement : requirements)
+		{
+			if (requirement.region != null)
 			{
 				return true;
 			}
@@ -3806,6 +3837,15 @@ public class IronscapePlugin extends Plugin
 	{
 		for (StepRequirement requirement : requirements)
 		{
+			if (requirement.region != null)
+			{
+				Player me = client.getLocalPlayer();
+				if (me == null || me.getWorldLocation().getRegionID() != requirement.region)
+				{
+					return false;
+				}
+				continue;
+			}
 			int have;
 			if (requirement.varbit != null)
 			{
@@ -3861,6 +3901,20 @@ public class IronscapePlugin extends Plugin
 		/** Optional badge: item name for the sprite + short label ("stamp"). */
 		final String icon;
 		final String label;
+		/** Position checkpoint: met while standing in this map region. */
+		final Integer region;
+
+		StepRequirement(Integer region)
+		{
+			this.skill = null;
+			this.varbit = null;
+			this.varp = null;
+			this.threshold = 1;
+			this.bit = null;
+			this.icon = null;
+			this.label = null;
+			this.region = region;
+		}
 
 		StepRequirement(Skill skill, int level)
 		{
@@ -3882,6 +3936,7 @@ public class IronscapePlugin extends Plugin
 			this.bit = bit;
 			this.icon = icon;
 			this.label = label;
+			this.region = null;
 		}
 	}
 

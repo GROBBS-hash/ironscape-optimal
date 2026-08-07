@@ -210,5 +210,16 @@ public class StepAnnotation
 		public String icon;
 		/** Badge text for checkpoints, shown as "<label> 0/1", e.g. "stamp". */
 		public String label;
+		/**
+		 * Position checkpoint: met while the player stands in this map
+		 * region (WorldPoint.getRegionID()). For destinations the place
+		 * list can't express — interiors and off-map areas like the rune
+		 * essence mine — where a text/📍 arrival would anchor on the
+		 * ORIGIN and false-tick. Same exclusivity as varbit checkpoints
+		 * (the sub completes ONLY off it), but evaluated frontier-only
+		 * like arrival, and gated on the step's annotation items being
+		 * carried ("make sure you have it with you").
+		 */
+		public Integer region;
 	}
 }
