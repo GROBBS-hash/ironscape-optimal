@@ -80,6 +80,16 @@ public class BankMissingSection
 	/** Real bank items the last COMPLETED pass saw (see the not-ready guard). */
 	private int lastNativeCount;
 
+	/**
+	 * The last pass found FEWER populated item widgets than the bank item
+	 * container actually holds — the widgets have not caught up, so an item
+	 * that is really in the bank had to be drawn as an unclickable ghost.
+	 * The plugin watches this to decide whether a deposit needs the client
+	 * prodded into a rebuild; nothing guesses that it is happening.
+	 */
+	@lombok.Getter
+	private boolean lastPassStale;
+
 	/** Bank item widgets carrying an actual item right now. */
 	private static int countPopulatedItems(Widget container)
 	{
@@ -107,10 +117,61 @@ public class BankMissingSection
 		this.itemManager = itemManager;
 	}
 
+	/** Distinct real (non-placeholder) item stacks the BANK CONTAINER holds. */
+	private int bankContainerItems()
+	{
+		net.runelite.api.ItemContainer bank =
+			client.getItemContainer(net.runelite.api.gameval.InventoryID.BANK);
+		if (bank == null)
+		{
+			return -1;
+		}
+		int count = 0;
+		for (net.runelite.api.Item item : bank.getItems())
+		{
+			if (item.getId() > 0 && item.getQuantity() > 0)
+			{
+				count++;
+			}
+		}
+		return count;
+	}
+
 	/**
-	 * Show (or hide) the sections. Called after every bank build.
+	 * Item NAMES the bank container holds right now, canonicalized the same
+	 * way the widget index is — the authoritative "what is in the bank",
+	 * independent of whether the client has drawn a widget for it yet.
 	 */
-	public void update(boolean show, List<Section> sections)
+	private java.util.Set<String> bankContainerNames()
+	{
+		net.runelite.api.ItemContainer bank =
+			client.getItemContainer(net.runelite.api.gameval.InventoryID.BANK);
+		java.util.Set<String> names = new java.util.HashSet<>();
+		if (bank == null)
+		{
+			return names;
+		}
+		for (net.runelite.api.Item item : bank.getItems())
+		{
+			if (item.getId() > 0 && item.getQuantity() > 0)
+			{
+				names.add(itemManager.getItemComposition(itemManager.canonicalize(item.getId()))
+					.getName().toLowerCase(java.util.Locale.ROOT));
+			}
+		}
+		return names;
+	}
+
+	/**
+	 * Show (or hide) the sections.
+	 *
+	 * @param trigger what asked for this pass ("build" = the client's own
+	 *                bank build, "bank-change" = the container changed under
+	 *                us). Part of the logged shape, so a pass that changes
+	 *                nothing else still prints when its cause differs —
+	 *                without it, "no log line" was misread as "no pass ran".
+	 */
+	public void update(boolean show, List<Section> sections, String trigger)
 	{
 		// NOT-READY GUARD, and it must come BEFORE anything below touches
 		// the pools. BANKMAIN_BUILD fires TWICE around a withdrawal: the
@@ -225,6 +286,17 @@ public class BankMissingSection
 		// above compares against it, so "0 now, plenty last time" reads as
 		// a half-built container rather than an empty bank.
 		lastNativeCount = nativeByName.size();
+		int populated = countPopulatedItems(container);
+		int inContainer = bankContainerItems();
+		// COUNTING both sides and comparing does NOT work: a healthy bank
+		// runs ~30 stacks ahead of its populated widgets (302/330 on a
+		// freshly opened, fully working filter), so "populated < container"
+		// is the normal state and firing a rebuild on it fires constantly.
+		// The condition that actually matters is PER ITEM and narrow: we
+		// drew a ghost for something the bank container really holds, so
+		// there was no widget to move and the player cannot click it.
+		java.util.Set<String> containerNames = bankContainerNames();
+		lastPassStale = false;
 		java.util.Set<Widget> kept = new java.util.HashSet<>();
 		// Per-item branch record, logged when it CHANGES: "name=moved" (the
 		// real bank widget), "=ghost" (our drawn copy), "=skip" (no icon id,
@@ -353,6 +425,15 @@ public class BankMissingSection
 				}
 				else
 				{
+					// Ghost for something the bank REALLY holds = the deposit
+					// symptom: the item is back in the bank but the client
+					// has not given it a widget, so it renders unclickable
+					// with no tooltip. This — not a count comparison — is
+					// what justifies prodding the client into a rebuild.
+					if (inBankContainer(entry.getKey(), containerNames))
+					{
+						lastPassStale = true;
+					}
 					Widget icon = create(container, WidgetType.GRAPHIC);
 					iconsUsed++;
 					icon.setItemId(itemId);
@@ -399,10 +480,18 @@ public class BankMissingSection
 		// Self-diagnosis for the vanishing-icon reports: one line per pass
 		// whenever the composition changes — if icons vanish WITHOUT a new
 		// line, the bank redrew without this pass running at all.
+		// "native items" counts the bank WIDGETS carrying an item; "in
+		// container" counts the bank ITEM CONTAINER. They should agree.
+		// When they don't, the widgets are stale — which is the whole
+		// deposit question: an item that is in the container but has no
+		// populated widget cannot be moved, so it can only be drawn as an
+		// unclickable ghost.
 		String shape = sections.size() + " sections, " + kept.size() + " moved, "
 			+ iconsUsed + " ghosts, " + textsUsed + " texts, "
 			+ liveChildren.size() + " container children, "
-			+ lastNativeCount + " native items";
+			+ lastNativeCount + " native items, "
+			+ populated + "/" + inContainer + " widgets populated, via " + trigger
+			+ (lastPassStale ? " STALE (a ghost the bank really holds)" : "");
 		if (!shape.equals(lastShape))
 		{
 			lastShape = shape;
@@ -454,6 +543,29 @@ public class BankMissingSection
 				items.revalidateScroll();
 			});
 		}
+	}
+
+	/**
+	 * Does the bank container hold this goal's item? EXACT aliases only.
+	 *
+	 * The fuzzy nameMatchesGoal fallback is deliberately not used here: it
+	 * is the same over-matching that once let "plague sample", owned none
+	 * of, claim another item's bank widget, and using it made this flag
+	 * read true on every pass including healthy ones. A diagnostic that is
+	 * always on says nothing. Family names ("axe", "beads") will not report
+	 * — an acceptable blind spot for a signal whose job is to be trusted
+	 * when it does fire.
+	 */
+	private boolean inBankContainer(String goalName, java.util.Set<String> containerNames)
+	{
+		for (String alias : ItemTracker.aliases(goalName))
+		{
+			if (containerNames.contains(alias))
+			{
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/** Chars per header line at PLAIN_11 across the item area's width. */

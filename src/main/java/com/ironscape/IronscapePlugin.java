@@ -132,6 +132,7 @@ public class IronscapePlugin extends Plugin
 	@Inject
 	private com.ironscape.items.BankMissingSection bankMissingSection;
 
+
 	@Inject
 	private PlaceManager placeManager;
 
@@ -590,6 +591,14 @@ public class IronscapePlugin extends Plugin
 	/** Bank-search keywords that trigger the guide-items filter. */
 	private static final java.util.Set<String> BANK_FILTER_KEYWORDS =
 		java.util.Set.of("ironman", "bruh");
+
+	/**
+	 * Game ticks to keep re-laying the filter view out after the bank
+	 * container changes. Three (~1.8s) because we do not know how long the
+	 * client takes to give a deposited item its widget back — one tick was
+	 * the timing the failed attempts assumed.
+	 */
+	private static final int BANK_RELAYOUT_TICKS = 3;
 
 	/** Tick the upcoming-needs sections were last rebuilt on. */
 	private int bankFilterCacheTick = -1;
@@ -1753,13 +1762,25 @@ public class IronscapePlugin extends Plugin
 			// Banking, not giving: cancel any consumption signal.
 			lastBankEventTick = tickCounter;
 			recentConsumeTicks = 0;
-			// OPEN BUG (see BACKLOG "bank filter, deposits"): items you
-			// DEPOSIT while the filter is on render as unclickable ghosts
-			// until the filter is toggled off and on. Two attempts failed
-			// here — bankSearch.layoutBank(), then reset(true)+layoutBank()
-			// on this event — so nothing is wired in on purpose rather than
-			// leaving a forced relayout that costs a rebuild per deposit
-			// and fixes nothing.
+			// DEPOSITS. An item you deposit while the filter is on used to
+			// stay an unclickable ghost until the filter was toggled off and
+			// on: we only ever draw a REAL bank widget for something we can
+			// find populated in the item container, and right after a
+			// deposit there is none to find.
+			//
+			// Two earlier attempts tried to force the CLIENT to rebuild here
+			// (bankSearch.layoutBank(), then reset(true)+layoutBank()) and
+			// both did nothing. They were aiming at the wrong thing: the
+			// session log shows a pass DOES run on a deposit — the shape
+			// simply came out byte-identical, and the shape line only prints
+			// on change, so it looked like no pass at all. What that pass
+			// reads is a container whose widgets have not caught up yet.
+			//
+			// So: no client rebuild. Re-run OUR layout for the next few
+			// ticks, and the pass that lands after the widgets repopulate
+			// turns the ghosts back into real, withdrawable ones. Cheap —
+			// composition is frozen, only counts and widget joins redo.
+			bankRelayoutTicks = BANK_RELAYOUT_TICKS;
 		}
 		else if (itemTracker.lastRebuildConsumedCarried()
 			&& tickCounter - lastBankEventTick > 2 && loginGraceTicks == 0)
@@ -1999,28 +2020,43 @@ public class IronscapePlugin extends Plugin
 		// two hard freezes.
 		if (event.getScriptId() == net.runelite.api.ScriptID.BANKMAIN_FINISHBUILDING)
 		{
-			// Filter view active (button, or a keyword typed by hand): the
-			// native grid is blanked (see bankSearchFilter) and EVERY
-			// upcoming step renders as its own section — all of its items,
-			// have/need counts, Quest Helper-style.
-			boolean filterView = bankFilterActive();
-			List<com.ironscape.items.BankMissingSection.Section> sections = new ArrayList<>();
-			if (filterView)
-			{
-				refreshUpcomingNeeds();
-				sections = upcomingSections;
-			}
-			else
-			{
-				// Filter off: next activation re-anchors on the live frontier
-				// and rebuilds the sections from scratch.
-				frozenFilterStepIds = null;
-				frozenSections = null;
-			}
-			List<com.ironscape.items.BankMissingSection.Section> pass = sections;
-			clientThread.invokeAtTickEnd(() -> bankMissingSection.update(filterView, pass));
+			scheduleBankFilterPass("build");
 		}
 	}
+
+	/**
+	 * Lay the filter view out at the end of this tick.
+	 *
+	 * Filter view active (button, or a keyword typed by hand): the native
+	 * grid is blanked (see bankSearchFilter) and EVERY upcoming step renders
+	 * as its own section — all of its items, have/need counts, Quest
+	 * Helper-style.
+	 */
+	private void scheduleBankFilterPass(String trigger)
+	{
+		boolean filterView = bankFilterActive();
+		List<com.ironscape.items.BankMissingSection.Section> sections = new ArrayList<>();
+		if (filterView)
+		{
+			refreshUpcomingNeeds();
+			sections = upcomingSections;
+		}
+		else
+		{
+			// Filter off: next activation re-anchors on the live frontier
+			// and rebuilds the sections from scratch.
+			frozenFilterStepIds = null;
+			frozenSections = null;
+		}
+		List<com.ironscape.items.BankMissingSection.Section> pass = sections;
+		clientThread.invokeAtTickEnd(() -> bankMissingSection.update(filterView, pass, trigger));
+	}
+
+	/**
+	 * Ticks left to re-lay the filter view out after the bank container
+	 * changed. See the deposit note in onItemContainerChanged.
+	 */
+	private int bankRelayoutTicks;
 
 	/** Button toggled on, or the filter keyword typed into the bank search. */
 	private boolean bankFilterActive()
@@ -2046,6 +2082,25 @@ public class IronscapePlugin extends Plugin
 			SwingUtilities.invokeLater(panel::refreshItemCounts);
 		}
 		refreshCheckpointBadgeCache();
+		// The bank container changed recently (a deposit, most of all): keep
+		// re-laying the filter view out until the client has given the moved
+		// items their widgets back. Costs nothing while the bank is shut —
+		// update() no-ops without the ITEMS widget.
+		if (bankRelayoutTicks > 0)
+		{
+			bankRelayoutTicks--;
+			if (client.getWidget(net.runelite.api.gameval.InterfaceID.Bankmain.ITEMS) != null)
+			{
+				scheduleBankFilterPass("bank-change");
+			}
+			// NO forced rebuild here. One was tried and REMOVED: play-testing
+			// showed layoutBank() leaving the widget count exactly where it
+			// was (291 of 330 items), because the re-run asked our own
+			// bankSearchFilter callback again and got the same "hide" answer
+			// that starved the widgets in the first place. That answer is now
+			// "show" (see onScriptCallbackEvent), which fixes the cause, so
+			// there is nothing left for a rebuild to repair.
+		}
 		// Death retrieval: while a gravestone waits, keep the route pinned
 		// on it (re-post every 10 ticks — the respawn's loading screen and
 		// any teleport en route can drop a Shortest Path route). Getting
@@ -3104,7 +3159,31 @@ public class IronscapePlugin extends Plugin
 			return;
 		}
 		int[] intStack = client.getIntStack();
-		intStack[client.getIntStackSize() - 2] = 0; // 0 = hide this bank slot
+		// SHOW, not hide — and this is the deposit bug's root cause.
+		//
+		// We used to answer 0 ("hide") for every slot, on the reasoning that
+		// the native grid should be blank. But the bank's own build script
+		// treats this answer as permission to lay the slot out AT ALL:
+		//
+		//   filtertest:
+		//     invoke 279          ; ~bankmain_filteritem -> this callback
+		//     if_icmpne LABEL972  ; answer != 1 -> skip the slot entirely
+		//   LABEL929:
+		//     cc_sethide / cc_setobject / cc_setposition
+		//
+		// A slot we rejected never reaches cc_setobject, so the client never
+		// gives that item a widget. Widgets that existed before the filter
+		// came on survived (which is why WITHDRAWING looked fine), but an
+		// item DEPOSITED while the filter was on got none — leaving us
+		// nothing to move and no choice but an unclickable ghost. Forcing
+		// the build to re-run could never help: the re-run asked us again
+		// and we said no again (confirmed in play 2026-08-08 — the forced
+		// rebuild left native items at 291 of 330).
+		//
+		// Blanking the grid was never this callback's job anyway.
+		// BankMissingSection hides every native child it did not move into
+		// a section, which is what actually produces the clean view.
+		intStack[client.getIntStackSize() - 2] = 1; // 1 = lay this slot out
 	}
 
 	/** How many upcoming incomplete STEPS the bank filter collects items from. */
