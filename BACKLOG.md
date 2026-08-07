@@ -78,7 +78,7 @@ the SS-01 class), the Tier 2 count (remaining PIN subs, often correct), and the 
 manual tick only).
 
 **Why:** Tier 1 is the definitive list of steps affected by P0-01. NONE is the definitive list of steps that
-*cannot* auto-complete at all and therefore depend on UX-01 manual override. Both numbers size real work.
+*cannot* auto-complete at all and therefore rely entirely on the user ticking them by hand. Both numbers size real work.
 
 **Caveat:** this tool was mid-development when the session ended. Verify it runs before trusting the counts.
 
@@ -243,7 +243,8 @@ These exist to make the panel followable without the user having to work out whi
 2. **Never reflow while active.** No renumbering, no reordering, no list jumping under the cursor as state changes.
 3. **Make completion visible.** Tick plus a brief highlight flash, so the user sees *why* it advanced. Silent
    advancement is how P0-04-style false completions go unnoticed.
-4. **Always allow manual override.** See UX-01 below — this is non-negotiable.
+4. **Every substep independently tickable.** Per-step manual override already exists and persists; substeps
+   must not regress this to all-or-nothing. See UX-01.
 
 ## Panel sketch
 
@@ -259,21 +260,27 @@ Step 218 — Go to Hazelmere, continue Grand Tree to Karamja shipyard
 
 ---
 
-### UX-01 — Manual override on every substep and step
-**Priority: P0.** Not in the original session notes; added deliberately.
+### UX-01 — Distinguish manual overrides from auto-completions
+**Priority: P2.** Small diagnostic improvement.
 
-**What:** Every substep and step gets a `back` / `skip` control allowing the user to force-advance or step back.
+**Already implemented — do not rebuild:** users can tick and un-tick any step manually, and un-ticking a falsely
+auto-completed step **persists** (the detector does not immediately re-fire and overwrite it). The override
+mechanism works.
 
-**Why it matters:** Completion detection is currently wrong in **all three directions** — late (P0-01), false
-(P0-04), and premature (P1-03). Without an override, every detection bug is a hard blocker: the user is stuck and
-uninstalls. With one, every detection bug degrades to an annoyance.
+**What's left:** render manually-overridden steps differently from auto-detected ones — a distinct colour, icon,
+or marker in the side panel and the persisted progress state.
 
-It is also the safety net for quests not yet seeded (D1 tier-3 gaps) and for guide-pack steps that are simply
-wrong.
+**Why it's worth doing:** an override is a signal that detection failed on that step. If overrides are
+distinguishable in the saved progress file, a user's progress becomes a free bug report — it names exactly which
+steps the detector is getting wrong, without the user having to write anything up. Complements INV-04, which finds
+the same class of problem statically.
 
-**Done when:** Any step or substep can be manually completed or reverted, state persists across logout, and manual
-overrides are visually distinguished from auto-completions (so the user can tell what the plugin actually
-detected).
+**Constraint for the substep work:** when substeps land, **each substep needs its own independent tick/un-tick**.
+Otherwise compound steps regress to all-or-nothing override, which is worse than the current per-step behaviour.
+Fold this into P1-06 rather than treating it as separate work.
+
+**Done when:** manual and automatic completions are visually distinct in the panel and separable in the progress
+file.
 
 ---
 
@@ -509,7 +516,7 @@ the chest. Should fire on the read action / resulting varbit change.
 ## Suggested execution order
 
 **Phase 0 — investigate (cheap, gates everything)**
-1. **INV-04 arrival audit** — run first; the tooling already exists and it sizes P0-01 and UX-01
+1. **INV-04 arrival audit** — run first; the tooling already exists and it sizes P0-01
 2. INV-01 split-quest count
 3. INV-02 compound step classification
 4. INV-03 transport node dump
@@ -517,21 +524,20 @@ the chest. Should fire on the read action / resulting varbit change.
 6. Resolve the step-ID stability risk in the DESIGN section — gates substeps
 
 **Phase 1 — foundations**
-5. **UX-01** manual override — do this first; it de-risks every subsequent detection bug
-6. **TOOL-01** satisfiability validator — small, and it turns D2 from an audit into a test
-7. **P1-06** substeps per the DESIGN section — the keystone
+7. **TOOL-01** satisfiability validator — small, and it turns D2 from an audit into a test
+8. **P1-06** substeps per the DESIGN section — the keystone. Include per-substep tick/un-tick (see UX-01 constraint)
 
 **Phase 2 — correctness, now cheaper**
-8. P0-03 quest state seeding (D1)
-9. P0-02 requirement scoping (D2) → then retest P1-02
-10. P0-01 + P0-04 completion predicates — same subsystem, do together
-11. P1-03, P1-05, P2-07 — should mostly fall out of substeps; verify rather than rebuild
+9. P0-03 quest state seeding (D1)
+10. P0-02 requirement scoping (D2) → then retest P1-02
+11. P0-01 + P0-04 completion predicates — same subsystem, do together
+12. P1-03, P1-05, P2-07 — should mostly fall out of substeps; verify rather than rebuild
 
 **Phase 3 — transport graph**
-12. P0-06 (check git history first), P1-01, P1-04 per D3 branch
+13. P0-06 (check git history first), P1-01, P1-04 per D3 branch
 
 **Phase 4 — overlay parity**
-13. P2 tier — largely independent, good filler work
+14. P2 tier — largely independent, good filler work
 
 ---
 
