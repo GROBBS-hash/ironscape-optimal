@@ -189,6 +189,13 @@ public class IronscapePlugin extends Plugin
 	private com.ironscape.overlay.StepOverlay stepOverlay;
 
 	@Inject
+	private com.ironscape.overlay.QuestHandoffOverlay questHandoffOverlay;
+
+	/** RuneLite's notification channel (tray/sound/flash, user-configured). */
+	@Inject
+	private net.runelite.client.Notifier notifier;
+
+	@Inject
 	private com.ironscape.overlay.QuestStartMarkerOverlay questStartMarkerOverlay;
 
 	@Inject
@@ -423,6 +430,23 @@ public class IronscapePlugin extends Plugin
 
 	/** Snapshot the step overlay draws; rebuilt once per game tick. */
 	private volatile com.ironscape.overlay.StepOverlay.Model stepOverlayModel;
+
+	/**
+	 * The "back to the guide" banner, or null when nothing is showing.
+	 * Volatile: written on the client thread, read by the overlay render.
+	 */
+	private volatile com.ironscape.overlay.QuestHandoffOverlay.Model handoffModel;
+
+	/** Ticks the banner has left. */
+	private int handoffBannerTicks;
+
+	/**
+	 * ~18 seconds. Long enough to finish the dialogue you are in and read
+	 * it, short enough that it never becomes furniture. It expires rather
+	 * than needing a dismiss click - a banner you must close to keep
+	 * playing is worse than the problem it solves.
+	 */
+	private static final int HANDOFF_BANNER_TICKS = 30;
 
 	/**
 	 * A Provider delays construction until we call get() in startUp() —
@@ -1365,6 +1389,8 @@ public class IronscapePlugin extends Plugin
 		overlayManager.add(travelMenuOverlay);
 		stepOverlay.setModelSupplier(() -> stepOverlayModel);
 		overlayManager.add(stepOverlay);
+		questHandoffOverlay.setModelSupplier(() -> handoffModel);
+		overlayManager.add(questHandoffOverlay);
 		questStartMarkerOverlay.setTargetSupplier(() -> questStartMarker);
 		overlayManager.add(questStartMarkerOverlay);
 		npcTargetOverlay.setNamesSupplier(() -> npcTargetNames);
@@ -1568,6 +1594,7 @@ public class IronscapePlugin extends Plugin
 		overlayManager.remove(minigameTeleportOverlay);
 		overlayManager.remove(travelMenuOverlay);
 		overlayManager.remove(stepOverlay);
+		overlayManager.remove(questHandoffOverlay);
 		overlayManager.remove(questStartMarkerOverlay);
 		overlayManager.remove(npcTargetOverlay);
 		overlayManager.remove(targetTileOverlay);
@@ -1792,7 +1819,7 @@ public class IronscapePlugin extends Plugin
 		deathPoint = realPoint(me);
 		log.info("player died at {} — routing to the gravestone until reached", deathPoint);
 		client.addChatMessage(ChatMessageType.CONSOLE, "",
-			"IRONSCAPE: you died — the route now points at your gravestone.", null);
+			"IRONSCAPE: you died - the route now points at your gravestone.", null);
 		maybeNavigateToNext();
 	}
 
@@ -1959,7 +1986,7 @@ public class IronscapePlugin extends Plugin
 					text = text.substring(0, 57) + "...";
 				}
 				client.addChatMessage(ChatMessageType.CONSOLE, "",
-					"IRONSCAPE: ↩ " + text
+					"IRONSCAPE: reopened: " + text
 						+ (gatherLost ? " (you no longer have enough)" : " (items back in the bank)"),
 					null);
 			}
@@ -2127,6 +2154,10 @@ public class IronscapePlugin extends Plugin
 			SwingUtilities.invokeLater(panel::refreshItemCounts);
 		}
 		refreshCheckpointBadgeCache();
+		if (handoffBannerTicks > 0 && --handoffBannerTicks == 0)
+		{
+			handoffModel = null;
+		}
 		// The bank container changed recently (a deposit, most of all): keep
 		// re-laying the filter view out until the client has given the moved
 		// items their widgets back. Costs nothing while the bank is shut —
@@ -2158,7 +2189,7 @@ public class IronscapePlugin extends Plugin
 			{
 				deathPoint = null;
 				client.addChatMessage(ChatMessageType.CONSOLE, "",
-					"IRONSCAPE: gravestone reached — routing back to the guide.", null);
+					"IRONSCAPE: gravestone reached - routing back to the guide.", null);
 				maybeNavigateToNext();
 			}
 			else if (tickCounter % 10 == 0)
@@ -2680,7 +2711,7 @@ public class IronscapePlugin extends Plugin
 				&& errandReminded.add(current.step.getId() + "|" + errand.item))
 			{
 				client.addChatMessage(ChatMessageType.CONSOLE, "",
-					"IRONSCAPE: on-the-way pickup — "
+					"IRONSCAPE: on-the-way pickup - "
 						+ (errand.note != null ? errand.note : "get " + errand.item + " here")
 						+ ".", null);
 			}
@@ -3486,6 +3517,23 @@ public class IronscapePlugin extends Plugin
 	}
 
 	/** Is this step the player's current frontier step? */
+	/**
+	 * The next thing the guide wants, in one short line — so the "stop
+	 * following Quest Helper" message says what to do INSTEAD of following
+	 * it, rather than just telling the player to look elsewhere.
+	 */
+	private String nextStepSummary()
+	{
+		Current next = findCurrent();
+		if (next == null)
+		{
+			return "see the Ironscape panel.";
+		}
+		String text = next.sub.getPlainText().trim();
+		// ASCII dots: the game font has no ellipsis glyph.
+		return text.length() > 70 ? text.substring(0, 67) + "..." : text;
+	}
+
 	private boolean isFrontierStep(GuideStep step)
 	{
 		Current current = findCurrent();
@@ -3906,7 +3954,7 @@ public class IronscapePlugin extends Plugin
 			{
 				text = text.substring(0, 57) + "...";
 			}
-			client.addChatMessage(ChatMessageType.CONSOLE, "", "IRONSCAPE: ✓ " + text, null);
+			client.addChatMessage(ChatMessageType.CONSOLE, "", "IRONSCAPE: done: " + text, null);
 		}
 		String stepId = step.getId();
 		SwingUtilities.invokeLater(() -> {
@@ -3941,22 +3989,52 @@ public class IronscapePlugin extends Plugin
 			{
 				text = text.substring(0, 57) + "...";
 			}
-			client.addChatMessage(ChatMessageType.CONSOLE, "", "IRONSCAPE: ✓ " + text, null);
+			client.addChatMessage(ChatMessageType.CONSOLE, "", "IRONSCAPE: done: " + text, null);
 		}
 
-		// HANDOFF RETURN, mid-quest flavour. We used to pull our panel back
-		// only when the handed-off quest FINISHED — but a guide step often
-		// ends PART WAY through one ("get the plague sample and 3 potions",
-		// then leave for Rimmington). Our step completing is the moment the
-		// player needs us again, not Quest Helper, which would happily run
-		// them to the end of the quest.
-		if (handedOffQuest != null && loginGraceTicks == 0 && isFrontierStep(step)
+		// HANDOFF RETURN, mid-quest flavour. A guide step often ends PART WAY
+		// through a quest ("get the plague sample and 3 potions", then leave
+		// for Rimmington). Our step completing is the moment the player needs
+		// us again, not Quest Helper, which would happily run them to the end
+		// of the quest — so this has to be unmissable.
+		//
+		// atFrontier, NOT isFrontierStep(step): advancePositionTo() above has
+		// already moved the frontier PAST this step, so re-asking says no and
+		// the message never fired. Owner hit exactly this on Biohazard.
+		//
+		// It no longer needs handedOffQuest either. The condition that
+		// matters is inherent in the state — a frontier step finished while
+		// its quest is still IN_PROGRESS — and hanging it on a transition
+		// flag was a second way to silently not fire.
+		if (loginGraceTicks == 0 && atFrontier
 			&& progressManager.isCompleted(activeVariant, step.getId()))
 		{
-			handedOffQuest = null;
-			client.addChatMessage(ChatMessageType.CONSOLE, "",
-				"IRONSCAPE: step done — back to the guide (the quest continues later).", null);
-			SwingUtilities.invokeLater(() -> clientToolbar.openPanel(navButton));
+			Quest quest = stepQuest(new Current(step, sub));
+			if (quest != null && cachedQuestState(quest) == QuestState.IN_PROGRESS)
+			{
+				handedOffQuest = null;
+				String next = nextStepSummary();
+				// ASCII only, and colored instead. The game font has no glyph
+				// for "✓" — it renders as "?", which is what the owner saw
+				// (same trap as the ellipsis on bank headers).
+				client.addChatMessage(ChatMessageType.CONSOLE, "",
+					"<col=00ff00>IRONSCAPE: STOP following Quest Helper here.</col>", null);
+				client.addChatMessage(ChatMessageType.CONSOLE, "",
+					"<col=00ff00>The guide leaves " + quest.getName()
+						+ " part-finished on purpose - it comes back to it later. "
+						+ "Next: " + next + "</col>", null);
+				SwingUtilities.invokeLater(() -> clientToolbar.openPanel(navButton));
+				// Chat alone was not enough (owner): a console line scrolls
+				// away behind quest dialogue while the player watches the
+				// game. Put it across the viewport and ping the notifier too.
+				if (config.showHandoffBanner())
+				{
+					handoffModel = new com.ironscape.overlay.QuestHandoffOverlay.Model(
+						quest.getName(), next);
+					handoffBannerTicks = HANDOFF_BANNER_TICKS;
+					notifier.notify("Guide step done - stop following Quest Helper. Next: " + next);
+				}
+			}
 		}
 
 		String stepId = step.getId();
@@ -4713,7 +4791,7 @@ public class IronscapePlugin extends Plugin
 				break;
 			case MASKED_BUNDLED:
 				message = "IRONSCAPE: bundled location for " + annotationId
-					+ " hidden — use the ⌖ button to capture the right spot.";
+					+ " hidden - use the capture-location button to set the right spot.";
 				break;
 			default:
 				message = "IRONSCAPE: no location to remove for this step.";
@@ -5252,7 +5330,7 @@ public class IronscapePlugin extends Plugin
 			// Silence reads as breakage — say why the click did nothing.
 			clientThread.invokeLater(() -> client.addChatMessage(ChatMessageType.CONSOLE, "",
 				"IRONSCAPE: no saved location for \"" + placeName
-					+ "\" — stand there and add it with the panel's + button.", null));
+					+ "\" - stand there and add it with the panel's + button.", null));
 			return;
 		}
 		WorldPoint point = found; // effectively final for the lambdas below
@@ -5289,7 +5367,7 @@ public class IronscapePlugin extends Plugin
 					// pointing the player at it is the compliant version.
 					client.addChatMessage(ChatMessageType.CONSOLE, "",
 						"IRONSCAPE: " + quest.getName()
-							+ " is in progress — its start point isn't where you need to go. "
+							+ " is in progress - its start point isn't where you need to go. "
 							+ "Select it in Quest Helper for step-by-step guidance.",
 						null);
 				}
