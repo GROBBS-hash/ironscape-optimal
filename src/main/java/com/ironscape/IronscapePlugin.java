@@ -731,6 +731,11 @@ public class IronscapePlugin extends Plugin
 					: client.getVarpValue(stage.varp);
 				satisfied = varValue >= stage.value;
 			}
+			else if (stage.item != null && Boolean.TRUE.equals(stage.given))
+			{
+				// HAND-IN stage: done once the item has left your hands.
+				satisfied = itemTracker.carriedCountOf(stage.item) == 0;
+			}
 			else if (stage.item != null)
 			{
 				// Intermediate stages count CARRIED only: quest keys are
@@ -757,9 +762,20 @@ public class IronscapePlugin extends Plugin
 			}
 			if (satisfied)
 			{
-				for (int k = 0; k <= i; k++)
+				if (Boolean.TRUE.equals(stage.given))
 				{
-					errandDone.add(errandStageKey(step, chain.get(k)));
+					// Hand-ins are INDEPENDENT: giving Da Vinci his ethenea
+					// first must not mark Hops and Chancy done behind it.
+					// Only the normal "the key served its purpose" cascade
+					// implies the earlier stages.
+					errandDone.add(errandStageKey(step, stage));
+				}
+				else
+				{
+					for (int k = 0; k <= i; k++)
+					{
+						errandDone.add(errandStageKey(step, chain.get(k)));
+					}
 				}
 			}
 		}

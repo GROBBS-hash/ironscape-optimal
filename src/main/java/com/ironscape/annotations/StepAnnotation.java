@@ -99,6 +99,22 @@ public class StepAnnotation
 		public int plane;
 		/** Item this stage yields; the stage stands down once you own one. */
 		public String item;
+		/**
+		 * INVERTS `item`: this stage HANDS the item over, so it stands down
+		 * once you no longer carry one. Biohazard's three vials go to three
+		 * different people (Hops the sulphuric broline, Chancy the liquid
+		 * honey, Da Vinci the ethenea) and giving the wrong one to the wrong
+		 * person is the mistake worth preventing.
+		 *
+		 * A satisfied give-stage never marks EARLIER stages done, unlike the
+		 * normal cascade — three hand-ins are independent, and doing Da Vinci
+		 * first must not skip Hops.
+		 *
+		 * Limitation: banking the item reads as "given". The chain is
+		 * guidance, not the completion gate (that's the step's checkpoint),
+		 * so the cost is a skipped hint rather than a wrong tick.
+		 */
+		public Boolean given;
 		/** Optional reminder text; defaults to naming the item. */
 		public String note;
 		/**

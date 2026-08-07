@@ -5980,6 +5980,55 @@
   },
   "22d68e6e8f:0": {
    "travelVia": "Battlefield of Khazard"
+  },
+  "0117b32204:0": {
+   "errands": [
+    {
+     "x": 2928,
+     "y": 3220,
+     "plane": 0,
+     "npc": "Hops",
+     "item": "sulphuric broline",
+     "given": true,
+     "items": [
+      "sulphuric broline"
+     ],
+     "note": "Give Hops the sulphuric broline.",
+     "dialog": [
+      "You give him the vial of sulphuric broline..."
+     ]
+    },
+    {
+     "x": 2928,
+     "y": 3220,
+     "plane": 0,
+     "npc": "Chancy",
+     "item": "liquid honey",
+     "given": true,
+     "items": [
+      "liquid honey"
+     ],
+     "note": "Give Chancy the liquid honey.",
+     "dialog": [
+      "You give him the vial of liquid honey..."
+     ]
+    },
+    {
+     "x": 2928,
+     "y": 3220,
+     "plane": 0,
+     "npc": "Da Vinci",
+     "item": "ethenea",
+     "given": true,
+     "items": [
+      "ethenea"
+     ],
+     "note": "Give Da Vinci the ethenea.",
+     "dialog": [
+      "You give him the vial of ethenea..."
+     ]
+    }
+   ]
   }
  }
 }
