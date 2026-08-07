@@ -5784,6 +5784,28 @@
   },
   "9437f6d520": {
    "note": "The skull is under the Wizards' Tower: ladder down, altar in the south-east room. Searching it spawns a skeleton — grab the skull and go; no need to fight."
+  },
+  "bcb183f206:0": {
+   "errands": [
+    {
+     "x": 3195,
+     "y": 3405,
+     "plane": 0,
+     "item": "cadava potion",
+     "npc": "Apothecary",
+     "items": [
+      "cadava berries"
+     ],
+     "dialog": [
+      "Talk about something else.",
+      "Talk about Romeo & Juliet."
+     ],
+     "note": "Bring the cadava berries to the Apothecary in south-west Varrock — ask about Romeo & Juliet and he brews the potion."
+    }
+   ]
+  },
+  "bcb183f206": {
+   "note": "Quest Helper walks the quest; the potion leg: cadava berries to the Apothecary (south-west Varrock), ask about Romeo & Juliet."
   }
  }
 }
