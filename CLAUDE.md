@@ -738,6 +738,53 @@ refresh when "Failed to login" appears.
   capture; hub pin at b8c994d, now ~70 commits behind — bump after a
   calm session.
 
+- SESSION WAVE 10 (2026-08-07, live play-test): **INSTANCED REGIONS** —
+  every position read went through `Actor#getWorldLocation`, which inside
+  a dynamic region returns THAT COPY's coordinates; `fromLocalInstance`
+  appeared nowhere. The rune essence mine makes a fresh copy every 5
+  entrants, so its `region: 11595` checkpoint compared against a
+  different map and "Use Brimstails to go to ess mines" never ticked
+  (the P0-01 the backlog blamed on wave 9's chain rule — chain blocking
+  is per-step and was never involved). `playerPoint()`/`realPoint(actor)`
+  now map to TEMPLATE coords; 20 of 30 sites converted, 4 deliberately
+  left scene-local (they feed `LocalPoint.fromWorld` for rendering, or
+  are scene-only nearest-object searches). CONFIRMED IN PLAY. Learned
+  minigame regions are now template ids, so pre-wave-10 `minigamePresence`
+  values go stale once and relearn.
+  **SURFACE BAND**: the "dungeons live at y+6400" guard tested
+  `|Δy| > 4000` and missed the essence mine at y≈4830 — from inside it
+  the Gnome Stronghold read as 1,372 tiles away and a Barbarian Assault
+  teleport won the first leg while the exit portal sat three tiles away.
+  Now tests the BAND (`SURFACE_MAX_Y = 4000`) on both sides, in
+  `firstLegTowards` AND `nearestOf` (which had picked the ZANARIS bank
+  chest, y=4459, for a bank stop from inside the mine).
+  **NEW ANNOTATION FIELDS**: `Target.npc:false` (a pin marks a place, not
+  a person — a door pin was outlining a loitering gnome); top-level
+  `dialog` (chat-option recolor for steps with no errand chain — it was
+  errand-stage-only); `requires.equipped` (worn-only count in
+  ItemTracker; checkpoint-exclusive and FRONTIER-ONLY, since worn state
+  is reversible). equip/wear/wield stay out of the goal detector — only
+  4 such clauses guide-wide, so it's seeding, not a detector change.
+  **DATA**: ⌖ pins on SUB keys (the scraper regenerates step keys and
+  would wipe them) for the Brimstail cave ENTRANCE 2403,3418 (+`npc:false`,
+  +dialog) and Wizard Cromperty 2684,3323 (+dialog, string verified from
+  QH source); items+`equipped` on the gas mask / ghostspeak steps, gloves
+  on the nettles step; gas mask id 1506 (untradeable → no sprite without
+  it); `BANKS` gained both Gnome Stronghold banks at **plane 1**.
+  **SEEDING LESSON**: a wiki LOCATION page's `{{Map}}` pin is the
+  building's ground entrance, not the thing inside — both gnome banks
+  pinned at plane 0 that way, while the **Gnome banker** NPC page gave
+  the real booths at plane 1. Same shape as Brimstail. For anything
+  upstairs or underground, use the NPC/object page.
+  **DIAGNOSTICS**: `logHintDecision` ("teleport-hint: ...") mirrors
+  logNavDecision and names which of the five hint sources fired — a
+  screenshot can't tell them apart; `+` add-place now prints the plane.
+  A world-tile teleport marker is SHORTEST PATH's own transport
+  suggestion, never ours (we only highlight widgets) — they can disagree.
+  Also fixed a pre-existing `compileTestJava` break (GoalAuditDumpTest
+  couldn't reach a package-private PlaceManager ctor) that blocked the
+  whole test task.
+
 - KIT-SEEDING POLICY (owner, 2026-08-05): quest-kit annotation items
   carry TRUE REQUIREMENTS always; items a quest hands you MID-QUEST
   never (they sit permanently red — misinformation); "nice to have"

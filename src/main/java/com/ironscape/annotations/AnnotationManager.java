@@ -108,6 +108,18 @@ public class AnnotationManager
 		return b == null || b.errands == null ? Collections.emptyList() : b.errands;
 	}
 
+	/** Chat-menu options to highlight for a step/sub, local over bundled. Empty if none. */
+	public synchronized List<String> getDialog(String annotationId)
+	{
+		StepAnnotation l = local.get(annotationId);
+		if (l != null && l.dialog != null && !l.dialog.isEmpty())
+		{
+			return l.dialog;
+		}
+		StepAnnotation b = bundled.get(annotationId);
+		return b == null || b.dialog == null ? Collections.emptyList() : b.dialog;
+	}
+
 	/** Items needed for a step/sub-step, local file winning over bundled. Empty if none. */
 	public synchronized List<StepAnnotation.ItemNeed> getItems(String annotationId)
 	{

@@ -319,6 +319,9 @@ public class IronscapePlugin extends Plugin
 						.getName().toLowerCase(Locale.ROOT);
 					if (names.contains(name))
 					{
+						// SCENE coordinates on purpose: these go straight to
+						// the overlay's LocalPoint.fromWorld, which wants the
+						// tile as the scene has it, not its template twin.
 						spots.add(tile.getWorldLocation());
 						break;
 					}
@@ -621,6 +624,38 @@ public class IronscapePlugin extends Plugin
 	private String lastErrandStage;
 
 	/**
+	 * The player's REAL-WORLD tile — the one our annotations, places and
+	 * region checkpoints are written in.
+	 *
+	 * INSTANCES: areas the server copies per-party (most quest interiors,
+	 * minigames, and the rune essence mine, which spawns a fresh copy every
+	 * 5 entrants) are built as a DYNAMIC region somewhere else on the map,
+	 * and {@code Actor#getWorldLocation} reports that copy's coordinates.
+	 * Read raw, a region checkpoint, an arrival radius, an errand stage or
+	 * a ⌖ capture is then comparing against a different map — this is why
+	 * "Use Brimstails to go to ess mines" never ticked while the player
+	 * stood in the mine holding the orb (region 11595, checkpoint sound,
+	 * position wrong). fromLocalInstance maps back to the TEMPLATE tile and
+	 * falls through to the plain reading outside instances, so callers use
+	 * it unconditionally. Client thread (reads the scene).
+	 */
+	private WorldPoint playerPoint()
+	{
+		Player me = client.getLocalPlayer();
+		return me == null ? null : realPoint(me);
+	}
+
+	/** {@link #playerPoint()} for any actor — an NPC in an instance moves too. */
+	private WorldPoint realPoint(net.runelite.api.Actor actor)
+	{
+		net.runelite.api.coords.LocalPoint local = actor.getLocalLocation();
+		// A just-despawned actor has no local point; its last world location
+		// is the best answer left.
+		return local == null ? actor.getWorldLocation()
+			: WorldPoint.fromLocalInstance(client, local);
+	}
+
+	/**
 	 * The first unsatisfied stage of the current sub/step's errand chain,
 	 * once its quest has STARTED (before that, quest-start guidance is
 	 * the right pointer). Deliberately still active after the quest
@@ -673,8 +708,7 @@ public class IronscapePlugin extends Plugin
 		{
 			return null;
 		}
-		Player me = client.getLocalPlayer();
-		WorldPoint here = me == null ? null : me.getWorldLocation();
+		WorldPoint here = playerPoint();
 		for (int i = 0; i < chain.size(); i++)
 		{
 			StepAnnotation.Errand stage = chain.get(i);
@@ -731,15 +765,37 @@ public class IronscapePlugin extends Plugin
 	}
 
 	/**
-	 * QH-style dialog highlighting: while an errand stage carrying dialog
-	 * choices is active, matching options in the chat menu recolor blue.
-	 * Runs on widget load AND per tick — the menu rebuilds on every
-	 * dialog advance and the recolor must survive it. Client thread.
+	 * QH-style dialog highlighting: matching options in the chat menu
+	 * recolor blue. Two sources — the active ERRAND stage's `dialog`, and
+	 * any `dialog` list on the current sub/step's own annotation, so a
+	 * plain step can say which option to pick without inventing a
+	 * one-stage chain to carry it ("Can you teleport me to the Rune
+	 * Essence Mine?" sits under "What's that cute creature wandering
+	 * around?"). Runs on widget load AND per tick — the menu rebuilds on
+	 * every dialog advance and the recolor must survive it. Client thread.
 	 */
 	private void highlightStageDialog()
 	{
+		List<String> wanted = null;
 		StepAnnotation.Errand stage = activeErrand();
-		if (stage == null || stage.dialog == null || stage.dialog.isEmpty())
+		if (stage != null && stage.dialog != null && !stage.dialog.isEmpty())
+		{
+			wanted = stage.dialog;
+		}
+		else
+		{
+			// Sub-keyed first, then the step — same precedence as ⌖ targets.
+			Current current = findCurrent();
+			if (current != null)
+			{
+				wanted = annotationManager.getDialog(current.sub.getId());
+				if (wanted.isEmpty())
+				{
+					wanted = annotationManager.getDialog(current.step.getId());
+				}
+			}
+		}
+		if (wanted == null || wanted.isEmpty())
 		{
 			return;
 		}
@@ -761,7 +817,7 @@ public class IronscapePlugin extends Plugin
 			{
 				continue;
 			}
-			for (String want : stage.dialog)
+			for (String want : wanted)
 			{
 				if (text.equalsIgnoreCase(want))
 				{
@@ -913,6 +969,14 @@ public class IronscapePlugin extends Plugin
 		new WorldPoint(2613, 3093, 0), // Yanille
 		new WorldPoint(3045, 3234, 0), // Port Sarim
 		new WorldPoint(2586, 3420, 0), // Fishing Guild
+		// Gnome Stronghold — both banks. Missing entirely, so a stronghold
+		// bank stop routed to the Fishing Guild 150 tiles away. Both are
+		// UPSTAIRS: the location pages' map pins are ground-level and drop
+		// you at the foot of the staircase, but every gnome banker on the
+		// wiki's NPC map sits at plane 1. Aim at the booths so Shortest
+		// Path draws the stairs too.
+		new WorldPoint(2445, 3425, 1), // Gnome Stronghold south bank (Nieve)
+		new WorldPoint(2444, 3484, 1), // Gnome Stronghold north bank (Grand Tree)
 		new WorldPoint(1640, 3944, 0), // Wintertodt camp bank chest
 		new WorldPoint(1512, 3421, 0), // Land's End bank chest
 		new WorldPoint(1591, 3479, 0), // Woodcutting Guild bank chest
@@ -925,6 +989,14 @@ public class IronscapePlugin extends Plugin
 		new WorldPoint(3381, 3268, 0), // PvP Arena bank
 		new WorldPoint(3428, 2892, 0), // Nardah
 	};
+
+	/**
+	 * Northern edge of the walkable SURFACE. Everything above it is an
+	 * area the map parks off to the side — dungeons (surface y + 6400),
+	 * the rune essence mine (y≈4830), the Abyss — where a 2D distance to
+	 * a surface point means nothing.
+	 */
+	private static final int SURFACE_MAX_Y = 4000;
 
 	/** How close (tiles) counts as "arrived" at a PRECISE ⌖ target. */
 	private static final int ARRIVE_RADIUS = 8;
@@ -1663,7 +1735,7 @@ public class IronscapePlugin extends Plugin
 		{
 			return;
 		}
-		deathPoint = me.getWorldLocation();
+		deathPoint = realPoint(me);
 		log.info("player died at {} — routing to the gravestone until reached", deathPoint);
 		client.addChatMessage(ChatMessageType.CONSOLE, "",
 			"IRONSCAPE: you died — the route now points at your gravestone.", null);
@@ -1961,9 +2033,9 @@ public class IronscapePlugin extends Plugin
 		// close clears it and normal frontier routing resumes.
 		if (deathPoint != null)
 		{
-			Player me = client.getLocalPlayer();
-			if (me != null && me.getWorldLocation().getPlane() == deathPoint.getPlane()
-				&& me.getWorldLocation().distanceTo2D(deathPoint) <= 8)
+			WorldPoint me = playerPoint();
+			if (me != null && me.getPlane() == deathPoint.getPlane()
+				&& me.distanceTo2D(deathPoint) <= 8)
 			{
 				deathPoint = null;
 				client.addChatMessage(ChatMessageType.CONSOLE, "",
@@ -2003,7 +2075,10 @@ public class IronscapePlugin extends Plugin
 		Player player = client.getLocalPlayer();
 		if (player != null)
 		{
-			WorldPoint here = player.getWorldLocation();
+			// Real-world tiles on BOTH sides: entering an instance is a genuine
+			// teleport either way, but walking around inside one must not read
+			// as a 20-tile jump every tick.
+			WorldPoint here = realPoint(player);
 			// A waiting gravestone mutes the teleport signal: the RESPAWN
 			// is a 20+ tile jump ("you teleported to Lumbridge" — no), and
 			// any teleport taken to reach the grave is off-route travel.
@@ -2138,17 +2213,26 @@ public class IronscapePlugin extends Plugin
 		// an earlier branch wins.
 		activeSpellTeleport = -1;
 		routeHomeTeleportHint = false;
+		// Which branch below decided the hint — logged on change, because
+		// on screen every source looks identical (see logHintDecision).
+		String hintReason;
 		if (!config.showTeleportHints())
 		{
 			activeMinigameTarget = null;
+			hintReason = "hints disabled in config";
 		}
 		else if (clickedMinigameTicks > 0)
 		{
 			activeMinigameTarget = clickedMinigameTarget;
+			hintReason = "clicked place link '" + clickedMinigameTarget
+				+ "' (" + clickedMinigameTicks + " ticks left)";
 		}
 		else
 		{
 			activeMinigameTarget = current == null ? null : minigameBySub.get(current.sub.getId());
+			hintReason = activeMinigameTarget != null
+				? "sub names minigame teleport '" + activeMinigameTarget + "'"
+				: "none";
 			// No explicit "minigame teleport to X" sub, but the frontier
 			// step's own 📍 area IS a Grouping destination and the player
 			// is far from it: the minigame teleport is how you get there,
@@ -2198,17 +2282,26 @@ public class IronscapePlugin extends Plugin
 							current.sub.getPlainText().toLowerCase(Locale.ROOT)).find();
 					FirstLeg leg = prescribed ? null
 						: firstLegTowards(routeTarget, !minigameTeleportOnCooldown());
+					hintReason = prescribed
+						? "none — sub prescribes its own transport"
+						: leg == null
+							? "none — no first leg beats walking to " + routeTarget
+							: "route-aware first leg toward " + routeTarget;
 					if (leg != null && leg.minigame != null)
 					{
 						String towardsKey = leg.minigame.toLowerCase(Locale.ROOT).replace('’', '\'');
 						java.util.Set<Integer> confirmed = minigameRegions.get(towardsKey);
-						Player me = client.getLocalPlayer();
+						WorldPoint me = playerPoint();
 						boolean there = towardsKey.equals(minigamePresence)
 							|| (me != null && confirmed != null
-								&& confirmed.contains(me.getWorldLocation().getRegionID()));
+								&& confirmed.contains(me.getRegionID()));
 						if (!there)
 						{
 							activeMinigameTarget = leg.minigame;
+						}
+						else
+						{
+							hintReason = "none — already present at " + leg.minigame;
 						}
 					}
 					activeSpellTeleport = activeMinigameTarget == null
@@ -2224,10 +2317,13 @@ public class IronscapePlugin extends Plugin
 				if (key != null && GROUPING_MINIGAMES.contains(key))
 				{
 					WorldPoint area = placeManager.getLoose(location);
-					Player me = client.getLocalPlayer();
+					WorldPoint me = playerPoint();
 					if (area != null && me != null)
 					{
-						int region = me.getWorldLocation().getRegionID();
+						// TEMPLATE region: a minigame interior is usually
+						// instanced, and a dynamic region id is different every
+						// visit — learning one would teach us nothing reusable.
+						int region = me.getRegionID();
 						// Restore saved presence: logged in still standing
 						// in the region we were AT when the client closed.
 						if (pendingPresenceRestore != null)
@@ -2242,8 +2338,8 @@ public class IronscapePlugin extends Plugin
 									.add(region);
 							}
 						}
-						boolean near = me.getWorldLocation().getPlane() == area.getPlane()
-							&& me.getWorldLocation().distanceTo2D(area) <= 100;
+						boolean near = me.getPlane() == area.getPlane()
+							&& me.distanceTo2D(area) <= 100;
 						java.util.Set<Integer> confirmed = minigameRegions.get(key);
 						// AT the minigame = near its pin, in a region
 						// confirmed to be it, or contiguous walking since
@@ -2281,6 +2377,8 @@ public class IronscapePlugin extends Plugin
 								lastSavedPresenceState = null;
 							}
 							activeMinigameTarget = location;
+							hintReason = "step 📍 area '" + location
+								+ "' is a Grouping destination and you're not there";
 						}
 					}
 				}
@@ -2292,6 +2390,21 @@ public class IronscapePlugin extends Plugin
 		homeTeleportHint = config.showTeleportHints() && current != null
 			&& activeMinigameTarget == null
 			&& HOME_TELEPORT.matcher(current.sub.getPlainText()).find();
+		if (homeTeleportHint)
+		{
+			hintReason = "sub text says home teleport";
+		}
+		// The forensic line. NOTE what this does NOT cover: a teleport
+		// marker drawn on a world TILE is Shortest Path's own transport
+		// suggestion for the route it computed — a different plugin's
+		// opinion, which can disagree with ours.
+		logHintDecision(activeMinigameTarget != null
+			? "minigame '" + activeMinigameTarget + "' — " + hintReason
+			: activeSpellTeleport != -1
+				? "spell widget " + activeSpellTeleport + " — " + hintReason
+				: routeHomeTeleportHint || homeTeleportHint
+					? "home teleport — " + hintReason
+					: hintReason);
 		// "Chronicle tele": the teleport lives on the WORN Chronicle
 		// (shield slot) — highlight the equipment click path.
 		activeEquippedTeleport = config.showTeleportHints() && current != null
@@ -2362,6 +2475,9 @@ public class IronscapePlugin extends Plugin
 		// step) has an annotated ⌖ target, highlight that tile in the
 		// world — dig spots, item spawns, and other precise locations.
 		WorldPoint spot = null;
+		// Does that ⌖ mark a PERSON? A pin on a door or a dig spot must not
+		// nominate the nearest NPC to it (see Target.npc).
+		boolean spotNominates = true;
 		if (config.showTargetMarker() && current != null)
 		{
 			StepAnnotation.Target target = annotationManager.getTarget(current.sub.getId());
@@ -2372,6 +2488,7 @@ public class IronscapePlugin extends Plugin
 			if (target != null)
 			{
 				spot = new WorldPoint(target.x, target.y, target.plane);
+				spotNominates = !Boolean.FALSE.equals(target.npc);
 			}
 		}
 
@@ -2425,7 +2542,7 @@ public class IronscapePlugin extends Plugin
 		// stages skip it: reaching one IS the event, nothing to say.
 		if (errandPoint != null && player != null && errand.item != null)
 		{
-			WorldPoint here = player.getWorldLocation();
+			WorldPoint here = realPoint(player);
 			if (here.getPlane() == errandPoint.getPlane()
 				&& here.distanceTo2D(errandPoint) <= 30
 				&& errandReminded.add(current.step.getId() + "|" + errand.item))
@@ -2453,7 +2570,7 @@ public class IronscapePlugin extends Plugin
 		// PLACE then (the RFD dining-hall doors), not a vendor.
 		WorldPoint shopAnchor = errand != null
 			? (errand.item != null ? errandPoint : null)
-			: spot;
+			: (spotNominates ? spot : null);
 		if (shopAnchor == null && current != null && hasPurchaseGoal(current.sub))
 		{
 			// Text places only — the step's 📍 town tag is far too coarse
@@ -2601,10 +2718,14 @@ public class IronscapePlugin extends Plugin
 				// quest..."), but whoever stands NEAREST the quest's start
 				// point is the quest giver — same for a ⌖ target and its
 				// shopkeeper (Gulluck at his weapon shop).
+				// Real-world tile: the marker and the shop anchor are annotation
+				// coordinates, so the NPC has to be read in the same map.
+				WorldPoint npcPoint = marker != null || shopAnchor != null
+					? realPoint(npc) : null;
 				if (marker != null
-					&& npc.getWorldLocation().getPlane() == marker.getPlane())
+					&& npcPoint.getPlane() == marker.getPlane())
 				{
-					int distance = npc.getWorldLocation().distanceTo2D(marker);
+					int distance = npcPoint.distanceTo2D(marker);
 					if (distance <= 4 && distance < markerBest)
 					{
 						markerBest = distance;
@@ -2612,9 +2733,9 @@ public class IronscapePlugin extends Plugin
 					}
 				}
 				if (shopAnchor != null
-					&& npc.getWorldLocation().getPlane() == shopAnchor.getPlane())
+					&& npcPoint.getPlane() == shopAnchor.getPlane())
 				{
-					int distance = npc.getWorldLocation().distanceTo2D(shopAnchor);
+					int distance = npcPoint.distanceTo2D(shopAnchor);
 					if (distance <= 4 && distance < spotBest)
 					{
 						spotBest = distance;
@@ -3429,10 +3550,10 @@ public class IronscapePlugin extends Plugin
 			{
 				return true;
 			}
-			Player me = client.getLocalPlayer();
+			WorldPoint me = playerPoint();
 			return me != null
-				&& me.getWorldLocation().getPlane() == interactionTarget.getPlane()
-				&& me.getWorldLocation().distanceTo(interactionTarget) <= ARRIVE_RADIUS;
+				&& me.getPlane() == interactionTarget.getPlane()
+				&& me.distanceTo(interactionTarget) <= ARRIVE_RADIUS;
 		}
 
 		// "Teleport using the chronicle" — a recent position jump proves it.
@@ -3470,7 +3591,7 @@ public class IronscapePlugin extends Plugin
 			return false;
 		}
 
-		WorldPoint here = player.getWorldLocation();
+		WorldPoint here = realPoint(player);
 		// A ⌖ capture is a precise spot; a place name is a whole town —
 		// entering from any gate should count. EXCEPT network travel
 		// ("Charter to port sarim", "use the spirit tree"): a capture
@@ -3721,6 +3842,13 @@ public class IronscapePlugin extends Plugin
 					parsed.add(new StepRequirement(requires.region));
 					continue;
 				}
+				if (requires.equipped != null)
+				{
+					parsed.add(new StepRequirement(requires.equipped,
+						requires.icon == null ? requires.equipped : requires.icon,
+						requires.label == null ? "worn" : requires.label));
+					continue;
+				}
 				if (requires.varbit != null || requires.varp != null)
 				{
 					if (requires.value != null || requires.bit != null)
@@ -3802,13 +3930,13 @@ public class IronscapePlugin extends Plugin
 		}
 	}
 
-	/** Does the list carry a varbit/varp/region checkpoint (vs only skill levels)? */
+	/** Does the list carry a varbit/varp/region/equipped checkpoint (vs only skill levels)? */
 	private static boolean hasVarCheckpoint(List<StepRequirement> requirements)
 	{
 		for (StepRequirement requirement : requirements)
 		{
 			if (requirement.varbit != null || requirement.varp != null
-				|| requirement.region != null)
+				|| requirement.region != null || requirement.equipped != null)
 			{
 				return true;
 			}
@@ -3817,14 +3945,17 @@ public class IronscapePlugin extends Plugin
 	}
 
 	/**
-	 * Position checkpoints (region) are arrival-class evidence, not
-	 * monotonic game state — they get the frontier-only treatment.
+	 * Position (region) and EQUIPPED checkpoints are live, reversible
+	 * state rather than monotonic game progress — both get the
+	 * frontier-only treatment, so a later step in the window cannot tick
+	 * because you walked through its region or happen to be wearing its
+	 * item.
 	 */
 	private static boolean hasRegionCheckpoint(List<StepRequirement> requirements)
 	{
 		for (StepRequirement requirement : requirements)
 		{
-			if (requirement.region != null)
+			if (requirement.region != null || requirement.equipped != null)
 			{
 				return true;
 			}
@@ -3839,8 +3970,19 @@ public class IronscapePlugin extends Plugin
 		{
 			if (requirement.region != null)
 			{
-				Player me = client.getLocalPlayer();
-				if (me == null || me.getWorldLocation().getRegionID() != requirement.region)
+				// TEMPLATE region — the essence mine (and most quest interiors)
+				// hand out a per-party dynamic copy whose raw region id is
+				// never the annotated one. See playerPoint().
+				WorldPoint me = playerPoint();
+				if (me == null || me.getRegionID() != requirement.region)
+				{
+					return false;
+				}
+				continue;
+			}
+			if (requirement.equipped != null)
+			{
+				if (itemTracker.wornCountOf(requirement.equipped) < 1)
 				{
 					return false;
 				}
@@ -3903,6 +4045,8 @@ public class IronscapePlugin extends Plugin
 		final String label;
 		/** Position checkpoint: met while standing in this map region. */
 		final Integer region;
+		/** Equipment checkpoint: met while this item name is WORN. */
+		final String equipped;
 
 		StepRequirement(Integer region)
 		{
@@ -3914,6 +4058,20 @@ public class IronscapePlugin extends Plugin
 			this.icon = null;
 			this.label = null;
 			this.region = region;
+			this.equipped = null;
+		}
+
+		StepRequirement(String equipped, String icon, String label)
+		{
+			this.skill = null;
+			this.varbit = null;
+			this.varp = null;
+			this.threshold = 1;
+			this.bit = null;
+			this.icon = icon;
+			this.label = label;
+			this.region = null;
+			this.equipped = equipped;
 		}
 
 		StepRequirement(Skill skill, int level)
@@ -3937,6 +4095,7 @@ public class IronscapePlugin extends Plugin
 			this.icon = icon;
 			this.label = label;
 			this.region = null;
+			this.equipped = null;
 		}
 	}
 
@@ -4067,6 +4226,10 @@ public class IronscapePlugin extends Plugin
 			return java.util.Collections.emptyList();
 		}
 		Player scanMe = client.getLocalPlayer();
+		// SCENE coordinates on BOTH sides (see the object compare below): this
+		// is a nearest-object-to-me search within the loaded scene, never a
+		// comparison against annotation data, so instance mapping would only
+		// cost a conversion per object per tick.
 		WorldPoint here = scanMe == null ? null : scanMe.getWorldLocation();
 		java.util.LinkedHashSet<net.runelite.api.GameObject> found = new java.util.LinkedHashSet<>();
 		net.runelite.api.GameObject nearestVendor = null;
@@ -4250,7 +4413,10 @@ public class IronscapePlugin extends Plugin
 				return;
 			}
 
-			WorldPoint where = player.getWorldLocation();
+			// Real-world tile: a capture taken inside an instance would write
+			// that copy's throwaway coordinates into the annotation file — and
+			// these get shared back.
+			WorldPoint where = realPoint(player);
 			annotationManager.setTarget(annotationId, where, safespot);
 			// A manual capture also OVERRIDES auto-navigation: the player
 			// is doing this step HERE, so route to the captured spot and
@@ -4463,6 +4629,26 @@ public class IronscapePlugin extends Plugin
 		}
 	}
 
+	/** Last teleport-hint outcome logged, so only CHANGES print. */
+	private String lastHintDecision;
+
+	/**
+	 * One INFO line per CHANGE of teleport-hint outcome — logNavDecision's
+	 * counterpart. A hint has five possible sources (a clicked place link,
+	 * a "minigame teleport to X" sub, the step's own 📍 Grouping area, the
+	 * route-aware first leg, or the sub saying "home tele") and on screen
+	 * they are indistinguishable, so "why is it pointing THERE?" was
+	 * unanswerable from a screenshot.
+	 */
+	private void logHintDecision(String decision)
+	{
+		if (!decision.equals(lastHintDecision))
+		{
+			lastHintDecision = decision;
+			log.info("teleport-hint: {}", decision);
+		}
+	}
+
 	/**
 	 * True while the frontier step's quest is IN PROGRESS — started but
 	 * not finished. From "quest accepted" to "quest complete" the player
@@ -4571,9 +4757,9 @@ public class IronscapePlugin extends Plugin
 		if (SPIRIT_TREE.matcher(frontier.sub.getPlainText()).find())
 		{
 			WorldPoint destination = targetFor(frontier.step, frontier.sub);
-			Player me = client.getLocalPlayer();
+			WorldPoint me = playerPoint();
 			if (me != null && (destination == null
-				|| me.getWorldLocation().distanceTo2D(destination) > 40))
+				|| me.distanceTo2D(destination) > 40))
 			{
 				WorldPoint tree = nearestOf(SPIRIT_TREES);
 				if (tree != null)
@@ -4589,14 +4775,14 @@ public class IronscapePlugin extends Plugin
 		if (CHARTER.matcher(frontier.sub.getPlainText()).find())
 		{
 			WorldPoint destination = targetFor(frontier.step, frontier.sub);
-			Player me = client.getLocalPlayer();
+			WorldPoint me = playerPoint();
 			if (me != null && (destination == null
-				|| me.getWorldLocation().distanceTo2D(destination) > 40))
+				|| me.distanceTo2D(destination) > 40))
 			{
 				WorldPoint dock = nearestOf(CHARTER_DOCKS);
-				if (dock != null && me.getWorldLocation().distanceTo2D(dock)
+				if (dock != null && me.distanceTo2D(dock)
 					< (destination == null ? Integer.MAX_VALUE
-						: me.getWorldLocation().distanceTo2D(destination)))
+						: me.distanceTo2D(destination)))
 				{
 					return dock;
 				}
@@ -4623,16 +4809,25 @@ public class IronscapePlugin extends Plugin
 	/** The closest of the given points to the player (straight-line). */
 	private WorldPoint nearestOf(WorldPoint[] points)
 	{
-		Player player = client.getLocalPlayer();
-		if (player == null)
+		WorldPoint here = playerPoint();
+		if (here == null)
 		{
 			return null;
 		}
-		WorldPoint here = player.getWorldLocation();
+		// Same band rule as firstLegTowards: standing in the rune essence
+		// mine (y≈4830), the ZANARIS bank chest (y=4459) read as 370 tiles
+		// off while every surface bank read as 1,300+, so "nearest bank"
+		// sent the player to Zanaris. Compare only within your own band —
+		// nothing to compare against beats a confident wrong answer.
+		boolean onSurface = here.getY() < SURFACE_MAX_Y;
 		WorldPoint best = null;
 		int bestDistance = Integer.MAX_VALUE;
 		for (WorldPoint point : points)
 		{
+			if ((point.getY() < SURFACE_MAX_Y) != onSurface)
+			{
+				continue;
+			}
 			int distance = here.distanceTo2D(point);
 			if (distance < bestDistance)
 			{
@@ -4908,11 +5103,16 @@ public class IronscapePlugin extends Plugin
 				SwingUtilities.invokeLater(() -> onDone.accept(false));
 				return;
 			}
-			WorldPoint where = player.getWorldLocation();
+			WorldPoint where = realPoint(player);
 			placeManager.add(placeName, where);
+			// PLANE included (⌖ capture already does): an upstairs pin read
+			// back as a ground-floor one is silently wrong, and "which floor
+			// is that bank booth on" is exactly what this gets used for.
 			client.addChatMessage(ChatMessageType.CONSOLE, "",
 				"IRONSCAPE: place '" + placeName + "' saved at ("
-					+ where.getX() + ", " + where.getY() + ").", null);
+					+ where.getX() + ", " + where.getY()
+					+ (where.getPlane() != 0 ? ", plane " + where.getPlane() : "")
+					+ ").", null);
 			SwingUtilities.invokeLater(() -> onDone.accept(true));
 		});
 	}
@@ -5142,19 +5342,25 @@ public class IronscapePlugin extends Plugin
 	 */
 	private FirstLeg firstLegTowards(WorldPoint target, boolean minigameAvailable)
 	{
-		Player me = client.getLocalPlayer();
+		WorldPoint me = playerPoint();
 		if (me == null || target == null)
 		{
 			return null;
 		}
-		// Dungeons live at y+6400: a surface target read from underground
-		// (or vice versa) makes every 2D distance fiction — no hint beats
-		// a wrong one ("teleport to Lumbridge" while one ladder below it).
-		if (Math.abs(me.getWorldLocation().getY() - target.getY()) > 4000)
+		// Off-surface areas are parked far north on the map — dungeons at
+		// y+6400, but the rune essence mine at y≈4830 and the Abyss beside
+		// it. A 2D distance between one of those and a surface point is
+		// FICTION, and no hint beats a wrong one ("teleport to Lumbridge"
+		// while one ladder below it). Testing the BAND rather than a fixed
+		// delta is what catches the mine: standing in it, the Gnome
+		// Stronghold reads as 1,372 tiles away — under the old 4,000
+		// threshold — so the Barbarian Assault landing "won" the first leg
+		// while the way out was the exit portal three tiles away.
+		if ((me.getY() >= SURFACE_MAX_Y) != (target.getY() >= SURFACE_MAX_Y))
 		{
 			return null;
 		}
-		int playerDistance = effectiveDistance(me.getWorldLocation(), target);
+		int playerDistance = effectiveDistance(me, target);
 		if (playerDistance <= 100)
 		{
 			return null;

@@ -58,7 +58,8 @@ public class PlaceManager
 		this(gson, new File(RuneLite.RUNELITE_DIR, "ironscape/places.json"));
 	}
 
-	PlaceManager(Gson gson, File localFile)
+	/** Explicit local file — tests and audit dumps point this at a scratch path. */
+	public PlaceManager(Gson gson, File localFile)
 	{
 		this.gson = gson.newBuilder().setPrettyPrinting().create();
 		this.localFile = localFile;

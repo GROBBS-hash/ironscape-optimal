@@ -51,6 +51,9 @@ public class ItemTracker
 	/** inventory + equipment only (what you have ON you). Guarded by `this`. */
 	private final Map<String, Integer> carriedByName = new HashMap<>();
 
+	/** EQUIPMENT only — "Equip Gas mask" is done when it's worn, not owned. */
+	private final Map<String, Integer> wornByName = new HashMap<>();
+
 	/** Bank snapshot by lowercase item name (client thread only). */
 	private Map<String, Integer> bankByName = new HashMap<>();
 
@@ -75,6 +78,12 @@ public class ItemTracker
 	public synchronized int carriedCountOf(String name)
 	{
 		return resolve(carriedByName, name);
+	}
+
+	/** How many the player is WEARING — carrying one in the bag doesn't count. */
+	public synchronized int wornCountOf(String name)
+	{
+		return resolve(wornByName, name);
 	}
 
 	/**
@@ -750,6 +759,10 @@ public class ItemTracker
 		Map<String, Integer> carried = new HashMap<>();
 		mergeContainer(carried, client.getItemContainer(InventoryID.INV));
 		mergeContainer(carried, client.getItemContainer(InventoryID.WORN));
+		// Equipment kept separately too — an "equip X" step needs to tell
+		// worn from merely carried, which the merged map can't.
+		Map<String, Integer> worn = new HashMap<>();
+		mergeContainer(worn, client.getItemContainer(InventoryID.WORN));
 
 		// Bank counts come ONLY from bank container EVENTS (bankByName):
 		// withdrawals always fire one, so the snapshot tracks reality.
@@ -805,6 +818,8 @@ public class ItemTracker
 
 			carriedByName.clear();
 			carriedByName.putAll(carried);
+			wornByName.clear();
+			wornByName.putAll(worn);
 			ownedByName.clear();
 			ownedByName.putAll(total);
 		}

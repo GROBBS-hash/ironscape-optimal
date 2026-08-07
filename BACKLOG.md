@@ -26,10 +26,55 @@ Screenshots `SS-01` … `SS-20` in `docs/screenshots/`.
 
 ---
 
+## RESOLVED — live play-test session 2026-08-07
+
+INV-A ran, and its answer invalidated a chunk of this file. Recorded before the details evaporate.
+
+**Root cause of P0-01: instanced regions, not the chain rule.** The rune essence mine spawns a per-party
+copy every 5 entrants (J-Mod quote on the wiki). In a dynamic region `Actor#getWorldLocation` returns the
+COPY's coordinates, so the `region: 11595` checkpoint compared against a different map and never fired.
+The plugin called `getWorldLocation()` at 30 sites and `WorldPoint.fromLocalInstance` at **none**. Fixed with
+`playerPoint()` / `realPoint(actor)`, applied to 20 of those sites — the other 4 stay scene-local on purpose
+(they feed `LocalPoint.fromWorld` for rendering, or are scene-only nearest-object searches).
+**Confirmed in play:** `auto-completed sub 06b3df5fd7:0 (quest checkpoint (varbit/varp/region))`.
+
+Two premises in the original INV-A were wrong: `2409,9812` is Brimstail's cave, not a mine tile, and the
+Enter-the-Abyss chain is on a DIFFERENT step (`29c5dcb92e`), so wave 9's CHAIN RULE was never involved —
+chain blocking is per-step (`currentSubSatisfied` → `unsatisfiedErrandStage(step, sub)`).
+
+Also fixed and confirmed:
+- **P1-01** (no route to/from the ess mine): ⌖ pins seeded at the cave ENTRANCE `2403,3418` and at Wizard
+  Cromperty `2684,3323`, both on SUB keys — the scraper regenerates step keys and would wipe them.
+- **Distance fiction beyond dungeons.** The `firstLegTowards` guard tested `|Δy| > 4000` for the y+6400
+  dungeon band, but the essence mine sits at y≈4830: from inside it the Gnome Stronghold read as 1,372
+  tiles away, so a Barbarian Assault teleport "won" the first leg while the exit portal was three tiles
+  away. Now tests the surface BAND (`SURFACE_MAX_Y = 4000`) on both sides. Same fix applied to `nearestOf`,
+  where it had sent a bank stop to the **Zanaris** chest (y=4459, "370 tiles away") from inside the mine.
+- **`BANKS` had no Gnome Stronghold entry** — a stronghold bank stop routed to the Fishing Guild. Added
+  both, at **plane 1**.
+- **Equip steps tracked nothing.** `equip`/`wear`/`wield` are in `NOT_AN_ITEM_FIRST_WORD` by design, and the
+  whole guide has only 4 such clauses, so this is seeding, not a detector change. Added an `equipped`
+  annotation requirement (worn-only count in `ItemTracker`, frontier-only since worn state is reversible)
+  plus item annotations. Gas mask is untradeable → id 1506 added to `item_ids.json` for the sprite.
+- **`Target.npc: false`** — a pin on a door nominated the nearest NPC to it and outlined a random gnome.
+- **`dialog` generalised** from errand stages to any step/sub annotation.
+
+**New diagnostics:** `logHintDecision` ("teleport-hint: ...") mirrors `logNavDecision`; `+` add-place now
+prints the plane. Both already flow into `mine-session-log.mjs`.
+
+**Seeding lesson worth keeping:** a wiki *location* page's `{{Map}}` pin is the building's ground entrance,
+not the thing inside it. Both gnome banks pinned at plane 0 that way; the **Gnome banker** NPC page gave the
+real booths at plane 1. Same shape as Brimstail (entrance ≠ destination). For anything upstairs or
+underground, use the NPC/object page.
+
+---
+
 ## Investigation tasks — do these first
 
 ### INV-A — Why didn't the ess-mine step tick? (P0-01)
-**Leading hypothesis: wave 9's CHAIN RULE, landed the same morning as this session.**
+**ANSWERED — see the RESOLVED section above. P0-01 and P1-01 are closed.**
+
+**Leading hypothesis (WRONG, kept for the record): wave 9's CHAIN RULE, landed the same morning.**
 
 Wave 9 made an unsatisfied errand chain block the sub's item-goal ticks — seeded specifically for the scrying orb
 (`Enter-the-Abyss orb`: Varrock mage 3259,3383 → Aubury route / essence-mine **~2920,4830** satisfaction).
@@ -272,6 +317,50 @@ sections. No equivalent for shop interfaces.
 
 ---
 
+### P0-07 — Quest kit QUANTITIES are all 1, and mid-quest items are in the kit (owner, 2026-08-07)
+**SS: "Start biohazard" step.** Owner: *"our plugin shows we need 1 of each rune, when we likely need many
+runes to cast enough spells. Same with the GP, we dont need just 1 as im assuming we need to buy items."*
+
+`seed-quest-items.mjs` reads the wiki `{{Quest details|items}}` bullets, which DO carry counts
+("*3 [[Oak logs]]"), but every seeded entry landed as `quantity: 1`. So `Fire runes 134/1`,
+`Law rune 11/1`, `Gp 2,475/1` — all green, all meaningless. A kit badge that is green before you have
+enough is worse than no badge: it actively tells you you're ready.
+
+**Fix:** parse the leading count from each bullet; where the wiki gives none but the item is obviously
+consumable (runes, coins), either leave it unseeded or carry a real number. Re-run over all 104 quests and
+diff before applying.
+
+**Related, same step, two more faults:**
+- **`Plague sample 0/1` sits permanently red.** It's a TEXT-detected goal from "get the plague sample", and
+  the sample is handed to you DURING Biohazard. This is the KIT-SEEDING POLICY / D2 case exactly ("items a
+  quest hands you mid-quest never carry requirements — they sit permanently red, and that's
+  misinformation"), except it comes from the detector, not the seeder, so the policy was never enforced
+  against it. Owner: *"The plague sample needs to be acquired as part of the quest, not from the bank."*
+  Errand chains are the right mechanism if it needs guidance at all.
+- **BANK-FIRST keeps routing to banks.** Log: after the Gnome bank stop, `routing to 2615,3332`
+  (Ardougne north bank). Cause is the kit, not the nav: `Pickaxe 2/1 🏦` is BANKED, and any banked shortfall
+  justifies a stop (wave 8, deliberate). A pickaxe is not a Biohazard requirement — it's kit noise. Fixing
+  the kit fixes the nav. **This is what TOOL-01 was for**; the quantity bug gives it a second job.
+
+---
+
+### P1-07 — Travel destination differs from the step's wording (owner, 2026-08-07)
+**"Spirit tree to ardy"** — the spirit tree network has no Ardougne stop. The one to take is **Battlefield
+of Khazard** (`2555,3259`, already in `SPIRIT_TREES`), then run north. Owner: *"i know the step doesnt label
+it like this but for our overlay and shortestpath thats the one we want."*
+
+`travelMenuWords` is built from the sub text + the step's 📍 tag — here "spirit tree to ardy" and
+"Ardougne", neither of which matches the menu entry "Battlefield of Khazard", so `TravelMenuOverlay`
+highlights nothing. **This is almost certainly the SS-07-works / SS-08-doesn't split in P2-03** — the same
+root, so do them together.
+
+**Fix:** an annotation field naming the network STOP to take (e.g. `"travelVia": "Battlefield of Khazard"`),
+fed into `travelMenuWords` and preferred as the boarding target. Must NOT become the arrival proof — wave 7
+already rules that a ⌖ on a spirit-tree/charter sub marks the BOARDING point and only the text destination
+or 📍 proves arrival. Then sweep the guide for other steps whose named destination isn't a network stop.
+
+---
+
 ### P2-03 — Teleport menu highlighting inconsistent
 **SS-07** (works) vs **SS-08** (doesn't) · **Prior work:** `TravelMenuOverlay` matches interface 187, MenuNew 947,
 last-loaded group; word-SET match of sub text + 📍 tag.
@@ -333,7 +422,7 @@ exist; whether they compose into a route-position ledger is unknown. Ask before 
 ## Execution order
 
 **Phase 0 — investigate (no code)**
-1. INV-A — ess-mine chain satisfaction (the freshest regression)
+1. ~~INV-A — ess-mine chain satisfaction~~ **DONE 2026-08-07 — instanced regions; see RESOLVED at top**
 2. INV-B — arrival audit counts
 3. INV-E — source of the Grand Tree start-step requirements
 4. INV-C — compound steps needing chains
@@ -372,5 +461,22 @@ exist; whether they compose into a route-position ledger is unknown. Ask before 
 - Three items are prior work misread as bugs: **P2-04** (deliberate), **P2-01** (seeder exists), **P0-05**
   (designed behaviour). Check the Prior work line before coding.
 - Test account has 292 QP — ideal for P0-03, poor for fresh-account ordering tests.
-- Still open from wave 9, unrelated to this session: bank filter vanishing icons (self-log armed, no repro),
-  deliberate death test, onion-gate capture, "big frog leg" → 7908 verdict.
+- **Bank filter vanishing icons — REPRO CAPTURED 2026-08-07.** The wave-8 self-log caught it while the owner
+  withdrew with the filter on:
+  ```
+  pass: 10 sections, 5 moved,  6 ghosts, 17 texts, 1438 container children
+  pass: 10 sections, 9 moved,  2 ghosts, 17 texts, 1461 container children
+  bank filter pools went stale (container resized) — recreating
+  pass: 10 sections, 0 moved, 11 ghosts, 17 texts, 1438 container children   <-- every icon a ghost
+  pass: 10 sections, 10 moved, 1 ghosts, 17 texts, 1466 container children
+  ```
+  A withdrawal rebuilds the bank container; our pooled widgets go stale and are cleared; the pass that runs
+  on that tick reads an INCOMPLETE container (1438 children, down from 1461), so `nativeByName` finds none
+  of the real item widgets and draws **everything** as a ghost. The next pass (1466 children) fixes it —
+  hence "icons move/disappear as I withdraw". **Fix shape:** on a stale-pool pass, skip the rebuild for one
+  tick (or keep the previous composition) rather than laying out from a half-built container. Do not chase
+  this with a repaint hack — the log line names the mechanism.
+- Still open from wave 9: deliberate death test, onion-gate capture, "big frog leg" → 7908 verdict.
+- Still hardcoded in Java, so not fixable in-game the way ⌖ pins are: `BANKS`, `SPIRIT_TREES`,
+  `CHARTER_DOCKS`. Two of today's bugs were wrong/missing entries in `BANKS`. Moving them into
+  `places.json` would make them capturable.

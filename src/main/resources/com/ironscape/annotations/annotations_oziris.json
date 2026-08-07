@@ -2200,7 +2200,17 @@
   "06b3df5fd7:0": {
    "requires": {
     "region": 11595
-   }
+   },
+   "target": {
+    "x": 2403,
+    "y": 3418,
+    "plane": 0,
+    "npc": false
+   },
+   "dialog": [
+    "Can you teleport me to the Rune Essence Mine?"
+   ],
+   "note": "Brimstail lives INSIDE the cave — the ⌖ is its surface entrance (a small door in the hillock, SW Tree Gnome Stronghold), because Shortest Path cannot draw a route into a cave interior. Enter, walk to Brimstail, right-click Teleport."
   },
   "bb4aa764f4": {
    "items": [
@@ -2213,7 +2223,16 @@
   "bb4aa764f4:0": {
    "requires": {
     "region": 11595
-   }
+   },
+   "target": {
+    "x": 2684,
+    "y": 3323,
+    "plane": 0
+   },
+   "dialog": [
+    "Can you teleport me to the Rune Essence Mine?"
+   ],
+   "note": "Wizard Cromperty, north-east of the East Ardougne market — right-click Teleport. Without the ⌖ this routed to the Ardougne town pin."
   },
   "573dc27831": {
    "items": [
@@ -5895,6 +5914,41 @@
   },
   "bcb183f206": {
    "note": "Quest Helper walks the quest; the potion leg: cadava berries to the Apothecary (south-west Varrock), ask about Romeo & Juliet."
+  },
+  "03cb56a31f:0": {
+   "items": [
+    {
+     "name": "gas mask",
+     "quantity": 1
+    }
+   ],
+   "note": "The gas mask comes from Biohazard’s earlier legs — if it is banked, the panel shows it red and routes you to a bank first.",
+   "requires": {
+    "equipped": "gas mask",
+    "label": "worn"
+   }
+  },
+  "12f19ee618:0": {
+   "items": [
+    {
+     "name": "ghostspeak amulet",
+     "quantity": 1
+    }
+   ],
+   "note": "Already yours from The Restless Ghost; banked between quests more often than not.",
+   "requires": {
+    "equipped": "ghostspeak amulet",
+    "label": "worn"
+   }
+  },
+  "11bd66cbe3:0": {
+   "items": [
+    {
+     "name": "gloves",
+     "quantity": 1
+    }
+   ],
+   "note": "Any gloves stop the nettle stings — bare hands damage you."
   }
  }
 }

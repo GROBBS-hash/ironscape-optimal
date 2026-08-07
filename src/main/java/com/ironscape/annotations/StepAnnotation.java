@@ -64,6 +64,16 @@ public class StepAnnotation
 	 */
 	public List<Errand> errands;
 
+	/**
+	 * Chat-menu options this step wants picked — recolored blue when the
+	 * menu opens, Quest Helper style. For steps whose whole action is one
+	 * dialogue choice ("Use Brimstails to go to ess mines" = "Can you
+	 * teleport me to the Rune Essence Mine?"). Errand stages carry their
+	 * own `dialog`; this is the same thing for steps with no chain.
+	 * Matched case-insensitively against the exact option text.
+	 */
+	public List<String> dialog;
+
 	public static class Errand
 	{
 		public int x;
@@ -173,6 +183,15 @@ public class StepAnnotation
 		 * even when the step text never says the word.
 		 */
 		public Boolean safespot;
+		/**
+		 * FALSE when this pin marks a place rather than a person — a cave
+		 * door, a ladder, a dig spot. The "nearest NPC to the pin" fallback
+		 * exists to find unnamed shopkeepers and quest givers; aimed at a
+		 * doorway it just crowns whoever loiters there (a gnome outside
+		 * Brimstail's cave wore the outline for a step about Brimstail).
+		 * Omit for pins that DO mark someone — Wizard Cromperty's does.
+		 */
+		public Boolean npc;
 	}
 
 	/**
@@ -221,5 +240,15 @@ public class StepAnnotation
 		 * carried ("make sure you have it with you").
 		 */
 		public Integer region;
+		/**
+		 * Item name that must be WORN. "Equip Gas mask" is done when the
+		 * mask is on your face — owning one proves nothing, and the item
+		 * goal detector deliberately ignores equip/wear/wield clauses
+		 * (they'd otherwise swallow "...and equip it" into item lists).
+		 * Same exclusivity as the other checkpoints, and evaluated
+		 * frontier-only: worn state is reversible, so a later step's
+		 * "equip X" must not tick just because you happen to have X on.
+		 */
+		public String equipped;
 	}
 }
