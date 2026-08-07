@@ -9,7 +9,8 @@
     {
      "name": "swamp paste"
     }
-   ]
+   ],
+   "note": "Recommended: Food."
   },
   "b3a38e5fec:0": {
    "errands": [
@@ -518,7 +519,8 @@
      "name": "hammer",
      "quantity": 1
     }
-   ]
+   ],
+   "note": "Recommended: Stamina Potions."
   },
   "0115a278ac-2": {
    "items": [
@@ -709,7 +711,8 @@
      "name": "coins",
      "quantity": 1000
     }
-   ]
+   ],
+   "note": "Recommended: Combat gear. Safespotting is possible., Food, Prayer potions."
   },
   "27405fdda8": {
    "items": [
@@ -1404,7 +1407,8 @@
     {
      "name": "thread"
     }
-   ]
+   ],
+   "note": "Recommended: Combat gear."
   },
   "300d6e8162": {
    "requires": {
@@ -2329,7 +2333,8 @@
      "name": "jerboa tail",
      "quantity": 2
     }
-   ]
+   ],
+   "note": "Recommended: Stamina potions."
   },
   "9617961c16": {
    "items": [
@@ -2352,7 +2357,8 @@
     {
      "name": "cooked meat"
     }
-   ]
+   ],
+   "note": "Recommended: Antipoison, Melee combat gear, Ranged combat gear, Food, Stamina Potions."
   },
   "d8ec3f19da": {
    "items": [
@@ -2431,7 +2437,8 @@
     {
      "name": "hammer"
     }
-   ]
+   ],
+   "note": "Recommended: Stamina potions."
   },
   "c03fd1c5e2": {
    "items": [
@@ -2485,7 +2492,8 @@
     {
      "name": "candle"
     }
-   ]
+   ],
+   "note": "Bring: Magic or melee combat gear."
   },
   "ade050c74d": {
    "items": [
@@ -2497,7 +2505,8 @@
      "name": "barronite deposit",
      "quantity": 1
     }
-   ]
+   ],
+   "note": "Bring: Combat gear and food."
   },
   "fb429230e6": {},
   "ce39cab917": {
@@ -2602,7 +2611,8 @@
      "name": "chocolate cake",
      "quantity": 1
     }
-   ]
+   ],
+   "note": "Recommended: Decent combat gear, Food, Prayer potions."
   },
   "c1d4f006d5": {
    "items": [
@@ -2727,7 +2737,8 @@
      "name": "pestle and mortar",
      "quantity": 1
     }
-   ]
+   ],
+   "note": "Bring: Combat gear. Recommended: Stamina potion."
   },
   "a3a8be033a": {
    "items": [
@@ -2816,7 +2827,8 @@
      "name": "coal",
      "quantity": 4
     }
-   ]
+   ],
+   "note": "Recommended: Combat gear."
   },
   "144721551c": {
    "items": [
@@ -3109,7 +3121,8 @@
     {
      "name": "iron arrows"
     }
-   ]
+   ],
+   "note": "Recommended: Magic combat gear, Food, Prayer potions."
   },
   "c2dcb46546": {
    "items": [
@@ -3121,7 +3134,8 @@
      "name": "stamina potion",
      "quantity": 1
     }
-   ]
+   ],
+   "note": "Recommended: Food, Antipoison."
   },
   "c1a70db6bd": {},
   "e376e8a4a0": {
@@ -3162,7 +3176,8 @@
      "name": "climbing boots",
      "quantity": 1
     }
-   ]
+   ],
+   "note": "Bring: Combat gear, preferably ranged or melee."
   },
   "d4b486fd19": {},
   "7a4590b937": {
@@ -3195,7 +3210,8 @@
      "name": "banana",
      "quantity": 1
     }
-   ]
+   ],
+   "note": "Recommended: Combat gear, food and potions, Antipoison, Food, Prayer potions."
   },
   "39dcbeea9d": {
    "items": [
@@ -3223,7 +3239,8 @@
      "name": "ghostspeak amulet",
      "quantity": 1
     }
-   ]
+   ],
+   "note": "Recommended: Combat gear to kill the ghasts."
   },
   "2f85f59207": {
    "items": [
@@ -3239,7 +3256,8 @@
      "name": "molten glass",
      "quantity": 1
     }
-   ]
+   ],
+   "note": "Recommended: Food."
   },
   "518aaf4170": {
    "items": [
@@ -3490,7 +3508,8 @@
     {
      "name": "iron arrows"
     }
-   ]
+   ],
+   "note": "Recommended: Stamina Potions, Combat Equipment."
   },
   "1b38cf21f5": {},
   "d36b8a5c25": {
@@ -3507,7 +3526,8 @@
      "name": "plank",
      "quantity": 1
     }
-   ]
+   ],
+   "note": "Bring: Combat gear. Recommended: Food, Prayer potions."
   },
   "41184c1680": {
    "items": [
@@ -3526,7 +3546,8 @@
     {
      "name": "slayer gloves"
     }
-   ]
+   ],
+   "note": "Bring: Combat gear."
   },
   "eb6f0caf31": {},
   "f1bcbcf2b6": {
@@ -3543,7 +3564,8 @@
      "name": "tinderbox",
      "quantity": 1
     }
-   ]
+   ],
+   "note": "Bring: Combat Gear, Food. Recommended: Antipoisons."
   },
   "079f2f3e5a": {
    "items": [
@@ -3595,7 +3617,8 @@
      "name": "shantay pass (item)",
      "quantity": 1
     }
-   ]
+   ],
+   "note": "Recommended: Combat gear + potions."
   },
   "3e5a100e9c": {
    "items": [
@@ -3646,7 +3669,8 @@
     {
      "name": "tinderbox"
     }
-   ]
+   ],
+   "note": "Recommended: Combat gear, Food, Stamina potions, Antipoisons, Prayer potions."
   },
   "4cb05055c3": {
    "items": [
@@ -3778,7 +3802,8 @@
      "name": "spade",
      "quantity": 1
     }
-   ]
+   ],
+   "note": "Recommended: Combat gear, food and potions, Magic combat gear, food and potions."
   },
   "2472913d40": {
    "items": [
@@ -3818,7 +3843,8 @@
     {
      "name": "iron arrows"
     }
-   ]
+   ],
+   "note": "Recommended: Combat Gear, Food."
   },
   "632a7662c1": {
    "items": [
@@ -3970,12 +3996,15 @@
     {
      "name": "axe"
     }
-   ]
+   ],
+   "note": "Recommended: Combat gear + food."
   },
   "2d3d6b006f": {},
   "43e2b987b0": {},
   "42dea87308": {},
-  "31de9f85a0": {},
+  "31de9f85a0": {
+   "note": "Bring: Ranged/Mage combat gear to skip boat combat, or a boat with cannons to deal with pirates, Combat gear. Recommended: Food, Prayer potions."
+  },
   "a8e75e2c0a": {
    "items": [
     {
@@ -4006,7 +4035,8 @@
      "name": "desert boots",
      "quantity": 1
     }
-   ]
+   ],
+   "note": "Recommended: Combat gear."
   },
   "d35ebaf24e": {
    "items": [
@@ -4035,7 +4065,8 @@
      "name": "logs",
      "quantity": 6
     }
-   ]
+   ],
+   "note": "Bring: Combat gear (magic is best). Recommended: Food."
   },
   "a49bf85860": {
    "items": [
@@ -4062,7 +4093,8 @@
     {
      "name": "prayer potion(4)"
     }
-   ]
+   ],
+   "note": "Bring: Combat gear, Food."
   },
   "6b47ef2f96": {},
   "02ff9d5962": {
@@ -4092,7 +4124,8 @@
     {
      "name": "iron arrows"
     }
-   ]
+   ],
+   "note": "Bring: Combat Equipment. Recommended: Food, Stamina Potions."
   },
   "f02d7ea598": {
    "items": [
@@ -4129,7 +4162,8 @@
     {
      "name": "law runes"
     }
-   ]
+   ],
+   "note": "Bring: Combat gear."
   },
   "99e60ba7f5": {
    "items": [
@@ -4280,7 +4314,8 @@
     {
      "name": "astral runes"
     }
-   ]
+   ],
+   "note": "Bring: Food."
   },
   "c6df38e08d": {
    "items": [
@@ -4338,7 +4373,7 @@
      "quantity": 3
     }
    ],
-   "note": "Bring all THREE Silverlight keys to Sir Prysin (south-west Varrock Castle) for Silverlight, then kill Delrith (level 27) at the dark wizards' circle south of Varrock — say the incantation Quest Helper shows to banish him."
+   "note": "Bring all THREE Silverlight keys to Sir Prysin (south-west Varrock Castle) for Silverlight, then kill Delrith (level 27) at the dark wizards' circle south of Varrock — say the incantation Quest Helper shows to banish him.\nBring: Armour, Food."
   },
   "c798796c06": {
    "items": [
@@ -4507,7 +4542,8 @@
      "name": "excalibur",
      "quantity": 1
     }
-   ]
+   ],
+   "note": "Recommended: Antipoison, Food."
   },
   "ef681e210e": {
    "items": [
@@ -4538,7 +4574,8 @@
      "name": "bat bones",
      "quantity": 1
     }
-   ]
+   ],
+   "note": "Bring: Combat gear + food for Sir Mordred (level 39)."
   },
   "da93eb7b7e": {
    "items": [
@@ -4878,7 +4915,8 @@
      "name": "snake basket",
      "quantity": 1
     }
-   ]
+   ],
+   "note": "Bring: Combat Gear bring Range or Mage Gear if safe spotting.."
   },
   "4af552d7d3": {
    "items": [
@@ -4988,7 +5026,8 @@
      "name": "rope",
      "quantity": 1
     }
-   ]
+   ],
+   "note": "Recommended: Food."
   },
   "b9facd3f97": {
    "items": [
