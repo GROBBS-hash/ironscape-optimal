@@ -63,6 +63,27 @@ cannot fix a data problem.
 
 ---
 
+### INV-04 — Run the existing arrival-resolution audit
+**This tooling already exists — do not rebuild it.** `tools/audit-arrivals.mjs` + `GoalAuditDumpTest`.
+
+**Run:**
+```
+gradlew test --tests "*.GoalAuditDumpTest"     # writes build/arrival-audit.tsv
+node tools/audit-arrivals.mjs                  # Tier 1 only
+node tools/audit-arrivals.mjs --all            # Tier 1 + Tier 2 + NONE
+```
+
+**Report:** the Tier 1 count (PIN subs whose step shares its 📍 tag with the *previous* step — origin-anchored,
+the SS-01 class), the Tier 2 count (remaining PIN subs, often correct), and the NONE count (nothing resolves,
+manual tick only).
+
+**Why:** Tier 1 is the definitive list of steps affected by P0-01. NONE is the definitive list of steps that
+*cannot* auto-complete at all and therefore depend on UX-01 manual override. Both numbers size real work.
+
+**Caveat:** this tool was mid-development when the session ended. Verify it runs before trusting the counts.
+
+---
+
 ## Resolved decisions
 
 ### D1 — Quest state: direct varbit/varp reads, three-tier
@@ -200,6 +221,19 @@ Substep
 **Stable IDs are load-bearing.** The annotation overlay keys against them. They must not shift when a guide pack
 updates and inserts or removes a step — do not use array position.
 
+> **⚠ RISK — resolve before building substeps.**
+> `tools/audit-arrivals.mjs` shows `GuideLoader` derives step IDs by **hashing the step's normalised text**
+> (`sha256(text).slice(0,10)`, with a `-2` suffix for duplicates). Text-derived IDs are stable across re-scrapes
+> *only while the wording is unchanged*. Any upstream edit to a step's text silently orphans its annotations —
+> and substeps would inherit that fragility.
+>
+> Meanwhile `CLAUDE.md` notes the source site's payload already carries **author-assigned stable IDs**
+> (e.g. `"1.1.76a"`). If those are genuinely stable upstream, keying off them is strictly better than hashing text.
+>
+> **Investigate:** are the site's authored IDs stable across scrapes? If yes, migrate keying to them (with the
+> text hash as a fallback for steps lacking one). If no, keep hashing but add a re-scrape diff report that flags
+> orphaned annotation keys. Either way, decide **before** substep IDs are minted on top of the existing scheme.
+
 ## UX rules — in priority order
 
 These exist to make the panel followable without the user having to work out which line applies to them.
@@ -270,13 +304,27 @@ the validator needs a grants field added — cheap, but it's schema work.
 **Screenshots:** SS-01 (unticked, already inside ess mine), SS-02 (ticked, after moving on)
 
 **What:** Step 205 *"Use Brimstails to go to ess mines"* did not tick on arrival. It ticked later, by SS-02.
-**This is a latency bug, not a missing trigger** — the trigger exists. Don't go hunting for one.
 
-**Root cause hypothesis:** Completion is evaluated on region-change or a polling tick, not on player position
-change within a region. Teleport-to-instance arrivals land inside the same region boundary and miss the trigger.
+**Root cause — already diagnosed. Do not re-investigate.** `tools/audit-arrivals.mjs` (uncommitted at time of
+writing; see Notes) documents the mechanism in its header comment:
 
-**Done when:** Arrival steps tick within ~1 game tick of entering the target area, verified for (a) Brimstail
-teleport, (b) spirit tree, (c) charter boat, (d) fairy ring.
+> Arrival would anchor on the step's 📍 tag FALLBACK ("PIN") — the *"go to ess mines"* class, where the tag names
+> the **ORIGIN** and the step false-ticks the moment its item gate opens.
+
+So the step's location tag points at where the player *starts*, not where they're going. Arrival resolution finds
+no destination, falls back to the pin, and the pin is already satisfied — so completion is gated only by the item
+check, and fires when that opens rather than on actual arrival.
+
+**This supersedes the earlier "region-change polling latency" hypothesis, which was wrong.**
+
+**Fix candidates** (from the same header): region checkpoint; a ⊕ marker at the true destination; or a
+`places.json` entry for the destination named in the step text.
+
+**Done when:** Arrival steps tick on entering the target area, verified for (a) Brimstail teleport, (b) spirit
+tree, (c) charter boat, (d) fairy ring. Re-run INV-04 and confirm the Tier 1 count drops to zero.
+
+**Related:** P0-04 is plausibly the same family — a false tick when the gate opens rather than on the named action.
+Check whether the Chronicle case appears in the audit output before treating it as a separate bug.
 
 ---
 
@@ -461,10 +509,12 @@ the chest. Should fire on the read action / resulting varbit change.
 ## Suggested execution order
 
 **Phase 0 — investigate (cheap, gates everything)**
-1. INV-01 split-quest count
-2. INV-02 compound step classification
-3. INV-03 transport node dump
-4. Verify the plugin-hub dependency rule underpinning D1
+1. **INV-04 arrival audit** — run first; the tooling already exists and it sizes P0-01 and UX-01
+2. INV-01 split-quest count
+3. INV-02 compound step classification
+4. INV-03 transport node dump
+5. Verify the plugin-hub dependency rule underpinning D1
+6. Resolve the step-ID stability risk in the DESIGN section — gates substeps
 
 **Phase 1 — foundations**
 5. **UX-01** manual override — do this first; it de-risks every subsequent detection bug
@@ -493,3 +543,27 @@ the chest. Should fire on the read action / resulting varbit change.
   worked), P0-01 (trigger exists, fires late). Check git history before writing new code on any of them.
 - The test account has significant pre-existing quest progress (292 QP) — ideal for testing P0-03, poor for testing
   fresh-account step ordering. A second clean account may be needed for guide-order regression testing.
+
+## Guide pack specifics
+
+Per `CLAUDE.md`: the only guide is `GuideVariant.OZIRIS` — Ironman Efficiency Guide v4, "Enhanced 2026" edition
+from ironman.guide, scraped by `tools/scrape-oziris.mjs`. Relevant files:
+
+- `src/main/resources/com/ironscape/guide/guide_data_oziris.json` — 575 steps, 7 sections
+- `annotations_oziris.json` — 82 hand-authored skill/item annotations
+- Progress key: `progress_OZIRIS`
+
+**INV-01 and INV-02 should be run against these two files.** (The earlier "700+ steps" figure in this backlog was
+an estimate; 575 is the real count.)
+
+## Work in progress at session end
+
+Two files were uncommitted when the weekly quota ran out:
+
+- `tools/audit-arrivals.mjs` — arrival-resolution audit. **Substantially complete and already valuable** — its
+  header comment is the source of the P0-01 root cause. See INV-04.
+- `src/test/java/com/ironscape/goals/GoalAuditDumpTest.java` — modified; writes `build/arrival-audit.tsv`, which
+  the above script consumes.
+
+Neither had been verified end-to-end. Confirm the Gradle test runs and produces the TSV before relying on the
+audit output.
