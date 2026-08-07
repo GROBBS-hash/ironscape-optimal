@@ -3476,7 +3476,10 @@ public class IronscapePlugin extends Plugin
 		// ... at Fred's farm", "Pickpocket HAM members" with a hideout ⌖)
 		// must not tick just because the player showed up — the owner hit
 		// this twice; the second time the ⌖ branch sat ABOVE this gate.
+		// Network-travel phrasing has no movement verb ("Spirit tree to
+		// gnome stronghold") but IS the movement instruction.
 		if (!travelGoalSubs.contains(sub.getId())
+			&& !networkTravel
 			&& !MOVEMENT_WORD.matcher(sub.getPlainText()).find())
 		{
 			return false;
@@ -3493,7 +3496,8 @@ public class IronscapePlugin extends Plugin
 		}
 		// Travel subs end at their LAST place mention (the destination);
 		// everything else anchors on the first ("Talk to Reldo" -> Reldo).
-		WorldPoint place = travelGoalSubs.contains(sub.getId())
+		// Network travel is destination-anchored too ("Charter to X").
+		WorldPoint place = travelGoalSubs.contains(sub.getId()) || networkTravel
 			? placeManager.lastPlaceIn(sub.getPlainText())
 			: placeManager.firstPlaceIn(sub.getPlainText());
 		if (place == null)
