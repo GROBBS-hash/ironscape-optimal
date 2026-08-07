@@ -4130,6 +4130,68 @@ public class IronscapePlugin extends Plugin
 		{
 			SwingUtilities.invokeLater(panel::refreshItemCounts);
 		}
+		logCheckpointValues();
+	}
+
+	/** Last logged "sub -> var values" line, so only CHANGES print. */
+	private String lastCheckpointLog;
+
+	/**
+	 * Print the LIVE value of the frontier sub's varbit/varp checkpoint
+	 * whenever it moves.
+	 *
+	 * Seeding a checkpoint means picking a threshold, and the threshold is
+	 * guesswork until something reports the real numbers: Quest Helper's
+	 * loadSteps() map only lists the values IT handles, so Biohazard reads
+	 * "10 chemist, 12 smuggle, 14 return to Elena" and says nothing about
+	 * whatever sits between 12 and 14. A threshold guessed from that map
+	 * left the step stuck after all three vials were handed over.
+	 *
+	 * One line per change is enough to author the next one from evidence
+	 * rather than inference, and to explain a stuck step in hindsight.
+	 */
+	private void logCheckpointValues()
+	{
+		Current current = findCurrent();
+		if (current == null)
+		{
+			return;
+		}
+		List<StepRequirement> requirements = subRequirements.get(current.sub.getId());
+		if (requirements == null || !hasVarCheckpoint(requirements))
+		{
+			return;
+		}
+		StringBuilder line = new StringBuilder();
+		for (StepRequirement requirement : requirements)
+		{
+			if (requirement.varbit != null)
+			{
+				line.append(" varbit ").append(requirement.varbit).append('=')
+					.append(client.getVarbitValue(requirement.varbit));
+			}
+			else if (requirement.varp != null)
+			{
+				line.append(" varp ").append(requirement.varp).append('=')
+					.append(client.getVarpValue(requirement.varp));
+			}
+			else
+			{
+				continue;
+			}
+			line.append(" (need ").append(requirement.threshold)
+				.append(requirement.bit != null ? " bit " + requirement.bit : "").append(')');
+		}
+		if (line.length() == 0)
+		{
+			return;
+		}
+		String message = current.sub.getId() + ":" + line;
+		if (!message.equals(lastCheckpointLog))
+		{
+			lastCheckpointLog = message;
+			log.info("checkpoint {}", message);
+		}
 	}
 
 	/** Does the list carry a varbit/varp/region/equipped checkpoint (vs only skill levels)? */
