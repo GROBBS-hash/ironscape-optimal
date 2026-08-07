@@ -539,7 +539,13 @@ class StepRow extends JPanel
 	/** The colored have/need COUNT of one item line (the name stays neutral). */
 	private String itemCountHtml(StepAnnotation.ItemNeed need, boolean done)
 	{
-		int required = need.quantity == null ? 1 : need.quantity;
+		// UNSPECIFIED quantity (the guide's own carry list: "bring runes,
+		// gp, a pickaxe") is NOT a requirement of one. Rendering it as
+		// "134/1" claims you need one fire rune and are therefore ready —
+		// the owner's report, and it's misinformation in the direction that
+		// matters. Show what you carry, no threshold, no green "done".
+		boolean unspecified = need.quantity == null;
+		int required = unspecified ? 1 : need.quantity;
 		// INGREDIENTS are consumed at the making spot — bank stock is
 		// useless mid-Aggie, so their count is what's in your hands
 		// (6,924 bank coins showed "enough" for a 65-coin dye run).
@@ -556,6 +562,22 @@ class StepRow extends JPanel
 		// shafts) fit in one slot, so they count carried like anything else.
 		String color;
 		String flag = "";
+		if (unspecified)
+		{
+			// Carry-list item: the question is "am I CARRYING what the guide
+			// said to bring", so show the carried count, not the total owned.
+			// Substitute families sum every tier (bare "pickaxe" counts all
+			// eight metals), so an owned-total of 2 for one pickaxe in the
+			// bag and one in the bank read as "I need 2 of something".
+			// Only when you carry none does the bank total matter — that's
+			// the 🏦 "go get it" case.
+			String text = carried > 0
+				? ItemTracker.formatCount(carried)
+				: ItemTracker.formatCount(have) + (have > 0 ? "&nbsp;🏦" : "");
+			return "<html><font color='" + (done ? "#808080"
+				: carried > 0 ? SATISFIED_HEX : have > 0 ? IN_BANK_HEX : MISSING_HEX) + "'>"
+				+ text + "</font></html>";
+		}
 		if (done)
 		{
 			color = "#808080";

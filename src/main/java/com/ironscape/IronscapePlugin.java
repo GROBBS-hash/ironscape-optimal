@@ -3418,10 +3418,24 @@ public class IronscapePlugin extends Plugin
 		if (atomicQuestGoal != null && itemGoalsBySub.containsKey(sub.getId()))
 		{
 			QuestState state = cachedQuestState(atomicQuestGoal.getQuest());
-			boolean questDone = atomicQuestGoal.isRequiresFinished()
-				? state == QuestState.FINISHED
-				: state != QuestState.NOT_STARTED;
-			return questDone && !errandPending;
+			if (atomicQuestGoal.isRequiresFinished())
+			{
+				// FINISHED genuinely subsumes the errands — you cannot have
+				// completed the quest with its own pickups outstanding.
+				return state == QuestState.FINISHED && !errandPending;
+			}
+			// STARTED does not. "Start biohazard, get the plague sample and
+			// 3 potions" ticked itself the instant the quest began and
+			// handed off to Quest Helper, with the sample still in Elena's
+			// house — the start is the PRECONDITION, the items are the
+			// objective. (Contrast "Buy a spade, start X marks the spot",
+			// where the quest action is the point; there the item goal is
+			// already satisfied by then, so falling through costs nothing.)
+			if (state == QuestState.NOT_STARTED || errandPending)
+			{
+				return false;
+			}
+			// fall through: the item goals below decide.
 		}
 
 		List<GoalDetector.ItemGoal> itemGoals = itemGoalsBySub.get(sub.getId());
@@ -3755,6 +3769,21 @@ public class IronscapePlugin extends Plugin
 				text = text.substring(0, 57) + "...";
 			}
 			client.addChatMessage(ChatMessageType.CONSOLE, "", "IRONSCAPE: ✓ " + text, null);
+		}
+
+		// HANDOFF RETURN, mid-quest flavour. We used to pull our panel back
+		// only when the handed-off quest FINISHED — but a guide step often
+		// ends PART WAY through one ("get the plague sample and 3 potions",
+		// then leave for Rimmington). Our step completing is the moment the
+		// player needs us again, not Quest Helper, which would happily run
+		// them to the end of the quest.
+		if (handedOffQuest != null && loginGraceTicks == 0 && isFrontierStep(step)
+			&& progressManager.isCompleted(activeVariant, step.getId()))
+		{
+			handedOffQuest = null;
+			client.addChatMessage(ChatMessageType.CONSOLE, "",
+				"IRONSCAPE: step done — back to the guide (the quest continues later).", null);
+			SwingUtilities.invokeLater(() -> clientToolbar.openPanel(navButton));
 		}
 
 		String stepId = step.getId();
@@ -4703,8 +4732,15 @@ public class IronscapePlugin extends Plugin
 				{
 					continue;
 				}
-				needs.add(new String[]{need.name,
-					String.valueOf(need.quantity == null ? 1 : need.quantity)});
+				// UNSPECIFIED quantity is the guide's carry list, not a
+				// requirement — a banked pickaxe on the Biohazard step sent
+				// the player to a SECOND bank right after the first one.
+				// Soft reminders don't get to hijack the route.
+				if (need.quantity == null)
+				{
+					continue;
+				}
+				needs.add(new String[]{need.name, String.valueOf(need.quantity)});
 			}
 		}
 		if (needs.isEmpty())

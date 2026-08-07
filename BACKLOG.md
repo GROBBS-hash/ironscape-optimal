@@ -321,14 +321,25 @@ sections. No equivalent for shop interfaces.
 **SS: "Start biohazard" step.** Owner: *"our plugin shows we need 1 of each rune, when we likely need many
 runes to cast enough spells. Same with the GP, we dont need just 1 as im assuming we need to buy items."*
 
-`seed-quest-items.mjs` reads the wiki `{{Quest details|items}}` bullets, which DO carry counts
-("*3 [[Oak logs]]"), but every seeded entry landed as `quantity: 1`. So `Fire runes 134/1`,
-`Law rune 11/1`, `Gp 2,475/1` — all green, all meaningless. A kit badge that is green before you have
-enough is worse than no badge: it actively tells you you're ready.
+**CORRECTION — my first diagnosis here blamed `seed-quest-items.mjs` and was WRONG.** Biohazard's wiki kit
+is only *priest gown top / bottom / gas mask* — no runes, no coins. The badges come from the **scraper**:
+`annotations_oziris.json` entry `27405fdda8` lists gp, scrying orb, pickaxe, fire/air/mind runes with
+**`quantity: null`**, straight off the Oziris site's per-step carry list. This is the answer to **INV-E**
+as well — the "Start Grand tree" requirements have the same origin.
 
-**Fix:** parse the leading count from each bullet; where the wiki gives none but the item is obviously
-consumable (runes, coins), either leave it unseeded or carry a real number. Re-run over all 104 quests and
-diff before applying.
+`null` was then read as "exactly 1" everywhere, so a carry list rendered as `Fire runes 134/1` — green,
+implying you're ready when the guide never said a number at all. **222 items across 61 steps** are affected.
+
+**Fixed 2026-08-07 (untested in play):** unspecified quantity now means "bring some", not "need one".
+The badge shows the carried count with no threshold and no false green; `bankFirstTarget` skips
+unspecified items entirely, which is what sent the player to a second bank for a banked pickaxe.
+
+**Deliberately NOT changed:** `annotationItemsCarried` (the arrival gate) still treats `null` as 1.
+Loosening it would make arrival ticks MORE eager, and eager arrival ticks are the failure mode this
+project has fought repeatedly. Revisit only with a specific report.
+
+**Still open:** where the wiki DOES give a count the seeder reads it, but `~400 [[Coins]]` (Ghosts Ahoy)
+loses its number to the tilde. Minor next to the above.
 
 **Related, same step, two more faults:**
 - **`Plague sample 0/1` sits permanently red.** It's a TEXT-detected goal from "get the plague sample", and
