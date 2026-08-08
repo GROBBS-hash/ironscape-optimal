@@ -5863,12 +5863,36 @@
      "note": "Kill a Giant bat outside Keep Le Faye for the bat bones."
     },
     {
+     "x": 2807,
+     "y": 3450,
+     "plane": 0,
+     "item": "insect repellent",
+     "note": "Insect repellent: on the floor of the house north of the Catherby bank."
+    },
+    {
+     "x": 2766,
+     "y": 3441,
+     "plane": 0,
+     "item": "bucket",
+     "note": "Bucket: on the ground in the bee field west of Catherby."
+    },
+    {
+     "x": 2762,
+     "y": 3443,
+     "plane": 0,
+     "item": "bucket of wax",
+     "note": "Use the insect repellent on a beehive, then fill the bucket with wax."
+    },
+    {
      "x": 2797,
      "y": 3440,
      "plane": 0,
      "item": "black candle",
      "npc": "Candle maker",
-     "note": "The Catherby candle maker hands over the black candle — insist when he warns you."
+     "dialog": [
+      "Have you got any black candles?"
+     ],
+     "note": "The Candle maker MAKES the candle in exchange for the bucket of wax — he has none to give without it."
     }
    ]
   },
