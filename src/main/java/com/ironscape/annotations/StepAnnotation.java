@@ -115,8 +115,51 @@ public class StepAnnotation
 		 * checks it evaluates every tick. This is the same idea with one
 		 * region instead of a zone: the stage asks "am I in yet?" rather
 		 * than "am I near the door?".
+		 *
+		 * COARSE, and its very first use showed how coarse: a region is
+		 * 64x64, and region 11061 holds Keep Le Faye AND the giant bats
+		 * outside it that the same chain sends you to two stages earlier.
+		 * Prefer {@link #zone} wherever the bounds are known — QH publishes
+		 * them. Region stays for places whose extent nobody has written
+		 * down and which fill their region anyway (instanced caves).
 		 */
 		public Integer region;
+		/**
+		 * Stage done once the player stands inside this BOX, on its plane —
+		 * the precise form of "am I in yet?", and the only condition that
+		 * can tell FLOORS apart.
+		 *
+		 * A journey that goes in, up, and back out cannot be expressed
+		 * without it: "the ground floor of Keep Le Faye" is a different leg
+		 * on the way in and on the way out, and a region cannot see the
+		 * difference between them, nor between floor 1 and floor 2.
+		 *
+		 * Quest Helper's zones are the source — `setupZones()` in each
+		 * quest helper publishes exactly these boxes, one per plane
+		 * (fayeGround / faye1 / faye2), and `tools/qh-tree.mjs` prints the
+		 * branch that each one guards.
+		 */
+		public Zone zone;
+		/**
+		 * INVERTS {@link #zone} / {@link #region}: this stage is done once
+		 * the player is OUT of it. The way out of a one-way interior is a
+		 * leg like any other — you have somewhere to be and something to
+		 * click — and no proximity coordinate can express it, because every
+		 * tile outside the door is a few tiles from every tile inside it.
+		 */
+		public Boolean leave;
+		/**
+		 * The scene object this leg is about, outlined by name at the
+		 * stage's route point (or its own point when there is no split):
+		 * the staircase to climb, the trapdoor to open, the crate to hide
+		 * in, the gangplank to cross.
+		 *
+		 * Without it the outline falls back to a hardcoded guess-list of
+		 * traversal words, which covers stairs and ladders and nothing
+		 * else. Naming the object is the model saying precisely what the
+		 * guess-list approximates.
+		 */
+		public String object;
 		/**
 		 * INVERTS `item`: this stage HANDS the item over, so it stands down
 		 * once you no longer carry one. Biohazard's three vials go to three
@@ -172,16 +215,24 @@ public class StepAnnotation
 		 */
 		public String npc;
 		/**
-		 * This stage is QUEST PROGRESS, not a journey: hold the route
-		 * entirely until its gate opens. "Go to Hazelmere and continue the
-		 * grand tree until you are at Karamja shipyard" walks to one place
-		 * and then just... does the quest, and routing to the step's area
-		 * for that half only fights Quest Helper.
+		 * There is no route to draw for this stage: post none at all.
+		 *
+		 * Two different situations, one behaviour. Either the stage is
+		 * QUEST PROGRESS rather than a journey — "go to Hazelmere and
+		 * continue the grand tree until you are at Karamja shipyard" walks
+		 * to one place and then just... does the quest, and routing to the
+		 * step's area for that half only fights Quest Helper — or Shortest
+		 * Path genuinely cannot draw the leg, which is the case for every
+		 * step of the way OUT of a one-way interior. Arhein's crate is not
+		 * in its transport graph and the keep door is locked, so from
+		 * inside Keep Le Faye it proposed a Lumbridge home teleport. A
+		 * route you cannot walk is worse than no route; the object outline
+		 * is the guidance for these legs.
 		 *
 		 * Opt-in per stage on purpose. Standing down for every mid-quest
 		 * step was tried and reverted — it left players with no route at
 		 * all ("run back to Falador" gave nothing) — so only a stage that
-		 * SAYS its work is quest progress holds.
+		 * SAYS so holds.
 		 */
 		public Boolean hold;
 		/**
@@ -194,6 +245,29 @@ public class StepAnnotation
 		 * blue in the dialog menu, Quest Helper-style. Exact option text.
 		 */
 		public java.util.List<String> dialog;
+	}
+
+	/**
+	 * An axis-aligned box on ONE plane, inclusive at both corners — the
+	 * same shape Quest Helper's Zone uses, and seeded straight from its
+	 * `setupZones()`. One plane per zone on purpose: telling floors apart
+	 * is the whole reason this exists.
+	 */
+	public static class Zone
+	{
+		public int x1;
+		public int y1;
+		public int x2;
+		public int y2;
+		public int plane;
+
+		public boolean contains(net.runelite.api.coords.WorldPoint p)
+		{
+			return p != null
+				&& p.getPlane() == plane
+				&& p.getX() >= Math.min(x1, x2) && p.getX() <= Math.max(x1, x2)
+				&& p.getY() >= Math.min(y1, y2) && p.getY() <= Math.max(y1, y2);
+		}
 	}
 
 	public static class Link

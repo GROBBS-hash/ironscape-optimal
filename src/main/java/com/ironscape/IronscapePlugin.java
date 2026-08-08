@@ -1,6 +1,7 @@
 package com.ironscape;
 
 import com.ironscape.annotations.AnnotationManager;
+import com.ironscape.annotations.ErrandProgress;
 import com.ironscape.annotations.StepAnnotation;
 import com.ironscape.goals.GoalDetector;
 import com.ironscape.guide.Guide;
@@ -802,86 +803,46 @@ public class IronscapePlugin extends Plugin
 		{
 			return null;
 		}
-		WorldPoint here = playerPoint();
-		for (int i = 0; i < chain.size(); i++)
-		{
-			StepAnnotation.Errand stage = chain.get(i);
-			boolean satisfied;
-			if (stage.value != null && (stage.varbit != null || stage.varp != null))
-			{
-				// Var-gated stage: quest progress orders stages that sit
-				// tiles apart (Cook -> large doors), where proximity can't.
-				int varValue = stage.varbit != null
-					? client.getVarbitValue(stage.varbit)
-					: client.getVarpValue(stage.varp);
-				satisfied = varValue >= stage.value;
-			}
-			else if (stage.region != null)
-			{
-				// "Am I in yet?" — the only honest test for a leg that moves
-				// you somewhere without giving you anything. Note this is
-				// checked BEFORE the item branches: a region stage may also
-				// carry an item for its badge, and the region is the gate.
-				satisfied = here != null && here.getRegionID() == stage.region;
-			}
-			else if (stage.item != null && Boolean.TRUE.equals(stage.given))
-			{
-				// HAND-IN stage: done once the item has left your hands.
-				satisfied = itemTracker.carriedCountOf(stage.item) == 0;
-			}
-			else if (stage.item != null)
-			{
-				// Intermediate stages count CARRIED only: quest keys are
-				// all literally named "Key", and an unrelated one in the
-				// BANK must not skip the crate. The LAST stage is the
-				// objective itself and may sit banked — still done.
-				satisfied = (i == chain.size() - 1
-					? itemTracker.countOf(stage.item)
-					: itemTracker.carriedCountOf(stage.item)) > 0;
-			}
-			else
-			{
-				// Item-less WAYPOINT stage (the cave entrance on the way
-				// to the warriors): satisfied by getting there — or by
-				// being closer to the NEXT stage than to it (a teleport
-				// skipped it; it served its purpose either way).
-				int radius = stage.radius != null ? stage.radius : 12;
-				satisfied = here != null
-					&& (here.distanceTo2D(new WorldPoint(stage.x, stage.y, stage.plane)) <= radius
-						|| (i + 1 < chain.size()
-							&& here.distanceTo2D(new WorldPoint(chain.get(i + 1).x,
-								chain.get(i + 1).y, chain.get(i + 1).plane))
-								< here.distanceTo2D(new WorldPoint(stage.x, stage.y, stage.plane))));
-			}
-			if (satisfied)
-			{
-				if (Boolean.TRUE.equals(stage.given))
-				{
-					// Hand-ins are INDEPENDENT: giving Da Vinci his ethenea
-					// first must not mark Hops and Chancy done behind it.
-					// Only the normal "the key served its purpose" cascade
-					// implies the earlier stages.
-					errandDone.add(errandStageKey(step, stage));
-				}
-				else
-				{
-					for (int k = 0; k <= i; k++)
-					{
-						errandDone.add(errandStageKey(step, chain.get(k)));
-					}
-				}
-			}
-		}
+		// The order rule lives in ErrandProgress, away from the client, so
+		// it can be tested: monotonic conditions (quest vars, owning an
+		// item) may look ahead; where the player is standing is judged at
+		// the front of the chain and nowhere else. Without that split a
+		// chain that comes back on itself is inexpressible — walking into
+		// Keep Le Faye at ground level would satisfy the "back down to the
+		// ground floor" leg that belongs after Mordred, and the cascade
+		// would mark the fight done on the way in.
+		int front = ErrandProgress.advance(step.getId(), chain, errandDone, errandWorld);
 		cacheErrandBadges(step, sub, chain);
-		for (StepAnnotation.Errand stage : chain)
-		{
-			if (!errandDone.contains(errandStageKey(step, stage)))
-			{
-				return stage;
-			}
-		}
-		return null;
+		return front < chain.size() ? chain.get(front) : null;
 	}
+
+	/** The client readings ErrandProgress needs, bound once. */
+	private final ErrandProgress.World errandWorld = new ErrandProgress.World()
+	{
+		@Override
+		public int varValue(Integer varbit, Integer varp)
+		{
+			return varbit != null ? client.getVarbitValue(varbit) : client.getVarpValue(varp);
+		}
+
+		@Override
+		public int carriedCount(String item)
+		{
+			return itemTracker.carriedCountOf(item);
+		}
+
+		@Override
+		public int totalCount(String item)
+		{
+			return itemTracker.countOf(item);
+		}
+
+		@Override
+		public WorldPoint here()
+		{
+			return playerPoint();
+		}
+	};
 
 	/**
 	 * Publish the chain's stage items for the panel to badge.
@@ -908,14 +869,15 @@ public class IronscapePlugin extends Plugin
 	private void cacheErrandBadges(GuideStep step, SubStep sub, List<StepAnnotation.Errand> chain)
 	{
 		java.util.LinkedHashMap<String, String> states = new java.util.LinkedHashMap<>();
-		for (StepAnnotation.Errand stage : chain)
+		for (int i = 0; i < chain.size(); i++)
 		{
+			StepAnnotation.Errand stage = chain.get(i);
 			if (stage.item == null)
 			{
 				continue;                     // waypoint: nothing to carry
 			}
 			String state;
-			if (!errandDone.contains(errandStageKey(step, stage)))
+			if (!errandDone.contains(ErrandProgress.stageKey(step.getId(), chain, i)))
 			{
 				state = "NEEDED";
 			}
@@ -1051,18 +1013,6 @@ public class IronscapePlugin extends Plugin
 			? new WorldPoint(stage.routeX, stage.routeY,
 				stage.routePlane == null ? 0 : stage.routePlane)
 			: new WorldPoint(stage.x, stage.y, stage.plane);
-	}
-
-	/** Sticky-satisfaction key for one errand stage (item, var, or waypoint). */
-	private static String errandStageKey(GuideStep step, StepAnnotation.Errand stage)
-	{
-		if (stage.value != null && (stage.varbit != null || stage.varp != null))
-		{
-			return step.getId() + "|var:"
-				+ (stage.varbit != null ? stage.varbit : "p" + stage.varp) + ">=" + stage.value;
-		}
-		return step.getId() + "|"
-			+ (stage.item != null ? stage.item : "wp:" + stage.x + "," + stage.y);
 	}
 
 	/** The quest the current step is about (any state), else null. */
@@ -2879,8 +2829,12 @@ public class IronscapePlugin extends Plugin
 		// quest start until the item is in the bag — mid-quest QH knows
 		// nothing about it, and post-quest it's the step's only signal.
 		StepAnnotation.Errand errand = activeErrand();
+		// Identity includes the ROUTE point, not just the item or the
+		// satisfaction tile: the two staircase legs of one keep are told
+		// apart by which staircase they send you to, and nothing else.
 		String errandStage = errand == null ? null
-			: (errand.item != null ? errand.item : "wp:" + errand.x + "," + errand.y);
+			: (errand.item != null ? errand.item : "wp:" + errand.x + "," + errand.y)
+				+ "@" + errandRoutePoint(errand);
 		if (!java.util.Objects.equals(errandStage, lastErrandStage))
 		{
 			// Activation, stage advance (key -> pebble) and final pickup
@@ -5134,15 +5088,25 @@ public class IronscapePlugin extends Plugin
 		// where to go" (owner, 2026-08-08). Only while the player is on
 		// the route's own plane: once upstairs, the stage's real target
 		// takes over and the staircase behind you is noise.
+		//
+		// A stage that NAMES its object gets that name instead of the
+		// guess-list, and needs no route/satisfaction split to qualify:
+		// the way out of Keep Le Faye is a door at the stage's own point,
+		// with nothing to route to at all.
 		WorldPoint traversal = null;
+		String traversalName = null;
 		StepAnnotation.Errand routedStage = activeErrand();
-		if (routedStage != null && routedStage.routeX != null && routedStage.routeY != null)
+		if (routedStage != null
+			&& (routedStage.object != null
+				|| (routedStage.routeX != null && routedStage.routeY != null)))
 		{
 			WorldPoint route = errandRoutePoint(routedStage);
 			WorldPoint here = playerPoint();
 			if (here != null && here.getPlane() == route.getPlane())
 			{
 				traversal = route;
+				traversalName = routedStage.object == null ? null
+					: routedStage.object.toLowerCase(Locale.ROOT);
 			}
 		}
 		// The object a sub NAMES, at the step's own ⌖: "Put pineapples into
@@ -5215,7 +5179,9 @@ public class IronscapePlugin extends Plugin
 					// the route names which one. Scene coords on both sides, so
 					// an instanced copy simply matches nothing rather than
 					// outlining the wrong stairs.
-					if (traversal != null && TRAVERSAL_OBJECTS.contains(name))
+					if (traversal != null && (traversalName != null
+						? name.equals(traversalName)
+						: TRAVERSAL_OBJECTS.contains(name)))
 					{
 						int d = object.getWorldLocation().distanceTo2D(traversal);
 						if (d <= ARRIVE_RADIUS && d < traversalBest)
@@ -5505,13 +5471,15 @@ public class IronscapePlugin extends Plugin
 			StepAnnotation.Errand errand = activeErrand();
 			if (errand != null)
 			{
-				// ... unless the stage IS the quest ("continue the grand
-				// tree until you are at Karamja shipyard"). There is no
-				// destination to draw, and the step's 📍 area only fights
-				// Quest Helper, so hold and say what will release it.
+				// ... unless the stage says there is no route to draw —
+				// either because it IS the quest ("continue the grand tree
+				// until you are at Karamja shipyard"), where the step's 📍
+				// area only fights Quest Helper, or because Shortest Path
+				// cannot path from where the player is standing (inside a
+				// one-way interior). Hold, and say what will release it.
 				if (Boolean.TRUE.equals(errand.hold))
 				{
-					logNavDecision("holding: quest progress"
+					logNavDecision("holding: stage draws no route"
 						+ (errand.note == null ? "" : " — " + errand.note));
 					eventBus.post(new PluginMessage("shortestpath", "clear"));
 					return;
