@@ -817,6 +817,42 @@ public class IronscapePlugin extends Plugin
 	}
 
 	/**
+	 * Is Quest Helper installed and switched on?
+	 *
+	 * Read out of RuneLite's own config, which is the sanctioned way to
+	 * learn anything about another plugin — the hub forbids reflection, and
+	 * QH's classes sit in an isolated classloader besides. Two keys: the
+	 * installed hub plugins, and an explicit disable. The toggle is ABSENT
+	 * when a plugin sits at its default, so only a literal "false" is off.
+	 *
+	 * The comma split matters: "sea-charting-quest-helper" CONTAINS
+	 * "quest-helper", so a substring test says yes to the wrong plugin.
+	 *
+	 * Honest limit: this says INSTALLED, not "actively guiding". Closing
+	 * QH's sidebar while leaving the plugin on is invisible to us and the
+	 * route stays held; disabling the plugin restores our own routing.
+	 */
+	private boolean questHelperInstalled()
+	{
+		String installed = configManager.getConfiguration("runelite", "externalPlugins");
+		if (installed == null)
+		{
+			return false;
+		}
+		boolean present = false;
+		for (String id : installed.split(","))
+		{
+			if ("quest-helper".equals(id.trim().replaceAll("^\\[|\\]$", "")))
+			{
+				present = true;
+				break;
+			}
+		}
+		return present && !"false".equalsIgnoreCase(
+			configManager.getConfiguration("runelite", "questhelperplugin"));
+	}
+
+	/**
 	 * Does any detector claim this sub? The same seven collections the
 	 * ambient-tick sweep consults — if none of them holds the sub, nothing
 	 * can ever tick it but a hand tick or its errand chain.
@@ -5638,6 +5674,26 @@ public class IronscapePlugin extends Plugin
 							Map.of("target", kitBank)));
 						return;
 					}
+				}
+				// ... and once the kit is sorted, get out of Quest Helper's
+				// way entirely if it is actually installed and running.
+				//
+				// Routing to the step's area was a compromise for players
+				// WITHOUT QH, who were left pointing nowhere when a blanket
+				// stand-down was tried and reverted. But for everyone who
+				// does have it, our line has been arguing with theirs on
+				// every quest step since — the owner watched it happen the
+				// moment he accepted Murder Mystery.
+				//
+				// Both cases are servable now that we can tell them apart,
+				// which needs no reflection: RuneLite records installed hub
+				// plugins and any explicit disable in its own config group.
+				if (questHelperInstalled())
+				{
+					logNavDecision("standing down: Quest Helper is installed"
+						+ " and this step's quest is in progress");
+					eventBus.post(new PluginMessage("shortestpath", "clear"));
+					return;
 				}
 				// An explicit ⌖ on the step (bundled or player-captured)
 				// IS the step's destination — the loose 📍 area sent the
