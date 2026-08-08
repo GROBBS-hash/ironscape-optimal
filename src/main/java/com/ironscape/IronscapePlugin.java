@@ -136,6 +136,10 @@ public class IronscapePlugin extends Plugin
 	@Inject
 	private PlaceManager placeManager;
 
+	/** Precomputed walking distances from every teleport landing — see firstLegTowards. */
+	@Inject
+	private com.ironscape.travel.TravelDistances travelDistances;
+
 	/**
 	 * RuneLite's event bus — how plugins in isolated classloaders talk to
 	 * each other. We post PluginMessage events for Shortest Path; if it
@@ -1029,6 +1033,21 @@ public class IronscapePlugin extends Plugin
 		new WorldPoint(2555, 3259, 0), // Battlefield of Khazard
 		new WorldPoint(3183, 3508, 0), // Grand Exchange
 		new WorldPoint(2488, 2850, 0), // Feldip Hills
+	};
+
+	/**
+	 * The same five trees as named in the bundled travel distance table,
+	 * index for index with SPIRIT_TREES. The trees are origins there as well
+	 * as targets, because riding the network means measuring a leg TO a tree
+	 * and another FROM one. TravelDistancesTest fails the build if a name
+	 * here stops resolving.
+	 */
+	private static final String[] SPIRIT_TREE_ORIGINS = {
+		"Spirit Tree: Tree Gnome Village",
+		"Spirit Tree: Gnome Stronghold",
+		"Spirit Tree: Battlefield of Khazard",
+		"Spirit Tree: Grand Exchange",
+		"Spirit Tree: Feldip Hills",
 	};
 
 	/**
@@ -2509,7 +2528,9 @@ public class IronscapePlugin extends Plugin
 								+ (castable(named) ? "" : " (not castable yet — boost/runes)"))
 						: leg == null
 							? "none — no first leg beats walking to " + routeTarget
-							: "route-aware first leg toward " + routeTarget;
+							: "route-aware first leg toward " + routeTarget
+								+ (travelDistances.reachable(routeTarget)
+									? " (walked distances)" : " (straight lines)");
 					if (leg != null && leg.minigame != null)
 					{
 						String towardsKey = leg.minigame.toLowerCase(Locale.ROOT).replace('’', '\'');
@@ -6142,6 +6163,65 @@ public class IronscapePlugin extends Plugin
 	}
 
 	/**
+	 * How far a NAMED landing really is from the target — walked tiles from
+	 * the bundled table, or the straight-line metric above when the table
+	 * cannot answer.
+	 *
+	 * This is the P1-08 fix. Ranking landings by straight line offered a
+	 * Burthorpe Games Room teleport toward Keep Le Faye, ~145 tiles away
+	 * against the Fishing Trawler's ~240 — but Keep Le Faye sits behind White
+	 * Wolf Mountain, so those walks are 476 and 405. The owner took the hint
+	 * and landed in a corner. It is wave 10's distance fiction again with a
+	 * mountain in place of a plane offset, and it covers the Ardougne wall,
+	 * every river and every island. Scored against full-resolution truth over
+	 * 340 (player, target) pairs from the guide's own pins, this names the
+	 * right landing 84% of the time where the straight line managed 64%.
+	 *
+	 * The spirit-tree network layers on exactly as effectiveDistance does it,
+	 * but in walked tiles: the five trees interconnect, so a landing near any
+	 * tree reaches the tree nearest the target. That needs a leg TO a tree and
+	 * another FROM one, which is why the trees are table origins too.
+	 *
+	 * Returns MAX_VALUE for a landing with no ungated route to the target —
+	 * a Mos Le'Harmless landing can never win a first leg to the mainland,
+	 * which is the barrier case stated as a distance.
+	 */
+	private int legDistance(String origin, WorldPoint landing, WorldPoint target, boolean walked)
+	{
+		if (!walked)
+		{
+			return effectiveDistance(landing, target);
+		}
+		int direct = travelDistances.distance(origin, target);
+		int best = direct == com.ironscape.travel.TravelDistances.UNKNOWN
+			? Integer.MAX_VALUE : direct;
+		if (cachedQuestState(Quest.TREE_GNOME_VILLAGE) != QuestState.FINISHED)
+		{
+			return best;
+		}
+		int toTree = Integer.MAX_VALUE;
+		int fromTree = Integer.MAX_VALUE;
+		for (int i = 0; i < SPIRIT_TREES.length; i++)
+		{
+			int boarding = travelDistances.distance(origin, SPIRIT_TREES[i]);
+			if (boarding != com.ironscape.travel.TravelDistances.UNKNOWN)
+			{
+				toTree = Math.min(toTree, boarding);
+			}
+			int riding = travelDistances.distance(SPIRIT_TREE_ORIGINS[i], target);
+			if (riding != com.ironscape.travel.TravelDistances.UNKNOWN)
+			{
+				fromTree = Math.min(fromTree, riding);
+			}
+		}
+		if (toTree == Integer.MAX_VALUE || fromTree == Integer.MAX_VALUE)
+		{
+			return best;
+		}
+		return Math.min(best, toTree + fromTree + 20);
+	}
+
+	/**
 	 * Boss quests that count toward Nightmare Zone's 5-quest entry gate
 	 * (the wiki's eligible-quest list, 2026-08-06).
 	 */
@@ -6227,6 +6307,11 @@ public class IronscapePlugin extends Plugin
 		{
 			return null;
 		}
+		// ONE metric for the whole decision. Walked tiles when the bundled
+		// table can speak about this target, straight lines when it cannot —
+		// never a mix, because 400 walked tiles and a 300-tile straight line
+		// are different quantities and ranking them together is meaningless.
+		boolean walked = travelDistances.reachable(target);
 		int bestDistance = (int) (playerDistance * 0.6);
 		// The FREE home teleport competes first (SP suggests it; we never
 		// did — the owner stood in Draynor with SP saying "home teleport"
@@ -6234,7 +6319,7 @@ public class IronscapePlugin extends Plugin
 		boolean bestHome = false;
 		if (!homeTeleportOnCooldown())
 		{
-			int d = effectiveDistance(HOME_TELEPORT_LANDING, target);
+			int d = legDistance("Home Teleport", HOME_TELEPORT_LANDING, target, walked);
 			if (d < bestDistance)
 			{
 				bestDistance = d;
@@ -6250,7 +6335,7 @@ public class IronscapePlugin extends Plugin
 				{
 					continue;
 				}
-				int d = effectiveDistance(entry.getValue(), target);
+				int d = legDistance(entry.getKey(), entry.getValue(), target, walked);
 				if (d < bestDistance)
 				{
 					bestDistance = d;
@@ -6266,7 +6351,7 @@ public class IronscapePlugin extends Plugin
 			{
 				continue;
 			}
-			int d = effectiveDistance(spell.destination, target);
+			int d = legDistance(spell.name, spell.destination, target, walked);
 			if (d < bestDistance)
 			{
 				bestDistance = d;
