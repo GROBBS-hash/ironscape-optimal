@@ -40,6 +40,7 @@ public class ProgressManager
 	// drops have been seen per sub-step id. Same cache/persist scheme as
 	// completed ids, stored as comma-joined "subId=count" pairs.
 	private final Map<GuideVariant, Map<String, Integer>> countedCache = new EnumMap<>(GuideVariant.class);
+	private final Map<GuideVariant, Map<String, Integer>> baselineCache = new EnumMap<>(GuideVariant.class);
 
 	@Inject
 	public ProgressManager(ConfigManager configManager)
@@ -78,6 +79,9 @@ public class ProgressManager
 			for (SubStep sub : step.getSubSteps())
 			{
 				countsChanged |= counts.remove(sub.getId()) != null;
+				// Same reasoning for purchases: a kept baseline would leave
+				// the step needing ANOTHER purchase to re-tick.
+				clearAcquisitionBaselines(variant, sub.getId());
 			}
 			if (countsChanged)
 			{
@@ -127,12 +131,14 @@ public class ProgressManager
 				}
 			}
 			ids.remove(sub.getId());
-			// See setCompleted: an unticked sub restarts its xp-drop count.
+			// See setCompleted: an unticked sub restarts its xp-drop count
+			// and re-arms its purchase baselines.
 			Map<String, Integer> counts = countedFor(variant);
 			if (counts.remove(sub.getId()) != null)
 			{
 				saveCounted(variant, counts);
 			}
+			clearAcquisitionBaselines(variant, sub.getId());
 		}
 		save(variant, ids);
 	}
@@ -340,6 +346,7 @@ public class ProgressManager
 	{
 		cache.clear();
 		countedCache.clear();
+		baselineCache.clear();
 		positionCache.clear();
 	}
 
@@ -374,6 +381,64 @@ public class ProgressManager
 	private static String key(GuideVariant variant)
 	{
 		return "progress_" + variant.name();
+	}
+
+	/**
+	 * How many of an item you held when a "buy X" sub first became
+	 * current. PERSISTED, unlike the session-only map this replaced: a
+	 * client restart between buying and the step being evaluated used to
+	 * re-capture the baseline with the goods already in hand, so the
+	 * count could never rise and the step was stuck green-but-unticked
+	 * forever (owner, 2026-08-08). Keyed "subId|item name" — neither part
+	 * can contain the ',' or '=' the encoding uses.
+	 */
+	public synchronized Integer acquisitionBaseline(GuideVariant variant, String key)
+	{
+		return baselineFor(variant).get(key);
+	}
+
+	public synchronized void setAcquisitionBaseline(GuideVariant variant, String key, int count)
+	{
+		Map<String, Integer> baselines = baselineFor(variant);
+		Integer previous = baselines.put(key, count);
+		if (previous == null || previous != count)
+		{
+			saveBaselines(variant, baselines);
+		}
+	}
+
+	/** Unticking a sub re-arms its purchases: buy them again to re-tick. */
+	public synchronized void clearAcquisitionBaselines(GuideVariant variant, String subId)
+	{
+		Map<String, Integer> baselines = baselineFor(variant);
+		if (baselines.keySet().removeIf(key -> key.startsWith(subId + "|")))
+		{
+			saveBaselines(variant, baselines);
+		}
+	}
+
+	private Map<String, Integer> baselineFor(GuideVariant variant)
+	{
+		return baselineCache.computeIfAbsent(variant,
+			v -> decodeCounts(configManager.getConfiguration(CONFIG_GROUP, baselineKey(v))));
+	}
+
+	private void saveBaselines(GuideVariant variant, Map<String, Integer> baselines)
+	{
+		String encoded = encodeCounts(baselines);
+		if (encoded.isEmpty())
+		{
+			configManager.unsetConfiguration(CONFIG_GROUP, baselineKey(variant));
+		}
+		else
+		{
+			configManager.setConfiguration(CONFIG_GROUP, baselineKey(variant), encoded);
+		}
+	}
+
+	private static String baselineKey(GuideVariant variant)
+	{
+		return "acqbase_" + variant.name();
 	}
 
 	private Map<String, Integer> countedFor(GuideVariant variant)

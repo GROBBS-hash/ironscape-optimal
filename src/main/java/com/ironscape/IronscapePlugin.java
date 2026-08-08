@@ -1173,12 +1173,10 @@ public class IronscapePlugin extends Plugin
 	 */
 	private final Map<String, List<GoalDetector.ItemGoal>> itemGoalsBySub = new LinkedHashMap<>();
 
-	/**
-	 * "subId|item" -> carried count when an acquisition ("buy X") sub first
-	 * became current. Ticking needs the count to RISE above this. Session
-	 * state only, cleared on shutdown and profile switch.
-	 */
-	private final Map<String, Integer> acquisitionBaseline = new HashMap<>();
+	// Acquisition baselines ("subId|item" -> carried count when a "buy X"
+	// sub first became current) now live in ProgressManager, persisted per
+	// profile: session-only state meant a client restart re-based them with
+	// the goods already bought, wedging the step green-but-unticked.
 
 	/**
 	 * Ticks left before goal completions announce in chat. Login floods
@@ -1650,7 +1648,6 @@ public class IronscapePlugin extends Plugin
 		travelGoalSubs.clear();
 		interactionGoalSubs.clear();
 		countedGoalBySub.clear();
-		acquisitionBaseline.clear();
 		arrivalArmed.clear();
 		depletionBySub.clear();
 		depletionArmed.clear();
@@ -1693,7 +1690,6 @@ public class IronscapePlugin extends Plugin
 		migrateLegacyConfig();
 		progressManager.invalidate();
 		// Baselines describe the OLD profile's inventory state.
-		acquisitionBaseline.clear();
 		arrivalArmed.clear();
 		minigameRegions.clear();
 		minigamePresence = null;
@@ -3885,12 +3881,12 @@ public class IronscapePlugin extends Plugin
 				if (goal.isAcquisition() && goal.getQuantity() < 3)
 				{
 					String key = sub.getId() + "|" + goal.getItemName();
-					Integer baseline = acquisitionBaseline.get(key);
+					Integer baseline = progressManager.acquisitionBaseline(activeVariant, key);
 					if (baseline == null || count < baseline)
 					{
 						// (Re)base — also downward, so banking the spares
 						// and then buying still registers as a gain.
-						acquisitionBaseline.put(key, count);
+						progressManager.setAcquisitionBaseline(activeVariant, key, count);
 						baseline = count;
 					}
 					if (count <= baseline)
