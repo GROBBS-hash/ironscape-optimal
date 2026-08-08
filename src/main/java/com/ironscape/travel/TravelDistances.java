@@ -192,7 +192,7 @@ public class TravelDistances
 	 */
 	private int cellIndex(WorldPoint p)
 	{
-		if (!isLoaded())
+		if (p == null || !isLoaded())
 		{
 			return -1;
 		}

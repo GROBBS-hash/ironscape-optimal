@@ -2528,9 +2528,9 @@ public class IronscapePlugin extends Plugin
 								+ (castable(named) ? "" : " (not castable yet — boost/runes)"))
 						: leg == null
 							? "none — no first leg beats walking to " + routeTarget
+								+ metricNote(routeTarget)
 							: "route-aware first leg toward " + routeTarget
-								+ (travelDistances.reachable(routeTarget)
-									? " (walked distances)" : " (straight lines)");
+								+ metricNote(routeTarget);
 					if (leg != null && leg.minigame != null)
 					{
 						String towardsKey = leg.minigame.toLowerCase(Locale.ROOT).replace('’', '\'');
@@ -6392,6 +6392,25 @@ public class IronscapePlugin extends Plugin
 		}
 		return bestMinigame == null && bestSpell == null && !bestHome
 			? null : new FirstLeg(bestMinigame, bestSpell, bestHome);
+	}
+
+	/**
+	 * Which metric the hint just ranked on, and how far the player is under
+	 * it. Both outcomes carry it, including "none": a session log has to be
+	 * able to say whether the travel table was consulted at all, and "none"
+	 * is the outcome you get while standing next to the target, which is
+	 * exactly when you would wonder.
+	 */
+	private String metricNote(WorldPoint target)
+	{
+		if (target == null)
+		{
+			return "";
+		}
+		WorldPoint me = playerPoint();
+		return (travelDistances.reachable(target) ? " (walked distances" : " (straight lines")
+			+ (me == null ? "" : ", player " + effectiveDistance(me, target) + " away")
+			+ ")";
 	}
 
 	/**
