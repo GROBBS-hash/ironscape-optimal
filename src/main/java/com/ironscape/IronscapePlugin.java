@@ -5346,8 +5346,23 @@ public class IronscapePlugin extends Plugin
 					eventBus.post(new PluginMessage("shortestpath", "clear"));
 					return;
 				}
+				// The ONE path in this method that used to post a route
+				// without logging a decision. Because logNavDecision only
+				// prints on CHANGE, lastNavDecision kept whatever the
+				// previous step had set, and the session log went on
+				// claiming the route pointed at the last step's
+				// destination — six minutes and a boat trip out of date.
+				// A route you cannot account for is worse than no route:
+				// the owner read it as "navigation is not working" while
+				// nav was in fact working, on an errand stage nobody could
+				// see (2026-08-08, the Mordred bat bones/black candle
+				// chain). Name the stage as well as the tile.
+				WorldPoint errandRoute = errandRoutePoint(errand);
+				logNavDecision("routing to errand stage " + errandRoute
+					+ (errand.item == null ? "" : " for " + errand.item)
+					+ (errand.note == null ? "" : " — " + errand.note));
 				eventBus.post(new PluginMessage("shortestpath", "path",
-					Map.of("target", errandRoutePoint(errand))));
+					Map.of("target", errandRoute)));
 				return;
 			}
 			// Chain COMPLETE but the sub's own goal isn't (standing at the
