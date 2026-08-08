@@ -534,7 +534,57 @@ and inventory outline.
 
 ---
 
-## NEXT SESSION — start here (rewritten 2026-08-08, end of wave 14)
+## NEXT SESSION — start here (rewritten 2026-08-08, end of wave 15)
+
+**Two things, in this order. Both are MODEL work, not seeding.**
+
+### 1. Plane-aware region stages — the biggest one
+
+`Errand.region` (wave 15) got navigation INTO Keep Le Faye. It ignores plane, so
+it cannot tell floors apart: the chain guided up the FIRST staircase and then
+stopped, and it cannot guide back down and out at all.
+
+Shortest Path will never solve the exit — the crate is one-way and SP has no
+modelled path out of the interior, which is why it drew a Lumbridge home
+teleport from in there. **The exit wants OUR object outlines**, which already
+exist for this: wave 12's "a stage with a route/satisfaction split outlines the
+traversal object at its route point".
+
+So: a stage condition that is region AND plane, plus stages for each traversal
+leg (up to p1, up to p2, back down, out the door), each outlining its own
+staircase or door. Decide the model first — this chain went waypoint -> route
+point -> region stage across three builds before it was right, and each patch
+was made in sequence rather than modelled.
+
+**Then sweep it.** Every "go through this thing" leg in the guide is the same
+shape and is currently approximated with proximity coordinates: cave entrances,
+boats, trapdoors, ZMI, Brimstail. That is the real payoff.
+
+### 2. Morgan's dialogue never recoloured
+
+Seeded on the gate stage with QH's exact strings, and it did not fire in play.
+NOT case: `dialogKey` strips punctuation and lowercases, so "Ok I will do all
+that." and the game's "OK I will do all that." both normalise the same. So the
+fault is upstream of the comparison — most likely the active stage's `dialog`
+never reaching `highlightStageDialog`. **Read the session log before touching
+code**; this is a code path, not data.
+
+### Then the wave 14 list below, unchanged
+Nothing in wave 14 has been play-tested except the first-leg hints.
+
+### Standing lessons from wave 15
+- **Seed SUBTRACTIVELY**: `node tools/qh-tree.mjs "Quest" --state N --draft`,
+  then delete what the guide's step does not own. The additive way missed four
+  legs on one chain.
+- **A waypoint models "be here", never "do this."** Actions need a var, an
+  item, a region, or nothing.
+- **Read the audit line by line** for the chain you are standing in.
+  `audit-errand-chains` printed the missing crate leg twice and it was skimmed.
+- **Never call `panel::refresh` from a per-tick path.** It blanked the guide.
+
+---
+
+## Previous session list (written 2026-08-08, end of wave 14)
 
 Wave 14 was a desk session. **P1-08 is closed**; everything else was audit
 work, and **nothing in wave 13 or 14 has been play-tested.**

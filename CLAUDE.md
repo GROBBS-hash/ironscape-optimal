@@ -738,6 +738,65 @@ refresh when "Failed to login" appears.
   capture; hub pin at b8c994d, now ~70 commits behind — bump after a
   calm session.
 
+- SESSION WAVE 15 (2026-08-08 late, LIVE play-test on the Merlin's Crystal
+  step `a8014d6a77`, main at `bbc7cdb`, all pushed): **the whole evening was
+  one errand chain, and the lesson is that it was never a seeding problem.**
+  Six rounds of fixes, each found in play: (1) the seeded note was INVENTED
+  ("insist when he warns you") — the wiki and QH both say the Candle maker
+  MAKES the candle in exchange for a bucket of wax; (2) the three wax legs
+  (repellent -> bucket -> beehive) were missing entirely; (3) no STATE GATE —
+  QH puts the whole black-candle branch in quest state 4 and the player was in
+  3, so the dialogue did not exist and the chain guided a wasted trip
+  (`varp 14 >= 4`, CONFIRMED in play); (4) the way IN was missing — the keep
+  door is locked forever and Arhein's CRATE behind the Candle Maker's shop is
+  the entrance; (5) as a proximity WAYPOINT the crate self-satisfied because it
+  sits where the wax legs already put you; (6) merged into the next stage as a
+  static route point it then pointed back OUT of the keep from inside.
+  **ROOT CAUSE of 5 and 6: the stage model could not express "am I in yet?".**
+  Stages could be satisfied by item, var, hand-in or proximity — and a leg
+  whose whole point is GETTING SOMEWHERE is none of those. QH has had this all
+  along (`inFayeGround`/`inFaye1`/`inFaye2` are zone checks it evaluates every
+  tick), which is why its guidance looks seamless. NEW FIELD `Errand.region`
+  (satisfied when `getRegionID()` matches; checked BEFORE the item branches so
+  a region stage can still carry an item for its badge). Keep Le Faye = 11061.
+  **This is the model for EVERY "go through this thing" leg in the guide** —
+  cave entrances, boats, trapdoors, the ZMI and Brimstail cases still
+  approximated with proximity coords. A sweep, not a report-at-a-time fix.
+  **NEW TOOLS**: `qh-tree.mjs` reads QH as the STATE MACHINE it is — parses
+  `steps.put(N,…)` plus the ConditionalStep tree and prints, per quest state,
+  the branches with their conditions and each leaf's coords/description/dialog
+  (`--draft` emits trimmable errand stages). Seeding becomes SUBTRACTIVE: take
+  the state your step covers and DELETE what it does not own. The old additive
+  way silently missed whatever nobody thought to add — four times, on one
+  chain. It found Morgan's dialogue within an hour of being written.
+  `audit-errand-chains.mjs` (UNCOVERED = a QH step no stage goes near; NO GATE
+  = chain spanning several quest states with no var gate). **It printed the
+  crate leg, twice, and I skimmed past it** — a tool only helps if its output
+  is read line by line for the chain you are standing in.
+  **ALSO SHIPPED**: errand stage BADGES (per-stage NEEDED/HELD/SPENT state
+  decided by the chain, never a raw count — half these items are consumed into
+  the next stage and plain "0/1" would sit red forever; display-only, never
+  annotation items, so the arrival gate and bank-first are untouched); ground
+  items now match the ACTIVE ERRAND STAGE's item and the nearest-NPC fallback
+  stands down when it is in the scene (a bystander was outlined instead of the
+  repellent on a table — `findWantedGroundItems` read `itemGoalsBySub` and
+  nothing else, same root as the missing badges); stage `items` lists drive
+  QH-style use-order inventory hints. **PANEL BLANKED IN PLAY** — the badge
+  cache called `panel::refresh`, which rebuilds the whole view incl. scroll and
+  jump-to-current, from the per-tick path once per chain. Never do that from a
+  badge update; `refreshItemCounts` cannot blank anything but also cannot ADD
+  rows, so stage badges appear from the next natural rebuild.
+  **CONFIRMED IN PLAY**: crate entry, region release, Mordred outlined,
+  `varp 14 >= 4`, badges, ground-item highlight, nav to the candle.
+  **STILL OPEN**: no plane awareness (guided up the FIRST staircase only, and
+  cannot guide back down and out — SP has no path out of the keep interior, so
+  the exit wants OUR object outlines, not SP's line); the dialogue recolour
+  never fired for Morgan even though the strings match (`dialogKey` lowercases
+  and strips punctuation, so it is NOT case) — read the log, it is a code path.
+  **A teleport marker on a world TILE is Shortest Path's own suggestion** — our
+  hint logged `none` while SP drew a Lumbridge home teleport, because the crate
+  is one-way and SP cannot path out of the interior.
+
 - SESSION WAVE 14 (2026-08-08, desk session — owner away, NOTHING play-tested):
   **P1-08 CLOSED: first legs now rank by WALKED distance.** The question the
   owner asked first — are SP's 25 transport TSVs enough to reason about
