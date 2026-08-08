@@ -816,6 +816,14 @@ public class IronscapePlugin extends Plugin
 					: client.getVarpValue(stage.varp);
 				satisfied = varValue >= stage.value;
 			}
+			else if (stage.region != null)
+			{
+				// "Am I in yet?" — the only honest test for a leg that moves
+				// you somewhere without giving you anything. Note this is
+				// checked BEFORE the item branches: a region stage may also
+				// carry an item for its badge, and the region is the gate.
+				satisfied = here != null && here.getRegionID() == stage.region;
+			}
 			else if (stage.item != null && Boolean.TRUE.equals(stage.given))
 			{
 				// HAND-IN stage: done once the item has left your hands.

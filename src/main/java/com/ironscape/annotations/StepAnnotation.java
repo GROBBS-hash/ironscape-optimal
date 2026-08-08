@@ -100,6 +100,24 @@ public class StepAnnotation
 		/** Item this stage yields; the stage stands down once you own one. */
 		public String item;
 		/**
+		 * Stage done once the player is standing in this REGION
+		 * (WorldPoint.getRegionID()).
+		 *
+		 * For a leg whose whole point is GETTING SOMEWHERE that no item and
+		 * no var records. Arhein's crate smuggles you into Keep Le Faye; the
+		 * crate is in Catherby, so a proximity waypoint on it ticked the
+		 * moment the player walked past on another errand, and modelling it
+		 * as a coordinate meant navigation kept pointing back at the crate
+		 * from INSIDE the keep.
+		 *
+		 * Quest Helper has had this all along and it is why its guidance
+		 * looks seamless here — inFayeGround / inFaye1 / inFaye2 are zone
+		 * checks it evaluates every tick. This is the same idea with one
+		 * region instead of a zone: the stage asks "am I in yet?" rather
+		 * than "am I near the door?".
+		 */
+		public Integer region;
+		/**
 		 * INVERTS `item`: this stage HANDS the item over, so it stands down
 		 * once you no longer carry one. Biohazard's three vials go to three
 		 * different people (Hops the sulphuric broline, Chancy the liquid

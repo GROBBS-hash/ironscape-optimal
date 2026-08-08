@@ -5901,11 +5901,18 @@
      "note": "Use the insect repellent on a beehive, then fill the bucket with wax."
     },
     {
+     "x": 2801,
+     "y": 3442,
+     "plane": 0,
+     "region": 11061,
+     "note": "The keep door is locked and stays locked — \"you will have to find another way in\". Hide in Arhein's crate behind the Candle Maker's shop in Catherby and it smuggles you inside."
+    },
+    {
      "x": 2770,
      "y": 3403,
      "plane": 2,
-     "routeX": 2801,
-     "routeY": 3442,
+     "routeX": 2770,
+     "routeY": 3405,
      "routePlane": 0,
      "npc": "Sir Mordred",
      "dialog": [
