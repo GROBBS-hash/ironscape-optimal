@@ -534,7 +534,50 @@ and inventory outline.
 
 ---
 
-## NEXT SESSION — start here (rewritten 2026-08-08, end of wave 13)
+## NEXT SESSION — start here (rewritten 2026-08-08, end of wave 14)
+
+Wave 14 was a desk session. **P1-08 is closed**; everything else was audit
+work, and **nothing in wave 13 or 14 has been play-tested.**
+
+1. **Wave 13's list below is untouched and still first** — the compost step
+   (`5bf54fe229`), the 11 revived quest steps, the Go button on un-pinned steps.
+   Two of its open questions are now settled and need no play: the Fremennik
+   lyre is `granted`, and the Rag and Bone Man start step stays as it is (the
+   pots and logs belong to the burning steps much later; if you want the nag,
+   the fix is moving that kit, not gating the start).
+2. **Watch the first-leg hints.** They now rank by walked distance. The
+   forensic line says which metric it used — `(walked distances)` or
+   `(straight lines)` — so `mine-session-log.mjs | grep teleport-hint` tells
+   you whether the table was in play. The case to re-run is the one that
+   started this: from a distance, "Kill Mordred and get bat bones/black
+   candle" should now offer **Camelot Teleport**, not Burthorpe.
+3. **The Karamja boat still needs its second data point** (#214). No
+   behaviour changed. The gate lines now carry what the crossing recorder is
+   holding, so one more trip says whether the click was never recorded or
+   recorded-then-rejected. `grep "boat gate:"`.
+4. **Two review lists are waiting**, both now filtered down to things that
+   matter rather than dumps:
+   - `node tools/audit-pin-reachability.mjs` — **14 pins the guide names that
+     Shortest Path cannot stand on.** `castle wars` (25 tiles out) and
+     `pest control` (13) are on the route. The suggested anchor is the nearest
+     standable tile, which is mechanically right and not always semantically
+     right — read before applying.
+   - `node tools/audit-quest-start-pins.mjs` — **10 to review** (was 24).
+     `creature of fenkenstrain` records its giver as a *signpost* while QH
+     talks to Dr. Fenkenstrain 89 tiles away; that one looks like a seeding
+     artifact.
+5. `node tools/audit-first-legs.mjs` lists the 188 targets whose first leg the
+   straight line got wrong. Nothing to fix — it is the regression tool for the
+   class, and a spot-check against your own game sense is worth more than
+   anything I can assert about it.
+6. Long-standing and still open: deliberate death test, onion-gate capture,
+   "big frog leg" -> 7908 verdict, Gertrude's Cat ticking on quest start.
+
+**Hub pin stays at `3638c2f`.** Two waves of unverified work now sit on top.
+
+---
+
+## Previous session list (written 2026-08-08, end of wave 13)
 
 Wave 13 was a desk session with the owner away. **Nothing in it is play-tested.**
 
@@ -571,7 +614,43 @@ Wave 13 was a desk session with the owner away. **Nothing in it is play-tested.*
 
 ---
 
-### P1-08 — First-leg hints can't see a BARRIER (owner, 2026-08-08, live)
+### P1-08 — First-leg hints can't see a BARRIER — **CLOSED (wave 14)**
+
+**The connectivity question, answered before designing anything:** the 25
+transport TSVs are **not** enough on their own. They model *crossings*, not
+terrain, so nothing in them can tell you Burthorpe -> Keep Le Faye is a
+531-tile walk. And connectivity was the wrong question anyway — White Wolf
+Mountain is walkable, so Burthorpe and Keep Le Faye are connected. What was
+needed is PATH DISTANCE.
+
+The data for that is SP's `collision-map.zip` (1.2MB, two bits per tile:
+can-step-north, can-step-east), which the hub does not stop us reading. Neither
+half suffices alone: collision without transports still ranks Burthorpe first
+(531 vs Port Sarim's 692); transports without collision cannot see the mountain.
+Together they reproduce the right answer.
+
+**Shipped:** `tools/build-travel-distances.mjs` runs SP's search offline at full
+tile resolution and bundles a distance field per landing, 32-tile cells, 25
+fields, **52KB gzipped**. No collision map in the jar, no runtime search, no new
+thread. `firstLegTowards` measures candidates with it and keeps straight lines
+for the player's own leg, which cannot be precomputed from an arbitrary position.
+
+**Measured, not asserted** (340 (player, target) pairs from the guide's own pins,
+scored against full-resolution truth): the right landing **64% -> 84%**, the
+fire/don't-fire call **82% -> 87%**. Two things the measurement killed:
+straight-line is **not** a lower bound on travel (32% of pin pairs travel
+shorter, because a boat costs nine tiles and the water is hundreds), and
+scaling the player's leg by the median walk ratio to make the legs comparable
+scored **worse** on both counts.
+
+A coarse navigation graph answering arbitrary-to-arbitrary was built and
+rejected: 110KB for 92% agreement, against 52KB for a perfect landing ranking.
+
+`node tools/audit-first-legs.mjs` is the regression tool — 188 of 558 targets
+got the wrong landing under the straight line, 21 of them with no ungated
+walking route at all from the landing it chose.
+
+<details><summary>Original report (2026-08-08, live)</summary>
 
 **Observed:** on "Kill Mordred and get bat bones/black candle", the hint offered a **Burthorpe Games
 Room** minigame teleport as the first leg toward Keep Le Faye (`2757,3401`). The owner took it,
@@ -605,6 +684,8 @@ a plane offset. Euclidean distance cannot see a mountain.
 teleport "wins" a first leg when the straight line crosses a known barrier region, or suppress
 first-leg hints entirely while the step's destination sits behind a gate the account has not
 unlocked. Both need the connectivity question answered first.
+
+</details>
 
 ---
 

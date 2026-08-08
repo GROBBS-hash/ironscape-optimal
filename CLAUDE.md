@@ -738,6 +738,90 @@ refresh when "Failed to login" appears.
   capture; hub pin at b8c994d, now ~70 commits behind — bump after a
   calm session.
 
+- SESSION WAVE 14 (2026-08-08, desk session — owner away, NOTHING play-tested):
+  **P1-08 CLOSED: first legs now rank by WALKED distance.** The question the
+  owner asked first — are SP's 25 transport TSVs enough to reason about
+  connectivity offline? — is **no**, and connectivity was the wrong question
+  anyway. The TSVs model CROSSINGS, not terrain, so nothing in them says
+  Burthorpe -> Keep Le Faye is a 531-tile walk; and White Wolf Mountain is
+  WALKABLE, so the two are connected — the lie was path LENGTH, not
+  reachability. What answers it is SP's `collision-map.zip` (1.2MB, two bits
+  per tile: can-step-north, can-step-east, layout in `SplitFlagMap.java`),
+  which the hub does not stop us READING even though it stops us calling their
+  pathfinder. Neither half suffices: collision alone still ranks Burthorpe
+  first (531 vs Port Sarim 692), transports alone cannot see the mountain.
+  SHIPPED: `tools/build-travel-distances.mjs` runs SP's own search offline at
+  full tile resolution and bundles a distance FIELD per landing (32-tile cells,
+  25 fields, **52KB gzipped**, `travel/travel_distances.bin.gz` +
+  `TravelDistances.java`). No collision map in the jar, no runtime search, no
+  new thread — which matters in a plugin that has hard-frozen twice on
+  re-entrancy. Transports counted are ONLY the ungated ones (no quest, no
+  skill, no items beyond coins) and NO long-distance networks: we cannot know
+  an account's unlocks at build time, a missing shortcut reads LONG which
+  suggests FEWER teleports, and baking networks in would let the hint argue
+  with itself. Spirit trees are origins as well as targets so the existing
+  network shortcut survives in walked tiles.
+  **MEASURED, NOT ASSERTED** (340 (player, target) pairs from the guide's own
+  pins, scored against full-resolution truth): right landing **64% -> 84%**,
+  fire/don't-fire **82% -> 87%**. TWO THINGS THE MEASUREMENT KILLED. (1) The
+  tempting argument that a straight-line player leg is safely conservative is
+  FALSE — straight line is not a lower bound on travel, because **32% of pin
+  pairs travel SHORTER than the straight line** (a boat costs nine tiles and
+  the water it crosses is hundreds). (2) Scaling the player's straight line by
+  the measured median walk ratio, to make both legs comparable, scored WORSE on
+  both counts, so it is not in the code. A coarse arbitrary-to-arbitrary
+  navigation graph was built and REJECTED: 110KB for 92% decision agreement
+  against 52KB for a perfect landing ranking. Metrics are never MIXED within
+  one decision — when the table cannot speak about a target every candidate
+  falls back to straight lines together, and a landing with no ungated route
+  answers UNKNOWN and drops out (the barrier case stated as a distance).
+  `TravelDistancesTest` fails the build if a landing name drifts from
+  minigame_landings.json / TELEPORT_SPELLS / SPIRIT_TREE_ORIGINS, since a
+  renamed landing would silently answer UNKNOWN and fall back to the very
+  straight lines the table replaces. `tools/audit-first-legs.mjs`: 188 of 558
+  targets got the wrong landing before, 21 with no ungated route at all.
+  **audit-pin-reachability REWRITTEN from proxy to proof** — it used to ask
+  "is a transport endpoint within 40 tiles" and report DEFINITE/LIKELY/
+  BORDERLINE tiers because it could not tell walking from teleporting. It now
+  runs SP's flood fill across every plane through every transport INCLUDING
+  gated ones (the question is whether SP can draw a path for a player who
+  qualifies): 1,281,364 tiles reachable from Lumbridge. Three tiers now mean
+  something: WRONG SPOT (nearest standable tile well clear — re-anchor),
+  NO ROUTE (nothing within 120 tiles; **14 of the 17 are Sailing islands**),
+  and FINE (within 5 tiles — **NOT a defect**, because SP's own pathfinder
+  walks to the closest reachable tile when the target is blocked, so a pin on
+  a bank booth routes correctly; the old tool would have reported all 16).
+  Filtered to names the GUIDE mentions, since a broken pin only costs a play
+  session if a step can route to it: 70 findings -> a 14-line review list, on
+  which `castle wars` (25 tiles out) and `pest control` (13) are on the route.
+  **audit-quest-start-pins CLASSIFIED**: it reported 24 drifts as if drift
+  meant we were wrong, so the same 24 returned every session. QH's FIRST step
+  is very often not the giver but the approach ("go to Port Sarim to get a
+  boat to Entrana" before Auguste; "catch 23 raw karambwanji"; "climb to the
+  second floor" before Sir Tiffy) — our giver is the better routing target in
+  every one. Now 10 to REVIEW (QH's own first step says it starts the quest
+  and still disagrees, or we have no recorded giver — `creature of
+  fenkenstrain` records its giver as a SIGNPOST) and 14 labelled not-defects.
+  Nine of those 14 are underground givers vs QH's surface entrance, the
+  ~6,400-tile rows: that is the ZMI/Brimstail shape, so it is stated
+  explicitly that it is NOT one here — reachability confirms SP paths to all
+  nine, making ours the more precise target.
+  **BOAT GATE: no behaviour changed on one data point** (owner's call). The
+  log confirmed its first exercise went "holding, gangplank loaded but not
+  crossed" -> "open, no gangplank in range" 13s later, so the crossing was
+  never accepted — but the line could not say WHY, and two faults produce it
+  (no click recorded at all vs a click recorded then rejected by the
+  near-the-destination test), wanting OPPOSITE fixes. The gate lines now carry
+  what the recorder holds: tile, age in ticks, STALE flag, distance from the
+  destination against the radius needed. The next trip is conclusive.
+  **OWNER DECISIONS**: Fremennik Trials lyre -> `granted` (the kit already
+  lists the knife and axe that BUILD it, so it is an in-quest acquisition and
+  the kit policy says those never sit red) — audit-quest-granted is now 0
+  flagged, the list is closed. Rag and Bone Man start step stays ticking on
+  quest start: the step says "start", and its pots/logs/tinderbox belong to
+  burning steps much later; if the nag is wanted, move that kit rather than
+  gate the start.
+
 - SESSION WAVE 13 (2026-08-08, desk session — owner away, NOTHING play-tested):
   **ANNOTATION ITEMS NOW GATE PURCHASE STEPS.** The reported shape: "Buy 1
   pack of normal compost and all farming tools, store everything in
