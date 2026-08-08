@@ -4207,7 +4207,8 @@
     },
     {
      "name": "lyre",
-     "quantity": 1
+     "quantity": 1,
+     "granted": true
     },
     {
      "name": "raw manta ray",
