@@ -2454,10 +2454,24 @@ public class IronscapePlugin extends Plugin
 					boolean prescribed = deathPoint == null && hintErrand == null
 						&& PRESCRIBED_TRANSPORT.matcher(
 							current.sub.getPlainText().toLowerCase(Locale.ROOT)).find();
-					FirstLeg leg = prescribed ? null
+					// ... but if it prescribes a spell we can actually point
+					// at ("Use mind bomb and camelot tele"), highlight THAT
+					// one. Standing down entirely left the player in the
+					// essence mine with no prompt at all (owner,
+					// 2026-08-08). No distance test: the guide named the
+					// spell, so where you are is irrelevant — which also
+					// gets past the surface-band guard that would otherwise
+					// suppress every hint from inside a dungeon.
+					TeleportSpell named = prescribed
+						? prescribedSpell(current.sub.getPlainText()) : null;
+					FirstLeg leg = prescribed
+						? (named == null ? null : new FirstLeg(null, named, false))
 						: firstLegTowards(routeTarget, !minigameTeleportOnCooldown());
 					hintReason = prescribed
-						? "none — sub prescribes its own transport"
+						? (named == null
+							? "none — sub prescribes its own transport"
+							: "prescribed spell " + named.name
+								+ (castable(named) ? "" : " (not castable yet — boost/runes)"))
 						: leg == null
 							? "none — no first leg beats walking to " + routeTarget
 							: "route-aware first leg toward " + routeTarget;
@@ -4680,6 +4694,15 @@ public class IronscapePlugin extends Plugin
 		return names;
 	}
 
+	/**
+	 * Traversal objects worth outlining when a route point sits on one.
+	 * Lowercase: liveObjectName lowercases (that mismatch has cost a
+	 * play-test round before).
+	 */
+	private static final java.util.Set<String> TRAVERSAL_OBJECTS = java.util.Set.of(
+		"staircase", "stairs", "ladder", "trapdoor", "trap door",
+		"stairwell", "steps");
+
 	private List<net.runelite.api.GameObject> findWantedRocks(Current current)
 	{
 		java.util.Set<String> rockNames = new java.util.HashSet<>();
@@ -4735,7 +4758,25 @@ public class IronscapePlugin extends Plugin
 		// outlines the stalls themselves, same as rocks for a mining sub.
 		rockNames.addAll(objectGrindNames(
 			current.sub.getPlainText().toLowerCase(Locale.ROOT)));
-		if (rockNames.isEmpty() && vendorNames.isEmpty())
+		// A stage with a route/satisfaction split points its route at a
+		// TRAVERSAL object — the staircase up to Lancelot, the trapdoor
+		// down to a basement. The ⌖ marker showed where to stand but not
+		// what to click, and "the stairs need highlighting so people know
+		// where to go" (owner, 2026-08-08). Only while the player is on
+		// the route's own plane: once upstairs, the stage's real target
+		// takes over and the staircase behind you is noise.
+		WorldPoint traversal = null;
+		StepAnnotation.Errand routedStage = activeErrand();
+		if (routedStage != null && routedStage.routeX != null && routedStage.routeY != null)
+		{
+			WorldPoint route = errandRoutePoint(routedStage);
+			WorldPoint here = playerPoint();
+			if (here != null && here.getPlane() == route.getPlane())
+			{
+				traversal = route;
+			}
+		}
+		if (rockNames.isEmpty() && vendorNames.isEmpty() && traversal == null)
 		{
 			return java.util.Collections.emptyList();
 		}
@@ -4748,6 +4789,8 @@ public class IronscapePlugin extends Plugin
 		java.util.LinkedHashSet<net.runelite.api.GameObject> found = new java.util.LinkedHashSet<>();
 		net.runelite.api.GameObject nearestVendor = null;
 		int vendorBest = Integer.MAX_VALUE;
+		net.runelite.api.GameObject nearestTraversal = null;
+		int traversalBest = Integer.MAX_VALUE;
 		net.runelite.api.Tile[][][] tiles = client.getTopLevelWorldView().getScene().getTiles();
 		int plane = client.getTopLevelWorldView().getPlane();
 		for (net.runelite.api.Tile[] row : tiles[plane])
@@ -4782,12 +4825,30 @@ public class IronscapePlugin extends Plugin
 							nearestVendor = object;
 						}
 					}
+					// Nearest traversal object to the ROUTE POINT, not to the
+					// player: Camelot's ground floor has several staircases and
+					// the route names which one. Scene coords on both sides, so
+					// an instanced copy simply matches nothing rather than
+					// outlining the wrong stairs.
+					if (traversal != null && TRAVERSAL_OBJECTS.contains(name))
+					{
+						int d = object.getWorldLocation().distanceTo2D(traversal);
+						if (d <= ARRIVE_RADIUS && d < traversalBest)
+						{
+							traversalBest = d;
+							nearestTraversal = object;
+						}
+					}
 				}
 			}
 		}
 		if (nearestVendor != null)
 		{
 			found.add(nearestVendor);
+		}
+		if (nearestTraversal != null)
+		{
+			found.add(nearestTraversal);
 		}
 		return new java.util.ArrayList<>(found);
 	}
@@ -5926,16 +5987,9 @@ public class IronscapePlugin extends Plugin
 			}
 		}
 		TeleportSpell bestSpell = null;
-		int magic = client.getRealSkillLevel(Skill.MAGIC);
-		int laws = itemTracker.carriedCountOf("law runes");
 		for (TeleportSpell spell : TELEPORT_SPELLS)
 		{
-			if (magic < spell.level || laws < spell.laws)
-			{
-				continue;
-			}
-			if (spell.requiredQuest != null
-				&& cachedQuestState(spell.requiredQuest) != QuestState.FINISHED)
+			if (!castable(spell))
 			{
 				continue;
 			}
@@ -5950,6 +6004,62 @@ public class IronscapePlugin extends Plugin
 		}
 		return bestMinigame == null && bestSpell == null && !bestHome
 			? null : new FirstLeg(bestMinigame, bestSpell, bestHome);
+	}
+
+	/**
+	 * Can the player cast this teleport right now? Level, LAW runes in
+	 * hand and the quest gate. Elemental runes go unchecked on purpose —
+	 * staves make them unanswerable.
+	 * Client thread (skill and inventory reads).
+	 */
+	private boolean castable(TeleportSpell spell)
+	{
+		return client.getRealSkillLevel(Skill.MAGIC) >= spell.level
+			&& itemTracker.carriedCountOf("law runes") >= spell.laws
+			&& (spell.requiredQuest == null
+				|| cachedQuestState(spell.requiredQuest) == QuestState.FINISHED);
+	}
+
+	/**
+	 * The standard-book teleport a sub NAMES, or null — "Use mind bomb
+	 * and camelot tele" -> Camelot Teleport. Matched on the DESTINATION
+	 * word, since the guide never writes the full spell name.
+	 *
+	 * The destination must sit either side of a tele word ("camelot
+	 * tele", "Teleport to Varrock"). Merely MENTIONING a town is not a
+	 * teleport instruction, and three steps in the guide prove it: "Use
+	 * the falador teletab" (a tab, not the spell), "Use house tab and run
+	 * back to thurgo ... run back to Falador" (a destination on foot),
+	 * and "Home tele to lumby and run north to Varrock east bank" (a
+	 * different teleport entirely). The optional "port" carries a word
+	 * boundary, which is what makes "teletab" fail to match.
+	 *
+	 * Castability is deliberately NOT required here, unlike the spell
+	 * SUGGESTION path. "Use mind bomb and camelot tele" is the guide
+	 * telling you to BOOST into Camelot Teleport, so the player's real
+	 * Magic level is under 45 by design — gating on castable() silenced
+	 * the one step in the guide that most needs the prompt (owner,
+	 * 2026-08-08). A suggestion has to be castable to be worth making; a
+	 * prescription is the guide's call, and missing runes are the item
+	 * badges' job to report, not the hint's.
+	 */
+	private TeleportSpell prescribedSpell(String subText)
+	{
+		String lower = subText.toLowerCase(Locale.ROOT);
+		for (TeleportSpell spell : TELEPORT_SPELLS)
+		{
+			String destination = java.util.regex.Pattern.quote(
+				spell.name.toLowerCase(Locale.ROOT).replace(" teleport", ""));
+			boolean named = java.util.regex.Pattern
+				.compile("\\b" + destination + "\\s+tele(?:port)?\\b"
+					+ "|\\btele(?:port)?\\s+to\\s+" + destination + "\\b")
+				.matcher(lower).find();
+			if (named)
+			{
+				return spell;
+			}
+		}
+		return null;
 	}
 
 	/** The minigame-teleport name matching this place name, or null. */
