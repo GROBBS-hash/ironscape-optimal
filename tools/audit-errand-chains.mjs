@@ -171,3 +171,96 @@ if (gateless.length) {
     console.log(`  ${g.key}  ${g.quest} (${g.states} states)  "${g.text.slice(0, 60)}"`);
   }
 }
+
+// ---------------------------------------------------------------------------
+// STRUCTURAL checks -- no Quest Helper needed, and these are the ones wave 15
+// paid for one at a time. All three are the same underlying fault: a leg whose
+// whole point is GETTING SOMEWHERE, modelled as a coordinate. A proximity
+// waypoint can only ever say "be here", never "be through".
+// ---------------------------------------------------------------------------
+const UNDERGROUND = 4000;      // y at or above this is not the surface
+const band = (p) => (p.y >= UNDERGROUND ? 'underground' : 'surface');
+// Quest progress, not a place: neither a radius nor the ground between legs
+// decides anything for these, so both checks below leave them alone.
+const varGated = (s) => s.value != null && (s.varbit != null || s.varp != null);
+
+const findings = [];
+for (const [key, entry] of Object.entries(ann)) {
+  const chain = entry.errands;
+  if (!chain) continue;
+  const text = textById.get(key.split(':')[0]) || '';
+  for (let i = 0; i < chain.length; i++) {
+    const s = chain[i];
+    const prev = i > 0 ? chain[i - 1] : null;
+
+    // (A) SELF-SATISFYING. The stage's own satisfaction circle contains the
+    // place the PREVIOUS leg leaves you standing, so it ticks the instant the
+    // leg before it does and guides nothing. Arhein's crate, exactly: it sits
+    // in Catherby where the three wax legs already put you.
+    // (A var-gated stage is exempt from both: its gate is quest progress,
+    // so neither its radius nor the ground between legs decides anything.)
+    if (prev && !varGated(s) && s.zone == null && s.region == null && s.item == null
+        && dist(s, prev) <= (s.radius ?? 12)) {
+      findings.push({ key, i, text,
+        what: `SELF-SATISFYING  waypoint ${s.x},${s.y} is ${dist(s, prev)} tiles from the`
+          + ` previous stage, inside its own ${s.radius ?? 12}-tile radius` });
+    }
+
+    // (B) UNGUIDED TRAVERSAL. Consecutive stages either side of the
+    // underground band (which you can only cross THROUGH something), or on
+    // different floors CLOSE together (a staircase, not a journey) -- where
+    // the later one names neither a route point nor an object, so something
+    // is crossed that the chain never says how to cross.
+    //
+    // The distance test is what separates this from an ordinary long walk:
+    // the Blue Moon Inn upstairs to the Gnome bar upstairs is two floors and
+    // 700 tiles, and Shortest Path draws it perfectly well.
+    //
+    // `hold` exempts a stage: it is the annotation saying out loud that no
+    // route can be drawn for this leg, which is an answer to the question --
+    // not a good one, but a deliberate one. A held leg with nothing to click
+    // still leaves the player to find their own way; that wants zone bounds,
+    // and bounds have to be captured in game.
+    const traversal = prev && !varGated(s) && s.hold !== true
+      && (band(prev) !== band(s)
+        || ((prev.plane ?? 0) !== (s.plane ?? 0) && dist(prev, s) <= 30));
+    if (traversal && s.routeX == null && s.object == null) {
+      findings.push({ key, i, text,
+        what: `UNGUIDED TRAVERSAL  ${prev.x},${prev.y} p${prev.plane ?? 0} (${band(prev)})`
+          + ` -> ${s.x},${s.y} p${s.plane ?? 0} (${band(s)}) with no route point`
+          + ` and no object to click` });
+    }
+
+    // (C) COARSE REGION. A region is 64x64. If another stage of the SAME chain
+    // stands in it and is plainly somewhere else, the region cannot mean "am I
+    // in yet" -- region 11061 holds Keep Le Faye AND the giant bats the same
+    // chain sends you to two stages earlier. Zones tell them apart.
+    if (s.region != null) {
+      const regionOf = (p) => ((p.x >> 6) << 8) | (p.y >> 6);
+      for (let j = 0; j < chain.length; j++) {
+        if (j === i || regionOf(chain[j]) !== s.region || dist(chain[j], s) <= 20) continue;
+        findings.push({ key, i, text,
+          what: `COARSE REGION  region ${s.region} also contains stage ${j}`
+            + ` (${chain[j].x},${chain[j].y}, ${dist(chain[j], s)} tiles away)`
+            + ` -- prefer a zone` });
+        break;
+      }
+    }
+  }
+}
+
+console.log(`\n=== legs modelled as coordinates that are really "go through this thing" ===`);
+if (!findings.length) {
+  console.log('  none');
+} else {
+  console.log(`A waypoint models "be here", never "do this". These want a zone`);
+  console.log(`(with its plane), a route point, and the object to click.\n`);
+  let last = null;
+  for (const f of findings) {
+    if (f.key !== last) {
+      console.log(`  ${f.key}  "${f.text.slice(0, 62)}"`);
+      last = f.key;
+    }
+    console.log(`    stage ${f.i}  ${f.what}`);
+  }
+}
