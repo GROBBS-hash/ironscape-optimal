@@ -2598,10 +2598,17 @@ public class IronscapePlugin extends Plugin
 				: routeHomeTeleportHint || homeTeleportHint
 					? "home teleport — " + hintReason
 					: hintReason);
-		// "Chronicle tele": the teleport lives on the WORN Chronicle
-		// (shield slot) — highlight the equipment click path.
-		activeEquippedTeleport = config.showTeleportHints() && current != null
-			&& CHRONICLE_TELE.matcher(current.sub.getPlainText()).find()
+		// "Chronicle tele": the teleport lives on the Chronicle, which is
+		// usually WORN (shield slot) — highlight the equipment click path.
+		// But it works just as well from the inventory, and pointing at an
+		// empty equipment tab while it sits in your bag is worse than not
+		// pointing at all (owner). Resolve the container at render time:
+		// worn -> the equipment slot, carried -> the inventory outline
+		// below picks it up instead.
+		boolean chronicleSub = config.showTeleportHints() && current != null
+			&& CHRONICLE_TELE.matcher(current.sub.getPlainText()).find();
+		activeEquippedTeleport = chronicleSub
+			&& itemTracker.wornCountOf("chronicle") > 0
 			? net.runelite.api.gameval.InterfaceID.Wornitems.SLOT5 : -1;
 
 		// Travel menus (spirit trees, gliders — interface 187): the word
@@ -4930,6 +4937,14 @@ public class IronscapePlugin extends Plugin
 			{
 				wanted.add(full.substring(full.indexOf(' ') + 1));
 			}
+		}
+		// "Chronicle tele" with the Chronicle in the BAG rather than worn:
+		// the equipment-slot hint stands down (see activeEquippedTeleport),
+		// so outline the inventory copy instead of pointing nowhere.
+		if (CHRONICLE_TELE.matcher(current.sub.getPlainText()).find()
+			&& itemTracker.wornCountOf("chronicle") == 0)
+		{
+			wanted.add("chronicle");
 		}
 		return hintIdsFor(wanted);
 	}

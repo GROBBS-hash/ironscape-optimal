@@ -1812,70 +1812,130 @@
     "x": 3226,
     "y": 3399,
     "plane": 0
-   }
+   },
+   "items": [
+    {
+     "name": "barcrawl card",
+     "quantity": 1
+    }
+   ]
   },
   "5850a7f337": {
    "target": {
     "x": 3279,
     "y": 3488,
     "plane": 0
-   }
+   },
+   "items": [
+    {
+     "name": "barcrawl card",
+     "quantity": 1
+    }
+   ]
   },
   "e5075fa29d": {
    "target": {
     "x": 2956,
     "y": 3370,
     "plane": 0
-   }
+   },
+   "items": [
+    {
+     "name": "barcrawl card",
+     "quantity": 1
+    }
+   ]
   },
   "f4c42f72a8": {
    "target": {
     "x": 2574,
     "y": 3323,
     "plane": 0
-   }
+   },
+   "items": [
+    {
+     "name": "barcrawl card",
+     "quantity": 1
+    }
+   ]
   },
   "2ec2fc3a83": {
    "target": {
     "x": 2796,
     "y": 3156,
     "plane": 0
-   }
+   },
+   "items": [
+    {
+     "name": "barcrawl card",
+     "quantity": 1
+    }
+   ]
   },
   "f5fa9a94a7": {
    "target": {
     "x": 2556,
     "y": 3079,
     "plane": 0
-   }
+   },
+   "items": [
+    {
+     "name": "barcrawl card",
+     "quantity": 1
+    }
+   ]
   },
   "9f04c897bc": {
    "target": {
     "x": 3046,
     "y": 3257,
     "plane": 0
-   }
+   },
+   "items": [
+    {
+     "name": "barcrawl card",
+     "quantity": 1
+    }
+   ]
   },
   "2bd7b72ec8": {
    "target": {
     "x": 2927,
     "y": 3144,
     "plane": 0
-   }
+   },
+   "items": [
+    {
+     "name": "barcrawl card",
+     "quantity": 1
+    }
+   ]
   },
   "a640572dbb": {
    "target": {
     "x": 2690,
     "y": 3494,
     "plane": 0
-   }
+   },
+   "items": [
+    {
+     "name": "barcrawl card",
+     "quantity": 1
+    }
+   ]
   },
   "3786d596af": {
    "target": {
     "x": 2482,
     "y": 3491,
     "plane": 1
-   }
+   },
+   "items": [
+    {
+     "name": "barcrawl card",
+     "quantity": 1
+    }
+   ]
   },
   "609b673cbb": {
    "target": {
