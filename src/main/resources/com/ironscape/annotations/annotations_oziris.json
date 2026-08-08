@@ -27,14 +27,17 @@
     {
      "x": 2452,
      "y": 3231,
-     "plane": 0
+     "plane": 0,
+     "object": "Cave entrance",
+     "note": "Enter the Ourania Cave here. Shortest Path cannot draw a route inside a cave, so from this point on follow the highlighted objects rather than the line."
     },
     {
      "x": 3015,
      "y": 5583,
      "plane": 0,
      "item": "rune scimitar",
-     "note": "safespot the Zamorak warriors at the cave's end until a rune scimitar drops"
+     "note": "Zamorak warriors are deep in the cave, past the ZMI altar. No route is drawn from inside — Shortest Path has no path through cave interiors.",
+     "hold": true
     }
    ]
   },
@@ -5904,24 +5907,98 @@
      "x": 2801,
      "y": 3442,
      "plane": 0,
-     "region": 11061,
+     "zone": {
+      "x1": 2764,
+      "y1": 3395,
+      "x2": 2781,
+      "y2": 3410,
+      "plane": 0
+     },
+     "object": "Crate",
      "note": "The keep door is locked and stays locked — \"you will have to find another way in\". Hide in Arhein's crate behind the Candle Maker's shop in Catherby and it smuggles you inside."
+    },
+    {
+     "x": 2770,
+     "y": 3405,
+     "plane": 1,
+     "zone": {
+      "x1": 2764,
+      "y1": 3395,
+      "x2": 2781,
+      "y2": 3410,
+      "plane": 1
+     },
+     "routeX": 2770,
+     "routeY": 3405,
+     "routePlane": 0,
+     "hold": true,
+     "note": "Up the stairs in the fortress."
+    },
+    {
+     "x": 2770,
+     "y": 3399,
+     "plane": 2,
+     "zone": {
+      "x1": 2764,
+      "y1": 3395,
+      "x2": 2781,
+      "y2": 3410,
+      "plane": 2
+     },
+     "routeX": 2770,
+     "routeY": 3399,
+     "routePlane": 1,
+     "hold": true,
+     "note": "Up another floor — Mordred is on the top floor."
     },
     {
      "x": 2770,
      "y": 3403,
      "plane": 2,
-     "routeX": 2770,
-     "routeY": 3405,
-     "routePlane": 0,
-     "npc": "Sir Mordred",
-     "dialog": [
-      "Tell me how to untrap Merlin and I might.",
-      "Ok I will do all that."
-     ],
      "varp": 14,
      "value": 4,
-     "note": "Get in by hiding in Arhein's CRATE behind the Candle Maker's shop in Catherby — the keep door is locked and stays locked, \"you will have to find another way in\".\nInside: up the stairs, up another floor, then fight Sir Mordred to 0hp to make Morgan Le Faye spawn.\nFinish her dialogue in one go — LEAVING IT EARLY MEANS FIGHTING MORDRED AGAIN.\nUntil she has told you what frees Merlin, the Candle maker has no black candle option at all, so bringing the wax early does nothing."
+     "npc": "Sir Mordred",
+     "hold": true,
+     "dialog": [
+      "Tell me how to untrap Merlin and I might.",
+      "Ok, I will go do all that.",
+      "Ok I will do all that."
+     ],
+     "note": "Fight Sir Mordred to 0hp to make Morgan Le Faye spawn.\nFinish her dialogue in one go — LEAVING IT EARLY MEANS FIGHTING MORDRED AGAIN.\nUntil she has told you what frees Merlin, the Candle maker has no black candle option at all, so bringing the wax early does nothing."
+    },
+    {
+     "x": 2769,
+     "y": 3405,
+     "plane": 1,
+     "zone": {
+      "x1": 2764,
+      "y1": 3395,
+      "x2": 2781,
+      "y2": 3410,
+      "plane": 1
+     },
+     "routeX": 2769,
+     "routeY": 3399,
+     "routePlane": 2,
+     "hold": true,
+     "note": "Climb back down. Shortest Path has no way out of the keep — the crate is one-way — so follow the highlighted staircases instead of the route."
+    },
+    {
+     "x": 2769,
+     "y": 3405,
+     "plane": 0,
+     "zone": {
+      "x1": 2764,
+      "y1": 3395,
+      "x2": 2781,
+      "y2": 3410,
+      "plane": 0
+     },
+     "routeX": 2769,
+     "routeY": 3405,
+     "routePlane": 1,
+     "hold": true,
+     "note": "Down to the ground floor, then out through the front door."
     },
     {
      "x": 2797,
