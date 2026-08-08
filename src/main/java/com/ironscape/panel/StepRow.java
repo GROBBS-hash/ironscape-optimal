@@ -663,6 +663,14 @@ class StepRow extends JPanel
 		masterBox.addActionListener(e -> {
 			boolean completed = masterBox.isSelected();
 			ctx.getProgress().setCompleted(ctx.getVariant(), step, completed);
+			// Record that DETECTION did not do this. A silently-failing goal
+			// is otherwise invisible — the player just ticks the box.
+			ctx.getProgress().setManual(ctx.getVariant(), step.getId(), completed);
+			for (SubStep s : step.getSubSteps())
+			{
+				ctx.getProgress().setManual(ctx.getVariant(), s.getId(), completed);
+			}
+			masterBox.setToolTipText(metadataTooltip());
 			// A MANUAL tick is a deliberate "I'm here": move the player's
 			// position; an untick means "redo this" — move it back.
 			if (completed)
@@ -1064,11 +1072,18 @@ class StepRow extends JPanel
 	private String metadataTooltip()
 	{
 		Map<String, String> meta = step.getMetadata();
-		if (meta.isEmpty())
+		boolean manual = ctx.getProgress().isManual(ctx.getVariant(), step.getId());
+		if (meta.isEmpty() && !manual)
 		{
 			return null;
 		}
 		StringBuilder sb = new StringBuilder("<html>");
+		if (manual)
+		{
+			// The one line worth reading here: detection did NOT complete
+			// this step, a person did.
+			sb.append("<b>Ticked by hand</b> — no goal detected this<br>");
+		}
 		appendMetaLine(sb, meta, "total_time", "Time");
 		appendMetaLine(sb, meta, "gp_stack", "GP stack");
 		appendMetaLine(sb, meta, "items_needed", "Items");
@@ -1106,6 +1121,10 @@ class StepRow extends JPanel
 			checkBox.addActionListener(e -> {
 				boolean nowCompleted = checkBox.isSelected();
 				ctx.getProgress().setSubCompleted(ctx.getVariant(), step, sub, nowCompleted);
+				// See masterBox: a hand tick means no goal fired for this sub.
+				ctx.getProgress().setManual(ctx.getVariant(), sub.getId(), nowCompleted);
+				checkBox.setToolTipText(nowCompleted
+					? "Ticked by hand — no goal detected this" : null);
 				// Manual ticks steer the player's position (see masterBox).
 				if (nowCompleted && ctx.getProgress().isCompleted(ctx.getVariant(), step.getId()))
 				{

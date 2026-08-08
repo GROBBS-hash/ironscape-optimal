@@ -41,6 +41,7 @@ public class ProgressManager
 	// completed ids, stored as comma-joined "subId=count" pairs.
 	private final Map<GuideVariant, Map<String, Integer>> countedCache = new EnumMap<>(GuideVariant.class);
 	private final Map<GuideVariant, Map<String, Integer>> baselineCache = new EnumMap<>(GuideVariant.class);
+	private final Map<GuideVariant, Map<String, Integer>> manualCache = new EnumMap<>(GuideVariant.class);
 
 	@Inject
 	public ProgressManager(ConfigManager configManager)
@@ -72,6 +73,7 @@ public class ProgressManager
 		}
 		if (!completed)
 		{
+			setManual(variant, step.getId(), false);
 			// Unticking says "this isn't done" — a kept-around full counter
 			// would instantly re-tick the step on the next xp drop.
 			Map<String, Integer> counts = countedFor(variant);
@@ -82,6 +84,10 @@ public class ProgressManager
 				// Same reasoning for purchases: a kept baseline would leave
 				// the step needing ANOTHER purchase to re-tick.
 				clearAcquisitionBaselines(variant, sub.getId());
+				// Reopened means undecided again: it is no longer a record
+				// of detection having failed. Cleared on EVERY untick path,
+				// not just the panel's, so a gather-loss reopen counts too.
+				setManual(variant, sub.getId(), false);
 			}
 			if (countsChanged)
 			{
@@ -139,6 +145,7 @@ public class ProgressManager
 				saveCounted(variant, counts);
 			}
 			clearAcquisitionBaselines(variant, sub.getId());
+			setManual(variant, sub.getId(), false);
 		}
 		save(variant, ids);
 	}
@@ -347,6 +354,7 @@ public class ProgressManager
 		cache.clear();
 		countedCache.clear();
 		baselineCache.clear();
+		manualCache.clear();
 		positionCache.clear();
 	}
 
@@ -415,6 +423,63 @@ public class ProgressManager
 		{
 			saveBaselines(variant, baselines);
 		}
+	}
+
+	/**
+	 * Was this step or sub ticked BY HAND? Detection failing silently is
+	 * invisible otherwise: the player shrugs, ticks the box and plays on,
+	 * and nothing records that a goal never fired. Kept per id (step AND
+	 * sub), so errand-heavy steps stay individually inspectable rather
+	 * than collapsing to one all-or-nothing flag.
+	 *
+	 * Stored as a count map for one reason: it reuses the same encoding
+	 * as the counters beside it. 1 = manual, absent = detected.
+	 */
+	public synchronized boolean isManual(GuideVariant variant, String id)
+	{
+		return manualFor(variant).containsKey(id);
+	}
+
+	public synchronized void setManual(GuideVariant variant, String id, boolean manual)
+	{
+		Map<String, Integer> manuals = manualFor(variant);
+		boolean changed = manual
+			? manuals.put(id, 1) == null
+			: manuals.remove(id) != null;
+		if (changed)
+		{
+			saveManuals(variant, manuals);
+		}
+	}
+
+	/** Every id the player ticked by hand — the "detection failed here" list. */
+	public synchronized Set<String> manualIds(GuideVariant variant)
+	{
+		return new LinkedHashSet<>(manualFor(variant).keySet());
+	}
+
+	private Map<String, Integer> manualFor(GuideVariant variant)
+	{
+		return manualCache.computeIfAbsent(variant,
+			v -> decodeCounts(configManager.getConfiguration(CONFIG_GROUP, manualKey(v))));
+	}
+
+	private void saveManuals(GuideVariant variant, Map<String, Integer> manuals)
+	{
+		String encoded = encodeCounts(manuals);
+		if (encoded.isEmpty())
+		{
+			configManager.unsetConfiguration(CONFIG_GROUP, manualKey(variant));
+		}
+		else
+		{
+			configManager.setConfiguration(CONFIG_GROUP, manualKey(variant), encoded);
+		}
+	}
+
+	private static String manualKey(GuideVariant variant)
+	{
+		return "manual_" + variant.name();
 	}
 
 	private Map<String, Integer> baselineFor(GuideVariant variant)
