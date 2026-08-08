@@ -5914,6 +5914,10 @@
      "routeY": 3405,
      "routePlane": 0,
      "npc": "Sir Mordred",
+     "dialog": [
+      "Tell me how to untrap Merlin and I might.",
+      "Ok I will do all that."
+     ],
      "varp": 14,
      "value": 4,
      "note": "Inside the keep: up the stairs, up another floor, then fight Sir Mordred to 0hp to make Morgan Le Faye spawn.\nFinish her dialogue in one go — LEAVING IT EARLY MEANS FIGHTING MORDRED AGAIN.\nUntil she has told you what frees Merlin, the Candle maker has no black candle option at all, so bringing the wax early does nothing."
