@@ -141,6 +141,9 @@ public class IronscapePanel extends PluginPanel
 	private java.util.function.Function<String, String> badgeIconSupplier;
 	private java.util.function.Function<String, java.awt.image.BufferedImage> skillIconSupplier;
 
+	/** sub-id -> errand stage items and their NEEDED/HELD/SPENT state. */
+	private java.util.function.Function<String, java.util.LinkedHashMap<String, String>> errandStagesSupplier;
+
 	// Toolbar (stays fixed while the content below scrolls)
 	private final JProgressBar progressBar = new JProgressBar();
 	private final IconTextField searchBar = new IconTextField();
@@ -342,6 +345,12 @@ public class IronscapePanel extends PluginPanel
 		java.util.function.Function<String, java.awt.image.BufferedImage> skillIconSupplier)
 	{
 		this.skillIconSupplier = skillIconSupplier;
+	}
+
+	public void setErrandStagesSupplier(
+		java.util.function.Function<String, java.util.LinkedHashMap<String, String>> supplier)
+	{
+		this.errandStagesSupplier = supplier;
 	}
 
 	public void setSafespotCaptureHandler(CaptureHandler safespotCaptureHandler)
@@ -740,6 +749,7 @@ public class IronscapePanel extends PluginPanel
 		return new RowContext(
 			guide.getVariant(), progressManager, annotationManager, itemTracker, placeManager,
 			itemGoals, actionBadgeSupplier, badgeIconSupplier, skillIconSupplier,
+			errandStagesSupplier,
 			this::onManualProgressChange,
 			config.showCaptureButtons() ? captureHandler : null,
 			config.showCaptureButtons() ? safespotCaptureHandler : null,

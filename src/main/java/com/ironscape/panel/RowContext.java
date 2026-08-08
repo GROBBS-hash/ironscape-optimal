@@ -38,6 +38,15 @@ class RowContext
 	 * gets the Magic star); null function or null result = no icon. */
 	java.util.function.Function<String, java.awt.image.BufferedImage> skillIcon;
 
+	/**
+	 * sub-id -> the errand chain's stage items in order, each NEEDED / HELD
+	 * / SPENT. DISPLAY ONLY: these never become annotation items, because
+	 * annotationItemsCarried (the arrival gate) and bankFirstTarget read
+	 * those, and changing what gates an arrival is not what showing an
+	 * icon should do. Null function or null result = no stage badges.
+	 */
+	java.util.function.Function<String, java.util.LinkedHashMap<String, String>> errandStages;
+
 	/** Tells the panel to refresh the progress bar after a tick. */
 	Runnable onProgressChanged;
 

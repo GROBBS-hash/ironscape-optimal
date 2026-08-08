@@ -378,6 +378,34 @@ class StepRow extends JPanel
 				}
 			}
 		}
+		// ERRAND STAGE ITEMS. A step whose objective lives in a chain had
+		// nothing else to badge: "Kill Mordred and get bat bones/black
+		// candle" detects no item goal and its annotation is a note only.
+		// State comes from the chain rather than a raw count, because half
+		// these items get consumed into the next stage and a plain "0/1"
+		// would sit red forever once you made progress.
+		if (goalSubId != null && ctx.getErrandStages() != null)
+		{
+			java.util.LinkedHashMap<String, String> stages =
+				ctx.getErrandStages().apply(goalSubId);
+			if (stages != null)
+			{
+				for (Map.Entry<String, String> stage : stages.entrySet())
+				{
+					if (!seenNames.add(stage.getKey().toLowerCase(java.util.Locale.ROOT)))
+					{
+						continue;             // a real goal already covers it
+					}
+					StepAnnotation.ItemNeed need = new StepAnnotation.ItemNeed();
+					need.name = stage.getKey();
+					need.quantity = 1;
+					// SPENT reuses the "(used here)" styling consumed items
+					// already have — muted, never a red shortfall.
+					need.consumed = "SPENT".equals(stage.getValue()) ? Boolean.TRUE : null;
+					needs.add(need);
+				}
+			}
+		}
 		boolean hasActionBadge = goalSubId != null && ctx.getActionBadge() != null
 			&& ctx.getActionBadge().apply(goalSubId) != null;
 		if (needs.isEmpty() && !hasActionBadge)

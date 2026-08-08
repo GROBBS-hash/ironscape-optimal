@@ -674,6 +674,13 @@ public class IronscapePlugin extends Plugin
 	 */
 	private final java.util.Set<String> errandDone = new java.util.HashSet<>();
 
+	/**
+	 * Sub id -> the chain's stage items in order, each NEEDED / HELD / SPENT.
+	 * Written on the client thread by cacheErrandBadges, read from Swing.
+	 */
+	private final Map<String, java.util.LinkedHashMap<String, String>> errandStagesBySub =
+		new java.util.concurrent.ConcurrentHashMap<>();
+
 	/** Last poll of activeErrand()'s stage item, to reroute on stage changes. */
 	private String lastErrandStage;
 
@@ -824,6 +831,7 @@ public class IronscapePlugin extends Plugin
 				}
 			}
 		}
+		cacheErrandBadges(step, sub, chain);
 		for (StepAnnotation.Errand stage : chain)
 		{
 			if (!errandDone.contains(errandStageKey(step, stage)))
@@ -832,6 +840,67 @@ public class IronscapePlugin extends Plugin
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * Publish the chain's stage items for the panel to badge.
+	 *
+	 * A step whose objective lives in an errand chain had NOTHING to show:
+	 * "Kill Mordred and get bat bones/black candle" detects no item goal at
+	 * all and its annotation carries only a note, so the card rendered with
+	 * no items while the step below it listed four (owner, 2026-08-08).
+	 *
+	 * The naive fix — synthesise "0/1" needs from the stage items — is wrong
+	 * for exactly the chains that need it most. Merlin's Crystal spends the
+	 * repellent and the bucket to make the wax, and the wax to make the
+	 * candle, so three badges would sit permanently red the moment you made
+	 * progress. That is the misinformation the kit policy exists to stop.
+	 *
+	 * So each stage publishes a STATE rather than a count, and the chain's
+	 * own verdict decides it: SPENT for a stage already behind you whose item
+	 * you no longer hold, HELD for one you cleared and still carry, NEEDED
+	 * for the rest. Written here because this runs per tick on the client
+	 * thread with errandDone already computed; the panel reads the map from
+	 * Swing, the same split checkpointMetBySub uses (badges cannot read game
+	 * state off the client thread).
+	 */
+	private void cacheErrandBadges(GuideStep step, SubStep sub, List<StepAnnotation.Errand> chain)
+	{
+		java.util.LinkedHashMap<String, String> states = new java.util.LinkedHashMap<>();
+		for (StepAnnotation.Errand stage : chain)
+		{
+			if (stage.item == null)
+			{
+				continue;                     // waypoint: nothing to carry
+			}
+			String state;
+			if (!errandDone.contains(errandStageKey(step, stage)))
+			{
+				state = "NEEDED";
+			}
+			else if (Boolean.TRUE.equals(stage.given) || itemTracker.countOf(stage.item) <= 0)
+			{
+				// Handed over, or consumed into the next stage. Saying "used
+				// here" beats a red shortfall for something you were supposed
+				// to spend.
+				state = "SPENT";
+			}
+			else
+			{
+				state = "HELD";
+			}
+			states.put(stage.item, state);
+		}
+		if (!states.equals(errandStagesBySub.put(sub.getId(), states)) && panel != null)
+		{
+			// A full refresh, not refreshItemCounts. That only re-runs the
+			// badge refreshers a row already owns, so it can neither ADD the
+			// stage rows the first time this cache fills (one tick after the
+			// panel built) nor restyle one whose state flipped to SPENT --
+			// consumed is baked in when the row is constructed. State changes
+			// are rare enough that rebuilding is the cheap option.
+			SwingUtilities.invokeLater(panel::refresh);
+		}
 	}
 
 	/**
@@ -1578,6 +1647,7 @@ public class IronscapePlugin extends Plugin
 			}
 			return null;
 		});
+		panel.setErrandStagesSupplier(errandStagesBySub::get);
 		panel.setSkillIconSupplier(subId -> {
 			// The skill whose progress the badge shows — same lookup chain
 			// as the badge text, so icon and number always agree.
