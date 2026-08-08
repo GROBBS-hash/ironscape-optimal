@@ -564,9 +564,47 @@ Wave 13 was a desk session with the owner away. **Nothing in it is play-tested.*
 6. Gertrude's Cat still ticks on quest start — the wave 13 gating change deliberately does NOT
    cover it (its items are the scraper's null-quantity carry list, not its objective). Still needs
    a "use X on Y" detector or leaving alone. **Owner's call.**
-7. Long-standing: deliberate death test, onion-gate capture, "big frog leg" -> 7908 verdict.
+7. **P1-08 barrier-blind first-leg hints** (below) — a design question, not a quick fix.
+8. Long-standing: deliberate death test, onion-gate capture, "big frog leg" -> 7908 verdict.
 
 **Hub pin is at `3638c2f` and should NOT move** until wave 13 has been through a play session.
+
+---
+
+### P1-08 — First-leg hints can't see a BARRIER (owner, 2026-08-08, live)
+
+**Observed:** on "Kill Mordred and get bat bones/black candle", the hint offered a **Burthorpe Games
+Room** minigame teleport as the first leg toward Keep Le Faye (`2757,3401`). The owner took it,
+walked out, and found Shortest Path proposing a Lumbridge home teleport — reading, reasonably, as
+"navigation is not working".
+
+**Nav was right.** `auto-nav: routing to errand stage (2757,3401) for bat bones` — Keep Le Faye,
+correct for the step. The Lumbridge tile was SP's own transport suggestion, never ours.
+
+**The fault is the hint.** `firstLegTowards` ranks candidates by EUCLIDEAN distance: Burthorpe is
+~214 tiles from Keep Le Faye against ~318 from Port Sarim, so it wins easily. But Keep Le Faye is on
+the far side of **White Wolf Mountain**, whose tunnel is gated behind Fishing Contest — which the
+owner had only just started. The hint teleported him into a corner, and SP then had to route the
+long way round.
+
+**This is wave 10's "distance fiction" again**, one class over. There, dungeons at y≈4830 read as
+1,372 tiles away and a Barbarian Assault teleport won the first leg while the exit portal sat three
+tiles off; fixed by testing the surface BAND. Same mistake here, with a landmass barrier rather than
+a plane offset. Euclidean distance cannot see a mountain.
+
+**Why it is not a quick fix, and what NOT to do:**
+- The honest fix needs PATH distance, which only SP's pathfinder has, and the hub forbids reaching
+  into it across classloaders.
+- A bespoke "White Wolf Mountain is gated" rule fixes one mountain, not the class — the Ardougne
+  wall, the Fremennik approach and Karamja are all the same shape.
+- `tools/.sp-cache` now holds SP's 25 transport files (14,410 endpoints, see
+  `audit-pin-reachability`). Whether those are enough to approximate connectivity offline is an open
+  question and the first thing to test before designing anything.
+
+**Cheapest honest mitigation if a full fix is out of reach:** require a much larger margin before a
+teleport "wins" a first leg when the straight line crosses a known barrier region, or suppress
+first-leg hints entirely while the step's destination sits behind a gate the account has not
+unlocked. Both need the connectivity question answered first.
 
 ---
 
