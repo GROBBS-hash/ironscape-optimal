@@ -893,13 +893,20 @@ public class IronscapePlugin extends Plugin
 		}
 		if (!states.equals(errandStagesBySub.put(sub.getId(), states)) && panel != null)
 		{
-			// A full refresh, not refreshItemCounts. That only re-runs the
-			// badge refreshers a row already owns, so it can neither ADD the
-			// stage rows the first time this cache fills (one tick after the
-			// panel built) nor restyle one whose state flipped to SPENT --
-			// consumed is baked in when the row is constructed. State changes
-			// are rare enough that rebuilding is the cheap option.
-			SwingUtilities.invokeLater(panel::refresh);
+			// NEVER panel::refresh from here. That rebuilds the whole view,
+			// scroll and jump-to-current included, and this runs on the tick
+			// path once per chain -- the owner picked up the insect repellent
+			// and the panel went BLANK (no exception logged; the rebuilds
+			// themselves are the fault). refreshItemCounts only re-runs the
+			// refreshers a row already owns, so it cannot blank anything.
+			//
+			// The cost is that a row cannot APPEAR from here: stage badges
+			// show from the next natural rebuild instead. In practice the
+			// cache is already warm by then, since it fills on the first tick
+			// the step is current and the panel rebuilds when the frontier
+			// moves. Letting a refresher add rows is the real fix and wants
+			// its own change, not a rebuild hidden inside a badge update.
+			SwingUtilities.invokeLater(panel::refreshItemCounts);
 		}
 	}
 
