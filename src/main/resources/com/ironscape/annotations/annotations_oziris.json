@@ -5968,6 +5968,24 @@
     },
     {
      "x": 2769,
+     "y": 3399,
+     "plane": 2,
+     "zone": {
+      "x1": 2764,
+      "y1": 3395,
+      "x2": 2781,
+      "y2": 3410,
+      "plane": 2
+     },
+     "leave": true,
+     "routeX": 2769,
+     "routeY": 3399,
+     "routePlane": 2,
+     "hold": true,
+     "note": "Climb back down from the top floor. Shortest Path has no way out of the keep — the crate is one-way — so follow the highlighted staircases instead of the route."
+    },
+    {
+     "x": 2769,
      "y": 3405,
      "plane": 1,
      "zone": {
@@ -5977,23 +5995,7 @@
       "y2": 3410,
       "plane": 1
      },
-     "routeX": 2769,
-     "routeY": 3399,
-     "routePlane": 2,
-     "hold": true,
-     "note": "Climb back down. Shortest Path has no way out of the keep — the crate is one-way — so follow the highlighted staircases instead of the route."
-    },
-    {
-     "x": 2769,
-     "y": 3405,
-     "plane": 0,
-     "zone": {
-      "x1": 2764,
-      "y1": 3395,
-      "x2": 2781,
-      "y2": 3410,
-      "plane": 0
-     },
+     "leave": true,
      "routeX": 2769,
      "routeY": 3405,
      "routePlane": 1,
