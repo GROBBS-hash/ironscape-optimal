@@ -12,3 +12,6 @@ tools/node_modules/
 *.ahk
 tools/.qh-cache/
 tools/.wiki-cache/
+
+# Shortest Path transport data, re-downloadable (audit-pin-reachability)
+tools/.sp-cache/
