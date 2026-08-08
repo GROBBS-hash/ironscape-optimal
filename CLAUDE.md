@@ -810,6 +810,16 @@ refresh when "Failed to login" appears.
   the item, NOT a var — the proposed checkpoint cannot exist), D3 sticky
   transport (the "wrong dock" cases are BOAT steps whose route the GUIDE
   names; the plugin never chose them).
+  **TARGET DRIFT** (`tools/audit-target-drift.mjs`, built from an owner
+  report): `targetFor` prefers a place name found in the STEP TEXT over
+  the step's 📍 area, so a step with no ⌖ whose text merely MENTIONS a
+  nav name gets that name's pin as its destination. "Put pineapples into
+  the compost bin" (📍Catherby) resolved through the `compost` item_source
+  at Vannah in Hosidius, ~1,900 tiles away, and the first-leg hint
+  correctly offered a Tithe Farm teleport for a bin 20 tiles up the hill.
+  36 steps drift >200 tiles; the audit excludes ⌖'d and errand-chained
+  steps, and quest names (routing to the giver is designed). Fix per step
+  is a ⌖ pin — capturable in game.
   **PROCESS**: `git add -p` is unavailable non-interactively — splitting
   one file across commits needs hunk patches (`git diff` -> split -> `git
   apply`), and the reassembled file must be diffed against the

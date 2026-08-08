@@ -6212,6 +6212,22 @@
     "label": "smuggled"
    },
    "note": "The Karamja/Port Sarim leg is the rum smuggling. Varp 71 reaches 2 once Redbeard has his rum and sends you for the treasure map (Quest Helper step 2), so a part-done quest reports honestly."
+  },
+  "bb3ef09ca4": {
+   "target": {
+    "x": 2796,
+    "y": 3414,
+    "plane": 0
+   },
+   "note": "The Trader Crewmembers are on the charter DOCK east of the bank, not in Catherby itself."
+  },
+  "c7888bb039": {
+   "target": {
+    "x": 2810,
+    "y": 3464,
+    "plane": 0
+   },
+   "note": "Compost bin beside the Catherby allotments, north-east of town (gardener Dantaera)."
   }
  }
 }
