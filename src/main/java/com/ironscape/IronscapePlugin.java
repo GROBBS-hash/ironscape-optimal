@@ -3796,11 +3796,41 @@ public class IronscapePlugin extends Plugin
 		}
 		if (gangplankNearby())
 		{
-			logBoatGate(sub.getId() + ": holding, gangplank loaded but not crossed");
+			logBoatGate(sub.getId() + ": holding, gangplank loaded but not crossed"
+				+ crossingNote(destination));
 			return false;
 		}
-		logBoatGate(sub.getId() + ": open, no gangplank in range");
+		logBoatGate(sub.getId() + ": open, no gangplank in range" + crossingNote(destination));
 		return true;
+	}
+
+	/**
+	 * What the crossing recorder is actually holding, appended to every gate
+	 * line.
+	 *
+	 * The gate's first exercise (Port Sarim, 2026-08-08) went "holding" then
+	 * "open, no gangplank in range", so the crossing was never accepted — but
+	 * the line cannot say WHY. Two different faults produce it: no click was
+	 * recorded at all (the object is not named "Gangplank" at that dock, or
+	 * the crossing came through a menu action the switch does not cover), or a
+	 * click WAS recorded and then rejected for being too far from the
+	 * destination. Those want opposite fixes, and one dock is not six, so
+	 * nothing changes until a second trip says which — this just makes that
+	 * trip conclusive rather than needing a third.
+	 */
+	private String crossingNote(WorldPoint destination)
+	{
+		if (lastGangplankPoint == null)
+		{
+			return " (no crossing click ever recorded)";
+		}
+		int age = client.getTickCount() - lastGangplankTick;
+		return " (last crossing " + lastGangplankPoint + ", " + age + " ticks ago"
+			+ (age > GANGPLANK_FRESH_TICKS ? ", STALE" : "")
+			+ (destination == null ? ", no destination to compare"
+				: ", " + lastGangplankPoint.distanceTo(destination) + " tiles from " + destination
+					+ " (needs " + PLACE_ARRIVE_RADIUS + ")")
+			+ ")";
 	}
 
 	/** One INFO line per change — a held boat sub must be greppable. */
