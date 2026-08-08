@@ -926,12 +926,29 @@ public class IronscapePlugin extends Plugin
 	private void highlightStageDialog()
 	{
 		java.util.Set<String> wanted = new java.util.LinkedHashSet<>();
-		StepAnnotation.Errand stage = activeErrand();
-		if (stage != null && stage.dialog != null && !stage.dialog.isEmpty())
-		{
-			wanted.addAll(stage.dialog);
-		}
 		Current current = findCurrent();
+		// The whole live chain's options, not just the active stage's.
+		//
+		// Scoping them to the active stage looks tidier and is wrong,
+		// because a stage gated on quest progress is satisfied BY the
+		// conversation it is guiding: Morgan Le Faye's last option is the
+		// one that advances varp 14 to 4, and the session log has the chain
+		// moving on to the Candle maker twenty seconds before the player
+		// picked it. Every "talk to X until the var moves" stage has that
+		// shape, so a stage can never own its own final option.
+		//
+		// Costs nothing to widen: these are exact option strings, and an
+		// option that is not on screen simply does not match.
+		if (current != null && activeErrand() != null)
+		{
+			for (StepAnnotation.Errand stage : errandChain(current.step, current.sub))
+			{
+				if (stage.dialog != null)
+				{
+					wanted.addAll(stage.dialog);
+				}
+			}
+		}
 		if (current != null)
 		{
 			// Sub-keyed first, then the step — same precedence as ⌖ targets.
@@ -968,23 +985,45 @@ public class IronscapePlugin extends Plugin
 		{
 			return;
 		}
+		int matched = 0;
+		java.util.List<String> offered = new java.util.ArrayList<>();
 		for (net.runelite.api.widgets.Widget child : children)
 		{
 			String text = child == null ? null : child.getText();
-			if (text == null)
+			if (text == null || text.isEmpty())
 			{
 				continue;
 			}
+			offered.add(text);
 			for (String want : wanted)
 			{
 				if (dialogOptionMatches(text, want))
 				{
 					child.setTextColor(0x1a1aff);
+					matched++;
 					break;
 				}
 			}
 		}
+		// Forensics, in the shape of logNavDecision / logHintDecision. This
+		// path had none, so when the owner reported Morgan Le Faye's options
+		// staying white there was no way to tell a dead code path from a
+		// string that never could have matched — and the log settled it only
+		// because a THIRD-PARTY plugin happened to print the chosen option.
+		// Quest Helper says "Ok I will do all that."; the game says "Ok, I
+		// will go do all that.". Logged only when the menu's contents change,
+		// so a menu left open costs one line.
+		String menu = matched + "/" + offered.size() + " " + offered + " vs " + wanted;
+		if (!menu.equals(lastDialogMenu))
+		{
+			lastDialogMenu = menu;
+			log.info("dialog-highlight: matched {} of {} options {} against {}",
+				matched, offered.size(), offered, wanted);
+		}
 	}
+
+	/** Last dialog-menu forensic line, so an open menu logs once. */
+	private String lastDialogMenu;
 
 	/**
 	 * Does this chat option mean the wanted one? Exact matching was too
