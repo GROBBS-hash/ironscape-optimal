@@ -738,6 +738,72 @@ refresh when "Failed to login" appears.
   capture; hub pin at b8c994d, now ~70 commits behind — bump after a
   calm session.
 
+- SESSION WAVE 16b (2026-08-08 late, LIVE play-test after the desk work;
+  main at `c913f26`, pushed; hub pin stays `3638c2f`): **three reports, and
+  the lesson is that none of them needed a game to find.**
+  (1) **The descent legs wedged before he ever saw them** — seeded as "arrive
+  at floor N", which is unanswerable once you are OUTSIDE the keep, so from
+  Catherby the chain sat on "climb down from the top floor" forever. Caught by
+  reasoning about his actual position before he launched. Descent legs now say
+  **`leave` the floor you are on**, which is satisfied from anywhere outside.
+  CONFIRMED IN PLAY: from Catherby the chain fell straight through to the
+  candle. Same fault as the crate: a positional condition anchored on the near
+  side of the thing it describes.
+  (2) **The step could not tick by any route.** "Kill Mordred and get bat
+  bones/black candle" parses to NO goal (no kill-a-named-NPC detector, and the
+  slash is not a list), so `completion-paths.tsv` read `none` and nav sat
+  logging "holding until the sub's goal ticks" for a goal that does not exist.
+  Now a chain completes its own step, scoped to subs with no goal of their own
+  — exactly 2 steps guide-wide, both previously uncompletable. Incidental
+  chains are untouched (the pebble chain must never tick "Do Tree Gnome
+  Village"). CONFIRMED IN PLAY on login.
+  (3) **Diary legs had never guided anyone.** Sherlock and the flax sit in
+  front of the bat bones, and items look ahead and cascade, so carrying bones
+  marked both done behind them. The obvious repair is WRONG — making them
+  independent would let an optional diary task BLOCK a quest chain, which the
+  seeded note already feared. New **`optional`**: outside the ordering in both
+  directions, nothing implies it, it implies nothing, the chain completes
+  without it, and it asks within 40 tiles. Writing the test found the shape:
+  the window where it can usefully ask is between its own satisfaction radius
+  and the nudge radius, since inside 12 tiles a waypoint is simply done.
+  (4) **NAV WAS FIGHTING QUEST HELPER on every quest step** — the "quest owns
+  guidance" branch posted the step's area rather than clearing, a wave-2
+  compromise for players without QH after a blanket stand-down was tried and
+  reverted. Both cases are servable now that we can TELL THEM APART with no
+  reflection: `runelite.externalPlugins` lists installed hub plugins and
+  `runelite.questhelperplugin` records an explicit disable. **The comma split
+  is load-bearing — "sea-charting-quest-helper" CONTAINS "quest-helper"** —
+  and the toggle is ABSENT at default, so only a literal "false" is off.
+  Limit: says INSTALLED, not "actively guiding"; closing QH's sidebar is
+  invisible to us.
+  (5) **THE BANKING REPORT WAS AN INFORMATION BUG, AND I CHASED THE ROUTER
+  FIRST.** Owner: we have QH and the wiki, so if we lack quest items we should
+  bank. Measured instead of assumed: `cross-check-quest-kits` guide-wide finds
+  QH requiring exactly TWO items we omit (Demon Slayer's bucket of water,
+  Tribal Totem's glory), both deliberate policy exclusions. **The kits are
+  complete and the behaviour was right.** Murder Mystery's only requirement is
+  a pot, which the wiki marks obtainable in-quest and he was already carrying.
+  What failed is that the panel showed seven NUMBERLESS carry-list items
+  (gp, barcrawl card, spade...) with no way to tell them from requirements. I
+  had proposed a "one bank stop per step" rule before measuring; the
+  measurement killed it. 20 steps have entirely unnumbered kits and they are
+  the site's running inventory advice ("few cakes", "all of your mind and air
+  runes") — numbers do not exist for them and seeding numbers would be wrong.
+  **NEW TOOL — `tools/preflight.mjs`**, the systemic answer to "why am I
+  reporting the same thing over and over": it reads the route position the
+  plugin already persists (`ironscape.position_OZIRIS`, no argument, because a
+  check you must configure is a check nobody runs) and reports what the next N
+  steps can and cannot do — MANUAL ONLY / NO ROUTE / CARRY-LIST KIT. All three
+  of tonight's reports appear in it. Its FIRST run called 8 of 12 steps
+  unroutable because it did not know quest steps route to the GIVER or that
+  place names resolve through `firstPlaceIn`; **a check nobody believes is
+  worse than no check**. Guide-wide it measures **139 steps that can only be
+  ticked by hand** and **132 with nowhere to route** — those numbers ARE the
+  recurring-report problem, since they were always going to arrive one at a
+  time. Breakdown of the 139: 74 genuine advice (want a panel LABEL, not a
+  fix), 23 travel steps with no travel goal, 19 "Continue quest X", 6 talk,
+  5 combat, 6 banking advice.
+
 - SESSION WAVE 16 (2026-08-08 late, desk session — owner away, NOTHING
   play-tested; main at `20b2dc9`, pushed; hub pin stays `3638c2f`):
   **the model could not say "am I in yet", and once it could, the rest was

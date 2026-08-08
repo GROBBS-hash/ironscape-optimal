@@ -534,7 +534,59 @@ and inventory outline.
 
 ---
 
-## NEXT SESSION — start here (rewritten 2026-08-08, end of wave 16)
+## NEXT SESSION — start here (rewritten 2026-08-09, end of wave 16's play-test)
+
+**Run this first, every session, before you play:**
+
+```
+node tools/preflight.mjs
+```
+
+It reads your saved route position and says what the next 15 steps can and
+cannot do. Tonight's three complaints were all in it before they happened.
+
+### The one decision waiting on you
+
+**Label manual-only steps in the panel.** 139 steps guide-wide can only be
+ticked by hand — no detector, no checkpoint, no chain — and every one of them
+reads as a bug when you meet it cold. A muted "tick by hand" marker removes
+that whole class of false reports. Display-only, no behaviour change, but it
+needs your eyes on how it looks, which is why it is not already built.
+
+### Then, in value order
+
+1. **23 travel steps have no travel goal** — "Run to draynor village", "Walk to
+   Falador". The travel detector exists and covers 52 other steps, so these are
+   a gap with a shape, not a missing feature. Worth finding why before changing
+   the detector: it has wide blast radius and `GoalDetectorTest` is the guard.
+2. **74 of the 139 are genuinely advice** ("Use Authenticator AND 2-step
+   verification"). Those want the label above, not a fix.
+3. **6 talk steps and 5 combat steps** could tick — "Talk to juliet", "Kill a
+   giant bat (Rag and bone man)". `LOOT_FOR_ITEM` (wave 8) should have caught
+   the combat ones; find out why it did not.
+4. **19 "Continue quest X" steps** are mid-quest and correctly untickable by
+   quest state. They want varp checkpoints — seeding, per step.
+
+### Still unverified from tonight
+
+- The **second staircase and both descent legs** in Keep Le Faye. You are past
+  the crate, so this account cannot reach them; needs a fresh Merlin's Crystal.
+- **Optional legs.** The flax and Sherlock legs now survive the item cascade
+  and ask within 40 tiles. Untested in play.
+- **The QH stand-down.** Verify our line no longer fights QH's on a quest step,
+  and that turning the QH plugin OFF brings our routing back.
+- **Chain-completion ticks.** Confirmed once tonight on the Merlin step.
+
+### Two open questions on the flax leg
+Proximity still satisfies it, so walking within 12 tiles counts as done whether
+or not you pick anything — that was the old anti-wedge choice, and `optional`
+now handles wedging instead, so the reason is gone. Making it an item leg would
+need actual flax. And `Errand.item` has no quantity, so "5 flax" cannot be
+expressed without a new field. Both are your call.
+
+---
+
+## Previous session list (written 2026-08-08, end of wave 16)
 
 Wave 16 was a desk session. **Nothing in it is play-tested**, and it changed
 the rule that decides how far along every errand chain you are — so the first
