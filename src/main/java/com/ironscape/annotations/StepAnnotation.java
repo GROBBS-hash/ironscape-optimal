@@ -213,6 +213,19 @@ public class StepAnnotation
 		 * reachable at all.
 		 */
 		public Boolean granted;
+		/**
+		 * SPENT during the step itself — the mind bomb you drink before
+		 * casting Camelot teleport. It is a true requirement (missing it
+		 * stays red: go and get one), but it must not gate the step's
+		 * arrival tick, because by the time you arrive it is GONE. Without
+		 * this the step wedges forever: annotationItemsCarried reads 0/1
+		 * and no landing can ever prove the journey.
+		 *
+		 * Same shape as the coins exclusion that arrival already hard-codes
+		 * (a fare paid mid-step must not wedge the destination), just
+		 * declarable per item.
+		 */
+		public Boolean consumed;
 	}
 
 	public static class Target

@@ -409,7 +409,8 @@ class StepRow extends JPanel
 				// the dyes) — both muted so requirements keep the spotlight.
 				String tag = Boolean.TRUE.equals(need.optional) ? "(optional)"
 					: Boolean.TRUE.equals(need.ingredient) ? "(ingredient)"
-					: Boolean.TRUE.equals(need.granted) ? "(from the quest)" : null;
+					: Boolean.TRUE.equals(need.granted) ? "(from the quest)"
+					: Boolean.TRUE.equals(need.consumed) ? "(used here)" : null;
 				JLabel name = new JLabel(tag != null
 					? "<html>" + RichText.escape(ItemTracker.capitalize(need.name))
 						+ " <font color='#877e6f'>" + tag + "</font></html>"

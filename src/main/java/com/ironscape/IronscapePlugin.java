@@ -4119,6 +4119,12 @@ public class IronscapePlugin extends Plugin
 			{
 				continue; // unresolvable name: can't count it, don't block on it
 			}
+			if (Boolean.TRUE.equals(need.consumed))
+			{
+				// Drunk/spent during the step: it is gone by the time you
+				// land, so gating on it would wedge the step forever.
+				continue;
+			}
 			String lower = need.name.toLowerCase(Locale.ROOT);
 			if (lower.equals("coins") || lower.equals("gp"))
 			{
