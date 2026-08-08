@@ -785,6 +785,9 @@
      "name": "law rune",
      "quantity": 1
     }
+   ],
+   "dialog": [
+    "Yes."
    ]
   },
   "8d434c1ca7": {
@@ -2653,7 +2656,15 @@
    ],
    "note": "Bring: Combat gear and food."
   },
-  "fb429230e6": {},
+  "fb429230e6": {
+   "dialog": [
+    "The Demon Slayer Quest",
+    "Yes.",
+    "Ok, here you go.",
+    "Okay, where is he? I'll kill him for you!",
+    "So how did Wally kill Delrith?"
+   ]
+  },
   "ce39cab917": {
    "items": [
     {
@@ -2905,7 +2916,11 @@
     }
    ]
   },
-  "55333783ab": {},
+  "55333783ab": {
+   "dialog": [
+    "Yes."
+   ]
+  },
   "cc64d9b2f4": {
    "items": [
     {
@@ -3036,7 +3051,16 @@
     }
    ]
   },
-  "b86c6efaa5": {},
+  "b86c6efaa5": {
+   "dialog": [
+    "I was wondering what was down those stairs?",
+    "Why not?",
+    "If you were my friend I wouldn't mind it.",
+    "Well, let's be friends!",
+    "And how am I meant to do that?",
+    "Yes."
+   ]
+  },
   "e2746be131": {
    "items": [
     {
@@ -3217,7 +3241,12 @@
     }
    ]
   },
-  "70f06cc8d2": {},
+  "70f06cc8d2": {
+   "dialog": [
+    "Tell me of this quest.",
+    "Yes."
+   ]
+  },
   "931e176337": {
    "items": [
     {
@@ -3282,7 +3311,15 @@
    ],
    "note": "Recommended: Food, Antipoison."
   },
-  "c1a70db6bd": {},
+  "c1a70db6bd": {
+   "dialog": [
+    "What are you camped out here for?",
+    "What makes you think it's out here?",
+    "If it's hidden how are you planning to find it?",
+    "Looks like you don't know either.",
+    "Yes."
+   ]
+  },
   "e376e8a4a0": {
    "items": [
     {
@@ -3324,7 +3361,12 @@
    ],
    "note": "Bring: Combat gear, preferably ranged or melee."
   },
-  "d4b486fd19": {},
+  "d4b486fd19": {
+   "dialog": [
+    "Yes.",
+    "I want to become a Knight of the Round Table!"
+   ]
+  },
   "7a4590b937": {
    "items": [
     {
@@ -3511,7 +3553,12 @@
     }
    ]
   },
-  "93f1dd8c69": {},
+  "93f1dd8c69": {
+   "dialog": [
+    "I'm looking for a quest!",
+    "Yes."
+   ]
+  },
   "07aef0d346": {},
   "5bc5011c12": {
    "items": [
@@ -4114,7 +4161,13 @@
     }
    ]
   },
-  "cdb767e3c4": {},
+  "cdb767e3c4": {
+   "dialog": [
+    "Are you really the greatest salesman in the world?",
+    "I'd like to help you, but...",
+    "Yes."
+   ]
+  },
   "80a3ae4d44": {
    "items": [
     {
@@ -4151,7 +4204,11 @@
    "note": "Recommended: Combat gear + food."
   },
   "2d3d6b006f": {},
-  "43e2b987b0": {},
+  "43e2b987b0": {
+   "dialog": [
+    "Yes."
+   ]
+  },
   "42dea87308": {},
   "31de9f85a0": {
    "note": "Bring: Ranged/Mage combat gear to skip boat combat, or a boat with cannons to deal with pirates, Combat gear. Recommended: Food, Prayer potions."
@@ -4367,7 +4424,11 @@
     }
    ]
   },
-  "476c85b265": {},
+  "476c85b265": {
+   "dialog": [
+    "Yes."
+   ]
+  },
   "0da34b3a89": {
    "items": [
     {
@@ -4501,7 +4562,12 @@
     }
    ]
   },
-  "6e540329c5": {},
+  "6e540329c5": {
+   "dialog": [
+    "I'm looking for a quest.",
+    "Sounds good, what should I do?"
+   ]
+  },
   "af619686cb": {
    "items": [
     {
@@ -6261,6 +6327,12 @@
     "plane": 0
    },
    "note": "The five allotment tools go in the tool leprechaun beside the Catherby patch, so they follow you to every patch. This shop (Farming Supplies) sells only the rake, seed dibber and watering can - plus a gardening trowel, plant pot, bucket and plant cure. It does NOT sell a spade or secateurs, and the guide never says where to get them, so those two are marked optional: listed as useful, never blocking the step. The leprechaun deposit is not detectable, so the step ticks once you own the three buyable tools and the compost pack."
+  },
+  "5252d1fcd8": {
+   "dialog": [
+    "I'm looking for a quest!",
+    "Yes."
+   ]
   }
  }
 }
