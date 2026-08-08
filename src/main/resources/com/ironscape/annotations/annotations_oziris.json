@@ -5901,6 +5901,12 @@
      "note": "Use the insect repellent on a beehive, then fill the bucket with wax."
     },
     {
+     "x": 2801,
+     "y": 3442,
+     "plane": 0,
+     "note": "The keep door is LOCKED and always will be — \"you will have to find another way in\". Hide in Arhein's crate behind the Candle Maker's shop in Catherby; it smuggles you inside."
+    },
+    {
      "x": 2770,
      "y": 3403,
      "plane": 2,
@@ -5910,7 +5916,7 @@
      "npc": "Sir Mordred",
      "varp": 14,
      "value": 4,
-     "note": "Fight Sir Mordred upstairs in Keep Le Faye and talk to Morgan Le Faye FIRST. Until she tells you what frees Merlin, the Candle maker has no black candle option at all — bringing him the wax early does nothing."
+     "note": "Inside the keep: up the stairs, up another floor, then fight Sir Mordred to 0hp to make Morgan Le Faye spawn.\nFinish her dialogue in one go — LEAVING IT EARLY MEANS FIGHTING MORDRED AGAIN.\nUntil she has told you what frees Merlin, the Candle maker has no black candle option at all, so bringing the wax early does nothing."
     },
     {
      "x": 2797,
