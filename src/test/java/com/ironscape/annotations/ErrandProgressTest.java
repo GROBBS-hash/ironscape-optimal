@@ -178,6 +178,81 @@ public class ErrandProgressTest
 			ErrandProgress.advance("s", chain, done, w));
 	}
 
+	/**
+	 * Optional legs, the two behaviours that make them optional.
+	 *
+	 * The Merlin chain opens with two diary tasks and neither had ever
+	 * guided anyone: they sit in front of the bat bones, and carrying bat
+	 * bones cascaded them done. Carrying bat bones proves you walked past
+	 * the flax field, not that you picked any.
+	 */
+	@Test
+	public void optionalLegsAreNeitherImpliedNorBlocking()
+	{
+		List<StepAnnotation.Errand> chain = new ArrayList<>();
+		StepAnnotation.Errand flax = at(2744, 3444, 0);
+		flax.optional = true;
+		chain.add(flax);
+		StepAnnotation.Errand bones = at(2757, 3401, 0);
+		bones.item = "bat bones";
+		chain.add(bones);
+
+		Set<String> done = new HashSet<>();
+		Fake w = new Fake();
+		w.at = new WorldPoint(2757, 3401, 0);            // at the bats, 44 tiles off
+		w.carried.add("bat bones");
+
+		// NOT implied: the bones do not cascade over the diary leg...
+		assertEquals("holding the bones completes the chain's real work",
+			chain.size(), ErrandProgress.advance("s", chain, done, w));
+		assertTrue("...and the chain counts as complete without the diary",
+			ErrandProgress.complete("s", chain, done));
+		assertTrue("...but the flax leg is still not done",
+			!done.contains(ErrandProgress.stageKey("s", chain, 0)));
+
+		// NOT blocking, and it speaks up on the approach. The window where
+		// it asks is between its own satisfaction radius and the nudge
+		// radius — inside 12 tiles a waypoint is simply done, so 20 tiles
+		// out is where guidance is worth anything.
+		w.at = new WorldPoint(2744, 3464, 0);
+		assertEquals("approaching the field, the flax leg asks", 0,
+			ErrandProgress.advance("s", chain, done, w));
+
+		w.at = new WorldPoint(2744, 3444, 0);
+		assertEquals("standing in it satisfies the leg", chain.size(),
+			ErrandProgress.advance("s", chain, done, w));
+	}
+
+	/** An unsatisfied optional leg must never wedge the legs behind it. */
+	@Test
+	public void skippingAnOptionalLegNeverWedgesTheChain()
+	{
+		List<StepAnnotation.Errand> chain = new ArrayList<>();
+		StepAnnotation.Errand diary = at(2733, 3413, 0);
+		diary.optional = true;
+		chain.add(diary);
+		StepAnnotation.Errand gate = at(2770, 3403, 2);
+		gate.varp = 14;
+		gate.value = 4;
+		chain.add(gate);
+		StepAnnotation.Errand candle = at(2797, 3440, 0);
+		candle.item = "black candle";
+		chain.add(candle);
+
+		Set<String> done = new HashSet<>();
+		Fake w = new Fake();
+		w.at = new WorldPoint(2797, 3440, 0);            // far from the diary NPC
+		w.varp14 = 4;
+
+		assertEquals("the chain runs past the skipped diary leg to the candle", 2,
+			ErrandProgress.advance("s", chain, done, w));
+
+		w.carried.add("black candle");
+		assertEquals("and completes without it", chain.size(),
+			ErrandProgress.advance("s", chain, done, w));
+		assertTrue(ErrandProgress.complete("s", chain, done));
+	}
+
 	/** A `leave` stage is done by getting OUT, and only then. */
 	@Test
 	public void leaveStageWaitsUntilYouAreOut()

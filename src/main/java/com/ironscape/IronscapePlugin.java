@@ -816,6 +816,37 @@ public class IronscapePlugin extends Plugin
 		return front < chain.size() ? chain.get(front) : null;
 	}
 
+	/**
+	 * Does any detector claim this sub? The same seven collections the
+	 * ambient-tick sweep consults — if none of them holds the sub, nothing
+	 * can ever tick it but a hand tick or its errand chain.
+	 */
+	private boolean hasAnyGoal(String subId)
+	{
+		return itemGoalsBySub.containsKey(subId)
+			|| questGoalBySub.containsKey(subId)
+			|| levelGoalsBySub.containsKey(subId)
+			|| countedGoalBySub.containsKey(subId)
+			|| actionGoalBySub.containsKey(subId)
+			|| travelGoalSubs.contains(subId)
+			|| interactionGoalSubs.contains(subId);
+	}
+
+	/** Every non-optional leg of the sub's chain satisfied (false when it has none). */
+	private boolean errandChainComplete(GuideStep step, SubStep sub)
+	{
+		List<StepAnnotation.Errand> chain = errandChain(step, sub);
+		if (chain.isEmpty())
+		{
+			return false;
+		}
+		// Re-run the progress pass first: errandDone is only as current as
+		// its last evaluation, and this runs in the completion loop, which
+		// may reach a sub the guidance path has not looked at this tick.
+		ErrandProgress.advance(step.getId(), chain, errandDone, errandWorld);
+		return ErrandProgress.complete(step.getId(), chain, errandDone);
+	}
+
 	/** The client readings ErrandProgress needs, bound once. */
 	private final ErrandProgress.World errandWorld = new ErrandProgress.World()
 	{
@@ -990,7 +1021,9 @@ public class IronscapePlugin extends Plugin
 		for (net.runelite.api.widgets.Widget child : children)
 		{
 			String text = child == null ? null : child.getText();
-			if (text == null || text.isEmpty())
+			// "Select an option" is the menu's HEADER, not a choice — it was
+			// making every count read one high.
+			if (text == null || text.isEmpty() || "Select an option".equals(text))
 			{
 				continue;
 			}
@@ -2633,6 +2666,8 @@ public class IronscapePlugin extends Plugin
 							? "none — sub prescribes its own transport"
 							: "prescribed spell " + named.name
 								+ (castable(named) ? "" : " (not castable yet — boost/runes)"))
+						: chainHolding
+							? "none — errand chain complete, holding"
 						: leg == null
 							? "none — no first leg beats walking to " + routeTarget
 								+ metricNote(routeTarget)
@@ -3711,6 +3746,26 @@ public class IronscapePlugin extends Plugin
 				if (subReqs != null && requirementsMet(subReqs))
 				{
 					completeSubGoal(current.step, current.sub, "sub requirement met");
+					completedSomething = true;
+					break;
+				}
+
+				// A step whose whole job IS its errand chain has nothing
+				// else to detect: "Kill Mordred and get bat bones/black
+				// candle" parses to no goal at all, so it could never tick
+				// by any route and nav sat holding for a goal that does not
+				// exist (owner, in play, having done every leg). The chain
+				// already knows when it is finished, so let it say so.
+				//
+				// Only when the sub has NO goal of its own. Where a chain is
+				// incidental the goal still rules: finishing the Glarial's
+				// pebble chain must not tick "Do Tree Gnome Village", whose
+				// completion is the quest. Two steps guide-wide qualify, and
+				// neither could auto-complete at all before.
+				if (!hasAnyGoal(current.sub.getId())
+					&& errandChainComplete(current.step, current.sub))
+				{
+					completeSubGoal(current.step, current.sub, "errand chain complete");
 					completedSomething = true;
 					break;
 				}

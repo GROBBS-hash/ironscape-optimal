@@ -5863,13 +5863,15 @@
      "y": 3413,
      "plane": 0,
      "npc": "Sherlock",
-     "note": "Diary task: talk to Sherlock, south of the Sorcerer's Tower. A WAYPOINT — getting there satisfies it, so skipping the diary can never wedge the quest step."
+     "note": "Diary task (OPTIONAL): talk to Sherlock, south of the Sorcerer's Tower. Speaks up when you are within 40 tiles; skipping it can never wedge the quest.",
+     "optional": true
     },
     {
      "x": 2744,
      "y": 3444,
      "plane": 0,
-     "note": "Diary task: pick 5 flax in the Seers' Village field. TENTATIVE PIN — the wiki has no map marker for the field, so right-click the target and capture the real spot if this lands wrong."
+     "note": "Diary task (OPTIONAL): pick 5 flax in the Seers' Village field. Speaks up when you are within 40 tiles.",
+     "optional": true
     },
     {
      "x": 2757,

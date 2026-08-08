@@ -45,8 +45,23 @@ public final class ErrandProgress
 		WorldPoint here();
 	}
 
+	/**
+	 * How near an OPTIONAL leg must be before it speaks up.
+	 *
+	 * An optional leg is a side task that happens to sit near the route --
+	 * a diary talk, a field of flax -- so "while you are here anyway" is
+	 * literally its condition. Beyond this it is transparent: the chain
+	 * runs past it as though it were not there.
+	 */
+	public static final int OPTIONAL_NUDGE_RADIUS = 40;
+
 	private ErrandProgress()
 	{
+	}
+
+	private static boolean optional(StepAnnotation.Errand stage)
+	{
+		return Boolean.TRUE.equals(stage.optional);
 	}
 
 	/**
@@ -63,7 +78,8 @@ public final class ErrandProgress
 		for (int i = 0; i < chain.size(); i++)
 		{
 			StepAnnotation.Errand stage = chain.get(i);
-			if (isPositional(stage) || !monotonicSatisfied(stage, i, chain.size(), world))
+			if (optional(stage) || isPositional(stage)
+				|| !monotonicSatisfied(stage, i, chain.size(), world))
 			{
 				continue;
 			}
@@ -79,8 +95,37 @@ public final class ErrandProgress
 			{
 				for (int k = 0; k <= i; k++)
 				{
-					done.add(stageKey(stepId, chain, k));
+					// ... and the cascade never reaches an OPTIONAL leg.
+					// Carrying bat bones proves you walked past the flax
+					// field; it does not prove you picked any. That
+					// inference is exactly why the diary legs of the
+					// Merlin chain had never once guided anyone.
+					if (!optional(chain.get(k)))
+					{
+						done.add(stageKey(stepId, chain, k));
+					}
 				}
+			}
+		}
+		// PASS 1b — OPTIONAL legs, each judged alone.
+		//
+		// They sit outside the ordering entirely: nothing implies them and
+		// they imply nothing, so a side task can be done at any point, or
+		// never. Positional ones get no "closer to the next stage" escape
+		// either -- being on your way somewhere else is not picking flax.
+		for (int i = 0; i < chain.size(); i++)
+		{
+			StepAnnotation.Errand stage = chain.get(i);
+			if (!optional(stage))
+			{
+				continue;
+			}
+			boolean satisfied = isPositional(stage)
+				? atStage(stage, world.here())
+				: monotonicSatisfied(stage, i, chain.size(), world);
+			if (satisfied)
+			{
+				done.add(stageKey(stepId, chain, i));
 			}
 		}
 		// PASS 2 — positional conditions, at the front only. Everything
@@ -88,8 +133,8 @@ public final class ErrandProgress
 		// stage marks only itself, and the loop then re-reads the front so
 		// several legs can fall in one tick (walking out of a zone can
 		// satisfy a leave-stage and the waypoint after it at once).
-		for (int front = front(stepId, chain, done); front < chain.size();
-			front = front(stepId, chain, done))
+		for (int front = front(stepId, chain, done, world); front < chain.size();
+			front = front(stepId, chain, done, world))
 		{
 			StepAnnotation.Errand stage = chain.get(front);
 			if (!isPositional(stage) || !positionalSatisfied(stage, front, chain, world.here()))
@@ -98,20 +143,74 @@ public final class ErrandProgress
 			}
 			done.add(stageKey(stepId, chain, front));
 		}
-		return front(stepId, chain, done);
+		return front(stepId, chain, done, world);
 	}
 
-	/** First stage not in {@code done}; {@code chain.size()} when all are. */
-	public static int front(String stepId, List<StepAnnotation.Errand> chain, Set<String> done)
+	/**
+	 * The leg to guide: the first unsatisfied one, except that an OPTIONAL
+	 * leg is passed over unless the player is already near it.
+	 *
+	 * That is what makes it optional in both directions. It never blocks --
+	 * skipping the diary can never wedge a quest chain, which the seeded
+	 * note on the Sherlock leg was already worried about -- and it never
+	 * disappears, because nothing behind it can imply it. It simply waits
+	 * until you are in the area and then asks.
+	 */
+	public static int front(String stepId, List<StepAnnotation.Errand> chain,
+		Set<String> done, World world)
 	{
 		for (int i = 0; i < chain.size(); i++)
 		{
-			if (!done.contains(stageKey(stepId, chain, i)))
+			StepAnnotation.Errand stage = chain.get(i);
+			if (done.contains(stageKey(stepId, chain, i)))
 			{
-				return i;
+				continue;
 			}
+			if (optional(stage) && !nearStage(stage, world.here(), OPTIONAL_NUDGE_RADIUS))
+			{
+				continue;
+			}
+			return i;
 		}
 		return chain.size();
+	}
+
+	/**
+	 * Is the chain done? OPTIONAL legs do not count -- a step whose work is
+	 * its chain is finished when the work is, whether or not you took the
+	 * diary detour on the way.
+	 */
+	public static boolean complete(String stepId, List<StepAnnotation.Errand> chain, Set<String> done)
+	{
+		for (int i = 0; i < chain.size(); i++)
+		{
+			if (!optional(chain.get(i)) && !done.contains(stageKey(stepId, chain, i)))
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+
+	private static boolean nearStage(StepAnnotation.Errand stage, WorldPoint here, int radius)
+	{
+		return here != null
+			&& here.distanceTo2D(new WorldPoint(stage.x, stage.y, stage.plane)) <= radius;
+	}
+
+	/** Standing at the stage itself -- its own radius, no escape hatches. */
+	private static boolean atStage(StepAnnotation.Errand stage, WorldPoint here)
+	{
+		if (stage.zone != null)
+		{
+			return here != null && Boolean.TRUE.equals(stage.leave) != stage.zone.contains(here);
+		}
+		if (stage.region != null)
+		{
+			return here != null
+				&& Boolean.TRUE.equals(stage.leave) != (here.getRegionID() == stage.region);
+		}
+		return nearStage(stage, here, stage.radius != null ? stage.radius : 12);
 	}
 
 	/**

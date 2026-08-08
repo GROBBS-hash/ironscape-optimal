@@ -236,6 +236,23 @@ public class StepAnnotation
 		 */
 		public Boolean hold;
 		/**
+		 * A SIDE TASK that happens to sit near the route — the diary talk
+		 * with Sherlock, the field of flax — rather than a leg of the work.
+		 *
+		 * It sits outside the chain's ordering in both directions, which is
+		 * the only way a side task can behave. Nothing implies it: carrying
+		 * bat bones proves you walked past the flax field, not that you
+		 * picked any, and that inference meant the Merlin chain's two diary
+		 * legs had never once guided anyone (owner, in play). And it
+		 * implies nothing: skipping the diary can never wedge the quest,
+		 * and the step still completes without it.
+		 *
+		 * It speaks up when you are within {@code OPTIONAL_NUDGE_RADIUS},
+		 * because "while you are here anyway" is the whole of what an
+		 * optional task asks.
+		 */
+		public Boolean optional;
+		/**
 		 * The hand-ins for THIS stage: while it's active, only these glow
 		 * in the inventory (QH-style) instead of the whole step kit.
 		 */
