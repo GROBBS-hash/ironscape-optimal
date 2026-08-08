@@ -5888,9 +5888,13 @@
      "note": "Use the insect repellent on a beehive, then fill the bucket with wax."
     },
     {
-     "x": 2757,
-     "y": 3401,
-     "plane": 0,
+     "x": 2770,
+     "y": 3403,
+     "plane": 2,
+     "routeX": 2770,
+     "routeY": 3405,
+     "routePlane": 0,
+     "npc": "Sir Mordred",
      "varp": 14,
      "value": 4,
      "note": "Fight Sir Mordred upstairs in Keep Le Faye and talk to Morgan Le Faye FIRST. Until she tells you what frees Merlin, the Candle maker has no black candle option at all — bringing him the wax early does nothing."
