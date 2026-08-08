@@ -103,6 +103,13 @@ public class QuestHandoffOverlay extends Overlay
 		List<String> body = new ArrayList<>(
 			wrap(model.quest + " is deliberately left part-finished — the guide comes back to it.",
 				metrics, maxTextWidth));
+		// Telling someone to stop following Quest Helper without saying HOW
+		// leaves its arrows on screen fighting our route (owner, 2026-08-08).
+		// We cannot highlight its X for them — that button lives in Quest
+		// Helper's own Swing side panel, not in a game widget we can draw on
+		// — so the next best thing is naming exactly where it is.
+		body.addAll(wrap("Close it in the Quest Helper side panel: click the X "
+			+ "next to the quest's name, under \"reload quest\".", metrics, maxTextWidth));
 		List<String> next = wrap("Next: " + model.next, metrics, maxTextWidth);
 
 		int textWidth = boldMetrics.stringWidth(headline);

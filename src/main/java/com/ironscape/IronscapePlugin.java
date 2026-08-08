@@ -4237,6 +4237,9 @@ public class IronscapePlugin extends Plugin
 					"<col=00ff00>The guide leaves " + quest.getName()
 						+ " part-finished on purpose - it comes back to it later. "
 						+ "Next: " + next + "</col>", null);
+				client.addChatMessage(ChatMessageType.CONSOLE, "",
+					"<col=00ff00>Close it in the Quest Helper side panel (the X by "
+						+ "the quest name) so its arrows stop fighting the route.</col>", null);
 				SwingUtilities.invokeLater(() -> clientToolbar.openPanel(navButton));
 				// Chat alone was not enough (owner): a console line scrolls
 				// away behind quest dialogue while the player watches the
