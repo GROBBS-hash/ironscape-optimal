@@ -6242,7 +6242,8 @@
     },
     {
      "name": "spade",
-     "quantity": 1
+     "quantity": 1,
+     "optional": true
     },
     {
      "name": "watering can",
@@ -6250,7 +6251,8 @@
     },
     {
      "name": "secateurs",
-     "quantity": 1
+     "quantity": 1,
+     "optional": true
     }
    ],
    "target": {
@@ -6258,7 +6260,7 @@
     "y": 3464,
     "plane": 0
    },
-   "note": "The five allotment tools go in the tool leprechaun beside the Catherby patch, so they follow you to every patch. NOTE: the step now waits for all five tools AND the compost pack. The leprechaun deposit itself is not detectable, so it ticks once everything is bought. If the tools are already IN the leprechaun from an earlier visit, nothing can see them - tick by hand."
+   "note": "The five allotment tools go in the tool leprechaun beside the Catherby patch, so they follow you to every patch. This shop (Farming Supplies) sells only the rake, seed dibber and watering can - plus a gardening trowel, plant pot, bucket and plant cure. It does NOT sell a spade or secateurs, and the guide never says where to get them, so those two are marked optional: listed as useful, never blocking the step. The leprechaun deposit is not detectable, so the step ticks once you own the three buyable tools and the compost pack."
   }
  }
 }

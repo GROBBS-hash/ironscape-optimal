@@ -882,8 +882,56 @@ class StepRow extends JPanel
 		}
 		if (navigate != null)
 		{
-			navigate.setVisible(target != null);
+			navigate.setVisible(target != null || hasFallbackTarget(annotationId));
 		}
+	}
+
+	/**
+	 * Can Go do anything without a captured ⌖?
+	 *
+	 * Wave 3 gave the Go HANDLER a fallback chain (a place named in the
+	 * step text, else the step's 📍 area tag) — but this button stayed
+	 * hidden unless a ⌖ existed, so that fallback was unreachable through
+	 * the UI for its whole life. Every un-pinned step simply had no Go
+	 * button, which reads as "the plugin won't navigate me" even while
+	 * auto-nav is routing perfectly well (owner, 2026-08-08, on "Start
+	 * Fishing contest").
+	 *
+	 * Mirrors targetFor's chain using PlaceManager only, which is plain
+	 * data and safe to read off the Swing thread. The quest-start pin in
+	 * that chain needs live quest state and is deliberately NOT consulted
+	 * here — missing it can only hide the button on a step that would
+	 * have navigated, never show a dead one.
+	 */
+	private boolean hasFallbackTarget(String annotationId)
+	{
+		if (ctx.getPlaces() == null)
+		{
+			return false;
+		}
+		String text = annotationId.contains(":")
+			? subTextFor(annotationId) : step.getPlainText();
+		if (text != null
+			&& (ctx.getPlaces().firstPlaceIn(text) != null
+				|| ctx.getPlaces().lastPlaceIn(text) != null))
+		{
+			return true;
+		}
+		String location = step.getMetadata().get("location");
+		return location != null && ctx.getPlaces().getLoose(location) != null;
+	}
+
+	/** The sub-step's own text, for the id the buttons belong to. */
+	private String subTextFor(String annotationId)
+	{
+		for (SubStep candidate : step.getSubSteps())
+		{
+			if (candidate.getId().equals(annotationId))
+			{
+				return candidate.getPlainText();
+			}
+		}
+		return step.getPlainText();
 	}
 
 	/**

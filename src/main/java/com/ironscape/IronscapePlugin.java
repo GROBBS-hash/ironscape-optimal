@@ -4252,10 +4252,15 @@ public class IronscapePlugin extends Plugin
 		for (StepAnnotation.ItemNeed need : gateableItems(step, sub))
 		{
 			int required = need.quantity == null ? 1 : need.quantity;
-			int count = itemTracker.bankCountable(need.name, required)
-				? itemTracker.countOf(need.name)
-				: itemTracker.carriedCountOf(need.name);
-			if (count < required)
+			// Counts the BANK, unlike most goals. What this gate asks is
+			// "is there anything left on the shopping list to acquire" —
+			// already owning the item answers that wherever it sits. The
+			// first cut used carried-only and instantly hit the trap this
+			// project keeps hitting: the owner had all five farming tools
+			// BANKED, the panel showed them green with a 🏦 badge, and the
+			// step would not tick. A gate stricter than its own badge is
+			// unexplainable to the player (owner, 2026-08-08).
+			if (itemTracker.countOf(need.name) < required)
 			{
 				return false;
 			}
