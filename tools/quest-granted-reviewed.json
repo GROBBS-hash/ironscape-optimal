@@ -1,0 +1,20 @@
+{
+  "_comment": [
+    "Items audit-quest-granted flagged that were REVIEWED and REJECTED — the",
+    "quest does not hand them over, so they stay ordinary requirements. There",
+    "is no annotation flag for 'reviewed, not granted' (a rejection means the",
+    "item is just normal), so without this file every settled question",
+    "re-reports on every run and the audit never converges.",
+    "",
+    "Key is '<stepId> <item name>', matching the audit's own handled-set key.",
+    "Cite the evidence: the wiki's 'Items required' annotation is the",
+    "discriminator, per the wave-12 lesson that being LISTED is not enough."
+  ],
+  "reviewed": {
+    "20e0b80487 phoenix feather": "The Golem: a genuine fetch, not granted (owner review, wave 12 — overturned in this direction along with barronite deposit).",
+    "ade050c74d barronite deposit": "Defender of Varrock: a genuine fetch, not granted (owner review, wave 12).",
+    "95213feaa2 silverlight key": "Demon Slayer: explicit owner correction (wave 9). The finishing step needs 3 keys; the bones/coin/bucket spent on the earlier key legs were pruned instead.",
+    "0da34b3a89 ring of charos(a)": "While Guthix Sleeps: wiki Items required lists 'Ring of Charos(a) or 500 coins' as a BRING item, not under 'Obtainable during quest'.",
+    "326668c883 hangover cure": "Plague City: wiki lists 'Hangover cure or the ingredients to make one' as a bring item, and the guide makes it two steps earlier (fa497e8b66). Bring-then-consume-in-finale is a GOOD kit entry per wave 9."
+  }
+}

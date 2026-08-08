@@ -94,6 +94,19 @@ for (const [key, entry] of Object.entries(annotations)) {
   }
 }
 
+// The other half of converging: a REJECTED verdict. Marking an item
+// `granted` records "yes"; nothing records "reviewed, and the quest really
+// does not hand it over", so those re-reported on every run — four of the
+// seven findings in this audit's second sweep were questions the owner had
+// already answered (phoenix feather and barronite deposit in wave 12, the
+// silverlight keys back in wave 9). Same shape as audit-goals' VERIFIED
+// allow-list for hand-checked item_ids keys.
+const reviewedFile = path.join(__dirname, 'quest-granted-reviewed.json');
+if (fs.existsSync(reviewedFile)) {
+  const reviewed = JSON.parse(fs.readFileSync(reviewedFile, 'utf8')).reviewed ?? {};
+  for (const key of Object.keys(reviewed)) handled.add(key.toLowerCase());
+}
+
 if (!fs.existsSync(AUDIT_TSV)) {
   console.error(`missing ${path.relative(process.cwd(), AUDIT_TSV)} — run:\n`
     + '  gradlew test --tests "*.GoalAuditDumpTest"');
@@ -110,6 +123,10 @@ for (const line of fs.readFileSync(AUDIT_TSV, 'utf8').split('\n')) {
 for (const [key, entry] of Object.entries(annotations)) {
   for (const item of entry.items ?? []) {
     if (item.granted) continue;
+    // Annotation items need the same handled check the goal loop does,
+    // or a reviewed REJECTION never suppresses anything — every finding
+    // this audit has ever produced came in through here.
+    if (handled.has(`${key.split(':')[0]} ${item.name.toLowerCase()}`)) continue;
     add(key.split(':')[0], {
       name: item.name,
       qty: item.quantity == null ? '-' : String(item.quantity),

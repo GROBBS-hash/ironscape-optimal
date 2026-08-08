@@ -4416,7 +4416,8 @@
     },
     {
      "name": "pink dye",
-     "quantity": 1
+     "quantity": 1,
+     "granted": true
     },
     {
      "name": "snapdragon seed",
