@@ -289,6 +289,14 @@ public class IronscapePlugin extends Plugin
 	private volatile int currentSubItemIcon = -1;
 
 	/**
+	 * Overhead icon per VENDOR name, when one step buys from several
+	 * shops — the candle maker wears a candle, Harry wears a fishing rod.
+	 * Falls back to currentSubItemIcon for anyone not named here.
+	 */
+	private volatile java.util.Map<String, Integer> npcItemIcons =
+		java.util.Collections.emptyMap();
+
+	/**
 	 * Scene tiles holding a ground item that matches one of the current
 	 * sub's item goals — the "pick up 2 iron bars" / item-spawn case.
 	 * Scans the current plane's tiles once per game tick; ~11k null checks
@@ -1410,6 +1418,7 @@ public class IronscapePlugin extends Plugin
 		npcTargetOverlay.setIndexesSupplier(() -> npcTargetIndexes);
 		npcTargetOverlay.setQuestIconSupplier(() -> currentSubIsQuest);
 		npcTargetOverlay.setItemIconSupplier(() -> currentSubItemIcon);
+		npcTargetOverlay.setPerNpcIconSupplier(() -> npcItemIcons);
 		overlayManager.add(npcTargetOverlay);
 		targetTileOverlay.setTargetSupplier(() -> targetTileMarker);
 		targetTileOverlay.setLabelSupplier(() -> targetTileLabel);
@@ -3066,6 +3075,7 @@ public class IronscapePlugin extends Plugin
 		// The item you're there to BUY floats over the outlined NPC's
 		// head: first still-unmet item goal of the current sub.
 		int wantedIcon = -1;
+		java.util.Map<String, Integer> perNpcIcons = new java.util.HashMap<>();
 		if (current != null)
 		{
 			List<GoalDetector.ItemGoal> wanted = itemGoalsBySub.get(current.sub.getId());
@@ -3083,8 +3093,23 @@ public class IronscapePlugin extends Plugin
 						: itemTracker.carriedCountOf(goal.getItemName());
 					if (count < goal.getQuantity())
 					{
-						wantedIcon = itemTracker.iconIdFor(goal.getItemName());
-						break;
+						// One step, several shops: "Buy candle, 2 fishing
+						// rods, lobster pot" in Catherby is a candle maker
+						// AND a fishing shop, so a single shared icon hung
+						// a fishing rod over the candle maker (owner,
+						// 2026-08-08). Where item_sources names the vendor,
+						// each NPC wears the item THEY sell.
+						int goalIcon = itemTracker.iconIdFor(goal.getItemName());
+						String vendor = placeManager.sourceVendor(goal.getItemName());
+						if (vendor != null && goalIcon > 0)
+						{
+							perNpcIcons.putIfAbsent(
+								vendor.toLowerCase(Locale.ROOT), goalIcon);
+						}
+						if (wantedIcon == -1)
+						{
+							wantedIcon = goalIcon;
+						}
 					}
 				}
 			}
@@ -3110,6 +3135,7 @@ public class IronscapePlugin extends Plugin
 			}
 		}
 		currentSubItemIcon = wantedIcon;
+		npcItemIcons = perNpcIcons;
 
 		// Ground items the current sub wants picked up ("Pick up 2 iron
 		// bars...", item spawns): highlight their tiles, QH-style.

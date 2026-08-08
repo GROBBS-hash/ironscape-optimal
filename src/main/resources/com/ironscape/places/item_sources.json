@@ -93,6 +93,54 @@
    "plane": 0,
    "note": "Teleport cards: buy from Diango in the Draynor market — they charge the Chronicle (one teleport per card).",
    "vendor": "Diango"
+  },
+  "fishing rod": {
+   "display": "Fishing rod",
+   "x": 2834,
+   "y": 3444,
+   "plane": 0,
+   "vendor": "Harry",
+   "note": "Harry's Fishing Shop, Catherby - stocks fishing rods, lobster pots, harpoons and nets."
+  },
+  "fishing rods": {
+   "display": "Fishing rods",
+   "x": 2834,
+   "y": 3444,
+   "plane": 0,
+   "vendor": "Harry",
+   "note": "Harry's Fishing Shop, Catherby - stocks fishing rods, lobster pots, harpoons and nets."
+  },
+  "lobster pot": {
+   "display": "Lobster pot",
+   "x": 2834,
+   "y": 3444,
+   "plane": 0,
+   "vendor": "Harry",
+   "note": "Harry's Fishing Shop, Catherby - stocks fishing rods, lobster pots, harpoons and nets."
+  },
+  "lobster pots": {
+   "display": "Lobster pots",
+   "x": 2834,
+   "y": 3444,
+   "plane": 0,
+   "vendor": "Harry",
+   "note": "Harry's Fishing Shop, Catherby - stocks fishing rods, lobster pots, harpoons and nets."
+  },
+  "candle": {
+   "display": "Candle",
+   "x": 2797,
+   "y": 3440,
+   "plane": 0,
+   "vendor": "Candle maker",
+   "note": "Candle shop, Catherby - the Candle maker sells plain candles (he also hands over the black candle for Merlin's Crystal)."
+  },
+  "candles": {
+   "display": "Candles",
+   "x": 2797,
+   "y": 3440,
+   "plane": 0,
+   "vendor": "Candle maker",
+   "note": "Candle shop, Catherby - the Candle maker sells plain candles (he also hands over the black candle for Merlin's Crystal)."
   }
  }
 }

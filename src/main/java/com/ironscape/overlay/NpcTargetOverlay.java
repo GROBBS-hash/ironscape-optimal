@@ -46,9 +46,11 @@ public class NpcTargetOverlay extends Overlay
 	private Supplier<Set<Integer>> indexesSupplier = Collections::emptySet;
 	private Supplier<Boolean> questIconSupplier = () -> false;
 	private Supplier<Integer> itemIconSupplier = () -> -1;
+	private Supplier<java.util.Map<String, Integer>> perNpcIconSupplier =
+		Collections::emptyMap;
 	private BufferedImage icon;
-	private int cachedItemId = -1;
-	private BufferedImage cachedItemImage;
+	/** Item id -> sprite. A per-NPC icon means several are live at once. */
+	private final java.util.Map<Integer, BufferedImage> itemImages = new java.util.HashMap<>();
 
 	@Inject
 	public NpcTargetOverlay(Client client, SpriteManager spriteManager,
@@ -94,6 +96,17 @@ public class NpcTargetOverlay extends Overlay
 		this.itemIconSupplier = itemIconSupplier;
 	}
 
+	/**
+	 * Per-VENDOR overrides, keyed by lowercase NPC name — "Buy candle, 2
+	 * fishing rods, lobster pot" spans two Catherby shops, and each
+	 * keeper should wear their own stock. Anyone absent falls back to
+	 * setItemIconSupplier.
+	 */
+	public void setPerNpcIconSupplier(Supplier<java.util.Map<String, Integer>> supplier)
+	{
+		this.perNpcIconSupplier = supplier;
+	}
+
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
@@ -133,15 +146,18 @@ public class NpcTargetOverlay extends Overlay
 			}
 			else
 			{
-				Integer itemId = itemIconSupplier.get();
+				// A vendor named in item_sources wears the item THEY sell:
+				// one step can span two shops, and a single shared icon put
+				// a fishing rod over the candle maker's head.
+				Integer itemId = name == null ? null
+					: perNpcIconSupplier.get().get(Text.removeTags(name).toLowerCase());
+				if (itemId == null)
+				{
+					itemId = itemIconSupplier.get();
+				}
 				if (itemId != null && itemId > 0)
 				{
-					if (itemId != cachedItemId)
-					{
-						cachedItemId = itemId;
-						cachedItemImage = itemManager.getImage(itemId);
-					}
-					overhead = cachedItemImage;
+					overhead = itemImages.computeIfAbsent(itemId, itemManager::getImage);
 				}
 			}
 			if (overhead != null)
