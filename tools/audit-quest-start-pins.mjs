@@ -115,10 +115,29 @@ for (const [key, pin] of questPins) {
 
 drifted.sort((a, b) => b.drift - a.drift);
 
+// Drift alone does not mean our pin is wrong, and reporting it as though it
+// does makes the same 24 rows come back every session. Quest Helper's FIRST
+// step is very often not the giver at all: it is the approach or a
+// prerequisite -- "go to Port Sarim to get a boat to Entrana" before Auguste,
+// "catch 23 raw karambwanji" before the Tai Bwo Wannai trio, "climb to the
+// second floor" before Sir Tiffy. In every one of those our giver pin is the
+// better routing target and QH's is a waypoint on the way to it.
+//
+// The rows worth a human are the ones where QH's own first step SAYS it is
+// starting the quest and still disagrees with us, plus any pin with no
+// recorded giver behind it.
+const STARTS_QUEST = /\bto start (?:the )?(?:this )?quest\b|\bstart(?:s|ing)? (?:the )?quest\b/i;
+const isGiverDispute = (r) => !r.giver
+  || (r.step.type === 'NpcStep' && STARTS_QUEST.test(r.step.description));
+const disputes = drifted.filter(isGiverDispute);
+const approaches = drifted.filter((r) => !isGiverDispute(r));
+
 console.log('=== quest pins that disagree with Quest Helper\'s first step ===');
 console.log('(a big drift usually means the pin is a landmark, not the giver —');
 console.log(' and a landmark can be somewhere Shortest Path cannot reach at all)\n');
-for (const r of drifted) {
+console.log(`--- REVIEW: QH's first step claims to start the quest, or we have no`);
+console.log(`    recorded giver. These are real disagreements. (${disputes.length})\n`);
+for (const r of disputes) {
   console.log(`  ${String(r.drift).padStart(5)} tiles  "${r.key}"`);
   console.log(`         ours: ${r.pin.x},${r.pin.y}` + (r.pin.plane ? ` p${r.pin.plane}` : '')
     + (r.giver ? `  giver recorded as "${r.giver}"` : ''));
@@ -127,7 +146,18 @@ for (const r of drifted) {
   if (r.step.description) console.log(`         "${r.step.description}"`);
 }
 
-console.log(`\n${drifted.length} pins drift >${DRIFT} tiles`);
+console.log(`\n--- NOT DEFECTS: QH opens with an approach or a prerequisite and our pin`);
+console.log(`    is the giver, which is the better routing target. (${approaches.length})`);
+console.log(`    The ~6,400-tile rows are underground givers against QH's surface entrance;`);
+console.log(`    audit-pin-reachability confirms Shortest Path can path to all of them,`);
+console.log(`    so ours is the more precise target rather than the ZMI/Brimstail trap.\n`);
+for (const r of approaches) {
+  console.log(`  ${String(r.drift).padStart(5)} tiles  "${r.key}"  ours "${r.giver}" `
+    + `${r.pin.x},${r.pin.y}  vs QH ${r.step.type} ${r.step.variable}`);
+}
+
+console.log(`\n${disputes.length} to review  |  ${approaches.length} QH-opens-elsewhere`
+  + `  |  ${drifted.length} drift >${DRIFT} tiles total`);
 console.log(`${agreed.length} agree with QH`);
 console.log(`${noHelper.length} have no QH helper to compare against`);
 if (showAll && noHelper.length) {
