@@ -87,6 +87,47 @@ public class GoalDetectorTest
 	}
 
 	@Test
+	public void bareQuestNameStepsStillGetTheirQuestGoal()
+	{
+		// No verb anywhere: "Cabin fever" is the whole step. These had NO
+		// completion path at all — arrival was the only one left, and it is
+		// gated on a kit the quest consumes, so they could never tick.
+		Guide guide = guideWithMetadataStep("Cabin fever",
+			Map.of("quest", "Cabin Fever", "questStatus", "complete"));
+
+		GoalDetector.Goals goals = GoalDetector.detect(guide);
+
+		assertEquals(1, goals.getQuestGoals().size());
+		assertTrue(goals.getQuestGoals().get(0).isRequiresFinished());
+	}
+
+	@Test
+	public void aParentheticalAsideDoesNotHideTheQuestName()
+	{
+		Guide guide = guideWithMetadataStep(
+			"Rum deal (Req 42 slayer, you should be close to it)",
+			Map.of("quest", "Rum Deal", "questStatus", "complete"));
+
+		GoalDetector.Goals goals = GoalDetector.detect(guide);
+
+		assertEquals(1, goals.getQuestGoals().size());
+	}
+
+	@Test
+	public void questTagsTheGameSpellsDifferentlyStillResolve()
+	{
+		// The guide predates the sequel numbering; the game says
+		// "Desert Treasure I". Exact-match alone found nothing.
+		Guide guide = guideWithMetadataStep("Do Desert Treasure",
+			Map.of("quest", "Desert Treasure", "questStatus", "complete"));
+
+		GoalDetector.Goals goals = GoalDetector.detect(guide);
+
+		assertEquals(1, goals.getQuestGoals().size());
+		assertEquals(Quest.DESERT_TREASURE_I, goals.getQuestGoals().get(0).getQuest());
+	}
+
+	@Test
 	public void makeStepsProduceProductItemGoalsNotQuestGoals()
 	{
 		// "Make the hangover cure for plague city quest" is a PREP step:
