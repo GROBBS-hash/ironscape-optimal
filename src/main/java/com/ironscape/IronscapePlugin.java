@@ -983,6 +983,10 @@ public class IronscapePlugin extends Plugin
 	private static final java.util.regex.Pattern CHARTER =
 		java.util.regex.Pattern.compile("(?i)\\bcharter\\b");
 
+	/** "Take the boat back to Ardy" — arrival needs the gangplank crossed. */
+	private static final java.util.regex.Pattern BOAT =
+		java.util.regex.Pattern.compile("(?i)\\bboats?\\b");
+
 	/** "safespot the zamorak warrior" — names the ⌖ tile "Safespot". */
 	private static final java.util.regex.Pattern SAFESPOT =
 		java.util.regex.Pattern.compile("(?i)safe\\s*-?\\s*spot");
@@ -1141,6 +1145,15 @@ public class IronscapePlugin extends Plugin
 
 	/** Game tick of the last GAME OBJECT click (ladder, cave, portal). */
 	private int lastObjectClickTick = -10;
+
+	/**
+	 * Tick and tile of the last gangplank crossing — where the player
+	 * stood when they clicked it, which is the side they were LEAVING.
+	 * See ashoreOfBoat: boarding crosses a plank too, so the tile is what
+	 * separates "boarded at the far end" from "walked off here".
+	 */
+	private int lastGangplankTick = -1000;
+	private WorldPoint lastGangplankPoint;
 
 	/** Text-detected "get N items" / "start quest X" goals (see GoalDetector). */
 	private GoalDetector.Goals goals;
@@ -2050,6 +2063,17 @@ public class IronscapePlugin extends Plugin
 			case GAME_OBJECT_FOURTH_OPTION:
 			case GAME_OBJECT_FIFTH_OPTION:
 				lastObjectClickTick = client.getTickCount();
+				// Crossing a gangplank is the moment a boat trip actually
+				// ends — see ashoreOfBoat. Recorded WITH the tile the click
+				// was made from, since the same object is crossed at both
+				// ends of the journey.
+				String target = net.runelite.client.util.Text.removeTags(
+					event.getMenuTarget() == null ? "" : event.getMenuTarget());
+				if (target.toLowerCase(Locale.ROOT).contains("gangplank"))
+				{
+					lastGangplankTick = client.getTickCount();
+					lastGangplankPoint = playerPoint();
+				}
 				break;
 			default:
 				break;
@@ -3606,6 +3630,131 @@ public class IronscapePlugin extends Plugin
 	 *                 1 gp must not tick next step's "grab your gp" and
 	 *                 drag navigation ahead of where the player really is.
 	 */
+	/**
+	 * Where a travel sub says it ENDS, or null when nothing resolves: the
+	 * last place its text names, else the step's authored 📍 tag (the
+	 * guide's word order flips against the place list often enough —
+	 * "go to battlefield of khazard" vs "Khazard Battlefield" — that the
+	 * tag is the reliable half).
+	 *
+	 * Shared by the teleport-jump shortcut and the arrival check, so the
+	 * two can never disagree about where the sub was heading.
+	 */
+	private WorldPoint travelDestination(GuideStep step, SubStep sub)
+	{
+		WorldPoint place = placeManager.lastPlaceIn(sub.getPlainText());
+		if (place == null)
+		{
+			String location = step.getMetadata().get("location");
+			place = location == null ? null : placeManager.getLoose(location);
+		}
+		return place;
+	}
+
+	/** How long a gangplank crossing counts as "just now" (~60s). */
+	private static final int GANGPLANK_FRESH_TICKS = 100;
+
+	/**
+	 * Has a BOAT sub's journey actually put the player back on land?
+	 *
+	 * A docked ship's deck sits well inside the destination's arrival
+	 * radius, so "Take the boat back to Ardy" ticked the moment the boat
+	 * moored — with the player still aboard. Shortest Path then routes
+	 * from a deck tile it has no path off and navigation bricks (owner,
+	 * 2026-08-08). Destination proof (P0-04) can't help here: the deck IS
+	 * the destination as far as distance is concerned.
+	 *
+	 * Crossing the gangplank is the transition, so that click is the
+	 * signal — but only one made NEAR THE DESTINATION. Boarding at the far
+	 * end crosses the same object, which is why the crossing TILE is
+	 * recorded and not just the fact of it.
+	 *
+	 * RELEASE VALVE: no gangplank loaded near the player means there is
+	 * nothing to cross, so the gate opens. A route that drops you straight
+	 * onto the dock ticks normally instead of wedging forever — worth
+	 * having, because whether all six of the guide's boat trips even end
+	 * at a plank is unverified.
+	 *
+	 * Client thread (scene scan).
+	 */
+	private boolean ashoreOfBoat(GuideStep step, SubStep sub)
+	{
+		if (!BOAT.matcher(sub.getPlainText()).find())
+		{
+			return true;
+		}
+		WorldPoint destination = travelDestination(step, sub);
+		boolean crossedHere = lastGangplankPoint != null
+			&& client.getTickCount() - lastGangplankTick <= GANGPLANK_FRESH_TICKS
+			&& (destination == null
+				|| lastGangplankPoint.distanceTo(destination) <= PLACE_ARRIVE_RADIUS);
+		if (crossedHere)
+		{
+			logBoatGate(sub.getId() + ": ashore, gangplank crossed");
+			return true;
+		}
+		if (gangplankNearby())
+		{
+			logBoatGate(sub.getId() + ": holding, gangplank loaded but not crossed");
+			return false;
+		}
+		logBoatGate(sub.getId() + ": open, no gangplank in range");
+		return true;
+	}
+
+	/** One INFO line per change — a held boat sub must be greppable. */
+	private void logBoatGate(String message)
+	{
+		if (!message.equals(lastBoatGateLog))
+		{
+			lastBoatGateLog = message;
+			log.info("boat gate: {}", message);
+		}
+	}
+
+	private String lastBoatGateLog;
+
+	/**
+	 * Is a gangplank loaded within sight of the player? Scene coordinates
+	 * on both sides — a nearest-object search inside the loaded scene,
+	 * never a comparison against annotation data.
+	 */
+	private boolean gangplankNearby()
+	{
+		Player me = client.getLocalPlayer();
+		if (me == null)
+		{
+			return false; // can't prove a plank is there; never wedge on doubt
+		}
+		WorldPoint here = me.getWorldLocation();
+		net.runelite.api.WorldView view = client.getTopLevelWorldView();
+		net.runelite.api.Tile[][] tiles = view.getScene().getTiles()[view.getPlane()];
+		for (net.runelite.api.Tile[] column : tiles)
+		{
+			for (net.runelite.api.Tile tile : column)
+			{
+				if (tile == null
+					|| tile.getWorldLocation().distanceTo2D(here) > ARRIVE_RADIUS)
+				{
+					continue;
+				}
+				for (net.runelite.api.GameObject object : tile.getGameObjects())
+				{
+					if (object == null)
+					{
+						continue;
+					}
+					String name = liveObjectName(object.getId());
+					if (name != null && name.contains("gangplank"))
+					{
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
+
 	private boolean currentSubSatisfied(GuideStep step, SubStep sub, boolean frontier,
 		boolean inFrontierStep)
 	{
@@ -3798,11 +3947,31 @@ public class IronscapePlugin extends Plugin
 		// No early false: a travel sub can ALSO complete by arriving at its
 		// destination below ("Home tele to lumby and run north to Varrock
 		// east bank" — walking the second half needs arrival detection).
+		//
+		// And the jump must have landed WHERE THE SUB SAYS. Without that
+		// this branch ticked any travel sub that happened to be current
+		// while a teleport was warm: Brimstail's jump into the essence mine
+		// ticked the region checkpoint, the loop cascaded to "Use mind bomb
+		// and camelot tele", and that sub completed from inside the mine
+		// with Camelot 1,300 tiles away (owner, 2026-08-08; the same shape
+		// as the Chronicle/Castle Wars report). Charter and spirit-tree
+		// subs have required destination proof since wave 7 — teleports get
+		// the same rule. Unresolvable destination falls through to the
+		// arrival check below rather than ticking on the jump alone.
 		if (travelGoalSubs.contains(sub.getId())
 			&& inFrontierStep && recentTeleportTicks > 0
 			&& annotationItemsCarried(step, sub))
 		{
-			return true;
+			Player traveller = client.getLocalPlayer();
+			WorldPoint landed = traveller == null ? null : realPoint(traveller);
+			WorldPoint destination = travelDestination(step, sub);
+			if (landed != null && destination != null
+				&& landed.getPlane() == destination.getPlane()
+				&& landed.distanceTo(destination) <= TELEPORT_ARRIVE_RADIUS
+				&& ashoreOfBoat(step, sub))
+			{
+				return true;
+			}
 		}
 
 		// No item/quest goal: a movement step. Arriving at its target
@@ -3857,15 +4026,16 @@ public class IronscapePlugin extends Plugin
 		if (precise != null && !networkTravel)
 		{
 			return here.getPlane() == precise.plane
-				&& here.distanceTo(new WorldPoint(precise.x, precise.y, precise.plane)) <= ARRIVE_RADIUS;
+				&& here.distanceTo(new WorldPoint(precise.x, precise.y, precise.plane)) <= ARRIVE_RADIUS
+				&& ashoreOfBoat(step, sub);
 		}
 		// Travel subs end at their LAST place mention (the destination);
 		// everything else anchors on the first ("Talk to Reldo" -> Reldo).
 		// Network travel is destination-anchored too ("Charter to X").
 		WorldPoint place = travelGoalSubs.contains(sub.getId()) || networkTravel
-			? placeManager.lastPlaceIn(sub.getPlainText())
+			? travelDestination(step, sub)
 			: placeManager.firstPlaceIn(sub.getPlainText());
-		if (place == null)
+		if (place == null && !travelGoalSubs.contains(sub.getId()) && !networkTravel)
 		{
 			// The guide's phrasing flips word order against the place list
 			// ("go to battlefield of khazard" vs the place "Khazard
@@ -3891,7 +4061,9 @@ public class IronscapePlugin extends Plugin
 			arrivalArmed.add(sub.getId());
 			return false;
 		}
-		return arrivalArmed.contains(sub.getId());
+		// Standing at the destination is not enough for a BOAT sub — the
+		// deck is inside the radius, and nav bricks from there.
+		return arrivalArmed.contains(sub.getId()) && ashoreOfBoat(step, sub);
 	}
 
 	/**
