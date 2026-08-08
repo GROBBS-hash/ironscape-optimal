@@ -819,6 +819,44 @@ refresh when "Failed to login" appears.
   steps (Clan Wars is the first leg). `ce8c0e36d3` is its own case — a ⌖ on
   a boat sub marks the BOARDING dock (wave 7), so it wants a pin at the Ardy
   dock, not Brimhaven.
+  **11 QUEST STEPS COULD NEVER AUTO-TICK** (the biggest find of the
+  session, and it came out of the gating measurement rather than a report).
+  14 quest-tagged steps had NO detected quest goal; with no goal their only
+  auto-completion is ARRIVAL, which is gated on the step's annotation kit —
+  and on a FINISHING step that kit is what the quest CONSUMES. So "Do
+  Desert Treasure", "Cabin fever", "Watchtower quest", "One small favour",
+  "Rum deal", "Garden of tranquility quest", "Forgettable tale...", "Do
+  Hand in the sand quest", "Finish Evil Dave subquest" and two more could
+  not complete by any route. TWO independent causes:
+  (1) NAME RESOLUTION — the metadata fallback required an exact match on
+  the RuneLite Quest enum and SEVEN tags miss it: "Vampire Slayer" ->
+  Vampyre (renamed), "Garden of Tranquility" -> Tranquillity (two Ls),
+  "Hand in the Sand" -> "The Hand in the Sand" (article), "Desert Treasure"
+  -> "Desert Treasure I", "Desert Treasure II" -> "...- The Fallen Empire",
+  "Rag and Bone Man" -> "Rag and Bone Man I", "Recipe for Disaster (Evil
+  Dave)" -> "Recipe for Disaster - Evil Dave". Hand-authored alias map, NOT
+  fuzzy matching — "Desert Treasure" and "Rag and Bone Man" each prefix
+  TWO real quests, so a prefix rule picks wrong. New
+  `GoalAuditDumpTest.dumpQuestNames` -> `build/quest-names.tsv` makes the
+  next such diff mechanical (it also caught that the enum constant is
+  `DESERT_TREASURE_I`, not `DESERT_TREASURE`).
+  (2) THE VERB GATE rejected any step whose text lacked
+  start/do/finish/etc, killing bare-name steps. FIRST ATTEMPT KEYED THE
+  EXEMPTION ON `questStatus` AND GoalDetectorTest CAUGHT IT: the site tags
+  PREP steps with a status too, so "Make the hangover cure for plague city
+  quest" would have begun ticking off Plague City's quest state. The
+  premise "prep steps carry no tag" was true of the shipped data snapshot
+  and false as a contract — the TEST held the knowledge the data did not.
+  Discriminator is now "the step's text IS the quest name, give or take a
+  trailing 'quest' and a parenthetical"; the prep step fails it because it
+  leads with its own action. Verified by DIFFING completion-paths.tsv
+  before/after: exactly 12 subs change, 9 -> quest-finish, 3 ->
+  quest-start. "Start Vampire slayer, get 3 garlic" gains a quest goal
+  ALONGSIDE its item goal, which is STRICTER (the atomic branch makes
+  STARTED fall through to the items). WATCH IN PLAY: "Start Rag and bone
+  man on the way to the temple" previously needed its pots/logs/tinderbox
+  through the arrival gate and now ticks when the quest starts — consistent
+  with every other start step, but it is the one loosening.
   **INERT GAP RECORDED**: `annotationItemsCarried` reads `step.getId()`
   whenever a step has ONE sub — which on the atomic Oziris guide is ALWAYS
   — so the 5 sub-keyed annotation item entries are invisible to the arrival

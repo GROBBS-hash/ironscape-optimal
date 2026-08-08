@@ -542,23 +542,29 @@ Wave 13 was a desk session with the owner away. **Nothing in it is play-tested.*
    farming tools") must now wait for all five tools AND the pack, in either buying order, and must
    still tick after the tools go into the leprechaun. If the tools were ALREADY in the leprechaun
    from an earlier visit nothing can see them — tick by hand; the note on the step says so.
-2. **Exercise the never-run list** (unchanged from wave 12), gangplank gate first. Wave 13 found
+2. **Watch the 11 revived quest steps.** They previously could not auto-tick at all (no quest
+   goal -> arrival only -> gated on a kit the quest consumes). Now 9 tick on quest completion and
+   3 on quest start. The one loosening to watch: `5291ef1de9` "Start Rag and bone man on the way
+   to the temple" used to need its pots/logs/tinderbox via the arrival gate and now ticks when the
+   quest starts. If that is wrong, the fix is a varp checkpoint, the same shape as wave 12's
+   quest-start sweep.
+3. **Exercise the never-run list** (unchanged from wave 12), gangplank gate first. Wave 13 found
    statically that **all six boat destinations have a plank**, so the release valve never fires and
    the gate is load-bearing on every trip. Watch `mine-session-log.mjs | grep "boat gate:"` for
    `holding, gangplank loaded but not crossed` then `ashore, gangplank crossed`.
-3. **The 35 target-drift steps** — wave 13 tried and failed to find a safe general rule (see
+4. **The 35 target-drift steps** — wave 13 tried and failed to find a safe general rule (see
    CLAUDE.md wave 13 for why distance and place-type both collapse), so these really are per-step
    ⌖ captures. The triage of which are real hijacks vs correct-as-is is in that same entry; do the
    real hijacks and skip the rest.
-4. **One open data question**: the Fremennik Trials lyre (`80a3ae4d44`). The wiki calls it a drop
+5. **One open data question**: the Fremennik Trials lyre (`80a3ae4d44`). The wiki calls it a drop
    from the trial NPCs "or the skills and materials to make one", so it is obtainable in-quest —
    should it be `granted` (muted, never routes) or stay a red requirement? Everything else the
    granted audit flagged is now settled; `node tools/audit-quest-granted.mjs` reports exactly this
    one item.
-5. Gertrude's Cat still ticks on quest start — the wave 13 gating change deliberately does NOT
+6. Gertrude's Cat still ticks on quest start — the wave 13 gating change deliberately does NOT
    cover it (its items are the scraper's null-quantity carry list, not its objective). Still needs
    a "use X on Y" detector or leaving alone. **Owner's call.**
-6. Long-standing: deliberate death test, onion-gate capture, "big frog leg" -> 7908 verdict.
+7. Long-standing: deliberate death test, onion-gate capture, "big frog leg" -> 7908 verdict.
 
 **Hub pin is at `3638c2f` and should NOT move** until wave 13 has been through a play session.
 
