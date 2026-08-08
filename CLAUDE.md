@@ -797,10 +797,10 @@ refresh when "Failed to login" appears.
   of tonight's reports appear in it. Its FIRST run called 8 of 12 steps
   unroutable because it did not know quest steps route to the GIVER or that
   place names resolve through `firstPlaceIn`; **a check nobody believes is
-  worse than no check**. Guide-wide it measures **139 steps that can only be
+  worse than no check**. Guide-wide it measures **107 steps that can only be
   ticked by hand** and **132 with nowhere to route** — those numbers ARE the
   recurring-report problem, since they were always going to arrive one at a
-  time. Breakdown of the 139: 74 genuine advice (want a panel LABEL, not a
+  time. Breakdown of the 107 (before the arrival correction, 139): 74 genuine advice (want a panel LABEL, not a
   fix), 23 travel steps with no travel goal, 19 "Continue quest X", 6 talk,
   5 combat, 6 banking advice.
 

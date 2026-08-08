@@ -545,13 +545,23 @@ node tools/preflight.mjs
 It reads your saved route position and says what the next 15 steps can and
 cannot do. Tonight's three complaints were all in it before they happened.
 
-### The one decision waiting on you
+### Look at these two labels first — they are new and unseen
 
-**Label manual-only steps in the panel.** 139 steps guide-wide can only be
-ticked by hand — no detector, no checkpoint, no chain — and every one of them
-reads as a bug when you meet it cold. A muted "tick by hand" marker removes
-that whole class of false reports. Display-only, no behaviour change, but it
-needs your eyes on how it looks, which is why it is not already built.
+**Built overnight, needs your eyes, not your debugging.**
+
+- Steps nothing can complete now carry a muted **"tick by hand — nothing here
+  to detect"**. 107 steps guide-wide; most are genuinely advice.
+- Items with no quantity are tagged **"(bring some)"** — the guide's running
+  carry advice, as opposed to a requirement with a number.
+
+Wording and placement are guesses; say if either is wrong.
+
+**One thing nearly shipped as a lie and is worth knowing about:** the first
+version labelled "Run south to Port sarim" as manual-only. It has no detector
+at all, but it ticks on ARRIVAL, and so do 32 others. Both the panel and
+`preflight.mjs` now test the same movement-instruction-plus-resolvable-place
+pair `currentSubSatisfied` does. That is the difference between 139 and 107,
+and between two wrong labels in your next twelve steps and none.
 
 ### Then, in value order
 
@@ -559,7 +569,7 @@ needs your eyes on how it looks, which is why it is not already built.
    Falador". The travel detector exists and covers 52 other steps, so these are
    a gap with a shape, not a missing feature. Worth finding why before changing
    the detector: it has wide blast radius and `GoalDetectorTest` is the guard.
-2. **74 of the 139 are genuinely advice** ("Use Authenticator AND 2-step
+2. **74 of them are genuinely advice** ("Use Authenticator AND 2-step
    verification"). Those want the label above, not a fix.
 3. **6 talk steps and 5 combat steps** could tick — "Talk to juliet", "Kill a
    giant bat (Rag and bone man)". `LOOT_FOR_ITEM` (wave 8) should have caught
