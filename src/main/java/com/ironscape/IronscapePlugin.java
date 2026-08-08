@@ -6408,8 +6408,14 @@ public class IronscapePlugin extends Plugin
 			return "";
 		}
 		WorldPoint me = playerPoint();
+		// Bucketed to 50 tiles ON PURPOSE. logHintDecision prints one line per
+		// CHANGE and de-duplicates on the whole string, so an exact distance
+		// makes every step you take a new log line -- 139 of them in four
+		// minutes on the first run, drowning the file mine-session-log reads.
+		// 50 keeps the useful reading (which side of the 100-tile floor, and
+		// roughly how far) at a handful of lines per journey.
 		return (travelDistances.reachable(target) ? " (walked distances" : " (straight lines")
-			+ (me == null ? "" : ", player " + effectiveDistance(me, target) + " away")
+			+ (me == null ? "" : ", player ~" + (effectiveDistance(me, target) / 50 * 50) + " away")
 			+ ")";
 	}
 
