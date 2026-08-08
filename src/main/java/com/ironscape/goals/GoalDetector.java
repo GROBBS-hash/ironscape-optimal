@@ -580,22 +580,94 @@ public final class GoalDetector
 			return; // mid-quest checkpoint step; annotations own completion
 		}
 		// The tag also decorates PREP steps ("Make the hangover cure for
-		// plague city quest") — quest state says nothing about those. Only
-		// steps whose text actually acts on the quest get the goal.
+		// plague city quest") — quest state says nothing about those, and
+		// questStatus does NOT separate them (the site tags prep steps with
+		// a status too; see GoalDetectorTest). So a step still has to look
+		// like it acts on the quest, by one of two tests:
+		//
+		//   a verb   "Do Desert Treasure", "Start Barcrawl miniquest"
+		//   the NAME the step text is just the quest's name, give or take a
+		//            trailing "quest" and a parenthetical aside
+		//
+		// The second is new. Without it, bare-name steps ("Cabin fever",
+		// "Watchtower quest", "One small favour", "Rum deal (Req 42
+		// slayer...)") got no quest goal and so had NO completion path at
+		// all except arrival — itself gated on a kit the quest consumes, so
+		// they could never auto-tick. The prep step fails both tests: its
+		// text leads with its own action and only mentions the quest in a
+		// trailing "for X quest".
 		if (!Pattern.compile("\\b(?:start|begin|do|complete|finish|continue)\\b")
-			.matcher(text).find())
+				.matcher(text).find()
+			&& !textIsJustTheQuestName(text, name))
 		{
 			return;
 		}
+		String status = step.getMetadata().get("questStatus");
+		Quest quest = questByName(name);
+		if (quest != null)
+		{
+			out.add(new QuestGoal(step, step.getSubSteps().get(0), quest,
+				"complete".equalsIgnoreCase(status)));
+		}
+	}
+
+	/**
+	 * Is the step's whole text just the quest's name? Compared against the
+	 * guide's own TAG rather than the game's name, since the two disagree
+	 * ("Forgettable Tale..." is tagged truncated), and either may be the
+	 * shorter — so a prefix match either way counts.
+	 */
+	private static boolean textIsJustTheQuestName(String text, String tag)
+	{
+		String bare = text.replaceAll("\\([^)]*\\)", " ")          // "(Req 42 slayer...)"
+			.replaceAll("\\b(?:mini)?quest\\b", " ")               // "Watchtower quest"
+			.replaceAll("[^a-z0-9 ]", " ")
+			.replaceAll("\\s+", " ").trim();
+		String wanted = tag.toLowerCase(Locale.ROOT)
+			.replaceAll("[^a-z0-9 ]", " ")
+			.replaceAll("\\s+", " ").trim();
+		if (bare.isEmpty() || wanted.isEmpty())
+		{
+			return false;
+		}
+		return bare.startsWith(wanted) || wanted.startsWith(bare);
+	}
+
+	/**
+	 * The guide's quest tag -> the RuneLite Quest whose name the game uses.
+	 *
+	 * Hand-authored rather than fuzzy-matched, because the near-misses are
+	 * genuinely ambiguous: "Desert Treasure" prefixes both "Desert Treasure
+	 * I" and "Desert Treasure II - The Fallen Empire", and "Rag and Bone
+	 * Man" prefixes I and II. Every entry below was checked against the
+	 * step that carries the tag (build/quest-names.tsv dumps the enum).
+	 */
+	private static final java.util.Map<String, String> QUEST_NAME_ALIASES = java.util.Map.of(
+		"vampire slayer", "Vampyre Slayer",                  // renamed in game
+		"garden of tranquility", "Garden of Tranquillity",   // two Ls
+		"hand in the sand", "The Hand in the Sand",          // leading article
+		"desert treasure", "Desert Treasure I",              // guide predates the sequel
+		"desert treasure ii", "Desert Treasure II - The Fallen Empire",
+		"rag and bone man", "Rag and Bone Man I",            // guide's step is the first part
+		"recipe for disaster (evil dave)", "Recipe for Disaster - Evil Dave");
+
+	/** Exact name first, then the alias table. Null when nothing matches. */
+	private static Quest questByName(String name)
+	{
+		String wanted = name.trim();
+		String alias = QUEST_NAME_ALIASES.get(wanted.toLowerCase(Locale.ROOT));
+		if (alias != null)
+		{
+			wanted = alias;
+		}
 		for (Quest quest : Quest.values())
 		{
-			if (quest.getName().equalsIgnoreCase(name.trim()))
+			if (quest.getName().equalsIgnoreCase(wanted))
 			{
-				boolean finished = "complete".equalsIgnoreCase(step.getMetadata().get("questStatus"));
-				out.add(new QuestGoal(step, step.getSubSteps().get(0), quest, finished));
-				return;
+				return quest;
 			}
 		}
+		return null;
 	}
 
 	/**

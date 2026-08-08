@@ -128,6 +128,27 @@ public class GoalAuditDumpTest
 	}
 
 	/**
+	 * Every RuneLite Quest enum name. The guide's `quest` metadata has to
+	 * match one of these EXACTLY today, and several do not — the wiki and
+	 * the game disagree about articles ("The Hand in the Sand"), spelling
+	 * ("Tranquillity"), and sequel numbering ("Desert Treasure I"). Dumped
+	 * so the mismatches can be found by diff rather than by memory.
+	 */
+	@Test
+	public void dumpQuestNames() throws Exception
+	{
+		File out = new File("build/quest-names.tsv");
+		out.getParentFile().mkdirs();
+		try (PrintWriter writer = new PrintWriter(out, StandardCharsets.UTF_8))
+		{
+			for (net.runelite.api.Quest quest : net.runelite.api.Quest.values())
+			{
+				writer.println("QUEST\t" + quest.name() + "\t" + quest.getName());
+			}
+		}
+	}
+
+	/**
 	 * Which detector path can complete each sub, and what the annotation
 	 * file says about it. Written for tools/audit-item-gating.mjs: whether
 	 * making annotation items gate completion CHANGES a step depends
