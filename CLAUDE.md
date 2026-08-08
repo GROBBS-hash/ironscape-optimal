@@ -738,6 +738,89 @@ refresh when "Failed to login" appears.
   capture; hub pin at b8c994d, now ~70 commits behind — bump after a
   calm session.
 
+- SESSION WAVE 16 (2026-08-08 late, desk session — owner away, NOTHING
+  play-tested; main at `20b2dc9`, pushed; hub pin stays `3638c2f`):
+  **the model could not say "am I in yet", and once it could, the rest was
+  small.** Wave 15's instruction was to ask whether the MODEL can express the
+  thing before fixing data, and the answer here was no twice over.
+  **FAULT 1 — the chain could not express a journey that comes back on
+  itself.** Every stage was judged wherever it sat, and any satisfied stage
+  cascaded its predecessors done. So a "back down to the ground floor" leg
+  would be satisfied by WALKING IN at ground level, and the cascade would mark
+  the Mordred fight done on the way in — meaning the descent legs the owner
+  asked for were not seedable at all until the rule changed. The
+  discriminator is whether a condition can COME UNDONE: a quest var never
+  counts back down and an item you hold proves the legs before it served, so
+  those may look ahead (that look-ahead is what rescues a leg you teleported
+  past); where you are standing is reversible, so it is judged at the FRONT
+  of the chain and nowhere else. The same rule already governed
+  `requires.equipped` (frontier-only because worn gear comes off) — this is
+  that rule applied where it was missing, not a new idea. The order rule moved
+  out to **`ErrandProgress`**, away from the client, so it is TESTABLE:
+  `ErrandProgressTest` walks the whole Keep Le Faye journey leg by leg, and
+  was **verified to fail under the old rule** before being kept.
+  **FAULT 2 — `region` was the right idea at the wrong granularity, and its
+  very first use already overlapped.** A region is 64x64: **11061 holds Keep
+  Le Faye AND the giant bats at 2757,3401 that the same chain sends you to two
+  stages earlier**, so "am I in the keep?" was answerable 13 tiles outside it.
+  QH has zones for exactly this reason. New **`Errand.zone`** (a box on ONE
+  plane, seeded straight from QH's `setupZones()`) is the only condition that
+  tells FLOORS apart; `region` stays, documented as coarse, for places whose
+  bounds nobody has written down. Also new: **`leave`** (inverts zone/region —
+  the way OUT of a one-way interior is a leg like any other, and no coordinate
+  can express it because every tile outside a door is a few tiles from every
+  tile inside it) and **`object`** (name the thing to click instead of
+  guessing from the hardcoded traversal-word list). Stage KEYS now carry their
+  index, since a chain may visit one place twice and a coordinate key let the
+  first visit tick the second. **`hold` gained its second, equally real
+  reason**: not only "this stage is quest progress" but "SP cannot draw this
+  leg" — from inside the keep it proposed a Lumbridge home teleport, the crate
+  being one-way.
+  **KEEP LE FAYE RESEEDED** subtractively from `qh-tree.mjs` states 3 and 4,
+  which carry every leg with exact objects and coords: 2 stages -> 7 (crate ->
+  stairs 2770,3405 p0 -> stairs 2770,3399 p1 -> Mordred -> down 2769,3399 p2
+  -> down 2769,3405 p1 -> candle), the three interior legs holding. **NOT
+  seeded, because it would be invented: the keep's front door.** QH does not
+  model it either — its own stuck-inside step just says "Return to Catherby".
+  One in-game ⌖ capture closes it.
+  **THE SWEEP WAS SMALLER THAN IT LOOKED, and the reason is worth keeping:**
+  the route/satisfaction split already covers a traversal whose satisfaction
+  sits on the FAR side (Lumbridge cellar, both ladders, the ess mine all
+  work). The gap was only ever legs satisfied on the NEAR side — the crate,
+  and exactly one other, the **ZMI cave** (entrance now names its object; the
+  Zamorak warriors leg holds rather than asking SP to route through a cave).
+  `audit-errand-chains` gained the three structural checks (SELF-SATISFYING /
+  UNGUIDED TRAVERSAL / COARSE REGION, no QH needed). Its first run reported
+  six; **read line by line**, four were var-gated stages (a gate is quest
+  progress, so no radius decides anything) and two were ordinary 700-tile
+  walks SP draws fine — both exemptions are now in the checks.
+  **MORGAN'S DIALOGUE — TWO CAUSES, NEITHER THE MATCHING CODE.** The log is
+  conclusive: (1) QH's `addDialogStep` says "Ok I will do all that.", the game
+  says **"Ok, I will go do all that."** — `dialogKey` strips punctuation but
+  cannot insert a word, so it could never have matched (both are seeded now);
+  (2) the stage carrying it is gated on `varp 14 >= 4`, which is what her
+  dialogue DOES — the log has the chain rerouting to the Candle maker at
+  22:45:22 and the player picking that option at **22:45:42**. A
+  quest-progress stage is satisfied by the conversation it is guiding, so it
+  can never own its own final option; **every "talk to X until the var moves"
+  stage has that shape**. Options now come from the WHOLE live chain (exact
+  strings, so an option not on screen simply does not match). NOTE the first
+  option ("Tell me how to untrap Merlin and I might.") matched exactly and the
+  path provably ran — whether it recoloured is still unconfirmed. That path
+  logged NOTHING, which is why last session could only theorise and why the
+  log only settled it because a THIRD-PARTY plugin happened to print the
+  chosen option; `dialog-highlight:` now names offered vs wanted.
+  **REVIEW LIST READ, NOT ACTED ON** (`audit-quest-start-pins`, 10 open):
+  five are the already-settled underground-giver class misfiled into REVIEW
+  (between a rock, land of the goblins, darkness of hallowvale, troll romance,
+  in search of knowledge); two are QH-opens-with-an-approach (tai bwo wannai
+  trio's karambwanji, mountain daughter's boulder); the ones that look real
+  are **`creature of fenkenstrain`** (ours records a SIGNPOST, QH's step says
+  "Talk to Dr. Fenkenstrain to start the quest" 89 tiles away) and possibly
+  `the queen of thieves` (45 tiles) and `the great brain robbery` (ours on Mos
+  Le'Harmless, QH at Bill Teach's ship). Left for the owner per the standing
+  rule about confirming game facts firsthand.
+
 - SESSION WAVE 15 (2026-08-08 late, LIVE play-test on the Merlin's Crystal
   step `a8014d6a77`, main at `bbc7cdb`, all pushed): **the whole evening was
   one errand chain, and the lesson is that it was never a seeding problem.**

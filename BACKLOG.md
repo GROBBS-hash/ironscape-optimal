@@ -534,7 +534,55 @@ and inventory outline.
 
 ---
 
-## NEXT SESSION — start here (rewritten 2026-08-08, end of wave 15)
+## NEXT SESSION — start here (rewritten 2026-08-08, end of wave 16)
+
+Wave 16 was a desk session. **Nothing in it is play-tested**, and it changed
+the rule that decides how far along every errand chain you are — so the first
+job is watching chains behave, not adding more.
+
+### 1. Walk the Keep Le Faye chain end to end
+
+Seven legs now instead of two. What to watch, in order: the crate outlines and
+routes from Catherby; the first staircase; **the second staircase** (this is
+the one that never existed — the chain used to stop here); Mordred; then the
+two descent legs, which are the half that has never been guided at all.
+
+The interior legs draw **no Shortest Path line on purpose** — the log says
+`holding: stage draws no route`. If SP starts drawing something anyway, that
+is a finding.
+
+**Not seeded, deliberately: the front door.** QH does not model it either. When
+you are standing at it, right-click ⌖ and capture — that is the whole fix, and
+guessing the object name was the wave 15 mistake.
+
+### 2. Watch the dialogue line
+
+`grep "dialog-highlight:"` — it prints the options offered and the options
+wanted, side by side. Two things were provably wrong (QH's string is missing a
+word, and the stage had stood down twenty seconds before the player chose);
+both are fixed. What is still **unconfirmed** is whether the first option
+recoloured, because that path logged nothing and nobody could tell. One
+Merlin's Crystal conversation settles it.
+
+### 3. Check nothing else regressed
+
+The order rule changed for **every** chain: positions are judged only at the
+front now. `ErrandProgressTest` walks the keep journey and was verified to fail
+under the old rule, but the corpus is 14 chains and only one is tested. The
+shape to watch for is a chain **wedging** — sitting on a leg you have plainly
+done. The look-ahead that rescues a skipped leg is deliberately kept for items
+and vars, so a wedge would mean a WAYPOINT you walked past out of order.
+
+### Then the wave 15 and 14 lists below, unchanged
+
+Wave 15's remaining item was the exit, which is (1) above. Nothing in wave 14
+is play-tested except the first-leg hints.
+
+**Hub pin stays at `3638c2f`.** Three unverified waves now sit on top.
+
+---
+
+## Previous session list (written 2026-08-08, end of wave 15)
 
 **Two things, in this order. Both are MODEL work, not seeding.**
 
