@@ -540,7 +540,7 @@ and inventory outline.
 2. **Gertrude's Cat still ticks on quest start.** Its extra actions are item-based ("use the leaves on a
    sardine"), so no varp fits and annotation items don't gate sub completion. Needs either a detector for
    "use X on Y" or leaving alone — **owner's call**, it's a blast-radius change.
-3. **Hub pin is at `b8c994d`, ~80 commits behind.** Bump after a calm session on this build.
+3. **Hub pin BUMPED to `3638c2f` (2026-08-08, owner's call).** PR 14207 now builds from the end of wave 12. Much of that build is unverified in play — if a hub reviewer or user reports something, suspect the never-exercised list above first.
 4. Long-standing: deliberate death test, onion-gate capture, "big frog leg" → 7908 verdict.
 
 ---
@@ -564,8 +564,8 @@ question is Gertrude's Cat, which needs an owner decision rather than a plan.
 
 ## Notes
 
-- **Hub pin is at `b8c994d`, ~80 commits behind.** Owner's standing rule: bump only after a calm session. A
-  backlog-clearing session is not a calm session — don't bump mid-flight.
+- **Hub pin is at `3638c2f`** (bumped 2026-08-08 on the owner's explicit call, ending wave 12). The standing
+  rule is otherwise: bump only after a calm session.
 - **Never add Claude co-author trailers to commits.** History was rewritten and force-pushed on 2026-07-28 to
   strip them.
 - Three items were prior work misread as bugs: **P2-04** (deliberate), **P2-01** (seeder exists), **P0-05**

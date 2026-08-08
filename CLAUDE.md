@@ -820,6 +820,8 @@ refresh when "Failed to login" appears.
   36 steps drift >200 tiles; the audit excludes ⌖'d and errand-chained
   steps, and quest names (routing to the giver is designed). Fix per step
   is a ⌖ pin — capturable in game.
+  **HUB PIN BUMPED to `3638c2f`** (owner's call, ending wave 12) — PR 14207 now builds the end of this
+  wave; the never-exercised list in BACKLOG.md is the first place to look if a report comes in.
   **PROCESS**: `git add -p` is unavailable non-interactively — splitting
   one file across commits needs hunk patches (`git diff` -> split -> `git
   apply`), and the reassembled file must be diffed against the
