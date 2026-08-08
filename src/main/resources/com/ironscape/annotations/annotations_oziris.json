@@ -6257,7 +6257,7 @@
     "y": 3464,
     "plane": 0
    },
-   "note": "The five allotment tools go in the tool leprechaun beside the Catherby patch, so they follow you to every patch. NOTE: this step ticks as soon as the compost pack is bought - the tools and the leprechaun deposit are not detectable."
+   "note": "The five allotment tools go in the tool leprechaun beside the Catherby patch, so they follow you to every patch. NOTE: the step now waits for all five tools AND the compost pack. The leprechaun deposit itself is not detectable, so it ticks once everything is bought. If the tools are already IN the leprechaun from an earlier visit, nothing can see them - tick by hand."
   }
  }
 }

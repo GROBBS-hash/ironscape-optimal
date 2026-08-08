@@ -1138,6 +1138,24 @@ public class IronscapePlugin extends Plugin
 	private final java.util.Set<String> arrivalArmed = new java.util.HashSet<>();
 
 	/**
+	 * Baseline key recording that a sub's annotated SHOPPING LIST was seen
+	 * complete. Holding the goods is reversible state proving a one-way
+	 * fact — "Buy 1 pack of normal compost and all farming tools, store
+	 * everything in leprechaun" ends by putting the tools INTO the
+	 * leprechaun, which no container we can read holds, so a gate that
+	 * only asked "are they in hand NOW" would slam shut on the deposit and
+	 * wedge the very step it fixes.
+	 *
+	 * Stored beside the acquisition baselines rather than in a session Set
+	 * because it needs their two behaviours exactly: it must survive a
+	 * client restart (P0's persisted-baseline lesson), and unticking the
+	 * sub must clear it (clearAcquisitionBaselines drops every "subId|..."
+	 * key, so this rides along). No item is named "@purchase-list", so the
+	 * reserved key cannot collide with a real goal's baseline.
+	 */
+	private static final String PURCHASE_LIST_KEY = "@purchase-list";
+
+	/**
 	 * The minigame the player is AT right now, if any — presence carries
 	 * across region borders while movement stays contiguous (walking from
 	 * the Foundry entrance down into its interior region), and breaks on
@@ -3885,6 +3903,17 @@ public class IronscapePlugin extends Plugin
 			{
 				return false;
 			}
+			// The detector sees only what the sentence NAMES. "Buy 1 pack of
+			// normal compost and all farming tools" yields one goal — the
+			// pack — so buying it ticked the whole step while the five tools
+			// (seeded as annotation items) had no vote. On a PURCHASE step
+			// the annotated list is the rest of the shopping list, so it
+			// gates too. See purchaseListAcquired for why ONLY purchases.
+			//
+			// Evaluated BEFORE the goals below, so the arming does not
+			// depend on what you buy first: pick the tools up before the
+			// compost pack and the list is still recorded as acquired.
+			boolean purchaseListDone = purchaseListAcquired(step, sub, itemGoals);
 			for (GoalDetector.ItemGoal goal : itemGoals)
 			{
 				// Carried only, so banked items don't tick "grab X" — EXCEPT
@@ -3925,6 +3954,11 @@ public class IronscapePlugin extends Plugin
 					return false;
 				}
 			}
+			if (!purchaseListDone)
+			{
+				return false;
+			}
+
 			// A sub can carry BOTH kinds of target — "until 200k cash, get
 			// at least 22 fletching": the gold alone must not tick it.
 			List<GoalDetector.SkillLevelGoal> itemSubLevels = levelGoalsBySub.get(sub.getId());
@@ -4169,6 +4203,109 @@ public class IronscapePlugin extends Plugin
 			}
 		}
 		return true;
+	}
+
+	/**
+	 * Are the annotated items of a PURCHASE step in hand (or were they,
+	 * while this sub was current)?
+	 *
+	 * Scoped to purchase steps on the evidence, not out of caution.
+	 * tools/audit-item-gating.mjs measured the obvious wider rule — gate on
+	 * every explicit-quantity item on every non-quest step — and it changed
+	 * 30 steps, of which 29 were WRONG: annotation items are overwhelmingly
+	 * TOOLS and INGREDIENTS, not objectives. Gating on those wedges in ways
+	 * the flags don't catch:
+	 *
+	 *   "Get 61 Crafting"          -> would demand 1,200 buckets you spend
+	 *                                 crafting, on a LEVEL goal. Never ticks.
+	 *   "Hunt 15k red chins"       -> chins count the bank, box traps don't;
+	 *                                 bank the traps and the step wedges.
+	 *   "give the bread to the
+	 *    beggar to get excalibur"  -> the bread is GONE by the time you hold
+	 *                                 the reward. Wedged forever.
+	 *
+	 * On a purchase step the relationship inverts: the annotated list is
+	 * what the sentence told you to buy but the detector could not name.
+	 * That was one step guide-wide when this shipped (the compost/farming
+	 * tools step that prompted it) and it covers any future "buy A and B"
+	 * where only one half parses.
+	 *
+	 * Client thread (item id resolution).
+	 */
+	private boolean purchaseListAcquired(GuideStep step, SubStep sub,
+		List<GoalDetector.ItemGoal> itemGoals)
+	{
+		boolean purchase = false;
+		for (GoalDetector.ItemGoal goal : itemGoals)
+		{
+			purchase |= goal.isAcquisition();
+		}
+		if (!purchase)
+		{
+			return true;
+		}
+		String armedKey = sub.getId() + "|" + PURCHASE_LIST_KEY;
+		if (progressManager.acquisitionBaseline(activeVariant, armedKey) != null)
+		{
+			return true;
+		}
+		for (StepAnnotation.ItemNeed need : gateableItems(step, sub))
+		{
+			int required = need.quantity == null ? 1 : need.quantity;
+			int count = itemTracker.bankCountable(need.name, required)
+				? itemTracker.countOf(need.name)
+				: itemTracker.carriedCountOf(need.name);
+			if (count < required)
+			{
+				return false;
+			}
+		}
+		progressManager.setAcquisitionBaseline(activeVariant, armedKey, 1);
+		return true;
+	}
+
+	/**
+	 * The annotation items that may gate completion: everything the
+	 * authored list holds MINUS the four flags and the two special cases
+	 * that exist because gating on them wedges the step.
+	 *
+	 * Unspecified quantity is excluded on the same grounds as P0-07 left
+	 * it out of the arrival gate: null means "bring some" (the scraper's
+	 * per-step carry list), and a carry list is not an objective —
+	 * Gertrude's Cat carries bucket/barcrawl card/rune mysteries package,
+	 * none of which the step is about.
+	 */
+	private List<StepAnnotation.ItemNeed> gateableItems(GuideStep step, SubStep sub)
+	{
+		List<StepAnnotation.ItemNeed> gating = new ArrayList<>();
+		List<StepAnnotation.ItemNeed> items = new ArrayList<>(
+			annotationManager.getItems(step.getId()));
+		if (!step.getId().equals(sub.getId()))
+		{
+			items.addAll(annotationManager.getItems(sub.getId()));
+		}
+		for (StepAnnotation.ItemNeed need : items)
+		{
+			if (need.quantity == null                       // "bring some"
+				|| Boolean.TRUE.equals(need.granted)        // the quest hands it over
+				|| Boolean.TRUE.equals(need.consumed)       // spent during the step
+				|| Boolean.TRUE.equals(need.optional)       // keep-if-you-get-it
+				|| Boolean.TRUE.equals(need.ingredient))    // material for the product
+			{
+				continue;
+			}
+			String lower = need.name.toLowerCase(Locale.ROOT);
+			if (lower.equals("coins") || lower.equals("gp"))
+			{
+				continue; // paying for the purchase must not block the purchase
+			}
+			if (itemTracker.iconIdFor(need.name) <= 0)
+			{
+				continue; // unresolvable name: can't count it, don't block on it
+			}
+			gating.add(need);
+		}
+		return gating;
 	}
 
 	/** A whole step completed by its skill requirement annotation. */
