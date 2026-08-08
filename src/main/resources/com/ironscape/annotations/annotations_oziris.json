@@ -6228,6 +6228,36 @@
     "plane": 0
    },
    "note": "Compost bin beside the Catherby allotments, north-east of town (gardener Dantaera)."
+  },
+  "5bf54fe229": {
+   "items": [
+    {
+     "name": "rake",
+     "quantity": 1
+    },
+    {
+     "name": "seed dibber",
+     "quantity": 1
+    },
+    {
+     "name": "spade",
+     "quantity": 1
+    },
+    {
+     "name": "watering can",
+     "quantity": 1
+    },
+    {
+     "name": "secateurs",
+     "quantity": 1
+    }
+   ],
+   "target": {
+    "x": 2810,
+    "y": 3464,
+    "plane": 0
+   },
+   "note": "The five allotment tools go in the tool leprechaun beside the Catherby patch, so they follow you to every patch. NOTE: this step ticks as soon as the compost pack is bought - the tools and the leprechaun deposit are not detectable."
   }
  }
 }

@@ -4833,7 +4833,20 @@ public class IronscapePlugin extends Plugin
 				traversal = route;
 			}
 		}
-		if (rockNames.isEmpty() && vendorNames.isEmpty() && traversal == null)
+		// The object a sub NAMES, at the step's own ⌖: "Put pineapples into
+		// the COMPOST BIN" walked you to the bin and then left you to find
+		// it (owner). Matching bare object names guide-wide would light up
+		// every table and tree, so this is anchored on the ⌖ — the pin marks
+		// the exact spot, and only an object AT it can match.
+		StepAnnotation.Target pinned = annotationManager.getTarget(current.sub.getId());
+		if (pinned == null)
+		{
+			pinned = annotationManager.getTarget(current.step.getId());
+		}
+		WorldPoint namedAt = pinned == null || Boolean.TRUE.equals(pinned.cleared)
+			? null : new WorldPoint(pinned.x, pinned.y, pinned.plane);
+		if (rockNames.isEmpty() && vendorNames.isEmpty()
+			&& traversal == null && namedAt == null)
 		{
 			return java.util.Collections.emptyList();
 		}
@@ -4848,6 +4861,9 @@ public class IronscapePlugin extends Plugin
 		int vendorBest = Integer.MAX_VALUE;
 		net.runelite.api.GameObject nearestTraversal = null;
 		int traversalBest = Integer.MAX_VALUE;
+		net.runelite.api.GameObject nearestNamed = null;
+		int namedBest = Integer.MAX_VALUE;
+		String subText = current.sub.getPlainText().toLowerCase(Locale.ROOT);
 		net.runelite.api.Tile[][][] tiles = client.getTopLevelWorldView().getScene().getTiles();
 		int plane = client.getTopLevelWorldView().getPlane();
 		for (net.runelite.api.Tile[] row : tiles[plane])
@@ -4894,6 +4910,18 @@ public class IronscapePlugin extends Plugin
 						{
 							traversalBest = d;
 							nearestTraversal = object;
+						}
+					}
+					// Named in the sub AND standing on the ⌖ (see namedAt).
+					// The length floor keeps one-word scenery ("door", "sign")
+					// from matching on a coincidence.
+					if (namedAt != null && name.length() >= 5 && subText.contains(name))
+					{
+						int d = object.getWorldLocation().distanceTo2D(namedAt);
+						if (d <= ARRIVE_RADIUS && d < namedBest)
+						{
+							namedBest = d;
+							nearestNamed = object;
 						}
 					}
 				}

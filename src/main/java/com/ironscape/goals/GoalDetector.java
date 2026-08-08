@@ -297,7 +297,21 @@ public final class GoalDetector
 	 * them; arrival + items leaving the player's hands does.
 	 */
 	private static final java.util.Set<String> INTERACTION_FIRST_WORDS = java.util.Set.of(
-		"give", "fix", "repair", "build", "hand", "deliver", "pay", "feed");
+		"give", "fix", "repair", "build", "hand", "deliver", "pay", "feed",
+		// "Put pineapples into the compost bin" is the same shape: the
+		// pineapples leave your hands at a specific place. Without it the
+		// step had NO completion signal at all — not a travel sub, and
+		// "put" is no movement word, so arrival deliberately ignored it.
+		"put");
+
+	/**
+	 * "put IT on 10 teaks" — a pronoun object means nothing leaves the
+	 * inventory (Miscellania allocation), so consumption would never come
+	 * and the sub would wedge. The only such clause in the guide, but the
+	 * shape is what matters: an interaction needs a real item.
+	 */
+	private static final Pattern PRONOUN_OBJECT = Pattern.compile(
+		"^\\w+\\s+(?:it|them|this|that)\\b", Pattern.CASE_INSENSITIVE);
 
 	@Value
 	public static class CountedSkillGoal
@@ -440,7 +454,8 @@ public final class GoalDetector
 				String firstWord = sub.getPlainText().trim().toLowerCase(Locale.ROOT)
 					.split("[^a-z]+", 2)[0];
 				boolean interaction = !producedItems && questGoals.size() == questsBefore
-					&& INTERACTION_FIRST_WORDS.contains(firstWord);
+					&& INTERACTION_FIRST_WORDS.contains(firstWord)
+					&& !PRONOUN_OBJECT.matcher(sub.getPlainText().trim()).find();
 				if (interaction)
 				{
 					interactionGoals.add(new InteractionGoal(step, sub));
