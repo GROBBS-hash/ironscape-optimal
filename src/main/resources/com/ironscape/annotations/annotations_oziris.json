@@ -2786,7 +2786,11 @@
     }
    ]
   },
-  "00027badc9": {},
+  "00027badc9": {
+   "dialog": [
+    "Can I have a quest?"
+   ]
+  },
   "798b0dbd71": {
    "items": [
     {
@@ -3148,7 +3152,11 @@
     }
    ]
   },
-  "26825ccf15": {},
+  "26825ccf15": {
+   "dialog": [
+    "Is this your toy boat?"
+   ]
+  },
   "e8ee60d3b8": {
    "items": [
     {
@@ -3705,7 +3713,13 @@
    ],
    "note": "Recommended: Stamina Potions, Combat Equipment."
   },
-  "1b38cf21f5": {},
+  "1b38cf21f5": {
+   "dialog": [
+    "Yes, I have seen her actually!",
+    "Yes, ok, I'll let her know.",
+    "Yes."
+   ]
+  },
   "d36b8a5c25": {
    "items": [
     {
@@ -3743,7 +3757,12 @@
    ],
    "note": "Bring: Combat gear."
   },
-  "eb6f0caf31": {},
+  "eb6f0caf31": {
+   "dialog": [
+    "Have you any quests for me?",
+    "Yes."
+   ]
+  },
   "f1bcbcf2b6": {
    "items": [
     {
@@ -4203,7 +4222,13 @@
    ],
    "note": "Recommended: Combat gear + food."
   },
-  "2d3d6b006f": {},
+  "2d3d6b006f": {
+   "dialog": [
+    "That's a deal!",
+    "Yes, I'm ready and don't mind it taking a few minutes.",
+    "Yes."
+   ]
+  },
   "43e2b987b0": {
    "dialog": [
     "Yes."
@@ -4349,6 +4374,9 @@
      "name": "stake",
      "quantity": 1
     }
+   ],
+   "dialog": [
+    "Yes."
    ]
   },
   "11514098de": {
