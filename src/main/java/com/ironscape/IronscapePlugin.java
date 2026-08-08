@@ -816,6 +816,19 @@ public class IronscapePlugin extends Plugin
 		return front < chain.size() ? chain.get(front) : null;
 	}
 
+	/** The sub of this step with that id, else null. */
+	private static SubStep findSub(GuideStep step, String subId)
+	{
+		for (SubStep sub : step.getSubSteps())
+		{
+			if (sub.getId().equals(subId))
+			{
+				return sub;
+			}
+		}
+		return null;
+	}
+
 	/**
 	 * Is Quest Helper installed and switched on?
 	 *
@@ -1754,6 +1767,54 @@ public class IronscapePlugin extends Plugin
 			return null;
 		});
 		panel.setErrandStagesSupplier(errandStagesBySub::get);
+		// Say so when a step cannot complete itself. Deliberately the SAME
+		// three tests the completion loop makes, so the label can never
+		// disagree with the behaviour it describes.
+		panel.setManualOnlySupplier(subId -> {
+			if (hasAnyGoal(subId))
+			{
+				return false;
+			}
+			List<StepRequirement> requirements = subRequirements.get(subId);
+			if (requirements != null && !requirements.isEmpty())
+			{
+				return false;
+			}
+			if (!annotationManager.getErrands(subId).isEmpty()
+				|| !annotationManager.getErrands(subId.split(":")[0]).isEmpty())
+			{
+				return false;
+			}
+			// ARRIVAL is the completion path with no goal behind it, so
+			// "no goal" is NOT the same as "cannot tick" — "Run south to
+			// Port sarim" has no detector at all and still completes when
+			// you get there. It needs a movement instruction AND somewhere
+			// the text or the 📍 tag can resolve, which is the same pair
+			// currentSubSatisfied tests.
+			Guide active = guideFor(activeVariant);
+			GuideStep owner = active == null ? null : active.getStepsById().get(subId.split(":")[0]);
+			SubStep sub = owner == null ? null : findSub(owner, subId);
+			if (sub == null)
+			{
+				return false;             // unknown: say nothing rather than guess
+			}
+			String text = sub.getPlainText();
+			if (MOVEMENT_WORD.matcher(text).find()
+				|| CHARTER.matcher(text).find() || SPIRIT_TREE.matcher(text).find())
+			{
+				String location = owner.getMetadata().get("location");
+				boolean somewhere = placeManager.lastPlaceIn(text) != null
+					|| placeManager.firstPlaceIn(text) != null
+					|| (location != null && placeManager.getLoose(location) != null)
+					|| annotationManager.getTarget(subId) != null
+					|| annotationManager.getTarget(owner.getId()) != null;
+				if (somewhere)
+				{
+					return false;         // arrival can finish this one
+				}
+			}
+			return true;
+		});
 		panel.setSkillIconSupplier(subId -> {
 			// The skill whose progress the badge shows — same lookup chain
 			// as the badge text, so icon and number always agree.

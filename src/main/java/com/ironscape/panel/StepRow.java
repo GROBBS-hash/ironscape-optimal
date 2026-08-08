@@ -435,10 +435,19 @@ class StepRow extends JPanel
 				// "(optional)" marks keep-if-you-get-it items; "(ingredient)"
 				// marks materials for the step's PRODUCTS (redberries under
 				// the dyes) — both muted so requirements keep the spotlight.
+				// "(bring some)" is the guide's own running carry advice —
+				// gp, a barcrawl card, "all of your mind and air runes" — as
+				// opposed to a requirement with a number. It reads the same
+				// as a requirement without saying so, which is how a step
+				// whose only real need was one pot (already carried) looked
+				// like seven unmet obligations and read as "we skipped
+				// banking" (owner, in play). No number exists for these, so
+				// nothing counts them and no bank stop acts on them.
 				String tag = Boolean.TRUE.equals(need.optional) ? "(optional)"
 					: Boolean.TRUE.equals(need.ingredient) ? "(ingredient)"
 					: Boolean.TRUE.equals(need.granted) ? "(from the quest)"
-					: Boolean.TRUE.equals(need.consumed) ? "(used here)" : null;
+					: Boolean.TRUE.equals(need.consumed) ? "(used here)"
+					: need.quantity == null ? "(bring some)" : null;
 				JLabel name = new JLabel(tag != null
 					? "<html>" + RichText.escape(ItemTracker.capitalize(need.name))
 						+ " <font color='#877e6f'>" + tag + "</font></html>"
@@ -1049,6 +1058,25 @@ class StepRow extends JPanel
 				+ "\" in the Quest Helper plugin for click-by-click quest guidance.<br>"
 				+ "(The Plugin Hub forbids plugins starting it for you.)</html>");
 			add(tip);
+		}
+
+		// Nothing can tick this one for you. 139 steps guide-wide are in that
+		// state — most are genuinely advice ("bank everything", "use
+		// Authenticator") — and meeting one unwarned reads as a broken plugin
+		// every time. Muted, one line, no icon: it is a fact about the step,
+		// not a warning about it.
+		if (ctx.getManualOnly() != null && !step.getSubSteps().isEmpty()
+			&& ctx.getManualOnly().test(step.getSubSteps().get(0).getId()))
+		{
+			JLabel manual = new JLabel("tick by hand — nothing here to detect");
+			manual.setFont(new Font(Font.DIALOG, Font.ITALIC, 11));
+			manual.setForeground(new Color(0x87, 0x7e, 0x6f));
+			manual.setAlignmentX(LEFT_ALIGNMENT);
+			manual.setBorder(BorderFactory.createEmptyBorder(3, 22, 1, 0));
+			manual.setToolTipText("<html>This step has no item, quest, level or travel goal,"
+				+ " no varbit checkpoint and no errand chain,<br>"
+				+ "so it cannot complete on its own. Tick it when you have done it.</html>");
+			add(manual);
 		}
 	}
 

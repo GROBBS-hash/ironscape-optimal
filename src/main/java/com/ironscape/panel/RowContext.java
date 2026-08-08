@@ -47,6 +47,17 @@ class RowContext
 	 */
 	java.util.function.Function<String, java.util.LinkedHashMap<String, String>> errandStages;
 
+	/**
+	 * sub-id -> true when NOTHING can ever tick this step automatically: no
+	 * detector claims it, it carries no varbit/varp checkpoint, and it has
+	 * no errand chain to finish. 139 steps guide-wide are in that state and
+	 * most of them are genuinely advice ("bank everything", "use
+	 * Authenticator"), but meeting one unwarned reads as a broken plugin
+	 * every single time. Saying so is cheaper than being asked.
+	 * Null function = don't mark anything.
+	 */
+	java.util.function.Predicate<String> manualOnly;
+
 	/** Tells the panel to refresh the progress bar after a tick. */
 	Runnable onProgressChanged;
 

@@ -109,6 +109,11 @@ const namesSomewhere = (text) => {
   return nameable.some((n) => t.includes(n));
 };
 
+// The movement verbs that make a sub a travel INSTRUCTION rather than an
+// action that merely happens somewhere -- copied from the plugin's
+// MOVEMENT_WORD, and the reason 'Run south to Port sarim' ticks itself.
+const MOVEMENT = /\b(?:go|walk|run|head|return|travel|enter|exit|climb|cross|move|proceed|sail|ride|fly|swim|tele|teleport|tabs?|charter)\b|spirit tree/i;
+
 // ---- the checks ----------------------------------------------------------
 function inspect(step) {
   const entries = annFor(step);
@@ -125,8 +130,19 @@ function inspect(step) {
   //    and no errand chain can only ever be ticked by hand. Plenty are
   //    legitimately advice ("bank everything"), but meeting one unwarned
   //    reads as a bug every single time.
-  const canAutoTick = step.path !== 'none' || hasCheckpoint || !!errands;
-  if (!canAutoTick) flags.push('MANUAL ONLY      no detector, no checkpoint, no chain');
+  // ARRIVAL has no goal behind it, so "no goal" is NOT "cannot tick": "Run
+  // south to Port sarim" has no detector and still completes when you get
+  // there. It needs a movement instruction and somewhere resolvable, the
+  // pair currentSubSatisfied tests. Missing this overstated the count and
+  // would have put a wrong label on the step.
+  const arr0 = arrival.get(step.sub);
+  const canArrive = (arr0 && arr0.tier !== 'NONE')
+    || (MOVEMENT.test(step.text) && (!!target || namesSomewhere(step.text)));
+  const canAutoTick = step.path !== 'none' || hasCheckpoint || !!errands || canArrive;
+  if (!canAutoTick) flags.push('MANUAL ONLY      no detector, no checkpoint, no chain, no arrival');
+  else if (step.path === 'none' && canArrive && !hasCheckpoint && !errands) {
+    notes.push('ticks on arrival (no detector, but it is a movement instruction)');
+  }
   else if (step.path === 'none' && errands) notes.push(`ticks when its chain completes (${errands.length} legs)`);
   else if (step.path === 'none' && hasCheckpoint) notes.push('ticks off a varbit/varp checkpoint');
 
