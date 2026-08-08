@@ -19,7 +19,7 @@ Screenshots `SS-01` … `SS-20` in `docs/screenshots/`.
 | Substeps need designing and building | **Errand chains already do this** — ordered stages with coords, items, NPCs, dialog, per-stage radius, route/satisfaction split, varbit/varp gates, waypoint stages, sticky first-unsatisfied, chain-complete = nav HOLD |
 | Quest state seeding is a new system | **Mid-quest varbit/varp checkpoint annotations exist** and override heuristics entirely (wave 6). `cachedQuestState` exists (wave 7). Partial-quest cases are *seeding*, not architecture |
 | Requirement scoping is an undecided policy | **KIT-SEEDING POLICY exists** (owner, 2026-08-05). Mid-quest-handed items never carry requirements. The policy is written; enforcement is the gap |
-| GP cost display is missing | **`seed-gp-costs.mjs` exists**, 30 buy steps seeded (wave 7). Hunter shop simply isn't among them |
+| GP cost display is missing | **`seed-gp-costs.mjs` exists**, 30 buy steps seeded (wave 7). The hunter shop step costs **12gp** — under the seeder's deliberate 100gp floor, so its absence is correct (wave 12) |
 | QH steals navigation on zone change | **`questHelperOwnsGuidance` deliberately routes mid-quest nav to the step's 📍 area.** Working as designed; the design is wrong for compound steps |
 | No validator tooling exists | **Six audit tools exist**: audit-goals, audit-nav, audit-shops, audit-drops, audit-arrivals, cross-check-quest-kits, plus GoalAuditDumpTest |
 | Step-ID stability is an open risk | **GuideManifest v2 already remaps ids** across upstream edits via sub-clause fingerprints. Largely mitigated |
@@ -92,6 +92,7 @@ route/satisfaction split exists precisely for this (SP can't path into interiors
 ---
 
 ### INV-B — Run the existing arrival audit
+**ANSWERED (wave 12): Tier 1 = 0.** The origin-anchored class P0-01 belonged to no longer exists. Tier 2 = 18, almost all Chronicle/minigame-teleport steps where the 📍 fallback is correct. NONE = 3, all advice steps that *should* be manual-tick.
 **Tooling exists. Do not rebuild.**
 ```
 gradlew test --tests "*.GoalAuditDumpTest"     # writes build/arrival-audit.tsv
@@ -103,6 +104,7 @@ Report Tier 1 (origin-anchored PIN arrivals — the SS-01 class), Tier 2, and NO
 ---
 
 ### INV-C — Which compound steps need errand chains?
+**ANSWERED (wave 12).** Only steps whose two places belong to the SAME step and sit far apart qualify — Hazelmere, now seeded. `questStatus` is only ever start/complete/absent, every "do X until the part where…" step already had a checkpoint or chain, and for "Do Dwarf cannon until…"-style steps the place named in the text is where the NEXT step goes.
 Guide is `GuideVariant.OZIRIS`, 575 steps, 7 sections
 (`src/main/resources/com/ironscape/guide/guide_data_oziris.json` + `annotations_oziris.json`, 82 annotations).
 
@@ -116,6 +118,7 @@ completion checkpoint but no chain to navigate the legs. That's the shape of the
 ---
 
 ### INV-D — Charter/boat network selection
+**ANSWERED (wave 12): no defect.** Selection is "nearest charter dock, if closer than the destination". The SS-15 cases are BOAT steps whose routes the guide names — the plugin never chose them. See D3.
 For SS-15 (barcrawl routed via Rimmington) and the preceding leg (Brimhaven rather than charter to Musa Point):
 dump which `CHARTER_DOCKS` node was selected and why.
 
@@ -189,6 +192,7 @@ with only the text destination or 📍 proving arrival (wave 7). Sticky selectio
 ---
 
 ### P0-03 — Pirate's Treasure parts not recognised as done
+**DONE (wave 12)** — seeded `varp 71 >= 2`, the point where Redbeard has his rum.
 **SS-16, SS-17** · **Prior work:** mid-quest varp/varbit checkpoint annotations (wave 6) — the exact mechanism.
 Pirate message id 433 already bundled.
 
@@ -202,6 +206,7 @@ are the ones that mis-report on accounts with prior progress. `PrintSubIdProbe` 
 ---
 
 ### P0-04 — Chronicle teleport ticked the Castle Wars step
+**DONE (wave 12), confirmed in play** — the jump must land within `TELEPORT_ARRIVE_RADIUS` of `travelDestination()`.
 **SS-06** · **Prior work:** teleport position-jump detector; wave 5 widened post-teleport arrive radius to 45;
 wave 7 network-travel arrival requires the text destination to prove arrival.
 
@@ -215,6 +220,7 @@ sub with a checkpoint completes only off it.
 ---
 
 ### P0-05 — Nav re-routes mid-quest instead of standing down
+**DONE (wave 12)** — new opt-in `Errand.hold`; blanket stand-down stays rejected.
 **Prior work:** `questHelperOwnsGuidance` — wave 2 deliberately made mid-quest nav route to the step's 📍 area
 rather than clearing. Wave 7 fixed a *separate* QH interference (clientscript load).
 
@@ -227,6 +233,7 @@ implements. See P1-06.
 ---
 
 ### P0-06 — Travel NPC not offered; wrong NPC highlighted
+**DONE (waves 11-12)** — travel NPCs + Cromperty + the sixth boat step keepered.
 **SS-14** (tooltip reads `Attack Foreman (level-23)`) · **Prior work:** named-NPC scan with named-beats-nearest
 (waves 5–6); `shop_npcs.json` with keepers/bartenders; `CHARTER_DOCKS` network.
 
@@ -241,6 +248,7 @@ Foreman. Bartenders and shopkeepers were seeded for exactly this reason — **do
 ## P1
 
 ### P1-01 — No route out of the Essence Mine
+**DONE (wave 10)**.
 **SS-03** · **Prior work:** the ZMI precedent — "SP can't path into cave interiors — anchor routable points at
 entrances" (wave 5). Errand stages have a **route/satisfaction split** for precisely this.
 **Fix:** anchor the ess-mine exit at its surface-routable point, same pattern as ZMI at Ourania Cave 2452,3231.
@@ -254,6 +262,7 @@ entrances" (wave 5). Errand stages have a **route/satisfaction split** for preci
 ---
 
 ### P1-03 — Karamja step ticked in the field, not at the docks
+**DONE (wave 12)** — the PIN was in the jungle at 2843,3070, ~120 tiles from any landing. Now Musa Point 2904,3162. No radius change needed.
 **SS-13** · **Prior work:** wave 5 widens arrive radius to **45** after a teleport; wave 7 makes charter subs prove
 arrival by text destination or 📍 only.
 **Diagnosis:** either the boat landing reads as a teleport (radius 45 covers the field) or the "Karamja" place pin
@@ -262,11 +271,13 @@ sits in the field. Check the pin first — cheaper.
 ---
 
 ### P1-04 — Wrong dock chosen; legs inconsistent
+**NOT A DEFECT (wave 12)** — those are boat steps whose routes the guide names. See D3.
 **SS-15** · **Gated on INV-D**, then D3 sticky transport.
 
 ---
 
 ### P1-05 — Barcrawl card and coins not required at the pub
+**DONE (wave 12)** — card seeded on all ten drink steps; coins stay off (a drink is a few gp).
 **SS-09** · **Prior work:** wave 6 barcrawl stamp varp-bit checkpoints (varp 77, per-bar bits); Barcrawl card
 sprite id 455 bundled; wave 7 re-seeded bar pins to QH's exact bartender WorldPoints and dropped the keeper's
 purchase-goal gate; coins deliberately **excluded** from the arrival gate so mid-step spending can't wedge a
@@ -278,6 +289,7 @@ before the walk. Coins are a display-only need here — do not re-add them to th
 ---
 
 ### P1-06 — Compound steps don't chain (Hazelmere → shipyard)
+**DONE (wave 12)** — Hazelmere seeded as two stages, the second an `Errand.hold`.
 **SS-12** · **Prior work: errand chains already implement this.**
 
 Existing stage capabilities (waves 4–9): ordered stages; `{x,y,plane,item,note}`; `npc` named outline; `items`
@@ -304,6 +316,7 @@ subsystem.
 ## P2
 
 ### P2-01 — No GP cost on the hunter shop step
+**NOT A DEFECT (wave 12)** — that step costs 12gp; the seeder skips <100gp on purpose.
 **SS-10** · **Prior work:** `seed-gp-costs.mjs`, 30 buy steps seeded (wave 7); SS-19 proves the badge renders.
 **Data gap.** Re-run the seeder over the remaining buy steps; hand-set where the wiki value is missing (Barrows
 gloves and Zeah compost are the existing hand-set precedents).
@@ -311,6 +324,7 @@ gloves and Zeah compost are the existing hand-set precedents).
 ---
 
 ### P2-02 — Shop interface items not highlighted
+**DONE (wave 12)** — `ShopItemHintOverlay`, matches by NAME (shop stock has no inventory id yet).
 **SS-11** · **Prior work:** `InventoryItemHintOverlay` outlines carried step items; bank filter renders per-step
 sections. No equivalent for shop interfaces.
 **Genuinely new work**, small. Follow the bank filter's widget-join pattern (`nameMatchesGoal`).
@@ -404,6 +418,7 @@ use it.
 ---
 
 ### P2-04 — Chronicle hint points at the equipment tab
+**DONE (wave 12)** — container resolved at render time; the worn-slot hint is unchanged.
 **SS-18** · **Prior work: added deliberately in wave 9** — "Chronicle worn-slot teleport hint (equipment tab
 STONE4 → `WornItems.SLOT5`, labeled)".
 **Not a bug — an unhandled case.** The Chronicle was in the inventory, not worn. Resolve the actual container at
@@ -412,6 +427,7 @@ render time and point at whichever holds it. **Do not remove the worn-slot hint.
 ---
 
 ### P2-05 — Outline doors, stairs, ladders
+**DONE (wave 12)** — a stage with a route/satisfaction split outlines the traversal object at its route point.
 **SS-19, SS-20** · **Prior work:** `ObjectTargetOverlay` outlines ore rocks, chests, grind objects, with
 impostor resolution and goal-item icon overhead; `ModelOutlineRenderer` gives QH-crisp silhouettes.
 **Extend the existing overlay** to traversal objects on the active route. Errand stages already model interior
@@ -425,6 +441,7 @@ legs via route/satisfaction, so the data to know *which* door is often present.
 ---
 
 ### P2-07 — Pirate's message ticked on pickup, not on read
+**NOT ACHIEVABLE as specified (wave 12)** — QH tracks the read by holding the item, not a var.
 **SS-19** · **Prior work:** pirate message id 433 bundled (wave 9); checkpoint annotations complete a sub only off
 the checkpoint (wave 6).
 **Fix:** varp/varbit checkpoint on the read, sub-keyed. Same pattern as the barcrawl stamps.
@@ -432,6 +449,7 @@ the checkpoint (wave 6).
 ---
 
 ### UX-01 — Distinguish manual overrides from auto-completions
+**DONE (wave 12)** — hand ticks stored per profile in `manual_<VARIANT>`, per step AND sub.
 **Already implemented:** manual tick/un-tick exists and persists. Remaining work is display-only — mark overridden
 steps distinctly so the progress file reveals which steps detection is failing on.
 **Constraint:** errand stages must remain individually inspectable; don't regress to all-or-nothing.
@@ -473,94 +491,91 @@ exist; whether they compose into a route-position ledger is unknown. Ask before 
 
 ---
 
-## NEXT SESSION — start here (written 2026-08-08, end of wave 11)
+## CLOSED IN WAVE 12 (2026-08-08, main at `54774f3`, pushed)
 
-Everything below is from live play; the first two were reported and diagnosed but NOT finished.
+Wave 11's "next session" list is fully cleared, and a backlog pass took the rest. Anything below marked
+**DONE** in the P-sections is shipped; three entries turned out **not to be defects at all**.
 
-### 1. P0-04 teleport destination proof — **written, uncommitted, never play-tested**
-`src/main/java/com/ironscape/IronscapePlugin.java` has an uncommitted change in the working tree.
-It compiles and tests pass. **Play-test it, then commit it.**
+**Confirmed in play:** P0-04 (held "Use mind bomb and camelot tele" from inside the ess mine), the
+Merlin's Crystal checkpoint + Gawain→Lancelot chain end to end, the handoff banner (its first ever
+firing — wave 11 fixed it but nobody had seen it), the mixed-purchase-list goals, the mind bomb badge
+and inventory outline.
 
-The travel-goal branch ticked any travel sub that happened to be current while `recentTeleportTicks > 0`,
-without checking where the jump landed. Brimstail's teleport into the essence mine ticked the ess-mine
-region checkpoint, the loop cascaded, and "Use mind bomb and camelot tele" completed from inside the mine
-with Camelot 1,300 tiles away. Fix requires the landing to be within `TELEPORT_ARRIVE_RADIUS` of the sub's
-destination, via a new shared `travelDestination()` helper so the jump path and the arrival path resolve
-the destination identically. Unresolvable destination falls through to the arrival check rather than
-ticking on the jump.
+**Shipped but NEVER exercised — test these first:**
+- the **gangplank gate**. The release valve means it cannot wedge, but nothing has confirmed it *holds*.
+  Still open: which of the **six** boat trips end at a plank versus dropping you on the dock. (Wave 11
+  listed five; `81b0064c8c` "Boat back to Karamja" was missed, and is now keepered to the Customs officer.)
+- **persisted acquisition baselines** — only provable across a restart: buy, restart, confirm it still ticks.
+- the **shop overlay**. Most likely failure is over-matching: name matching runs through the alias/family
+  rules, so a broad stock list could light up every axe tier when the step wants one.
+- **PAR / Holy Grail** start checkpoints, the **staircase outline**, **per-NPC shop icons**, the
+  **Karamja pin** at the docks, the **manual-tick tooltip**.
 
-### 2. Boat steps tick on the deck, before the gangplank (owner, 2026-08-08)
-"Take the boat back to Ardy" ticks on arrival while the player is still ON the ship. You must cross the
-gangplank to be on land, so navigation "bricks" — Shortest Path is routing from a deck tile.
+### Not defects — do not "fix" these
+- **P2-01** (no gp cost on the hunter shop step): that step costs **12gp**. The seeder skips anything
+  under 100gp deliberately, and re-running it applied **0** changes — wave 7 already covered everything
+  meaningful. A "coins 0/12" badge is noise.
+- **P2-07** (pirate message ticks on pickup, not read): the proposed varp/varbit checkpoint **cannot
+  exist**. QH tracks the read with a conditional step on *holding the item*, not a var; reading it moves
+  nothing. Would need a widget-text detector — new machinery for one step.
+- **D3 sticky transport**: the SS-15 "wrong dock" cases are **boat** steps whose routes the *guide* names
+  ("Take the boat from Ardy docks to Rimmington"). The plugin never chose them. Dock selection for real
+  charter subs is "nearest dock, if closer than the destination", which is sound.
 
-Same branch as (1), but the destination fix does NOT help: the deck is well within the radius of Ardougne.
-Owner's suggestion, and the right signal: gate boat subs on the **"Cross gangplank" object click**
-(`onMenuOptionClicked` already tracks object clicks for minigame presence).
-
-**Check before wiring:** whether any boat route in the guide drops you straight onto the dock with no plank
-to cross. If one does, gating on the plank would wedge that step forever. There are only 5 boat steps
-(`Take the boat to Great Kourend`, `Take boat to Port Sarim`, `Take the boat from Ardy docks to
-Rimmington`, `Take the boat back to Ardy`, `Ardy cloak tele and take the boat from Ardy to brimhaven`).
-
-### 3. Wizard Cromperty not outlined on the ess-mine step (owner, 2026-08-08)
-Same class as P0-06 and a one-line data fix: add him to `places/shop_npcs.json` keyed to the "Visit Ardy
-ess mines" step. The ⌖ pin at 2684,3323 exists; the nearest-NPC fallback just isn't nominating him.
-
-### 4. 21 quest-kit items awaiting the owner's ruling
-`node tools/audit-quest-granted.mjs`. All on quest FINISHING steps, so they are judgement calls, not
-defects — wave 9's rule is that a finishing step lists what the FINALE needs. Demon Slayer's
-`silverlight key x3` is the owner's own correction and was deliberately left alone. The question per item:
-does a muted "(from the quest)" read better than red?
-
-### 5. Still unverified from wave 11
-- the handoff banner + notification (never seen one fire — needs a step to finish mid-quest)
-- `Customs officer` on the Musa Point -> Port Sarim boat (tentative name, still far off in the route)
-- the ASCII glyph sweep on messages nobody has triggered yet (death, gravestone, on-the-way pickup)
+### Also learned
+- `questStatus` is only ever `start` / `complete` / absent — there is no hidden part-quest population, and
+  every "do X until the part where…" step already had a checkpoint or chain. The gap was **start** steps
+  carrying extra actions, now swept (3 of 33 needed seeding).
+- Hold chains are only worth it when both places belong to the **same step and sit far apart** (Hazelmere).
+  For "Do Dwarf cannon until…", "Continue Lost tribe until…" etc. the place named in the text is where the
+  **next** step goes; each step's own work is in one area, so routing to its 📍 stays correct.
+- Verifying `granted` needs the quest's wiki **"Items required" annotation** ("(obtained during the
+  quest)"), not mere presence in the list. That distinction overturned four items in both directions.
 
 ---
 
-## Execution order
+## NEXT SESSION — start here (written 2026-08-08, end of wave 12)
 
-**Phase 0 — investigate (no code)**
-1. ~~INV-A — ess-mine chain satisfaction~~ **DONE 2026-08-07 — instanced regions; see RESOLVED at top**
-2. INV-B — arrival audit counts
-3. INV-E — source of the Grand Tree start-step requirements
-4. INV-C — compound steps needing chains
-5. INV-D — charter dock selection
+1. **Exercise the never-run list above**, gangplank gate first.
+2. **Gertrude's Cat still ticks on quest start.** Its extra actions are item-based ("use the leaves on a
+   sardine"), so no varp fits and annotation items don't gate sub completion. Needs either a detector for
+   "use X on Y" or leaving alone — **owner's call**, it's a blast-radius change.
+3. **Hub pin is at `b8c994d`, ~80 commits behind.** Bump after a calm session on this build.
+4. Long-standing: deliberate death test, onion-gate capture, "big frog leg" → 7908 verdict.
 
-**Phase 1 — small, high-confidence fixes**
-6. P2-04 Chronicle container resolution
-7. P2-01 re-run gp-cost seeder
-8. P1-01 ess-mine exit anchored at a routable point
-9. P0-06 seed travel/charter NPCs into the named roster
+---
 
-**Phase 2 — chains and nav**
-10. P0-05 / P1-06 nav HOLD on gated stages
-11. Seed chains for INV-C's list
-12. P0-03 Pirate's Treasure checkpoint, then survey other part-quest steps
+## Execution order — COMPLETE as of wave 12
 
-**Phase 3 — detection**
-13. P0-01 per INV-A/B
-14. P0-04 destination-verified teleport arrival
-15. P1-03 Karamja pin / radius
-16. P2-07 pirate message read checkpoint
+Every phase below is closed. Kept as a record of what was done and in what order.
 
-**Phase 4 — policy enforcement and polish**
-17. TOOL-01, then P0-02 / P1-02
-18. P1-04 sticky transport (D3)
-19. P1-05, P2-02, P2-03, P2-05, UX-01
+- **Phase 0 — investigate.** INV-A (wave 10, instanced regions), INV-B, INV-C, INV-D, INV-E — all answered.
+- **Phase 1 — small fixes.** P2-04, P2-01 (not a defect), P1-01, P0-06.
+- **Phase 2 — chains and nav.** P0-05 / P1-06 via `Errand.hold`; Hazelmere seeded; P0-03 plus the
+  part-quest survey, which found the real gap was `questStatus=start` steps carrying extra actions.
+- **Phase 3 — detection.** P0-01, P0-04, P1-03; P2-07 shown to be unachievable as specified.
+- **Phase 4 — policy and polish.** TOOL-01 and P0-02 (wave 11), P1-02, D3 dropped as a phantom,
+  P1-05, P2-02, P2-03, P2-05, UX-01.
+
+**What remains is verification, not implementation** — see NEXT SESSION above. The one open design
+question is Gertrude's Cat, which needs an owner decision rather than a plan.
 
 ---
 
 ## Notes
 
-- **Hub pin is at `b8c994d`, ~70 commits behind.** Owner's standing rule: bump only after a calm session. A
+- **Hub pin is at `b8c994d`, ~80 commits behind.** Owner's standing rule: bump only after a calm session. A
   backlog-clearing session is not a calm session — don't bump mid-flight.
 - **Never add Claude co-author trailers to commits.** History was rewritten and force-pushed on 2026-07-28 to
   strip them.
-- Three items are prior work misread as bugs: **P2-04** (deliberate), **P2-01** (seeder exists), **P0-05**
-  (designed behaviour). Check the Prior work line before coding.
+- Three items were prior work misread as bugs: **P2-04** (deliberate), **P2-01** (seeder exists), **P0-05**
+  (designed behaviour). Check the Prior work line before coding. Wave 12 added three more that were not
+  defects at all: **P2-01** again (12gp), **P2-07** (no such var), **D3** (guide-prescribed routes).
 - Test account has 292 QP — ideal for P0-03, poor for fresh-account ordering tests.
+- **Splitting one file across several commits** needs hunk patches: `git diff` → split by `@@` → `git apply`
+  per group. `git add -p` is unavailable non-interactively. Diff the reassembled file against the
+  play-tested copy afterwards, and compile each commit in a throwaway `git worktree` — which is also the way
+  to build anything while a client is running.
 ### BANK FILTER — mostly fixed 2026-08-08, ONE case left
 
 **Fixed and confirmed in play:** icons no longer move or vanish while WITHDRAWING, and turning the filter off

@@ -738,6 +738,83 @@ refresh when "Failed to login" appears.
   capture; hub pin at b8c994d, now ~70 commits behind — bump after a
   calm session.
 
+- SESSION WAVE 12 (2026-08-08, live play-test then a backlog pass, main
+  at `54774f3`, PUSHED, 12 commits): **P0-04 CONFIRMED** — a warm
+  teleport ticked any travel sub regardless of where it landed; the jump
+  must now land within `TELEPORT_ARRIVE_RADIUS` of `travelDestination()`,
+  a shared helper so the jump path and the arrival path cannot disagree.
+  Watched hold "Use mind bomb and camelot tele" from inside the ess mine.
+  **GANGPLANK GATE** (still NEVER exercised): a docked ship's deck is
+  inside the destination radius, so boat steps ticked aboard and SP routed
+  from a tile with no path off. Boat subs need a gangplank crossing made
+  NEAR THE DESTINATION — the crossing TILE is recorded because boarding at
+  the far end crosses the same object. Release valve: no plank loaded
+  within 8 tiles = nothing to cross = gate opens, so a route that lands
+  you on the dock cannot wedge. There are SIX boat steps, not the five
+  the backlog listed (`81b0064c8c` "Boat back to Karamja" was missed).
+  **PRESCRIBED SPELL HINTS**: `PRESCRIBED_TRANSPORT` suppressed all hints
+  for a sub naming its own transport — right for not suggesting an
+  ALTERNATIVE, wrong for pointing at the spell the guide NAMED. Now
+  resolves the named spell and highlights its widget with NO distance test
+  (which also gets past the surface-band guard). Castability deliberately
+  NOT required: "use mind bomb and camelot tele" means the real Magic
+  level is under 45 BY DESIGN, and gating on it silenced the one step that
+  most needs the prompt. Destination must sit either side of a tele word —
+  "falador teletab", "...run back to Falador" and "Home tele to lumby...
+  Varrock east bank" all correctly reject.
+  **MIXED PURCHASE LISTS**: the goal parser returned on the first NUMBERED
+  item, so "Buy candle, 2 fishing rods, lobster pot" gave ONE goal of
+  three. Purchases now keep parsing comma siblings; +6 goals guide-wide,
+  0 removed (the dorgeshuun crossbow and a chronicle were also being
+  dropped). The audit caught two junk goals it introduced, needing
+  OPPOSITE fixes: `premade blurb' sp` is real (item_ids 2028), a
+  player-owned house is not an item ("player" -> NOT_AN_ITEM_FIRST_WORD).
+  **PERSISTED ACQUISITION BASELINES** (`acqbase_<VARIANT>` in
+  ProgressManager, mirroring the counted counters): they were session-only,
+  so buying items then restarting re-based with the goods in hand and the
+  step sat green-but-unticked forever. Downward rebase and untick-clears
+  both kept. Does NOT rescue a step whose goals did not exist in an
+  earlier session — no pre-purchase baseline to restore.
+  **NEW FIELDS**: `ItemNeed.consumed` (spent during its own step — a true
+  requirement excluded from the arrival gate, "(used here)"; the mind bomb
+  would otherwise wedge its step), `Errand.hold` (this stage IS quest
+  progress: clear the route rather than fight QH — OPT-IN because the
+  blanket stand-down was tried and reverted).
+  **QUEST-START SWEEP**: a start step with extra actions ticked on
+  IN_PROGRESS. Swept all 33 `questStatus=start`; only 3 needed seeding
+  (Merlin's `varp 14>=3`, PAR `varp 273>=20`, Holy Grail `varp 5>=3`,
+  values from QH `steps.put`). The rest are already gated by item goals on
+  the same sub, already checkpointed, or genuinely end at the start.
+  Errand chains seeded for the two conversation steps (Gawain -> Lancelot
+  upstairs, Merlin) with QH's exact `addDialogStep` strings — generic
+  dialogue highlighting does NOT cover specific options.
+  **PER-NPC ICONS**: the overhead icon was one shared value, so a
+  two-shop step hung a fishing rod over the candle maker. `item_sources`
+  vendors now wear their own stock. Catherby sources seeded from the SHOP
+  pages (verified as shop pages whose stock lists the item).
+  **SHOP OVERLAY** (`ShopItemHintOverlay`, groups 300/301): matches by
+  NAME, because what you are there to BUY has no inventory id yet.
+  **UX-01**: hand ticks recorded per profile (`manual_<VARIANT>`), per
+  step AND sub, cleared on every untick path.
+  **DATA**: 14 quest items marked `granted` — verified against each
+  quest's wiki "Items required", where "(obtained during the quest)" is
+  the discriminator; being LISTED is not enough. That overturned four in
+  BOTH directions (priest gowns/pigeon cages ARE granted; phoenix feather
+  and barronite deposit are genuine fetches). Karamja pin moved from the
+  jungle (2843,3070) to Musa Point — ~120 tiles from any landing, the
+  "ticked in the field" cause. Barcrawl card on the 10 drink steps.
+  Pirate's Treasure `varp 71>=2`. Chronicle hint resolves worn vs carried.
+  **THREE BACKLOG ITEMS WERE NOT DEFECTS**: P2-01 (the hunter shop step
+  costs 12gp; the seeder skips <100gp on purpose and re-running applied
+  0), P2-07 (QH tracks the message read with a conditional step on holding
+  the item, NOT a var — the proposed checkpoint cannot exist), D3 sticky
+  transport (the "wrong dock" cases are BOAT steps whose route the GUIDE
+  names; the plugin never chose them).
+  **PROCESS**: `git add -p` is unavailable non-interactively — splitting
+  one file across commits needs hunk patches (`git diff` -> split -> `git
+  apply`), and the reassembled file must be diffed against the
+  play-tested copy. Every commit was compile-verified in a throwaway
+  `git worktree`, which is also how to build while a client is running.
 - SESSION WAVE 11 (2026-08-08, live play-test, main at `105a0ff`, pushed):
   **BANK FILTER DEPOSITS — ROOT CAUSE WAS US.** Our `bankSearchFilter`
   callback answered **0 ("hide") for every slot**, and the decompiled
