@@ -769,8 +769,8 @@
   },
   "fishing contest": {
    "display": "Fishing Contest",
-   "x": 2876,
-   "y": 3481,
+   "x": 2821,
+   "y": 3486,
    "plane": 0,
    "type": "quest"
   },
