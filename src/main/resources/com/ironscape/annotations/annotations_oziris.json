@@ -5856,6 +5856,19 @@
   "a8014d6a77:0": {
    "errands": [
     {
+     "x": 2733,
+     "y": 3413,
+     "plane": 0,
+     "npc": "Sherlock",
+     "note": "Diary task: talk to Sherlock, south of the Sorcerer's Tower. A WAYPOINT — getting there satisfies it, so skipping the diary can never wedge the quest step."
+    },
+    {
+     "x": 2744,
+     "y": 3444,
+     "plane": 0,
+     "note": "Diary task: pick 5 flax in the Seers' Village field. TENTATIVE PIN — the wiki has no map marker for the field, so right-click the target and capture the real spot if this lands wrong."
+    },
+    {
      "x": 2757,
      "y": 3401,
      "plane": 0,
