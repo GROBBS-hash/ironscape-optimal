@@ -200,7 +200,11 @@ public final class GoalDetector
 		"optional", "optionally", "remember", "swap", "hop", "log", "world",
 		"travel", "fly", "sail", "ride", "cross", "move", "follow", "proceed", "wait",
 		"stay", "chop", "break", "drink", "eat", "empty", "fill", "rub", "activate",
-		"unnote", "train");
+		"unnote", "train",
+		// "Buy a Player-owned house" is a purchase, but not of an ITEM —
+		// no POH exists in any inventory, so the goal could only sit red
+		// forever. Caught by the unresolvable-goal audit.
+		"player");
 
 	/**
 	 * An unnoted inventory holds 28 items. An item goal needing MORE than
@@ -904,6 +908,18 @@ public final class GoalDetector
 
 		if (out.size() > before)
 		{
+			// MIXED purchase list: "Buy candle, 2 fishing rods, lobster
+			// pot". The numbered part is found above and returns, so the
+			// unnumbered siblings were dropped and the panel showed one
+			// badge where the guide asked for three (owner, 2026-08-08).
+			// Purchases list with commas at least as often as with "and",
+			// so a comma sibling carrying no number of its own is one more
+			// thing to buy. Purchases only: outside a shopping list a
+			// comma usually separates ACTIONS, not items.
+			if (ownPurchase)
+			{
+				addUnnumberedSiblings(out, step, sub, text, seen);
+			}
 			return ownPurchase; // numbered goals found; done
 		}
 
@@ -980,6 +996,50 @@ public final class GoalDetector
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * The comma/and separated parts of a purchase list that carry NO
+	 * number of their own — the "candle" and "lobster pot" of "Buy
+	 * candle, 2 fishing rods, lobster pot". Numbered parts are already
+	 * goals by the time this runs, and addIfValid's `seen` set keeps a
+	 * re-parsed one from doubling up.
+	 *
+	 * Everything from the buy verb onwards is the list; a part opening
+	 * with a non-item word (an action verb, a preposition) ends it, the
+	 * same rule the and-separated path uses.
+	 */
+	private static void addUnnumberedSiblings(List<ItemGoal> out, GuideStep step,
+		SubStep sub, String text, java.util.Set<String> seen)
+	{
+		Matcher list = VERB_NO_QUANTITY.matcher(text);
+		if (!list.find())
+		{
+			return;
+		}
+		String tail = text.substring(list.start(1));
+		for (String raw : tail.split("\\s*,\\s*|\\s+and\\s+"))
+		{
+			String part = raw.trim().replaceFirst("(?i)^(?:a|an|some|your|the)\\s+", "");
+			// A leading number means the numbered pass already had it.
+			if (part.isEmpty() || Character.isDigit(part.charAt(0)))
+			{
+				continue;
+			}
+			part = NAME_TERMINATOR.matcher(part).replaceFirst("").trim();
+			if (!BARE_ITEM.matcher(part).matches())
+			{
+				continue;
+			}
+			String firstWord = part.split("[^A-Za-z]+", 2)[0].toLowerCase(Locale.ROOT);
+			if (NOT_AN_ITEM_FIRST_WORD.contains(firstWord)
+				|| java.util.Set.of("make", "craft", "smith", "cook", "mix", "brew")
+					.contains(firstWord))
+			{
+				break; // an action verb opens a new clause: the list is over
+			}
+			addIfValid(out, step, sub, "1", part, seen, true);
+		}
 	}
 
 	private static void addIfValid(List<ItemGoal> out, GuideStep step, SubStep sub,
