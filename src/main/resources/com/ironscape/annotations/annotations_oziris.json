@@ -5881,6 +5881,10 @@
      "y": 3443,
      "plane": 0,
      "item": "bucket of wax",
+     "items": [
+      "insect repellent",
+      "bucket"
+     ],
      "note": "Use the insect repellent on a beehive, then fill the bucket with wax."
     },
     {
