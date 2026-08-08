@@ -1,6 +1,16 @@
 {
  "version": 1,
  "annotations": {
+  "82d1626549": {
+   "items": [
+    {
+     "name": "wizard's mind bomb",
+     "quantity": 1,
+     "consumed": true
+    }
+   ],
+   "note": "Drink the mind bomb for the Magic boost, then cast Camelot Teleport (45 Magic, needs the boost below that)."
+  },
   "7171e743ce": {
    "items": [
     {
@@ -489,11 +499,13 @@
     },
     {
      "name": "nulodion's notes",
-     "quantity": null
+     "quantity": null,
+     "granted": true
     },
     {
      "name": "ammo mould",
-     "quantity": null
+     "quantity": null,
+     "granted": true
     },
     {
      "name": "rope",
@@ -985,7 +997,8 @@
     },
     {
      "name": "key imprint",
-     "quantity": null
+     "quantity": null,
+     "granted": true
     },
     {
      "name": "bronze bar",
@@ -2547,7 +2560,8 @@
    "items": [
     {
      "name": "chaos core",
-     "quantity": 1
+     "quantity": 1,
+     "granted": true
     },
     {
      "name": "barronite deposit",
@@ -3331,7 +3345,8 @@
     },
     {
      "name": "pigeon cage",
-     "quantity": 5
+     "quantity": 5,
+     "granted": true
     },
     {
      "name": "pot",
@@ -3399,7 +3414,8 @@
     },
     {
      "name": "picture",
-     "quantity": 1
+     "quantity": 1,
+     "granted": true
     },
     {
      "name": "bucket of milk"
@@ -3651,7 +3667,8 @@
     },
     {
      "name": "strange implement",
-     "quantity": 1
+     "quantity": 1,
+     "granted": true
     },
     {
      "name": "black dye",
@@ -3963,15 +3980,18 @@
     },
     {
      "name": "specimen brush",
-     "quantity": 1
+     "quantity": 1,
+     "granted": true
     },
     {
      "name": "specimen jar",
-     "quantity": 1
+     "quantity": 1,
+     "granted": true
     },
     {
      "name": "panning tray",
-     "quantity": 1
+     "quantity": 1,
+     "granted": true
     },
     {
      "name": "trowel",
@@ -4402,7 +4422,8 @@
    "items": [
     {
      "name": "priest gown top",
-     "quantity": 1
+     "quantity": 1,
+     "granted": true
     },
     {
      "name": "gas mask",
@@ -4410,7 +4431,8 @@
     },
     {
      "name": "priest gown bottom",
-     "quantity": 1
+     "quantity": 1,
+     "granted": true
     }
    ]
   },
@@ -4957,11 +4979,13 @@
     },
     {
      "name": "snake charm",
-     "quantity": 1
+     "quantity": 1,
+     "granted": true
     },
     {
      "name": "snake basket",
-     "quantity": 1
+     "quantity": 1,
+     "granted": true
     }
    ],
    "note": "Bring: Combat Gear bring Range or Mage Gear if safe spotting.."
@@ -6027,6 +6051,74 @@
      "dialog": [
       "You give him the vial of ethenea..."
      ]
+    }
+   ]
+  },
+  "d4b486fd19:0": {
+   "requires": {
+    "varp": 14,
+    "value": 3,
+    "label": "talked to"
+   },
+   "note": "Starting the quest is only half the step - Gawain and Lancelot still need talking to. Varp 14 reaches 3 once Lancelot has told you about the stronghold (Quest Helper's step 3).",
+   "errands": [
+    {
+     "x": 2758,
+     "y": 3504,
+     "plane": 0,
+     "npc": "Sir Gawain",
+     "varp": 14,
+     "value": 2,
+     "note": "Sir Gawain is by the round table - ask how Merlin got trapped.",
+     "dialog": [
+      "Do you know how Merlin got trapped?"
+     ]
+    },
+    {
+     "x": 2760,
+     "y": 3511,
+     "plane": 1,
+     "routeX": 2751,
+     "routeY": 3511,
+     "routePlane": 0,
+     "npc": "Sir Lancelot",
+     "varp": 14,
+     "value": 3,
+     "note": "Lancelot is UPSTAIRS - the route points at the staircase. Climb it, then ask about getting into Morgan Le Faye stronghold.",
+     "dialog": [
+      "Any ideas on how to get into Morgan Le Faye's stronghold?",
+      "Thank you for the information."
+     ]
+    }
+   ]
+  },
+  "07aef0d346:0": {
+   "requires": {
+    "varp": 273,
+    "value": 20,
+    "label": "talked to"
+   },
+   "note": "Starting the quest is only half the step - Osman still needs talking to. Varp 273 reaches 20 once he has briefed you (Quest Helper step 20, prepareToSaveAli)."
+  },
+  "70f06cc8d2:0": {
+   "requires": {
+    "varp": 5,
+    "value": 3,
+    "label": "talked to"
+   },
+   "note": "Starting the quest is only half the step - Merlin still needs talking to. Varp 5 reaches 3 once he sends you to the High Priest (Quest Helper step 3).",
+   "errands": [
+    {
+     "x": 2763,
+     "y": 3513,
+     "plane": 1,
+     "routeX": 2751,
+     "routeY": 3511,
+     "routePlane": 0,
+     "npc": "Merlin",
+     "varp": 5,
+     "value": 3,
+     "note": "Merlin is UPSTAIRS in Camelot - the route points at the staircase. Climb it and talk to him."
     }
    ]
   }
