@@ -738,6 +738,96 @@ refresh when "Failed to login" appears.
   capture; hub pin at b8c994d, now ~70 commits behind — bump after a
   calm session.
 
+- SESSION WAVE 13 (2026-08-08, desk session — owner away, NOTHING play-tested):
+  **ANNOTATION ITEMS NOW GATE PURCHASE STEPS.** The reported shape: "Buy 1
+  pack of normal compost and all farming tools, store everything in
+  leprechaun" (`5bf54fe229`) yields ONE detected goal — the pack — so buying
+  it ticked the whole step while the five seeded tools had no vote.
+  The proposed narrow rule (explicit quantity, non-quest steps, minus
+  granted/consumed/optional/ingredient) was MEASURED AND REJECTED: it changes
+  30 steps and **29 are wrong**, because annotation items are overwhelmingly
+  TOOLS and INGREDIENTS, not objectives, and explicit quantity does not
+  separate them (`seed-tools` writes x1 like anything else). Three that wedge
+  permanently: "Get 61 Crafting" would demand 1,200 buckets you spend
+  crafting ON A LEVEL GOAL; "Hunt 15k red chins" wants a carried box trap
+  while chins count the BANK; "give the bread to the beggar to get the
+  excalibur" demands bread you already handed over. That last is the
+  `consumed` failure mode arriving through an unflagged item — exactly what
+  P0-07 kept the arrival gate tight for.
+  SHIPPED INSTEAD: `purchaseListAcquired` gates only steps whose detected
+  goal is an ACQUISITION. On a buy step the relationship inverts — the
+  annotated list is the rest of what the sentence told you to buy. Blast
+  radius is the one reported step, and it covers future "buy A and B" where
+  only one half parses. The list ARMS once seen complete, recorded as a
+  reserved `<subId>|@purchase-list` acquisition baseline so it survives a
+  restart AND is cleared by an untick (both needed: the step ends by putting
+  the tools INTO the leprechaun, which no readable container holds, so an
+  in-hand-now gate would slam shut on the deposit). Arming runs BEFORE the
+  item goals so buy order cannot change the outcome. Gertrude's Cat is
+  correctly untouched — its items are the scraper's null-quantity CARRY
+  LIST (bucket/barcrawl card/rune mysteries package), not its objective.
+  **NEW DUMP + TOOL**: `GoalAuditDumpTest.dumpCompletionPaths` ->
+  `build/completion-paths.tsv` (which detector path can tick each sub, from
+  the DETECTOR rather than inferred from step text — inference over-counted
+  by 31 steps that travel/arrival already gate via annotationItemsCarried);
+  `tools/audit-item-gating.mjs` joins it against the annotation corpus and
+  keeps the rejected wider rule listed so nobody re-proposes it blind.
+  **QUEST-GRANTED AUDIT CAN NOW SAY NO**: `granted` recorded "yes" and
+  nothing recorded "reviewed, genuine fetch", so settled questions
+  re-reported forever — 4 of 7 findings were already answered (phoenix
+  feather/barronite deposit wave 12, silverlight keys wave 9). New
+  `tools/quest-granted-reviewed.json` (same shape as audit-goals' VERIFIED
+  list); the filter ALSO had to be applied to the annotation loop, which
+  only checked `granted` — every finding this audit produces arrives there,
+  so a rejection suppressed nothing. Verdicts settled from the wiki's
+  "Items required", where placement under "Obtainable during quest" is the
+  discriminator: pink dye (WGS) GRANTED and seeded; ring of charos(a) "or
+  500 coins" = bring; Plague City hangover cure "or the ingredients to make
+  one", and the guide MAKES it two steps earlier (`fa497e8b66`) — bring-
+  then-consume-in-finale is a good kit entry per wave 9. Down to ONE open
+  question: the Fremennik Trials lyre (`80a3ae4d44`), which the wiki calls
+  a drop from the trial NPCs "or the skills and materials to make one" —
+  owner's call whether it should sit red.
+  **GANGPLANK GATE, STATIC FINDING (still not exercised)**: per the wiki's
+  gangplank location list, ALL SIX boat destinations have a plank — Port
+  Piscarilius (Veos), Port Sarim (to Musa Point), Musa Point, Rimmington
+  (Barnaby), Ardougne (to Brimhaven), Brimhaven (to Ardougne). So the
+  release valve NEVER fires at any of them and the gate is load-bearing on
+  every one. Code review found it sound (all five GAME_OBJECT_*_OPTION
+  cases record the crossing, both name comparisons lowercase, 8-tile plank
+  proximity vs 25-tile crossing-near-destination). The case to watch is a
+  route that lands you ASHORE with a plank inside 8 tiles: it holds until
+  you walk away — self-releasing, not a wedge, but it shows as a late tick.
+  **TARGET DRIFT — NO SAFE GENERAL RULE.** Tried to turn the 35 (not 36 —
+  the Catherby bin got pinned) into code and failed honestly. Distance
+  alone has real counterexamples: "Go to Zeah and get 100 compost and
+  saltpetre" drifts 219 tiles to the saltpetre DIG SPOT, which is where you
+  actually go, so a blanket threshold regresses it. A type-based rule
+  ("another quest's giver must not win") also collapsed: Shilo Village and
+  Tower of Life are place AND quest names with drift 0, several steps carry
+  no `quest` metadata even when the quest is theirs, and `firstPlaceIn`
+  picks the EARLIEST match so an own-quest name usually wins anyway. Left
+  for per-step ⌖ captures, as the owner said. TRIAGE for when he does them
+  — real hijacks: `a6c22a24cb` Evil Dave stew, `9c34f09b9e` Vannaka,
+  `5b504dfa2a`/`cf82191582`/`4e5d813136` wintertodt-as-provenance,
+  `4c0560fff4`/`1763f4c272` "compost"->Vannah, `a18966b61b` Heckel Funch
+  ->"bucket of milk", `b8e1b2bf8a` pest control->"lumby", `bbbd9a9020`
+  blurite->"falador", `a90532b6e2`/`b23fd9c74f`/`f27be2a275` ->"dragon
+  slayer" giver, `13f33630f0`/`7ca10e694f` Lost Tribe, `8fe077da99`
+  karambwans->Zanaris. NOT defects: `21637f4eeb` (Varrock east bank IS the
+  destination), `930916ba4a` (saltpetre dig spot), the three Clan Wars
+  steps (Clan Wars is the first leg). `ce8c0e36d3` is its own case — a ⌖ on
+  a boat sub marks the BOARDING dock (wave 7), so it wants a pin at the Ardy
+  dock, not Brimhaven.
+  **INERT GAP RECORDED**: `annotationItemsCarried` reads `step.getId()`
+  whenever a step has ONE sub — which on the atomic Oziris guide is ALWAYS
+  — so the 5 sub-keyed annotation item entries are invisible to the arrival
+  gate. Checked all five: none sit on an arrival-completed step (the gas
+  mask and ghostspeak amulet steps complete off their sub-keyed
+  `requires.equipped`, the other three off item goals). Real but currently
+  harmless; do NOT "fix" it by tightening the arrival gate without a
+  specific report. `gateableItems` (the new purchase gate) reads BOTH keys.
+
 - SESSION WAVE 12 (2026-08-08, live play-test then a backlog pass, main
   at `54774f3`, PUSHED, 12 commits): **P0-04 CONFIRMED** — a warm
   teleport ticked any travel sub regardless of where it landed; the jump

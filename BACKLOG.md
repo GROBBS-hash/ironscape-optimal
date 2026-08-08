@@ -534,7 +534,37 @@ and inventory outline.
 
 ---
 
-## NEXT SESSION — start here (written 2026-08-08, end of wave 12)
+## NEXT SESSION — start here (rewritten 2026-08-08, end of wave 13)
+
+Wave 13 was a desk session with the owner away. **Nothing in it is play-tested.**
+
+1. **Play-test the wave 13 change first**: `5bf54fe229` ("Buy 1 pack of normal compost and all
+   farming tools") must now wait for all five tools AND the pack, in either buying order, and must
+   still tick after the tools go into the leprechaun. If the tools were ALREADY in the leprechaun
+   from an earlier visit nothing can see them — tick by hand; the note on the step says so.
+2. **Exercise the never-run list** (unchanged from wave 12), gangplank gate first. Wave 13 found
+   statically that **all six boat destinations have a plank**, so the release valve never fires and
+   the gate is load-bearing on every trip. Watch `mine-session-log.mjs | grep "boat gate:"` for
+   `holding, gangplank loaded but not crossed` then `ashore, gangplank crossed`.
+3. **The 35 target-drift steps** — wave 13 tried and failed to find a safe general rule (see
+   CLAUDE.md wave 13 for why distance and place-type both collapse), so these really are per-step
+   ⌖ captures. The triage of which are real hijacks vs correct-as-is is in that same entry; do the
+   real hijacks and skip the rest.
+4. **One open data question**: the Fremennik Trials lyre (`80a3ae4d44`). The wiki calls it a drop
+   from the trial NPCs "or the skills and materials to make one", so it is obtainable in-quest —
+   should it be `granted` (muted, never routes) or stay a red requirement? Everything else the
+   granted audit flagged is now settled; `node tools/audit-quest-granted.mjs` reports exactly this
+   one item.
+5. Gertrude's Cat still ticks on quest start — the wave 13 gating change deliberately does NOT
+   cover it (its items are the scraper's null-quantity carry list, not its objective). Still needs
+   a "use X on Y" detector or leaving alone. **Owner's call.**
+6. Long-standing: deliberate death test, onion-gate capture, "big frog leg" -> 7908 verdict.
+
+**Hub pin is at `3638c2f` and should NOT move** until wave 13 has been through a play session.
+
+---
+
+## Previous session list (written 2026-08-08, end of wave 12)
 
 1. **Exercise the never-run list above**, gangplank gate first.
 2. **Gertrude's Cat still ticks on quest start.** Its extra actions are item-based ("use the leaves on a
