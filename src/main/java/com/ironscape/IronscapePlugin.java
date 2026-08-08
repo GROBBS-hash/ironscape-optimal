@@ -210,8 +210,17 @@ public class IronscapePlugin extends Plugin
 	@Inject
 	private com.ironscape.overlay.InventoryItemHintOverlay inventoryItemHintOverlay;
 
+	@Inject
+	private com.ironscape.overlay.ShopItemHintOverlay shopItemHintOverlay;
+
 	/** Inventory slot item ids the current step is about; overlay-outlined. */
 	private volatile java.util.Set<Integer> inventoryHintItemIds = java.util.Collections.emptySet();
+
+	/**
+	 * The same step items by NAME, for the shop overlay: stock you have
+	 * not bought yet has no inventory id to match on.
+	 */
+	private volatile java.util.Set<String> shopHintItemNames = java.util.Collections.emptySet();
 
 	/** "use the house tab", "fally teletab to..." — the tab phrase in a travel sub. */
 	private static final java.util.regex.Pattern TAB_PHRASE = java.util.regex.Pattern.compile(
@@ -1428,6 +1437,8 @@ public class IronscapePlugin extends Plugin
 		overlayManager.add(objectTargetOverlay);
 		inventoryItemHintOverlay.setItemIdsSupplier(() -> inventoryHintItemIds);
 		overlayManager.add(inventoryItemHintOverlay);
+		shopItemHintOverlay.setItemNamesSupplier(() -> shopHintItemNames);
+		overlayManager.add(shopItemHintOverlay);
 
 		panel = panelProvider.get();
 		panel.setItemGoals(itemGoalsBySub);
@@ -1620,6 +1631,7 @@ public class IronscapePlugin extends Plugin
 		overlayManager.remove(targetTileOverlay);
 		overlayManager.remove(objectTargetOverlay);
 		overlayManager.remove(inventoryItemHintOverlay);
+		overlayManager.remove(shopItemHintOverlay);
 		npcTargetNames = java.util.Collections.emptySet();
 		npcTargetIndexes = java.util.Collections.emptySet();
 		objectTargets = java.util.Collections.emptyList();
@@ -3155,9 +3167,16 @@ public class IronscapePlugin extends Plugin
 		// Outline the carried items the current step is ABOUT — its tab
 		// ("Use house tab..."), tools, ingredients and goal items — so
 		// what to use next is obvious at a glance.
-		inventoryHintItemIds = config.showInventoryHints() && current != null
-			? findStepInventoryItems(current)
-			: java.util.Collections.emptySet();
+		if (config.showInventoryHints() && current != null)
+		{
+			// Also refreshes shopHintItemNames — see findStepInventoryItems.
+			inventoryHintItemIds = findStepInventoryItems(current);
+		}
+		else
+		{
+			inventoryHintItemIds = java.util.Collections.emptySet();
+			shopHintItemNames = java.util.Collections.emptySet();
+		}
 		// Chat menus rebuild their option children WITHOUT reloading the
 		// widget group — the widget-load hook alone missed every rebuilt
 		// menu (owner: "options not showing"). Reapply per tick; cheap.
@@ -4946,6 +4965,18 @@ public class IronscapePlugin extends Plugin
 		{
 			wanted.add("chronicle");
 		}
+		// The same list drives the SHOP overlay, which cannot use the ids
+		// below: what you are there to buy is by definition not in your
+		// inventory yet, so it matches the shop's stock by NAME instead.
+		java.util.Set<String> names = new java.util.HashSet<>();
+		for (String name : wanted)
+		{
+			if (name != null && !name.isEmpty())
+			{
+				names.add(name.toLowerCase(Locale.ROOT));
+			}
+		}
+		shopHintItemNames = names;
 		return hintIdsFor(wanted);
 	}
 
