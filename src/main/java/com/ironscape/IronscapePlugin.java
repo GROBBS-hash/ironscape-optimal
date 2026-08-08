@@ -315,21 +315,54 @@ public class IronscapePlugin extends Plugin
 	 * Scans the current plane's tiles once per game tick; ~11k null checks
 	 * is nothing, and it needs no spawn/despawn bookkeeping.
 	 */
-	private List<WorldPoint> findWantedGroundItems(Current current)
+	/**
+	 * Is the thing this errand stage wants lying in the scene right now?
+	 *
+	 * If it is, the nearest-NPC fallback stands down. The owner walked into
+	 * the Catherby house for the insect repellent, found it on a table, and
+	 * watched the outline go on a bystanding NPC instead — a pickup stage
+	 * has no NPC in it, the ITEM is the target. Same rule as the one that
+	 * stops a fruit-stall sub crowning a passing Woman.
+	 *
+	 * Deliberately re-scans rather than reading groundItemTargets: that
+	 * field is assigned further down this same tick, and reordering the
+	 * block to reuse it would leave it stale on the paths that skip it.
+	 */
+	private boolean errandPickupInScene(Current current, StepAnnotation.Errand errand)
 	{
+		return errand != null && errand.item != null
+			&& !findWantedGroundItems(current, errand).isEmpty();
+	}
+
+	private List<WorldPoint> findWantedGroundItems(Current current, StepAnnotation.Errand errand)
+	{
+		java.util.Set<String> names = new java.util.HashSet<>();
 		List<GoalDetector.ItemGoal> wanted = itemGoalsBySub.get(current.sub.getId());
-		if (wanted == null || wanted.isEmpty())
+		if (wanted != null)
+		{
+			for (GoalDetector.ItemGoal goal : wanted)
+			{
+				if (isCoins(goal.getItemName()))
+				{
+					continue; // stray dropped gp is not "your step's items"
+				}
+				java.util.Collections.addAll(names, ItemTracker.aliases(goal.getItemName()));
+			}
+		}
+		// The ACTIVE ERRAND STAGE's item counts too, and on the steps where
+		// this matters it is the only thing that does. "Kill Mordred and get
+		// bat bones/black candle" detects no item goal at all, so the insect
+		// repellent sitting on a table in the Catherby house was invisible
+		// here and the nearest NPC got the outline instead (owner, in play).
+		// Same root as the missing badges: the chain knew the item, nothing
+		// else did.
+		if (errand != null && errand.item != null && !isCoins(errand.item))
+		{
+			java.util.Collections.addAll(names, ItemTracker.aliases(errand.item));
+		}
+		if (names.isEmpty())
 		{
 			return java.util.Collections.emptyList();
-		}
-		java.util.Set<String> names = new java.util.HashSet<>();
-		for (GoalDetector.ItemGoal goal : wanted)
-		{
-			if (isCoins(goal.getItemName()))
-			{
-				continue; // stray dropped gp is not "your step's items"
-			}
-			java.util.Collections.addAll(names, ItemTracker.aliases(goal.getItemName()));
 		}
 		List<WorldPoint> spots = new ArrayList<>();
 		net.runelite.api.WorldView view = client.getTopLevelWorldView();
@@ -3179,7 +3212,8 @@ public class IronscapePlugin extends Plugin
 			// fruit stall") never wants the nearest-NPC fallback — it crowned
 			// a Woman browsing the stall house with the outline.
 			if (npcNames.isEmpty() && !namedNpcSubs.contains(current.sub.getId())
-				&& objectGrindNames(subText).isEmpty())
+				&& objectGrindNames(subText).isEmpty()
+				&& !errandPickupInScene(current, errand))
 			{
 				java.util.Set<Integer> indexes = new java.util.HashSet<>();
 				if (nearestToMarker != -1)
@@ -3271,7 +3305,7 @@ public class IronscapePlugin extends Plugin
 		// Ground items the current sub wants picked up ("Pick up 2 iron
 		// bars...", item spawns): highlight their tiles, QH-style.
 		groundItemTargets = config.showGroundItemMarkers() && current != null
-			? findWantedGroundItems(current)
+			? findWantedGroundItems(current, errand)
 			: java.util.Collections.emptyList();
 		// Mining subs: outline the live rocks for every still-unmet ore
 		// goal ("Mine 4 copper ore and 1 iron ore" lights up both).
