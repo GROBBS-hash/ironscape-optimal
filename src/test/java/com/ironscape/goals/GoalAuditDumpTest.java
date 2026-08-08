@@ -127,6 +127,75 @@ public class GoalAuditDumpTest
 		}
 	}
 
+	/**
+	 * Which detector path can complete each sub, and what the annotation
+	 * file says about it. Written for tools/audit-item-gating.mjs: whether
+	 * making annotation items gate completion CHANGES a step depends
+	 * entirely on how that step completes today — a travel/arrival sub is
+	 * already gated by annotationItemsCarried, an item-goal sub is not.
+	 * Inferring that from step text (as the first cut of the audit did)
+	 * over-counts; this dumps the detector's own answer.
+	 */
+	@Test
+	public void dumpCompletionPaths() throws Exception
+	{
+		Guide guide = new GuideLoader(new Gson()).load(GuideVariant.OZIRIS);
+		GoalDetector.Goals goals = GoalDetector.detect(guide);
+
+		java.util.Map<String, java.util.Set<String>> paths = new java.util.HashMap<>();
+		java.util.function.BiConsumer<String, String> mark = (subId, kind) ->
+			paths.computeIfAbsent(subId, k -> new java.util.TreeSet<>()).add(kind);
+
+		for (GoalDetector.ItemGoal g : goals.getItemGoals())
+		{
+			mark.accept(g.getSub().getId(), g.isAcquisition() ? "item-buy" : "item");
+		}
+		for (GoalDetector.QuestGoal g : goals.getQuestGoals())
+		{
+			mark.accept(g.getSub().getId(), g.isRequiresFinished() ? "quest-finish" : "quest-start");
+		}
+		for (GoalDetector.SkillActionGoal g : goals.getSkillActionGoals())
+		{
+			mark.accept(g.getSub().getId(), "xp-drop");
+		}
+		for (GoalDetector.TravelGoal g : goals.getTravelGoals())
+		{
+			mark.accept(g.getSub().getId(), "travel");
+		}
+		for (GoalDetector.InteractionGoal g : goals.getInteractionGoals())
+		{
+			mark.accept(g.getSub().getId(), "interaction");
+		}
+		for (GoalDetector.CountedSkillGoal g : goals.getCountedSkillGoals())
+		{
+			mark.accept(g.getSub().getId(), "counted");
+		}
+		for (GoalDetector.SkillLevelGoal g : goals.getSkillLevelGoals())
+		{
+			mark.accept(g.getSub().getId(), "level");
+		}
+		for (GoalDetector.DepletionGoal g : goals.getDepletionGoals())
+		{
+			mark.accept(g.getSub().getId(), "depletion");
+		}
+
+		File out = new File("build/completion-paths.tsv");
+		out.getParentFile().mkdirs();
+		try (PrintWriter writer = new PrintWriter(out, StandardCharsets.UTF_8))
+		{
+			for (com.ironscape.guide.GuideStep step : guide.getAllSteps())
+			{
+				for (com.ironscape.guide.SubStep sub : step.getSubSteps())
+				{
+					java.util.Set<String> kinds = paths.get(sub.getId());
+					writer.println("PATH\t" + sub.getId()
+						+ "\t" + (kinds == null ? "none" : String.join(",", kinds))
+						+ "\t" + sub.getPlainText().trim().replaceAll("[\\t\\r\\n]+", " "));
+				}
+			}
+		}
+	}
+
 	@Test
 	public void dumpGoals() throws Exception
 	{
