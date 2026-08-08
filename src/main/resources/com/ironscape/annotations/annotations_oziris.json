@@ -85,7 +85,30 @@
    "requires": {
     "varp": 150,
     "value": 80
-   }
+   },
+   "errands": [
+    {
+     "x": 2677,
+     "y": 3087,
+     "plane": 1,
+     "routeX": 2677,
+     "routeY": 3087,
+     "routePlane": 0,
+     "npc": "Hazelmere",
+     "varp": 150,
+     "value": 20,
+     "note": "Hazelmere is UPSTAIRS on the island east of Yanille - the route points at the ladder. He hands over the scroll (Quest Helper step 20)."
+    },
+    {
+     "x": 3000,
+     "y": 3044,
+     "plane": 0,
+     "varp": 150,
+     "value": 80,
+     "hold": true,
+     "note": "now just continue The Grand Tree - the route resumes at the Karamja shipyard"
+    }
+   ]
   },
   "13f33630f0:0": {
    "requires": {
@@ -6121,6 +6144,14 @@
      "note": "Merlin is UPSTAIRS in Camelot - the route points at the staircase. Climb it and talk to him."
     }
    ]
+  },
+  "dcc79a54a9:0": {
+   "requires": {
+    "varp": 71,
+    "value": 2,
+    "label": "smuggled"
+   },
+   "note": "The Karamja/Port Sarim leg is the rum smuggling. Varp 71 reaches 2 once Redbeard has his rum and sends you for the treasure map (Quest Helper step 2), so a part-done quest reports honestly."
   }
  }
 }

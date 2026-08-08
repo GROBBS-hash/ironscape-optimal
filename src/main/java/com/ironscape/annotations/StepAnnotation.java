@@ -154,6 +154,19 @@ public class StepAnnotation
 		 */
 		public String npc;
 		/**
+		 * This stage is QUEST PROGRESS, not a journey: hold the route
+		 * entirely until its gate opens. "Go to Hazelmere and continue the
+		 * grand tree until you are at Karamja shipyard" walks to one place
+		 * and then just... does the quest, and routing to the step's area
+		 * for that half only fights Quest Helper.
+		 *
+		 * Opt-in per stage on purpose. Standing down for every mid-quest
+		 * step was tried and reverted — it left players with no route at
+		 * all ("run back to Falador" gave nothing) — so only a stage that
+		 * SAYS its work is quest progress holds.
+		 */
+		public Boolean hold;
+		/**
 		 * The hand-ins for THIS stage: while it's active, only these glow
 		 * in the inventory (QH-style) instead of the whole step kit.
 		 */

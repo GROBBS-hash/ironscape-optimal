@@ -74,8 +74,8 @@
  {
   "stepId": "86fde08b26",
   "text": "Buy a chronicle and 2 teleport cards from Diango\r",
-  "breakdown": "2x teleport cards@100",
-  "cost": 200,
+  "breakdown": "2x teleport cards@100, 1x chronicle@200",
+  "cost": 400,
   "incomplete": false,
   "ok": true
  },
@@ -258,9 +258,17 @@
  {
   "stepId": "d03a26dec5",
   "text": "Buy a premade blurb' sp, 4 vodka, pineapple chunks\r",
-  "breakdown": "4x vodka@5",
-  "cost": 20,
+  "breakdown": "4x vodka@5, 1x premade blurb' sp@30, 1x pineapple chunks@1",
+  "cost": 51,
   "incomplete": false,
+  "ok": false
+ },
+ {
+  "stepId": "8db2b31b1f",
+  "text": "Buy candle, 2 fishing rods, lobster pot\r",
+  "breakdown": "fishing rods: ?, 1x candle@3, 1x lobster pot@20",
+  "cost": 23,
+  "incomplete": true,
   "ok": false
  },
  {
@@ -386,8 +394,8 @@
  {
   "stepId": "7d846af3e5",
   "text": "Buy dorgeshuun crossbow and 4000 bone bolts\r",
-  "breakdown": "4000x bone bolts@3",
-  "cost": 12000,
+  "breakdown": "4000x bone bolts@3, 1x dorgeshuun crossbow@2000",
+  "cost": 14000,
   "incomplete": false,
   "ok": true
  },
@@ -458,16 +466,8 @@
  {
   "stepId": "2be2695463",
   "text": "Finish RFD, buy B gloves\r",
-  "breakdown": "1x b gloves@100000 (hand-set: RFD chest price)",
-  "cost": 130000,
-  "incomplete": false,
-  "ok": true
- },
- {
-  "stepId": "930916ba4a",
-  "text": "Go to Zeah and get 100 compost and saltpetre",
-  "breakdown": "100x compost@21 (hand row, Vannah's)",
-  "cost": 2100,
+  "breakdown": "1x b gloves@100000",
+  "cost": 100000,
   "incomplete": false,
   "ok": true
  }

@@ -5119,6 +5119,17 @@ public class IronscapePlugin extends Plugin
 			StepAnnotation.Errand errand = activeErrand();
 			if (errand != null)
 			{
+				// ... unless the stage IS the quest ("continue the grand
+				// tree until you are at Karamja shipyard"). There is no
+				// destination to draw, and the step's 📍 area only fights
+				// Quest Helper, so hold and say what will release it.
+				if (Boolean.TRUE.equals(errand.hold))
+				{
+					logNavDecision("holding: quest progress"
+						+ (errand.note == null ? "" : " — " + errand.note));
+					eventBus.post(new PluginMessage("shortestpath", "clear"));
+					return;
+				}
 				eventBus.post(new PluginMessage("shortestpath", "path",
 					Map.of("target", errandRoutePoint(errand))));
 				return;
