@@ -423,7 +423,10 @@ class StepRow extends JPanel
 			list.setOpaque(false);
 			list.setAlignmentX(LEFT_ALIGNMENT);
 			list.setBorder(BorderFactory.createEmptyBorder(0, indentPx, 2, 0));
-			list.setToolTipText("<html>Counts inventory + worn + bank (bank as of your last visit)</html>");
+			list.setToolTipText("<html>Counts inventory + worn + bank (bank as of your last visit)<br>"
+				+ "<b>Coloured counts</b> are requirements — the number is what you need.<br>"
+				+ "<b>Grey counts</b> are the guide's carry list: no amount was ever given,"
+				+ " so nothing checks them and no bank stop is made for them.</html>");
 			for (StepAnnotation.ItemNeed need : needs)
 			{
 				// Cards & chips restyle: NAME neutral on the left (CENTER
@@ -435,19 +438,17 @@ class StepRow extends JPanel
 				// "(optional)" marks keep-if-you-get-it items; "(ingredient)"
 				// marks materials for the step's PRODUCTS (redberries under
 				// the dyes) — both muted so requirements keep the spotlight.
-				// "(bring some)" is the guide's own running carry advice —
-				// gp, a barcrawl card, "all of your mind and air runes" — as
-				// opposed to a requirement with a number. It reads the same
-				// as a requirement without saying so, which is how a step
-				// whose only real need was one pot (already carried) looked
-				// like seven unmet obligations and read as "we skipped
-				// banking" (owner, in play). No number exists for these, so
-				// nothing counts them and no bank stop acts on them.
+				// A tag on EVERY unnumbered row said nothing and shouted it
+				// seven times (owner: "can't just say BRING SOME for all
+				// items"). The distinction still matters — a numbered item
+				// is what the quest REQUIRES, an unnumbered one is the
+				// guide's running carry advice — so it is carried by the
+				// COUNT's colour instead, which is already per-row and
+				// already where the eye goes. See itemCountHtml.
 				String tag = Boolean.TRUE.equals(need.optional) ? "(optional)"
 					: Boolean.TRUE.equals(need.ingredient) ? "(ingredient)"
 					: Boolean.TRUE.equals(need.granted) ? "(from the quest)"
-					: Boolean.TRUE.equals(need.consumed) ? "(used here)"
-					: need.quantity == null ? "(bring some)" : null;
+					: Boolean.TRUE.equals(need.consumed) ? "(used here)" : null;
 				JLabel name = new JLabel(tag != null
 					? "<html>" + RichText.escape(ItemTracker.capitalize(need.name))
 						+ " <font color='#877e6f'>" + tag + "</font></html>"
@@ -620,8 +621,15 @@ class StepRow extends JPanel
 			String text = carried > 0
 				? ItemTracker.formatCount(carried)
 				: ItemTracker.formatCount(have) + (have > 0 ? "&nbsp;🏦" : "");
+			// MUTED even when you are carrying it, because green here means
+			// "requirement met" everywhere else on the card and there is no
+			// requirement to meet — the guide never gave a number. Seven
+			// green ticks next to seven carry-list items is what made a step
+			// whose only real need was one pot look like seven obligations.
+			// The one item the quest actually requires now carries a number
+			// and keeps the colour, so it stands alone.
 			return "<html><font color='" + (done ? "#808080"
-				: carried > 0 ? SATISFIED_HEX
+				: carried > 0 ? "#877e6f"
 				: have > 0 ? IN_BANK_HEX
 				// Quest-granted and not carried yet is the NORMAL state
 				// before the quest hands it over — muted, not red.
@@ -1049,7 +1057,11 @@ class StepRow extends JPanel
 		// line now; the full how-to sentence on every quest step was noise.
 		if (quest != null)
 		{
-			JLabel tip = new JLabel("➜ Quest Helper: \"" + quest + "\"");
+			// Reads as an INSTRUCTION now. The old "➜ Quest Helper: "X""
+			// was too terse to act on, and it matters more since our own
+			// route stands down entirely on these steps — if the panel does
+			// not send you to QH, nothing does.
+			JLabel tip = new JLabel("Use Quest Helper → " + quest);
 			tip.setFont(new Font(Font.DIALOG, Font.PLAIN, 11));
 			tip.setForeground(CHIP_QUEST_FG);
 			tip.setAlignmentX(LEFT_ALIGNMENT);

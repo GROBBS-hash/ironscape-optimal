@@ -598,7 +598,8 @@
      "quantity": 20
     },
     {
-     "name": "shears"
+     "name": "shears",
+     "quantity": 1
     }
    ]
   },
@@ -805,7 +806,7 @@
     },
     {
      "name": "pot",
-     "quantity": null
+     "quantity": 1
     },
     {
      "name": "spade",
@@ -1450,7 +1451,8 @@
      "quantity": 1
     },
     {
-     "name": "thread"
+     "name": "thread",
+     "quantity": 1
     }
    ],
    "note": "Recommended: Combat gear."
@@ -2505,7 +2507,8 @@
      "quantity": 1
     },
     {
-     "name": "cooked meat"
+     "name": "cooked meat",
+     "quantity": 1
     }
    ],
    "note": "Recommended: Antipoison, Melee combat gear, Ranged combat gear, Food, Stamina Potions."
@@ -2585,7 +2588,8 @@
      "quantity": 50
     },
     {
-     "name": "hammer"
+     "name": "hammer",
+     "quantity": 1
     }
    ],
    "note": "Recommended: Stamina potions."
@@ -2637,7 +2641,8 @@
      "quantity": 1
     },
     {
-     "name": "tinderbox"
+     "name": "tinderbox",
+     "quantity": 1
     },
     {
      "name": "candle"
@@ -3107,7 +3112,8 @@
      "quantity": 1
     },
     {
-     "name": "dwarven stout"
+     "name": "dwarven stout",
+     "quantity": 1
     }
    ]
   },
@@ -3497,19 +3503,24 @@
      "quantity": 1
     },
     {
-     "name": "guam leaf"
+     "name": "guam leaf",
+     "quantity": 2
     },
     {
-     "name": "marrentill"
+     "name": "marrentill",
+     "quantity": 1
     },
     {
-     "name": "harralander"
+     "name": "harralander",
+     "quantity": 1
     },
     {
-     "name": "empty cup"
+     "name": "empty cup",
+     "quantity": 1
     },
     {
-     "name": "bowl of hot water"
+     "name": "bowl of hot water",
+     "quantity": 1
     }
    ]
   },
@@ -3554,13 +3565,16 @@
      "granted": true
     },
     {
-     "name": "bucket of milk"
+     "name": "bucket of milk",
+     "quantity": 1
     },
     {
-     "name": "chocolate dust"
+     "name": "chocolate dust",
+     "quantity": 1
     },
     {
-     "name": "snape grass"
+     "name": "snape grass",
+     "quantity": 1
     }
    ]
   },
@@ -3708,7 +3722,8 @@
      "quantity": 1
     },
     {
-     "name": "shortbow"
+     "name": "shortbow",
+     "quantity": 1
     },
     {
      "name": "iron arrows"
@@ -3755,7 +3770,8 @@
      "quantity": 1
     },
     {
-     "name": "slayer gloves"
+     "name": "slayer gloves",
+     "quantity": 1
     }
    ],
    "note": "Bring: Combat gear."
@@ -4049,10 +4065,12 @@
      "quantity": 1
     },
     {
-     "name": "air runes"
+     "name": "air runes",
+     "quantity": 1
     },
     {
-     "name": "law runes"
+     "name": "law runes",
+     "quantity": 1
     },
     {
      "name": "candle"
@@ -4082,7 +4100,8 @@
      "quantity": 1
     },
     {
-     "name": "tinderbox"
+     "name": "tinderbox",
+     "quantity": 1
     }
    ]
   },
@@ -4093,7 +4112,8 @@
      "quantity": 20
     },
     {
-     "name": "knife"
+     "name": "knife",
+     "quantity": 1
     },
     {
      "name": "candle"
@@ -4218,10 +4238,12 @@
      "quantity": 1
     },
     {
-     "name": "knife"
+     "name": "knife",
+     "quantity": 1
     },
     {
-     "name": "axe"
+     "name": "axe",
+     "quantity": 1
     }
    ],
    "note": "Recommended: Combat gear + food."
@@ -4289,7 +4311,8 @@
      "name": "gold ring"
     },
     {
-     "name": "flowers"
+     "name": "flowers",
+     "quantity": 1
     },
     {
      "name": "cake"
@@ -4356,7 +4379,8 @@
      "name": "plank"
     },
     {
-     "name": "shortbow"
+     "name": "shortbow",
+     "quantity": 1
     },
     {
      "name": "iron arrows"
@@ -4397,7 +4421,8 @@
      "name": "candle"
     },
     {
-     "name": "rope"
+     "name": "rope",
+     "quantity": 1
     },
     {
      "name": "law runes"
@@ -4804,7 +4829,8 @@
      "quantity": 1
     },
     {
-     "name": "axe"
+     "name": "axe",
+     "quantity": 1
     }
    ]
   },
@@ -5294,37 +5320,48 @@
   "e79ef96e9b": {
    "items": [
     {
-     "name": "papyrus"
+     "name": "papyrus",
+     "quantity": 3
     },
     {
-     "name": "ball of wool"
+     "name": "ball of wool",
+     "quantity": 1
     },
     {
-     "name": "empty sack"
+     "name": "empty sack",
+     "quantity": 8
     },
     {
-     "name": "candle"
+     "name": "candle",
+     "quantity": 1
     },
     {
-     "name": "yellow dye"
+     "name": "yellow dye",
+     "quantity": 1
     },
     {
-     "name": "red dye"
+     "name": "red dye",
+     "quantity": 1
     },
     {
-     "name": "silk"
+     "name": "silk",
+     "quantity": 10
     },
     {
-     "name": "bowl"
+     "name": "bowl",
+     "quantity": 1
     },
     {
-     "name": "logs"
+     "name": "logs",
+     "quantity": 10
     },
     {
-     "name": "tinderbox"
+     "name": "tinderbox",
+     "quantity": 1
     },
     {
-     "name": "willow branches"
+     "name": "willow branches",
+     "quantity": 12
     },
     {
      "name": "potato",
