@@ -191,6 +191,18 @@ public class AnnotationManager
 	}
 
 	/** Method note rendered like a guide NOTE block; null = none. */
+	/** The quest this step is a leg of, when the guide never names it. */
+	public synchronized String getQuest(String annotationId)
+	{
+		StepAnnotation l = local.get(annotationId);
+		if (l != null && l.quest != null)
+		{
+			return l.quest;
+		}
+		StepAnnotation b = bundled.get(annotationId);
+		return b == null ? null : b.quest;
+	}
+
 	public synchronized String getNote(String annotationId)
 	{
 		StepAnnotation l = local.get(annotationId);

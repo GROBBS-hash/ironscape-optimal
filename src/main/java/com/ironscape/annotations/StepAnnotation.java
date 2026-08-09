@@ -70,6 +70,26 @@ public class StepAnnotation
 	public String travelVia;
 
 	/**
+	 * The quest this step is a leg OF, when the guide never says so.
+	 *
+	 * "Continue Lost tribe until you need to go to the goblin village" is
+	 * a quest leg by any reading, but it carries no quest metadata and its
+	 * text yields no quest goal, so stepQuest() returned null: Quest
+	 * Helper never took over, the green tip line never appeared, and our
+	 * route argued with QH's for the whole leg. Eight steps guide-wide.
+	 *
+	 * It lives HERE rather than in the guide's metadata because metadata
+	 * comes from the scraper — a hand-edit there dies at the next
+	 * re-scrape, while annotations survive by design.
+	 *
+	 * PREP steps must never carry this. Tagging "buy a bronze sword for
+	 * Horror from the deep" would hand a shopping trip to Quest Helper and
+	 * stand our own routing down; only steps whose TASK is the quest leg
+	 * qualify (tools/review-decisions.mjs draws that line and explains it).
+	 */
+	public String quest;
+
+	/**
 	 * Mid-quest side pickups ("Do Tree gnome village, get Glarial's
 	 * pebble on the way"). Quest Helper owns the quest flow but knows
 	 * nothing about the errand — while the sub's quest is IN_PROGRESS,
