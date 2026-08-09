@@ -41,7 +41,7 @@ const IMPLIED = [
   // needs the furnace, so the verb has to be there ("blow all of it into
   // unpowered orbs" was the false positive this cost).
   ['furnace', /\b(?:smelt|mak(?:e|ing) \d* ?molten glass|make \d* ?(?:bronze|iron|steel|silver|gold|mithril|adamant|rune) bars?|cannonballs?)\b/i],
-  ['anvil', /\b(?:smith|smithing) (?:\d+ )?(?:a |an |the )?(?:bronze|iron|steel|mithril|adamant|rune)\b/i],
+  ['anvil', /\bsmith(?:ing)?\b[^.]{0,40}\b(?:bronze|iron|steel|mithril|adamant|rune)\b/i],
   ['spinning wheel', /\bspin (?:\d+ )?(?:ball of wool|wool|flax|bow ?string)/i],
   ['pottery wheel', /\b(?:unfired|make (?:\d+ )?(?:pot|pie dish|bowl)s?)\b/i],
   ['windmill', /\b(?:grind (?:\d+ )?wheat|make (?:\d+ )?flour|pot of flour)\b/i],
