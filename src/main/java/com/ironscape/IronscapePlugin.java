@@ -1478,6 +1478,14 @@ public class IronscapePlugin extends Plugin
 	private volatile boolean navRoutedToBank;
 
 	/**
+	 * "stepId@bank" of the bank stop we last SUGGESTED while Quest Helper
+	 * owned guidance, so we suggest it once instead of re-seizing the route
+	 * every ten ticks. Survives across navigation passes deliberately —
+	 * see the QH-owns bank branch.
+	 */
+	private String lastBankSuggestion;
+
+	/**
 	 * The sub tells you to hold a CONVERSATION — "speak to Lady of the
 	 * lake", "talk to Oziach", "ask every question".
 	 *
@@ -6132,13 +6140,45 @@ public class IronscapePlugin extends Plugin
 						// — could not arrive on its own (2026-08-09, in play,
 						// Black Knights' Fortress with its kit banked).
 						navRoutedToBank = true;
-						// Name the bank. "routing to a bank first" alone could
-						// not say WHICH, so a report of "it sent me across
-						// town" took reconstructing from four other lines.
-						logNavDecision("routing to a bank first — the step's kit is banked: "
-							+ kitBank);
-						eventBus.post(new PluginMessage("shortestpath", "path",
-							Map.of("target", kitBank)));
+						// SUGGEST the bank once; do not keep seizing the route.
+						//
+						// The 10-tick re-check has to keep RUNNING here — that
+						// is what notices the kit has left the bank and lets the
+						// stand-down below finally arrive. But re-POSTING on
+						// every one of those passes turns a suggestion into an
+						// override no player can escape: mid-Observatory, with
+						// the kit still banked, our Castle Wars path landed on
+						// top of Quest Helper's every six seconds, so the route
+						// "went to the right place briefly and then something
+						// took it over again" (owner, in play).
+						//
+						// It is also invisible in the log, because logNavDecision
+						// only prints on CHANGE and the decision never changed.
+						//
+						// Posting once per (step, bank) keeps wave 19's handoff
+						// sequence intact — bank, withdraw, hand over — while
+						// letting a player who would rather crack on simply walk
+						// away from the suggestion. The non-quest bank route
+						// below still re-posts freely: nothing else is drawing
+						// there, so there is nothing to fight.
+						// Keyed by STEP as well as bank, so a new step (or a
+						// different bank) is a fresh suggestion, while repeats
+						// within one step stay quiet. Not cleared where
+						// navRoutedToBank is: that resets at the top of every
+						// pass, which is exactly the once-per-pass behaviour
+						// being fixed.
+						String suggestion = questCurrent.step.getId() + "@" + kitBank;
+						if (!suggestion.equals(lastBankSuggestion))
+						{
+							lastBankSuggestion = suggestion;
+							// Name the bank. "routing to a bank first" alone could
+							// not say WHICH, so a report of "it sent me across
+							// town" took reconstructing from four other lines.
+							logNavDecision("routing to a bank first — the step's kit is banked: "
+								+ kitBank);
+							eventBus.post(new PluginMessage("shortestpath", "path",
+								Map.of("target", kitBank)));
+						}
 						return;
 					}
 				}
