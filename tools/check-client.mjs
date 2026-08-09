@@ -91,18 +91,48 @@ try {
 //    the candidate process, produced a confident RUNNING with no client
 //    running at all. A false block is not a safe failure: it is how you
 //    learn to ignore the check.
+//    The age must come off the LINE, not off the file. The file's mtime is
+//    written by whatever logged last, and third-party plugins log constantly
+//    (worldhopper pings, DoinkOink every tick), so mtime answers "is SOME
+//    client running" — the question the process list already asked. On
+//    2026-08-09 that reported our plugin as 117s old when its newest line
+//    was 47 minutes old: a ping kept the file warm while a stale line sat in
+//    the tail window. Both failure directions follow from it — a stale line
+//    plus the owner's everyday client is a false BLOCK, and one stack trace
+//    can push our lines out of a fixed byte window for a false CLEAR. So:
+//    read a window big enough to survive stack-trace spam, take the LAST
+//    matching line, and time that.
 if ((reasons.length || suspects.length) && fs.existsSync(LOG)) {
-  const age = Date.now() - fs.statSync(LOG).mtimeMs;
-  if (age < FRESH_MS) {
-    const tail = fs.readFileSync(LOG, 'utf8').slice(-20000);
-    const fromClient = tail.split('\n')
-      .filter((l) => l.includes('com.ironscape') && l.includes('[Client]'));
-    if (fromClient.length) {
-      reasons.push(`client.log wrote com.ironscape [Client] lines ${Math.round(age / 1000)}s ago`
+  const size = fs.statSync(LOG).size;
+  const want = Math.min(size, 2_000_000);
+  const fd = fs.openSync(LOG, 'r');
+  const buf = Buffer.alloc(want);
+  fs.readSync(fd, buf, 0, want, size - want);
+  fs.closeSync(fd);
+
+  let newest = null;
+  for (const line of buf.toString('utf8').split('\n')) {
+    if (!line.includes('com.ironscape') || !line.includes('[Client]')) continue;
+    const stamp = /^(\d{4}-\d{2}-\d{2}) (\d{2}:\d{2}:\d{2})/.exec(line);
+    if (!stamp) continue;
+    // The client writes local time; parsing it as local compares like for like.
+    const at = new Date(`${stamp[1]}T${stamp[2]}`).getTime();
+    if (!Number.isNaN(at) && (newest === null || at > newest)) newest = at;
+  }
+
+  if (newest !== null) {
+    const age = Date.now() - newest;
+    if (age < FRESH_MS) {
+      reasons.push(`client.log wrote a com.ironscape [Client] line ${Math.round(age / 1000)}s ago`
         + ' — so one of the processes above is running our plugin');
       // Now the suspect is convicted: something with our plugin is live,
       // and an installed RuneLite is the only candidate left.
       reasons.push(...suspects);
+    } else if (suspects.length && !reasons.length) {
+      // Say what was weighed. A silent CLEAR next to a live RuneLite.exe is
+      // the verdict most worth being able to double-check by hand.
+      console.log(`(note: ${suspects.length} RuneLite.exe process(es) seen, but our plugin`
+        + ` last logged ${Math.round(age / 60000)}min ago — treating them as the everyday client)`);
     }
   }
 }

@@ -146,6 +146,7 @@ const resolvesAsPlace = (name) => {
 };
 
 const locationByStep = new Map();
+const questByStep = new Map();
 {
   const guide = JSON.parse(fs.readFileSync(
     path.join(RES, 'guide/guide_data_oziris.json'), 'utf8'));
@@ -155,11 +156,25 @@ const locationByStep = new Map();
   for (const ch of guide.chapters) {
     for (const sec of ch.sections) {
       for (const st of sec.steps) {
-        locationByStep.set(sid(runText(st.content)), st.metadata?.location ?? null);
+        const id = sid(runText(st.content));
+        locationByStep.set(id, st.metadata?.location ?? null);
+        questByStep.set(id, st.metadata?.quest ?? null);
       }
     }
   }
 }
+
+// Mirrors IronscapePlugin.stepQuest, IN ITS ORDER: a detected quest goal,
+// else an annotation `quest` tag (sub key first, then step), else the step's
+// own metadata. Reading only the detector path -- which is all this check did
+// -- made it blind to precisely the steps the tag exists for: "Continue Lost
+// tribe" has no quest goal and no metadata tag, so its path is bare
+// `checkpoint` and it reported as an ordinary step with no mention of the
+// handoff. Three of the eight tagged steps sit inside a default window.
+const questFor = (step) => {
+  if (/quest-(start|finish)/.test(step.path)) return 'detected';
+  return ann[step.sub]?.quest || ann[step.id]?.quest || questByStep.get(step.id) || null;
+};
 
 // The movement verbs that make a sub a travel INSTRUCTION rather than an
 // action that merely happens somewhere -- the reason 'Run south to Port
@@ -245,8 +260,10 @@ function inspect(step) {
   }
 
   // 4. Quest steps: we now stand down for Quest Helper entirely.
-  if (/quest-(start|finish)/.test(step.path)) {
-    notes.push('quest step — Quest Helper owns guidance, our route stands down');
+  const quest = questFor(step);
+  if (quest) {
+    notes.push('quest step — Quest Helper owns guidance, our route stands down'
+      + (quest === 'detected' ? '' : ` (quest tag: ${quest})`));
   }
   return { flags, notes, errands, gating };
 }
