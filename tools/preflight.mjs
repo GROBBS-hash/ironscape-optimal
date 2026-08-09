@@ -206,14 +206,23 @@ function inspect(step) {
   // Mirrors IronscapePlugin.TALK_INSTRUCTION: arriving is not talking, so a
   // sub asking for a conversation cannot be finished by walking up to it.
   const wantsConversation = /\b(?:speak|talk|ask)\b/i.test(step.text);
+  // ...but the conversation detector can finish it, PROVIDED the step names
+  // who to talk to -- it completes on that NPC's dialogue opening. Whether
+  // the named words are really the NPC's in-game name is not knowable from
+  // here, so this says "names someone", never "will definitely tick".
+  const namesSomeoneToTalkTo = /\b(?:speak|talk)\s+to\s+\S+/i.test(step.text);
+  const canTalk = wantsConversation && namesSomeoneToTalkTo && step.path === 'none';
   const canArrive = !wantsConversation
     && ((arr0 && arr0.tier !== 'NONE')
       || ((MOVEMENT.test(step.text) || isBareDestination(step.text))
           && (!!target || namesSomewhere(step.text))));
-  const canAutoTick = step.path !== 'none' || hasCheckpoint || !!errands || canArrive;
+  const canAutoTick = step.path !== 'none' || hasCheckpoint || !!errands || canArrive || canTalk;
   if (!canAutoTick) flags.push('MANUAL ONLY      no detector, no checkpoint, no chain, no arrival');
   else if (step.path === 'none' && canArrive && !hasCheckpoint && !errands) {
     notes.push('ticks on arrival (no detector, but it is a movement instruction)');
+  }
+  else if (canTalk && !hasCheckpoint && !errands) {
+    notes.push('ticks when the NPC it names opens dialogue (if that is their real name)');
   }
   else if (step.path === 'none' && errands) notes.push(`ticks when its chain completes (${errands.length} legs)`);
   else if (step.path === 'none' && hasCheckpoint) notes.push('ticks off a varbit/varp checkpoint');

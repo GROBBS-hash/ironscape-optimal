@@ -1003,6 +1003,106 @@ public class IronscapePlugin extends Plugin
 	 * around?"). Runs on widget load AND per tick — the menu rebuilds on
 	 * every dialog advance and the recolor must survive it. Client thread.
 	 */
+	/**
+	 * "Speak to Lady of the lake" is done when she speaks back.
+	 *
+	 * The guide has steps whose whole job is a conversation, and nothing
+	 * could ever tick them: arriving is not talking (TALK_INSTRUCTION), and
+	 * no detector reads dialogue. They sat as hand-ticks, and the arrival
+	 * tick that used to cover one of them was a lie that also stole the
+	 * NPC outline by advancing the frontier.
+	 *
+	 * The signal is the dialogue box itself: the speaker's NAME widget is
+	 * the game telling us who is talking, which is as direct as evidence
+	 * gets — no proxy, no radius, no timing window.
+	 *
+	 * Deliberately narrow, because the failure mode of a new detector is
+	 * ticking things early:
+	 *   - the sub must NAME the speaker, so "ask every question" with
+	 *     nobody named stays a hand tick rather than completing on whoever
+	 *     happens to talk;
+	 *   - only subs NOTHING else can tick (hasAnyGoal), so a step that
+	 *     already completes off a quest state or an item keeps doing that
+	 *     — talking to the Duke must not tick "talk to the duke to START
+	 *     Rune mysteries" before the quest actually starts;
+	 *   - an authored checkpoint or an unsatisfied chain still owns the
+	 *     sub, the same precedence every other heuristic observes.
+	 */
+	private void detectConversation()
+	{
+		Current current = findCurrent();
+		if (current == null)
+		{
+			return;
+		}
+		String text = current.sub.getPlainText();
+		if (!TALK_INSTRUCTION.matcher(text).find()
+			|| hasAnyGoal(current.sub.getId()))
+		{
+			return;
+		}
+		List<StepRequirement> reqs = subRequirements.get(current.sub.getId());
+		if (reqs != null && hasVarCheckpoint(reqs))
+		{
+			return;             // authored checkpoint owns this sub
+		}
+		if (unsatisfiedErrandStage(current.step, current.sub) != null)
+		{
+			return;             // the chain defines "done"
+		}
+		String speaker = dialogueSpeaker();
+		if (speaker != null && subNamesSpeaker(text, speaker))
+		{
+			completeSubGoal(current.step, current.sub, "talked to " + speaker);
+		}
+	}
+
+	/** Who is talking in the dialogue box, or null if nobody is. */
+	private String dialogueSpeaker()
+	{
+		int[] nameWidgets =
+		{
+			net.runelite.api.gameval.InterfaceID.ChatLeft.NAME,
+			net.runelite.api.gameval.InterfaceID.ChatRight.NAME,
+		};
+		for (int id : nameWidgets)
+		{
+			net.runelite.api.widgets.Widget name = client.getWidget(id);
+			if (name == null || name.isHidden() || name.getText() == null)
+			{
+				continue;
+			}
+			// NPC names carry tags and non-breaking spaces; the guide does not.
+			String clean = net.runelite.client.util.Text.removeTags(name.getText())
+				.replace(' ', ' ').trim();
+			if (!clean.isEmpty())
+			{
+				return clean;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Does the sub name this speaker? The full name first ("Oziach"), then
+	 * its leading word, because the guide abbreviates where the game does
+	 * not — "Speak to Martin" against a "Martin the Master Gardener". Four
+	 * characters minimum so a "the"/"man" style lead-in cannot match, and
+	 * word-bounded either side so "Ned" does not match "needed".
+	 */
+	private static boolean subNamesSpeaker(String subText, String speaker)
+	{
+		String haystack = subText.toLowerCase(Locale.ROOT);
+		String full = speaker.toLowerCase(Locale.ROOT);
+		if (containsWord(haystack, full))
+		{
+			return true;
+		}
+		int space = full.indexOf(' ');
+		String first = space > 0 ? full.substring(0, space) : full;
+		return first.length() >= 4 && containsWord(haystack, first);
+	}
+
 	private void highlightStageDialog()
 	{
 		java.util.Set<String> wanted = new java.util.LinkedHashSet<>();
@@ -3522,6 +3622,7 @@ public class IronscapePlugin extends Plugin
 		// widget group — the widget-load hook alone missed every rebuilt
 		// menu (owner: "options not showing"). Reapply per tick; cheap.
 		highlightStageDialog();
+		detectConversation();
 		currentSubIsQuest = current != null && questGoalBySub.containsKey(current.sub.getId());
 
 		updateStepOverlay();
