@@ -658,8 +658,15 @@ class StepRow extends JPanel
 			color = Boolean.TRUE.equals(need.optional) || Boolean.TRUE.equals(need.granted)
 				? "#877e6f" : MISSING_HEX;
 		}
+		// CAPPED at what the step asks for. The raw total counts the bank
+		// too, so six clay in the bag and four in the bank rendered as
+		// "10/6" — true, and an answer to a question nobody asked (owner:
+		// "I only have 6/6 in inventory"). A requirement badge is progress
+		// towards a number, so it stops at that number; where the items
+		// actually are is what the colour and the 🏦 flag are for.
 		return "<html><font color='" + color + "'>"
-			+ ItemTracker.formatCount(have) + "/" + ItemTracker.formatCount(required)
+			+ ItemTracker.formatCount(Math.min(have, required))
+			+ "/" + ItemTracker.formatCount(required)
 			+ flag + "</font></html>";
 	}
 
