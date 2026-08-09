@@ -538,8 +538,8 @@
   },
   "creature of fenkenstrain": {
    "display": "Creature of Fenkenstrain",
-   "x": 3488,
-   "y": 3485,
+   "x": 3551,
+   "y": 3548,
    "plane": 0,
    "type": "quest"
   },
@@ -874,8 +874,8 @@
   },
   "the great brain robbery": {
    "display": "The Great Brain Robbery",
-   "x": 3682,
-   "y": 2963,
+   "x": 3710,
+   "y": 3496,
    "plane": 0,
    "type": "quest"
   },
@@ -1091,8 +1091,8 @@
   },
   "mountain daughter": {
    "display": "Mountain Daughter",
-   "x": 2808,
-   "y": 3672,
+   "x": 2766,
+   "y": 3667,
    "plane": 0,
    "type": "quest"
   },
@@ -1224,8 +1224,8 @@
   },
   "the queen of thieves": {
    "display": "The Queen of Thieves",
-   "x": 1796,
-   "y": 3782,
+   "x": 1803,
+   "y": 3738,
    "plane": 0,
    "type": "quest"
   },
@@ -2374,8 +2374,8 @@
   },
   "goblin village": {
    "display": "Goblin Village",
-   "x": 3525,
-   "y": 2975,
+   "x": 2958,
+   "y": 3508,
    "plane": 0
   },
   "grand exchange": {
@@ -3956,12 +3956,6 @@
    "y": 9914,
    "plane": 0
   },
-  "wgs": {
-   "display": "WGS",
-   "x": 2907,
-   "y": 3449,
-   "plane": 0
-  },
   "wintertodt": {
    "display": "Wintertodt",
    "x": 1631,
@@ -4062,12 +4056,6 @@
    "display": "River Lum",
    "x": 3171,
    "y": 3350,
-   "plane": 0
-  },
-  "song of": {
-   "display": "Song of",
-   "x": 2569,
-   "y": 3333,
    "plane": 0
   },
   "the gwenith glide": {
@@ -4210,8 +4198,8 @@
   },
   "mage bank": {
    "display": "Mage Bank",
-   "x": 2538,
-   "y": 4716,
+   "x": 3095,
+   "y": 3955,
    "plane": 0
   },
   "khazard battlefield": {

@@ -527,9 +527,10 @@
     "level": 42
    },
    "target": {
-    "x": 2553,
-    "y": 3406,
-    "plane": 0
+    "x": 2549,
+    "y": 3405,
+    "plane": 0,
+    "safespot": true
    }
   },
   "635b974a08": {
@@ -891,7 +892,12 @@
      "name": "bread",
      "quantity": 1
     }
-   ]
+   ],
+   "target": {
+    "x": 3019,
+    "y": 3259,
+    "plane": 0
+   }
   },
   "80afccadee": {
    "items": [
@@ -913,13 +919,27 @@
     },
     {
      "name": "ghost's skull",
-     "quantity": null
+     "quantity": null,
+     "optional": true
     },
     {
      "name": "runes",
      "quantity": null
     }
    ]
+  },
+  "c21fbf290a": {
+   "items": [
+    {
+     "name": "superantipoison(4)",
+     "quantity": 6
+    }
+   ],
+   "target": {
+    "x": 2467,
+    "y": 3176,
+    "plane": 0
+   }
   },
   "13f33630f0": {
    "items": [
@@ -1818,8 +1838,8 @@
   },
   "9442586803": {
    "target": {
-    "x": 3172,
-    "y": 3317,
+    "x": 3173,
+    "y": 3318,
     "plane": 0
    }
   },
@@ -2266,7 +2286,12 @@
      "name": "pickaxe",
      "quantity": 1
     }
-   ]
+   ],
+   "target": {
+    "x": 3036,
+    "y": 9582,
+    "plane": 0
+   }
   },
   "48db8d23b1": {
    "items": [
@@ -2398,7 +2423,12 @@
      "name": "hammer",
      "quantity": 1
     }
-   ]
+   ],
+   "target": {
+    "x": 3228,
+    "y": 3436,
+    "plane": 0
+   }
   },
   "0d525d6d34": {
    "items": [
@@ -2406,7 +2436,12 @@
      "name": "hammer",
      "quantity": 1
     }
-   ]
+   ],
+   "target": {
+    "x": 2869,
+    "y": 10202,
+    "plane": 0
+   }
   },
   "87a5ec23fb": {
    "items": [
@@ -6356,7 +6391,8 @@
    ]
   },
   "bcb183f206": {
-   "note": "Quest Helper walks the quest; the potion leg: cadava berries to the Apothecary (south-west Varrock), ask about Romeo & Juliet."
+   "note": "Quest Helper walks the quest; the potion leg: cadava berries to the Apothecary (south-west Varrock), ask about Romeo & Juliet.",
+   "quest": "Romeo & Juliet"
   },
   "03cb56a31f:0": {
    "items": [
@@ -6760,6 +6796,34 @@
     "y": 3395,
     "plane": 1
    }
+  },
+  "b3a38e5fec": {
+   "target": {
+    "x": 3018,
+    "y": 5615,
+    "plane": 0
+   }
+  },
+  "a81eb452da": {
+   "quest": "Gertrude's Cat"
+  },
+  "220f41d934": {
+   "quest": "Gertrude's Cat"
+  },
+  "d99967bb49": {
+   "quest": "The Grand Tree"
+  },
+  "dcc79a54a9": {
+   "quest": "Pirate's Treasure"
+  },
+  "7ca10e694f": {
+   "quest": "The Lost Tribe"
+  },
+  "1ba377b2f6": {
+   "quest": "The Lost Tribe"
+  },
+  "58ad4841dd": {
+   "quest": "Biohazard"
   }
  }
 }
