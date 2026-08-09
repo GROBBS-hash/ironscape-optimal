@@ -32,6 +32,8 @@ const LOG = path.join(os.homedir(), '.runelite', 'logs', 'client.log');
 const FRESH_MS = 120_000;
 
 const reasons = [];
+/** Processes that MIGHT be running our plugin; only the log can say. */
+const suspects = [];
 
 // 1. Any java process whose command line mentions this project or the
 //    plugin's launcher class. Gradle DAEMONS are excluded by name.
@@ -56,9 +58,17 @@ try {
       continue;
     }
     if (/IronscapePluginTest|IRONMAN Guide|ironscape/i.test(cmd)) {
+      // Loads classes out of build/. Blocking on its own, no corroboration
+      // needed — this is the process the whole check exists for.
       reasons.push(`pid ${proc.ProcessId} looks like our dev client`);
     } else if (/RuneLite\.exe/i.test(proc.CommandLine || '')) {
-      reasons.push(`pid ${proc.ProcessId} is a RuneLite client (check the log line below)`);
+      // The INSTALLED launcher. It only matters if it has our plugin
+      // loaded, which its name cannot tell us — so it is a SUSPECT, and
+      // the log below decides. Treating it as blocking by itself meant the
+      // owner's everyday client blocked every build forever: the check
+      // said RUNNING with no dev client anywhere, which is a false block,
+      // and a check that false-blocks is one you learn to override.
+      suspects.push(`pid ${proc.ProcessId} is the installed RuneLite`);
     }
   }
 } catch {
@@ -81,7 +91,7 @@ try {
 //    the candidate process, produced a confident RUNNING with no client
 //    running at all. A false block is not a safe failure: it is how you
 //    learn to ignore the check.
-if (reasons.length && fs.existsSync(LOG)) {
+if ((reasons.length || suspects.length) && fs.existsSync(LOG)) {
   const age = Date.now() - fs.statSync(LOG).mtimeMs;
   if (age < FRESH_MS) {
     const tail = fs.readFileSync(LOG, 'utf8').slice(-20000);
@@ -90,6 +100,9 @@ if (reasons.length && fs.existsSync(LOG)) {
     if (fromClient.length) {
       reasons.push(`client.log wrote com.ironscape [Client] lines ${Math.round(age / 1000)}s ago`
         + ' — so one of the processes above is running our plugin');
+      // Now the suspect is convicted: something with our plugin is live,
+      // and an installed RuneLite is the only candidate left.
+      reasons.push(...suspects);
     }
   }
 }
