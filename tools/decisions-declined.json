@@ -1,0 +1,13 @@
+{
+  "_comment": [
+    "Decisions the owner has considered and said NO to. Without this the",
+    "review page re-asks a settled question on every run, which is how an",
+    "audit stops being read (the lesson from quest-granted-reviewed.json).",
+    "",
+    "Record the REASON, not just the verdict — a bare 'no' is unreviewable",
+    "later, and the reason is usually the thing worth keeping."
+  ],
+  "declined": {
+    "06b3df5fd7": "Keep the cave-ENTRANCE pin (2403,3418) on the sub key. Brimstail is where you ACT — you talk to him to be teleported — and that pin also carries his dialogue and npc:false. The captured 2409,9812 is inside the essence mine, which is where you end up and which Shortest Path cannot draw a route to anyway. Owner's call, 2026-08-09."
+  }
+}

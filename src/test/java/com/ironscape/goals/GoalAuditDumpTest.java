@@ -44,6 +44,49 @@ public class GoalAuditDumpTest
 	}
 
 	/**
+	 * Every alias the REAL chain produces for each item_ids key, so the
+	 * Node audit can ask "will this name ever match what you carry?"
+	 * without reimplementing ItemTracker.
+	 *
+	 * That reimplementation was tried first and it does not work. A loose
+	 * copy invented thirteen findings; a faithful copy of canonical()
+	 * still cried wolf on "fally teletab" and "house teletabs", because
+	 * the chain rewrites teletab->tab BEFORE the colloquial lookup, and
+	 * on the normal/regular prefixes. Every one of those is a rule living
+	 * in the chain, and a second copy of the chain is a second thing to
+	 * keep in step — which is the audit-versus-plugin drift that let the
+	 * black wizard hat through in the first place. Dump the truth instead.
+	 */
+	@Test
+	public void dumpItemAliases() throws Exception
+	{
+		com.google.gson.JsonObject ids = new com.google.gson.Gson().fromJson(
+			new java.io.InputStreamReader(
+				com.ironscape.items.ItemTracker.class.getResourceAsStream("item_ids.json"),
+				StandardCharsets.UTF_8),
+			com.google.gson.JsonObject.class);
+		com.google.gson.JsonObject map = ids.has("ids")
+			? ids.getAsJsonObject("ids") : ids;
+		File out = new File("build/item-aliases.tsv");
+		out.getParentFile().mkdirs();
+		try (PrintWriter writer = new PrintWriter(out, StandardCharsets.UTF_8))
+		{
+			for (String key : map.keySet())
+			{
+				String[] aliases = com.ironscape.items.ItemTracker.aliases(key);
+				java.util.List<String> canonical = new java.util.ArrayList<>();
+				for (String alias : aliases)
+				{
+					canonical.add(com.ironscape.items.ItemTracker.canonical(alias));
+				}
+				writer.println(key + "\t" + map.get(key).getAsInt()
+					+ "\t" + String.join("|", aliases)
+					+ "\t" + String.join("|", canonical));
+			}
+		}
+	}
+
+	/**
 	 * How would each MOVEMENT-shaped sub prove arrival? TEXT = a place
 	 * name in the sub's own text resolves; PIN = only the step's 📍 tag
 	 * resolves (the fallback that anchored 'go to ess mines' on Gnome

@@ -1,0 +1,16 @@
+{
+  "_comment": [
+    "Pins that DIFFER from the wiki on purpose, with the reason. Same idea as",
+    "quest-granted-reviewed.json: without a place to record 'looked at this,",
+    "it is correct', an audit re-reports every settled decision forever and",
+    "stops being read (wave 13).",
+    "",
+    "Add an entry only when you can say WHY ours is better. 'Looks fine' is",
+    "not a reason - leave it flagged."
+  ],
+  "reviewed": {
+    "zmi bank": "Surface entrance of the Ourania Cave. Shortest Path cannot draw a route into a cave interior, so interiors are anchored at the way in (wave 5).",
+    "karamja": "Musa Point, not the jungle. The wiki pin at 2843,3070 is ~120 tiles from any landing and the step ticked in the field (wave 12).",
+    "ardy general store": "Hand-corrected to Aemad's after audit-shops found the town-page pin was a random landmark (wave 6)."
+  }
+}

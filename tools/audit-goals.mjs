@@ -11,6 +11,7 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { canonical, flaggedNames, liveItemNames } from './lib/item-names.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(__dirname, '..');
@@ -64,10 +65,19 @@ const COLLOQUIAL = {
   'regular plank': 'plank', 'regular planks': 'plank', 'normal compost pack': 'compost pack', 'flour': 'pot of flour', 'flours': 'pot of flour',
 };
 
+// Exact names are STRICTER than the tracker, which falls back to a
+// canonical comparison — doses collapse, so "ring of dueling" matches the
+// real "Ring of dueling(8)". Testing only exact names reported two goals
+// as unresolvable that the plugin resolves perfectly well, purely because
+// the deliberately dose-less colloquial has no exact item behind it.
+// Mirror the real last resort instead of a stricter approximation.
+const canonicalKnown = new Set([...known].map((n) => canonical(n)));
+
 const resolves = (name, aliases) => {
   const lower = name.toLowerCase().trim();
   if (SPECIAL.has(lower)) return true;
-  return aliases.some((a) => SPECIAL.has(a) || known.has(a));
+  return aliases.some((a) => SPECIAL.has(a) || known.has(a)
+    || canonicalKnown.has(canonical(a)));
 };
 
 // ---- 1. text-detected goals from the dump -----------------------------
@@ -219,4 +229,37 @@ if (!fs.existsSync(constantsTsv)) {
     console.log(`  "${key}" -> ${id} = ${constant} (name mismatch — sprite right, counting broken?)`);
   }
   console.log(`${idFlagged} suspicious item_ids entr${idFlagged === 1 ? 'y' : 'ies'}`);
+
+  // ---- 4b. the same keys against their id's LIVE DISPLAY NAME --------
+  // 4a asks whether the ID is right. This asks whether the NAME will ever
+  // match what the player is carrying, and they are NOT the same question:
+  // every item below had a correct id and a correct sprite while its badge
+  // sat at 0 (owner, in play, 2026-08-09 — six of them in one evening).
+  //
+  // VERIFIED deliberately does NOT apply here. Three of the six were on
+  // that list, hand-checked in an earlier sweep that answered the id
+  // question and recorded blanket approval, which silenced this one for
+  // months. An id-level exemption must not be able to hide a name-level
+  // defect. If a name legitimately differs, give ItemTracker a COLLOQUIAL
+  // entry — then it is bridged in the CODE, where it also works.
+  console.log('\n=== item_ids keys whose name can never match what you carry ===');
+  const aliasTsv = path.join(ROOT, 'build/item-aliases.tsv');
+  const liveNames = await liveItemNames(path.join(ROOT, 'tools/.wiki-cache/item-names-cache.json'));
+  if (!fs.existsSync(aliasTsv)) {
+    console.log('(skipped — run gradlew test for build/item-aliases.tsv)');
+  } else if (!liveNames) {
+    console.log('(skipped — could not reach the live item mapping)');
+  } else {
+    const { flagged, untradeable } = flaggedNames(
+      fs.readFileSync(aliasTsv, 'utf8'), liveNames);
+    for (const row of flagged) {
+      console.log(`  "${row.key}" -> ${row.id} is really "${row.real}"`
+        + ' (sprite right, count stuck at 0 — needs a COLLOQUIAL entry)');
+    }
+    console.log(`${flagged.length} unmatchable name(s); `
+      + `${untradeable} untradeable id(s) left to the constant check above`);
+    if (flagged.length) {
+      console.log('Review them by hand: node tools/review-item-names.mjs');
+    }
+  }
 }

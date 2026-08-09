@@ -127,8 +127,22 @@ drifted.sort((a, b) => b.drift - a.drift);
 // starting the quest and still disagrees with us, plus any pin with no
 // recorded giver behind it.
 const STARTS_QUEST = /\bto start (?:the )?(?:this )?quest\b|\bstart(?:s|ing)? (?:the )?quest\b/i;
-const isGiverDispute = (r) => !r.giver
-  || (r.step.type === 'NpcStep' && STARTS_QUEST.test(r.step.description));
+
+// An UNDERGROUND pin of ours against a SURFACE step of QH's is the
+// entrance-versus-giver split, not a disagreement: QH routes you to the
+// way in, we route to the person waiting below, and audit-pin-reachability
+// confirmed Shortest Path can draw a path to every one of them (wave 14),
+// so ours is the more precise target. Nine such rows were already
+// classified as not-defects; five more landed in REVIEW purely because no
+// giver NAME happens to be recorded for them, and so came back every
+// session. Whether we wrote down a name is not evidence about the pin.
+const SURFACE_MAX_Y = 4000;
+const isEntranceSplit = (r) => r.pin.y > SURFACE_MAX_Y
+  && r.step.y !== undefined && r.step.y < SURFACE_MAX_Y;
+
+const isGiverDispute = (r) => !isEntranceSplit(r)
+  && (!r.giver
+    || (r.step.type === 'NpcStep' && STARTS_QUEST.test(r.step.description)));
 const disputes = drifted.filter(isGiverDispute);
 const approaches = drifted.filter((r) => !isGiverDispute(r));
 
@@ -160,6 +174,18 @@ console.log(`\n${disputes.length} to review  |  ${approaches.length} QH-opens-el
   + `  |  ${drifted.length} drift >${DRIFT} tiles total`);
 console.log(`${agreed.length} agree with QH`);
 console.log(`${noHelper.length} have no QH helper to compare against`);
+
+// Hand the survivors to review-decisions.mjs, so a finding reaches the
+// clickable page instead of living only in a terminal scrollback.
+fs.mkdirSync(path.join(__dirname, '../build'), { recursive: true });
+fs.writeFileSync(path.join(__dirname, '../build/quest-start-review.json'),
+  JSON.stringify(disputes.map((r) => ({
+    key: r.key,
+    drift: r.drift,
+    ours: { x: r.pin.x, y: r.pin.y },
+    giver: r.giver || null,
+    qh: { x: r.step.x, y: r.step.y, type: r.step.type, description: r.step.description || '' },
+  })), null, 1));
 if (showAll && noHelper.length) {
   console.log('\nno helper: ' + noHelper.join(', '));
 }

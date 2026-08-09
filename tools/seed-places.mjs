@@ -296,6 +296,19 @@ function parseMapBody(body) {
   if (xm && ym) {
     x = parseInt(xm[1], 10);
     y = parseInt(ym[1], 10);
+  } else if (/\d{3,5}:\d{3,5}\s*,\s*\d{3,5}:\d{3,5}/.test(body)) {
+    // An AREA, not a point: {{Map|mtype=polygon|x1:y1,x2:y2,...}}.
+    //
+    // The generic "first N,N in the body" fallback below straddles two
+    // vertices and returns (y1, x2) — a TRANSPOSED coordinate that looks
+    // like a perfectly ordinary pin. Goblin Village landed at 3525,2975,
+    // in the Kharidian Desert, 547 tiles from itself, and nothing caught
+    // it: the pin is well-formed, reachable, and its name is unique.
+    // Take the centroid instead.
+    const vertices = [...body.matchAll(/(\d{3,5}):(\d{3,5})/g)]
+      .map((m) => [parseInt(m[1], 10), parseInt(m[2], 10)]);
+    x = Math.round(vertices.reduce((sum, v) => sum + v[0], 0) / vertices.length);
+    y = Math.round(vertices.reduce((sum, v) => sum + v[1], 0) / vertices.length);
   } else {
     const pair = body.match(/(\d{3,5}),\s*(\d{3,5})/);
     if (!pair) return null;
@@ -306,12 +319,46 @@ function parseMapBody(body) {
   return { x, y, plane: plane ? parseInt(plane[1], 10) : 0 };
 }
 
+// A new name that is an EXISTING name plus a locational qualifier, at the
+// same spot, is an alias — and aliases hide the name inside them. Mirrors
+// audit-place-spans.mjs; see there for why a merely longer name ("Desert
+// Treasure I" over "Desert Treasure") is harmless and this is not.
+const QUALIFIER = /^(?:in|at|near|outside|inside|by|behind|under|west|east|north|south)\b/i;
+const SAME_SPOT = 5;
+
+function swallowsExistingName(display, coords, existing) {
+  for (const place of Object.values(existing)) {
+    const inner = place.display;
+    if (!inner || place.type === 'quest' || place.type === 'transport') {
+      continue;
+    }
+    if (display.toLowerCase() === inner.toLowerCase()) {
+      continue;
+    }
+    if (!new RegExp(`\\b${inner.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i')
+      .test(display)) {
+      continue;
+    }
+    const extra = display.toLowerCase()
+      .replace(inner.toLowerCase(), ' ').replace(/\s+/g, ' ').trim();
+    if (!QUALIFIER.test(extra)) {
+      continue; // a fuller NAME, not a phrase — harmless
+    }
+    if ((place.plane ?? 0) === (coords.plane ?? 0)
+      && Math.hypot(place.x - coords.x, place.y - coords.y) <= SAME_SPOT) {
+      return inner;
+    }
+  }
+  return null;
+}
+
 const placesFile = JSON.parse(fs.readFileSync(PLACES_FILE, 'utf8'));
 placesFile.places = placesFile.places || {};
 
 let added = 0;
 let skipped = 0;
 const misses = [];
+const spanned = [];
 
 for (const name of names) {
   const key = name.toLowerCase();
@@ -336,6 +383,20 @@ for (const name of names) {
       misses.push(name);
       continue;
     }
+    const swallowed = swallowsExistingName(name, coords, placesFile.places);
+    if (swallowed) {
+      // "Lady of the lake in Taverly" at the same spot as "Lady of the
+      // lake" is a pure alias, and an alias like this SUPPRESSES the name
+      // inside it: PlaceManager matches displays longest-first, and an NPC
+      // name inside a longer place span is read as the place. She went
+      // unoutlined on the one step that names her.
+      //
+      // The alias was deleted by hand once and this seeder put it straight
+      // back, which is how the rule ended up here rather than only in
+      // audit-place-spans: a fix a tool undoes is not a fix.
+      spanned.push(`${name} (would swallow "${swallowed}")`);
+      continue;
+    }
     placesFile.places[key] = questMode
       ? { display: name, type: 'quest', ...coords }
       : { display: name, ...coords };
@@ -351,5 +412,10 @@ console.log(`\nDone: ${added} added, ${skipped} already present, ${misses.length
 if (misses.length) {
   console.log('Not found on the wiki (capture these in game with the + button):');
   misses.forEach((n) => console.log(`  - ${n}`));
+}
+if (spanned.length) {
+  console.log(`\nSkipped ${spanned.length} alias(es) that would have hidden an`
+    + ' existing name (see audit-place-spans.mjs):');
+  spanned.forEach((n) => console.log(`  - ${n}`));
 }
 console.log('Rebuild the plugin to bundle the new places.');

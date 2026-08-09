@@ -53,6 +53,33 @@ try {
   // no quest-giver file: every name is treated as a candidate
 }
 
+// Subs whose destination is decided by the QUEST branch, not by any place
+// name in the text. targetFor routes an unstarted quest goal to the
+// quest's GIVER, and once it is in progress the route stands down for
+// Quest Helper — so the text pin never gets a vote either way.
+//
+// Without this the audit reported "Start the Lost tribe, do until you need
+// to go to Varrock" as a 206-tile hijack, when the live code routes it to
+// Duke Horacio in Lumbridge exactly as designed. A list with confident
+// non-bugs in it is one nobody finishes reading.
+const questRouted = new Set();
+try {
+  const paths = fs.readFileSync(path.join(root, 'build/completion-paths.tsv'), 'utf8');
+  for (const line of paths.split('\n')) {
+    const [, subId, kind] = line.split('\t');
+    if (subId && (kind === 'quest-start' || kind === 'quest-finish')) {
+      questRouted.add(subId.split(':')[0]);
+    }
+  }
+} catch (e) {
+  // no dump: fall back to reporting them (better loud than silently blind)
+}
+
+// Mirrors IronscapePlugin.STOPPING_POINT: "…until you need to go to X"
+// names where you STOP. The plugin strips it before matching places, so
+// the audit must too or it flags a route the code no longer takes.
+const STOPPING_POINT = /\buntil\s+you\s+(?:need|have)\s+to\b.*$/i;
+
 const dist = (a, b) => Math.round(Math.hypot(a.x - b.x, a.y - b.y));
 const DRIFT = 200; // beyond this, the text pin is a different region entirely
 
@@ -71,11 +98,13 @@ for (const chapter of guide.chapters) {
         && (annotations[k].target || annotations[k].errands));
       if (settled) continue;
 
+      if (questRouted.has(id)) continue; // the quest branch owns this one
+
       const tag = (step.metadata || {}).location;
       const area = tag ? navNames.get(tag.toLowerCase()) : null;
       if (!area) continue; // no area to compare against
 
-      const lower = text.toLowerCase();
+      const lower = text.toLowerCase().replace(STOPPING_POINT, '');
       const ownQuest = ((step.metadata || {}).quest || '').toLowerCase();
       let hit = null;
       for (const [name, pin] of navNames) {

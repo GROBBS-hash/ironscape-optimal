@@ -24,6 +24,9 @@ const PLACES_FILE = path.join(__dirname, '../src/main/resources/com/ironscape/pl
 const USER_AGENT = 'ironscape-runelite-plugin dev tooling (facility seeding)';
 const REQUEST_DELAY_MS = 700;
 const MAX_TOWN_DISTANCE = 80;
+// Mirrors IronscapePlugin.SURFACE_MAX_Y: above this you are underground,
+// and distances across the boundary are fiction.
+const SURFACE_MAX_Y = 4000;
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 const stepId = (t) => crypto.createHash('sha256')
@@ -34,7 +37,12 @@ const FACILITY_PAGES = {
   'furnace': 'Furnace',
   'anvil': 'Anvil',
   'spinning wheel': 'Spinning wheel',
-  'range': 'Range (cooking)',
+  // "Range (cooking)" is not a page — the fetch 404'd and the tool
+  // reported "0 surface pins", which reads identically to "the wiki has
+  // no data" and is how this sat unexamined. It IS "Range"; that page
+  // genuinely carries no map templates, so ranges still cannot be
+  // seeded, but now for the real reason.
+  'range': 'Range',
   'altar': 'Altar',
   'pottery wheel': 'Potter\'s wheel',
   'pottery oven': 'Pottery oven',
@@ -79,11 +87,33 @@ const IMPLIED_FACILITY = [
 const COOKS = /\b(?:cook|bake|nettle|bowl of water|raw )\b/i;
 
 /** The facility a step needs: named outright, else implied by what it makes. */
+// "Mind altar" is a PLACE, and the step "safespot a bear for its meat
+// south of mind altar" wants no altar at all. Same shape as the "range"
+// trap wave 18 caught: the facility word is real, the sentence is about
+// something else. That one was caught only because the Altar page
+// happens to publish no pins — luck, not correctness — so name it.
+//
+// Data-driven, not a word list: if the facility word together with what
+// precedes it is a name places.json already knows, the step is talking
+// about that place.
+function namesAPlace(text, facility) {
+  const words = key(text).split(' ');
+  for (let i = 0; i < words.length; i++) {
+    if (words[i] !== facility) continue;
+    for (let back = 1; back <= 2; back++) {
+      if (i - back < 0) break;
+      if (places[words.slice(i - back, i + 1).join(' ')]) return true;
+    }
+  }
+  return false;
+}
+
 function facilityFor(text) {
   const named = text.match(FACILITY_RE);
   if (named) {
     const facility = named[1].toLowerCase();
     if (facility === 'range' && !COOKS.test(text)) return null;
+    if (namesAPlace(text, facility)) return null;
     return facility;
   }
   const implied = IMPLIED_FACILITY.find(([, re]) => re.test(text));
@@ -143,17 +173,36 @@ for (const facility of new Set(wanted.map((w) => w.facility))) {
   const pins = [];
   for (const tpl of wikitext.matchAll(/\{\{(?:Object[ _]map|Map)\s*\|([^{}]*)\}\}/gi)) {
     const body = tpl[1];
-    if (/mapID\s*=/i.test(body)) continue; // other-map instances (dungeons)
-    let x; let y;
-    const xm = body.match(/x\s*[=:]\s*(\d{4})/i);
-    const ym = body.match(/y\s*[=:]\s*(\d{4})/i);
-    if (xm && ym) { x = +xm[1]; y = +ym[1]; }
-    else {
-      const pair = body.match(/(\d{4}),\s*(\d{4})/);
-      if (!pair) continue;
-      x = +pair[1]; y = +pair[2];
+    // mapID names WHICH map the pins are on, and 0 is the ordinary
+    // surface — so "skip anything with a mapID" threw away almost every
+    // real pin. The Anvil page carries 61 map templates and this yielded
+    // FOUR, which is why anvils, ranges and potter's wheels all looked
+    // like "the wiki has no location data" (wave 18). It has plenty.
+    //
+    // Read from the coordinates, not from a guess about the parameter:
+    // the mapID=0 blocks hold x:3188,y:3426 and x:3228,y:3436 (Varrock's
+    // two anvils), while mapID=-1 and mapID=29 hold y:9489 and y:6055 —
+    // underground and other-plane maps. So drop a NON-ZERO mapID only.
+    // Other maps (Keldagrim is mapID=10, dungeons -1) are KEPT but ranked
+    // below the surface, so a surface town behaves exactly as before and
+    // only a town the surface map cannot serve reaches them. Keldagrim's
+    // anvils sit 26 tiles from its pin and were previously unreachable at
+    // any distance.
+    const mapId = body.match(/mapID\s*=\s*(-?\d+)/i);
+    const surface = !mapId || mapId[1] === '0';
+    // One template usually lists SEVERAL pins ("x:3246,y:3404|x:3248,
+    // y:3404|..."); taking only the first lost most of them, and the one
+    // kept is not necessarily the one nearest the step's town.
+    const labelled = [...body.matchAll(/x\s*[=:]\s*(\d{3,5})\s*[,|]\s*y\s*[=:]\s*(\d{3,5})/gi)];
+    if (labelled.length) {
+      for (const m of labelled) {
+        pins.push({ x: +m[1], y: +m[2], surface });
+      }
+      continue;
     }
-    if (y < 8000) pins.push({ x, y });
+    for (const m of body.matchAll(/(?:^|\|)\s*(\d{3,5})\s*[,:]\s*(\d{3,5})\s*(?=\||$)/g)) {
+      pins.push({ x: +m[1], y: +m[2], surface });
+    }
   }
   pinsByFacility[facility] = pins;
   console.log(`  ${facility}: ${pins.length} surface pin(s)`);
@@ -164,8 +213,21 @@ for (const w of wanted) {
   const pins = pinsByFacility[w.facility] || [];
   let best = null;
   for (const pin of pins) {
+    // Compare within the town's own BAND, the same rule nearestOf uses in
+    // the plugin. Filtering pins to y<8000 up front looked like "surface
+    // only" but really meant "no underground town can ever be served":
+    // Keldagrim sits at y~10200, so every one of its anvils was discarded
+    // before the proximity test ran. A town underground wants the
+    // underground pins and nothing else, and vice versa.
+    if ((pin.y < SURFACE_MAX_Y) !== (w.town.y < SURFACE_MAX_Y)) continue;
     const d = Math.max(Math.abs(pin.x - w.town.x), Math.abs(pin.y - w.town.y));
-    if (d <= MAX_TOWN_DISTANCE && (!best || d < best.d)) best = { ...pin, d };
+    if (d > MAX_TOWN_DISTANCE) continue;
+    // Surface-map pins win outright; another map's pin is only ever a
+    // fallback, so nothing that works today can be displaced by one.
+    const better = !best
+      || (pin.surface && !best.surface)
+      || (pin.surface === best.surface && d < best.d);
+    if (better) best = { ...pin, d };
   }
   if (!best) {
     console.log(`miss ${w.id} ${w.facility} @ ${w.town.name} | ${w.text}`);
