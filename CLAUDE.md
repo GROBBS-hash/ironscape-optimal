@@ -738,6 +738,105 @@ refresh when "Failed to login" appears.
   capture; hub pin at b8c994d, now ~70 commits behind — bump after a
   calm session.
 
+- SESSION WAVE 19 (2026-08-09 late, LIVE play-test then a long desk run;
+  main at `354056a`, 5 commits, PUSHED; hub pin still `3638c2f`):
+  **the theme was audits that confirmed the wrong answer.**
+  **BANK -> HANDOFF NEVER COMPLETED.** The bank-first branch INSIDE the
+  quest-owns-guidance path never set `navRoutedToBank`, so wave 18's
+  10-tick re-check could not run on a quest step: withdrawing the kit
+  completes nothing and fires no event, so the route stayed pinned to the
+  bank and the stand-down below it could never arrive. The owner's report
+  was "it should take us to the bank, then hand over to QH" — it did the
+  first and could not do the second. That branch is also the ONLY one
+  that logs "routing to a bank first", which is what proved his quest was
+  already IN_PROGRESS (so the Falador town pin was correct, not a bug).
+  Handoff banner gained a START direction, fired on the stand-down EDGE,
+  NOT per quest step: 144 of 575 steps are quest-tagged and the STOP
+  banner only fires ~30 times, so equal weights would bury the rare
+  critical one 4:1.
+  **ITEM NAMES: 20 FIXED, AND THE AUDIT IS WHY THEY LASTED.** "black
+  wizards hat" sat 0/1 with the hat in the bag — item_ids gave the right
+  SPRITE while counting matched by NAME. `audit-goals` section 4 compared
+  each key to its id's GAMEVAL CONSTANT, and 1017's is BLACKWIZHAT, which
+  reads like a name and CONFIRMS the wrong answer. My first fix ("black
+  wizard hat") was ALSO wrong — no such item — and the owner caught it in
+  game ("its just called a wizard hat"). Switching the authority to
+  RuneLite's own name cache (21,339 entries; covers the 67 untradeables
+  the price mapping cannot see) found 19 more, all in use. THREE sat in
+  the VERIFIED allow-list: that list answered "is the id right?" and
+  recorded blanket approval, silencing the different question "can the
+  NAME ever match" — an id-level exemption must never suppress a
+  name-level defect. 16 teleport-tab targets pointed at names that do not
+  exist ("(tablet)" suffix); the 9 POH tabs genuinely have none, verified
+  and left alone. Reimplementing the alias chain in JS cried wolf TWICE,
+  so GoalAuditDumpTest now dumps what ItemTracker really produces
+  (`build/item-aliases.tsv`) and the audit reads that — do not mirror
+  that chain again.
+  **DOSE RULE:** a goal that NAMES a dose means that dose (24 one-dose
+  vials read 6/6 against "6 full pots"). Dose-less goals unchanged. It
+  immediately broke `dueling ring -> ring of dueling(8)` — CHARGE counts
+  are not doses — found by reading the map, not by a test.
+  **CLICKABLE REVIEW PAGES are now how to ask for input** (owner: "this
+  click ui/table format works really well! lets do that").
+  `review-item-names` and `review-decisions` generate self-contained HTML
+  with the evidence inline (item SPRITE from RuneLite's icon endpoint,
+  usage counts, and for pins an "INERT IF BUNDLED" warning). 20 item
+  names and 8 quest tags decided in two passes instead of 20 play
+  sessions. Both carry reviewed/declined files so a settled question is
+  never re-asked. See [[review-ui-for-input]].
+  **NEW `StepAnnotation.quest`:** 8 steps whose task IS a quest leg
+  ("Continue Lost tribe", "Continue Biohazard", both Gertrude's Cat legs)
+  had no tag and no quest goal, so stepQuest() returned null — no QH
+  stand-down, no tip line, our route arguing with QH's for the whole leg.
+  It lives in annotations because metadata comes from the scraper and a
+  hand-edit there dies at the next re-scrape. PREP steps excluded (wave
+  13's lesson: tagging "buy a bronze sword for Horror from the deep"
+  hands a shopping trip to QH). My own measurement missed 2 of the 8 by
+  doing the ARTICLE thing — "Continue Lost tribe" does not contain "The
+  Lost Tribe".
+  **AUDITS DE-WOLFED:** target-drift 34 -> 26 (it did not know a quest
+  goal outranks the text pin, so "Start the Lost tribe" read as a
+  206-tile hijack when the live code routes it to Duke Horacio exactly as
+  designed); quest-start-pins 10 -> 5 (five underground givers were
+  misfiled as disagreements purely because no giver NAME was recorded —
+  whether we wrote a name down is not evidence about a pin); audit-goals
+  section 1 was STRICTER than the plugin (exact names vs canonical) and
+  so flagged two deliberately dose-less colloquials as broken.
+  **NEW `audit-place-pins`:** Goblin Village was pinned at 3525,2975 —
+  the Kharidian Desert, 547 tiles from itself — because a `{{Map}}` can
+  be a POLYGON and the seeder read the first "N,N" in the body,
+  straddling two vertices into a TRANSPOSED coordinate. Only casualty of
+  197 checked. Fixing it made a SECOND bug reachable: "Continue Lost
+  tribe until you need to go to the goblin village" then routed 268 tiles
+  to the place the step ends BEFORE reaching, so `STOPPING_POINT` strips
+  "until you need to go to X" (27 steps say "until"; exactly 2 have that
+  shape).
+  **SEED-FACILITIES had three compounding bugs:** it skipped every
+  template carrying `mapID=`, but `mapID=0` IS the surface map — the
+  Anvil page has 61 templates and we were reading FOUR. Plus only the
+  first pin per template, plus `Range (cooking)` being a 404 that printed
+  as "0 surface pins", indistinguishable from "the wiki has no data".
+  Anvil pins 4 -> 111; Varrock and Keldagrim anvils seeded (underground
+  towns could never be served — pins were filtered to y<8000 BEFORE the
+  proximity test ran). Wave 18's "range"-the-skill landmine closed: a
+  facility word inside a place name ("mind altar", "blast furnace") is a
+  place reference, decided from places.json rather than a word list.
+  **PROCESS, twice:** launched a second client on top of the owner's
+  because the check grepped for "RuneLite" while the dev client is
+  `java.exe`. New `tools/check-client.mjs` — whose FIRST outing then
+  blocked a launch on log lines 70s old from a client that had already
+  exited. A log file cannot run: PROCESS first, log only to say WHICH
+  process is ours. See [[check-client-before-launching]].
+  **CONFIRMED IN PLAY:** the bank->stand-down sequence end to end, the
+  START banner, the Ghost's-skull diagnosis (null-quantity annotation
+  items count as required:1, so an unobtainable carry-list item blocks
+  arrival forever — now `optional`).
+  **OPEN:** tai bwo wannai trio pin (QH opens with "catch 23 karambwanji",
+  a prerequisite 69 tiles from the giver — held back for the owner);
+  Brimstail interior capture DECLINED, entrance pin kept
+  (tools/decisions-declined.json); 5 item names awaiting review; 26 drift
+  rows wanting per-step ⌖ captures; and step 258's stopping-point fix
+  plus all 8 quest tags are UNPLAYED.
 - SESSION WAVE 18 (2026-08-09 evening, LIVE play-test, main at `0bb0f05`,
   10 commits, all pushed; hub pin still `3638c2f`, now 10 behind):
   **the word "the" caused three separate failures, and a stale backlog
