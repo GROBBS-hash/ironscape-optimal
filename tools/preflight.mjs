@@ -203,9 +203,13 @@ function inspect(step) {
   // pair currentSubSatisfied tests. Missing this overstated the count and
   // would have put a wrong label on the step.
   const arr0 = arrival.get(step.sub);
-  const canArrive = (arr0 && arr0.tier !== 'NONE')
-    || ((MOVEMENT.test(step.text) || isBareDestination(step.text))
-        && (!!target || namesSomewhere(step.text)));
+  // Mirrors IronscapePlugin.TALK_INSTRUCTION: arriving is not talking, so a
+  // sub asking for a conversation cannot be finished by walking up to it.
+  const wantsConversation = /\b(?:speak|talk|ask)\b/i.test(step.text);
+  const canArrive = !wantsConversation
+    && ((arr0 && arr0.tier !== 'NONE')
+      || ((MOVEMENT.test(step.text) || isBareDestination(step.text))
+          && (!!target || namesSomewhere(step.text))));
   const canAutoTick = step.path !== 'none' || hasCheckpoint || !!errands || canArrive;
   if (!canAutoTick) flags.push('MANUAL ONLY      no detector, no checkpoint, no chain, no arrival');
   else if (step.path === 'none' && canArrive && !hasCheckpoint && !errands) {

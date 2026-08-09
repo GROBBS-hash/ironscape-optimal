@@ -1340,6 +1340,22 @@ public class IronscapePlugin extends Plugin
 		java.util.regex.Pattern.CASE_INSENSITIVE);
 
 	/**
+	 * The sub tells you to hold a CONVERSATION — "speak to Lady of the
+	 * lake", "talk to Oziach", "ask every question".
+	 *
+	 * Arriving is not talking. Three steps in the guide pair a journey with
+	 * a conversation ("Go under the mountain and speak to Lady of the lake
+	 * in Taverly"), and the movement half satisfied the arrival gate while
+	 * the talk half has no detector at all, so they ticked themselves on
+	 * walking up. That is worse than not ticking: the tick advances the
+	 * frontier, which takes the NPC outline and the dialogue highlighting
+	 * away at the exact moment they were about to be useful (owner,
+	 * 2026-08-09, confirmed in the log — the sub completed at ~0 tiles).
+	 */
+	private static final java.util.regex.Pattern TALK_INSTRUCTION =
+		java.util.regex.Pattern.compile("\\b(?:speak|talk|ask)\\b", java.util.regex.Pattern.CASE_INSENSITIVE);
+
+	/**
 	 * Leading filler on a step that is otherwise just a destination —
 	 * "To Lumby", "Then Varrock east bank".
 	 */
@@ -4465,6 +4481,12 @@ public class IronscapePlugin extends Plugin
 		// this twice; the second time the ⌖ branch sat ABOVE this gate.
 		// Network-travel phrasing has no movement verb ("Spirit tree to
 		// gnome stronghold") but IS the movement instruction.
+		// Arriving is not talking: a sub that asks for a conversation is not
+		// finished by standing next to the NPC, however it is worded.
+		if (TALK_INSTRUCTION.matcher(sub.getPlainText()).find())
+		{
+			return false;
+		}
 		if (!travelGoalSubs.contains(sub.getId())
 			&& !networkTravel
 			&& !MOVEMENT_WORD.matcher(sub.getPlainText()).find()
