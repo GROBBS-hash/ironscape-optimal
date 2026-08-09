@@ -6610,6 +6610,24 @@
     "value": 6
    },
    "note": "Dig by Martin the Master Gardener at the Draynor pig pen — this one yields the casket."
+  },
+  "255bd9a43a:0": {
+   "target": {
+    "x": 2579,
+    "y": 3378,
+    "plane": 0
+   },
+   "items": [
+    {
+     "name": "clue hunter gloves",
+     "quantity": 1
+    },
+    {
+     "name": "clue hunter boots",
+     "quantity": 1
+    }
+   ],
+   "note": "Dig next to the oak tree south-west of the Fishing Guild, just north of East Ardougne. Wiki-sourced pin; the same page gives the garb spot we already have at 1595,3628."
   }
  }
 }

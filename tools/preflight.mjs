@@ -20,6 +20,7 @@
 //
 // Needs build/completion-paths.tsv and build/arrival-audit.tsv:
 //   gradlew test --tests "*.GoalAuditDumpTest"
+import crypto from 'node:crypto';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -109,6 +110,40 @@ const namesSomewhere = (text) => {
   return nameable.some((n) => t.includes(n));
 };
 
+// ... and the last of targetFor's sources: the step's own 📍 LOCATION tag,
+// which lives in the guide payload rather than in any dump. Missing it made
+// this check cry "no route" over most of the opening stretch -- steps tagged
+// "Lumbridge Castle" or "Ferox Enclave" that the plugin routes perfectly
+// well. Third over-report from this one check; each time the cause was a
+// source of targetFor's that the tool did not know about.
+const placeKeys = new Set(Object.keys(JSON.parse(fs.readFileSync(
+  path.join(RES, 'places/places.json'), 'utf8')).places).map((k) => k.toLowerCase()));
+// getLoose strips a directional prefix before giving up, so "North of
+// Ardougne" routes to Ardougne.
+const resolvesAsPlace = (name) => {
+  if (!name) return false;
+  const n = name.toLowerCase().trim();
+  if (placeKeys.has(n)) return true;
+  const stripped = n.replace(/^(?:north|south|east|west)(?:[ -](?:east|west))?\s+of\s+/, '');
+  return stripped !== n && placeKeys.has(stripped);
+};
+
+const locationByStep = new Map();
+{
+  const guide = JSON.parse(fs.readFileSync(
+    path.join(RES, 'guide/guide_data_oziris.json'), 'utf8'));
+  const runText = (rs) => (rs || []).map((r) => r.text).join('');
+  const sid = (t) => crypto.createHash('sha256')
+    .update(t.replace(/\s+/g, ' ').trim().toLowerCase(), 'utf8').digest('hex').slice(0, 10);
+  for (const ch of guide.chapters) {
+    for (const sec of ch.sections) {
+      for (const st of sec.steps) {
+        locationByStep.set(sid(runText(st.content)), st.metadata?.location ?? null);
+      }
+    }
+  }
+}
+
 // The movement verbs that make a sub a travel INSTRUCTION rather than an
 // action that merely happens somewhere -- copied from the plugin's
 // MOVEMENT_WORD, and the reason 'Run south to Port sarim' ticks itself.
@@ -150,7 +185,7 @@ function inspect(step) {
   //    audit could resolve means the Go button and auto-nav have nothing.
   const arr = arrival.get(step.sub);
   const routable = !!target || !!errands || (arr && arr.tier !== 'NONE')
-    || namesSomewhere(step.text);
+    || namesSomewhere(step.text) || resolvesAsPlace(locationByStep.get(step.id));
   if (!routable && !/^(bank|buy|sell|train|get \d)/i.test(step.text)) {
     flags.push('NO ROUTE         no pin, no chain, no resolvable place');
   }
