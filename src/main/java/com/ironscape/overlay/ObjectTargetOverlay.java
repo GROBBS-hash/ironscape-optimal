@@ -27,7 +27,7 @@ import net.runelite.client.ui.overlay.outline.ModelOutlineRenderer;
 @Singleton
 public class ObjectTargetOverlay extends Overlay
 {
-	private static final Color OUTLINE = new Color(0, 255, 255);
+	private final com.ironscape.IronscapeConfig config;
 
 	private final ModelOutlineRenderer outlineRenderer;
 	private final net.runelite.api.Client client;
@@ -45,8 +45,10 @@ public class ObjectTargetOverlay extends Overlay
 
 	@Inject
 	public ObjectTargetOverlay(ModelOutlineRenderer outlineRenderer,
-		net.runelite.api.Client client, net.runelite.client.game.ItemManager itemManager)
+		net.runelite.api.Client client, net.runelite.client.game.ItemManager itemManager,
+		com.ironscape.IronscapeConfig config)
 	{
+		this.config = config;
 		this.outlineRenderer = outlineRenderer;
 		this.client = client;
 		this.itemManager = itemManager;
@@ -91,7 +93,7 @@ public class ObjectTargetOverlay extends Overlay
 		graphics.setFont(net.runelite.client.ui.FontManager.getRunescapeBoldFont());
 		for (GameObject object : objects)
 		{
-			outlineRenderer.drawOutline(object, 2, OUTLINE, 2);
+			outlineRenderer.drawOutline(object, 2, config.hintColour(), 2);
 			if (itemId != null && itemId > 0 && cachedItemImage != null)
 			{
 				net.runelite.api.Point at = net.runelite.api.Perspective.getCanvasImageLocation(

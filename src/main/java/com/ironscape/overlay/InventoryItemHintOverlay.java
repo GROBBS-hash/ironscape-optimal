@@ -20,13 +20,17 @@ import net.runelite.client.ui.overlay.WidgetItemOverlay;
 @Singleton
 public class InventoryItemHintOverlay extends WidgetItemOverlay
 {
-	private static final Color OUTLINE = new Color(0, 255, 255);
+	private final com.ironscape.IronscapeConfig config;
+	private final net.runelite.client.game.ItemManager itemManager;
 
 	private Supplier<java.util.Set<Integer>> itemIdsSupplier = java.util.Collections::emptySet;
 
 	@Inject
-	public InventoryItemHintOverlay()
+	public InventoryItemHintOverlay(com.ironscape.IronscapeConfig config,
+		net.runelite.client.game.ItemManager itemManager)
 	{
+		this.config = config;
+		this.itemManager = itemManager;
 		showOnInventory();
 	}
 
@@ -48,7 +52,21 @@ public class InventoryItemHintOverlay extends WidgetItemOverlay
 		{
 			return;
 		}
-		graphics.setColor(OUTLINE);
+		// Trace the ITEM, not a box around its slot. A rounded rectangle
+		// says "this square matters"; Quest Helper draws the sprite's own
+		// silhouette, which reads instantly as "this thing" (owner, after
+		// watching QH outline a single garlic). getItemOutline is the same
+		// API QH uses, so the two look like siblings rather than rivals.
+		java.awt.image.BufferedImage outline =
+			itemManager.getItemOutline(itemId, widgetItem.getQuantity(), config.hintColour());
+		if (outline != null)
+		{
+			graphics.drawImage(outline, bounds.x, bounds.y, null);
+			return;
+		}
+		// Some items have no cached sprite yet (the image loads async on
+		// first sight). Fall back to the old box rather than nothing.
+		graphics.setColor(config.hintColour());
 		graphics.setStroke(new BasicStroke(2));
 		graphics.drawRoundRect(bounds.x - 1, bounds.y - 1,
 			bounds.width + 1, bounds.height + 1, 6, 6);

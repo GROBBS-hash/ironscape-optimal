@@ -29,9 +29,8 @@ import net.runelite.client.ui.overlay.WidgetItemOverlay;
 @Singleton
 public class ShopItemHintOverlay extends WidgetItemOverlay
 {
-	private static final Color OUTLINE = new Color(0, 255, 255);
-
 	private final ItemManager itemManager;
+	private final com.ironscape.IronscapeConfig config;
 
 	private Supplier<java.util.Set<String>> itemNamesSupplier = java.util.Collections::emptySet;
 	/** itemId -> wanted?, valid only while memoFor is the live name set. */
@@ -39,9 +38,10 @@ public class ShopItemHintOverlay extends WidgetItemOverlay
 	private java.util.Set<String> memoFor;
 
 	@Inject
-	public ShopItemHintOverlay(ItemManager itemManager)
+	public ShopItemHintOverlay(ItemManager itemManager, com.ironscape.IronscapeConfig config)
 	{
 		this.itemManager = itemManager;
+		this.config = config;
 		// 300 = the shop's stock, 301 = your inventory beside it.
 		showOnInterfaces(InterfaceID.SHOPMAIN, InterfaceID.SHOPSIDE);
 	}
@@ -73,7 +73,16 @@ public class ShopItemHintOverlay extends WidgetItemOverlay
 		{
 			return;
 		}
-		graphics.setColor(OUTLINE);
+		// Trace the item, same as the inventory hint — see that overlay for
+		// why a box around the slot reads worse than the sprite itself.
+		java.awt.image.BufferedImage outline =
+			itemManager.getItemOutline(itemId, widgetItem.getQuantity(), config.hintColour());
+		if (outline != null)
+		{
+			graphics.drawImage(outline, bounds.x, bounds.y, null);
+			return;
+		}
+		graphics.setColor(config.hintColour());
 		graphics.setStroke(new BasicStroke(2));
 		graphics.drawRoundRect(bounds.x - 1, bounds.y - 1,
 			bounds.width + 1, bounds.height + 1, 6, 6);

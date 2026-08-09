@@ -1,6 +1,5 @@
 package com.ironscape.overlay;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
@@ -22,7 +21,7 @@ import net.runelite.client.util.Text;
 
 /**
  * Outlines every NPC named in the CURRENT sub-step ("speak with Veos"
- * -> Veos gets a cyan outline that follows him as he wanders), Quest
+ * -> Veos gets an outline that follows him as he wanders), Quest
  * Helper-style but generic: no per-quest authoring, just the NPC's own
  * name appearing in the guide text. When the sub is a quest goal, the
  * blue quest icon floats over the NPC's head as well.
@@ -35,7 +34,7 @@ import net.runelite.client.util.Text;
 @Singleton
 public class NpcTargetOverlay extends Overlay
 {
-	private static final Color OUTLINE = new Color(0, 255, 255);
+	private final com.ironscape.IronscapeConfig config;
 
 	private final Client client;
 	private final SpriteManager spriteManager;
@@ -55,8 +54,10 @@ public class NpcTargetOverlay extends Overlay
 	@Inject
 	public NpcTargetOverlay(Client client, SpriteManager spriteManager,
 		net.runelite.client.game.ItemManager itemManager,
-		net.runelite.client.ui.overlay.outline.ModelOutlineRenderer outlineRenderer)
+		net.runelite.client.ui.overlay.outline.ModelOutlineRenderer outlineRenderer,
+		com.ironscape.IronscapeConfig config)
 	{
+		this.config = config;
 		this.client = client;
 		this.spriteManager = spriteManager;
 		this.itemManager = itemManager;
@@ -133,7 +134,7 @@ public class NpcTargetOverlay extends Overlay
 
 			// Quest Helper look: a crisp line hugging the model silhouette,
 			// not a convex-hull blob.
-			outlineRenderer.drawOutline(npc, 2, OUTLINE, 2);
+			outlineRenderer.drawOutline(npc, 2, config.hintColour(), 2);
 
 			BufferedImage overhead = null;
 			if (questIcon)

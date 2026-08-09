@@ -116,6 +116,23 @@ public interface IronscapeConfig extends Config
 		return true;
 	}
 
+	/**
+	 * GREEN on purpose. Quest Helper outlines in cyan, and so did every one
+	 * of these overlays, so on a quest step there was no way to tell "the
+	 * guide needs this" from "Quest Helper says click this now" — the two
+	 * plugins were drawing the same colour over each other (owner, in
+	 * play). Green for us, cyan for QH.
+	 */
+	@ConfigItem(
+		keyName = "hintColour",
+		name = "Highlight colour",
+		description = "Colour of the plugin's item, NPC and object outlines. Green by default so they read apart from Quest Helper's cyan"
+	)
+	default java.awt.Color hintColour()
+	{
+		return new java.awt.Color(0, 255, 128);
+	}
+
 	@ConfigItem(
 		keyName = "showInventoryHints",
 		name = "Highlight step items in inventory",
