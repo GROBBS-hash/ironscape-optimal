@@ -773,13 +773,92 @@ refresh when "Failed to login" appears.
   `3638c2f` is 2026-08-08 12:05, mid wave 12. Same class as wave 17's
   inflated "132 unroutable" that got written in here and repeated to the
   owner. **Count it, do not carry it forward.**
-  **UNPLAYED AND STILL OPEN** (unchanged from wave 19, client relaunched
-  on this build): the 8 annotation quest tags — highest risk, they hand
-  guidance to QH where we kept our route, and position 251 sits right in
-  front of steps 256/258 which are the Lost Tribe and Biohazard legs;
-  step 258's stopping-point fix; the Lady of the Lake outline. Hub pin
-  should follow a calm play session, not precede one — 84 commits is a
-  large thing to pin sight-unseen.
+  **THEN A LIVE PLAY-TEST (position 251 -> 254), three fixes, all
+  CONFIRMED IN PLAY.**
+  **(1) A STEP THAT COULD NOT COMPLETE BY ANY ROUTE.** "decant them until
+  you have like 6 full pots" showed a green 6/6 over a checkbox nothing
+  could tick: the detector cannot name "6 full pots", so the count lives
+  in an annotation, and annotation items are DISPLAY-ONLY.
+  `completion-paths` said `none`. The obvious rule (no path + numbered
+  annotation items held) was MEASURED AND REJECTED — 25 steps, ~2 right,
+  because annotation items are what you BRING: a spade would tick all six
+  "dig up the clue" steps and the barcrawl card all ten bars. **Wave 13's
+  finding arriving from the opposite direction.** What separates them is
+  the SENTENCE, so possession completion matches "until you have" /
+  "make sure you have": **2 steps guide-wide.** Two guards, and
+  `PossessionObjectiveTest` records that they are NOT equally
+  load-bearing — parenthetical is PROVEN (disable it and the Brimstail
+  reminder, "(scrying orb 2/3, make sure you have it with you)",
+  qualifies on text alone), checkpoint is PRECAUTIONARY (disable it and
+  nothing fails today). Verified by disabling each, not by assuming.
+  Ticked in play, frontier advanced.
+  **The dump that HID it:** completion-paths.tsv read only the DETECTOR,
+  so annotation-driven completion was invisible — 164 subs called
+  unreachable and the FIRST one examined completes fine off a region
+  checkpoint. Consumers read "none" as "only a human can tick this", so
+  an undercount here is an overcount of work everywhere downstream. Now
+  emits `checkpoint` and `possession`; **164 -> 132**.
+  **(2) NAV HIJACKED QUEST HELPER EVERY SIX SECONDS** (owner, mid-
+  Observatory: "it goes to the correct spot briefly then something takes
+  it over again"). The log named the tile — Castle Wars bank — **once**,
+  at 22:27:22, and never again, which IS the tell: `logNavDecision` only
+  prints on CHANGE, so the decision never changed while the POST kept
+  happening. Loop: QH owns guidance -> kit banked -> bank-first posts and
+  RETURNS before the stand-down -> the 10-tick re-check recomputes the
+  same bank -> posts again. Wave 19 added that re-check for a real reason
+  (withdrawing fires no event, so the route sat on the bank forever and
+  the handoff never arrived): it must keep RUNNING, it must not keep
+  POSTING. Now **one suggestion per (step, bank)** — the re-check still
+  notices the kit leaving and still falls through to the stand-down, and
+  a player who would rather crack on can walk away from it. Non-quest
+  bank routing untouched (nothing else draws there).
+  **AUDITED THE WHOLE QUESTION afterwards rather than declaring it
+  fixed:** of every SP post while QH owns guidance, only ERRAND CHAINS
+  still re-post (every 10 ticks, deliberately outranking QH since waves
+  4/8 — a chain guides legs QH's step does not) and the gravestone.
+  **14 chains exist; 4 sit on quest-tagged steps** (TGV pebble, RFD,
+  Merlin's Crystal, Holy Grail) where they could produce the same
+  symptom. Left alone on purpose: bank-first was a suggestion you could
+  not decline, an errand is us actively leading. Same one-shot treatment
+  applies if one ever misbehaves.
+  **(3) MID-QUEST LOGIN PROMPT** (owner's idea, and it exposed a
+  structural gap): STOP and START both fire on an EDGE, and logging in
+  has no edge — guidance was already QH's when you logged out, so the one
+  moment you have forgotten where you were is the one moment nothing
+  fires. New `Kind.RESUME` off the login-resume hook. Narrow: real login,
+  once, frontier quest IN_PROGRESS only, skipped if the stand-down
+  already announced that step, QH-installed only. Does NOT say "our route
+  stops here" — the Observatory kit was banked and bank-first was
+  actively routing him, so START's wording would have been false.
+  **CHECK-CLIENT FALSE-BLOCKED TWICE IN TEN MINUTES, same root — evidence
+  that cannot tell "our plugin is running" from "a client exists".**
+  (a) `gradlew test` logs to the SAME client.log as `[Test worker]`, so
+  the corroboration read MY OWN test output back as proof of a live
+  client — circular; only `[Client]` lines count now. (b) The installed
+  RuneLite.exe was blocking ON ITS OWN with the log demoted to a
+  footnote, so the owner's everyday client blocked every build and a
+  wait-for-clear loop span forever, launching nothing. The header already
+  had the right rule and the code did not implement it: names cannot
+  answer it, only the log can. RuneLite.exe is now a SUSPECT, convicted
+  only by fresh `com.ironscape [Client]` output; the dev client still
+  blocks on sight. **A false block is not a safe failure — it is how you
+  learn to override the check, which is exactly how wave 17 ran two
+  builds under a live client.**
+  **HUB PIN BUMPED (owner's call): `3638c2f` -> `f634cbf`, 89 commits.**
+  Verified the way a reviewer will: clean `gradlew clean build` from a
+  FRESH checkout of that exact sha, not the incremental working tree.
+  Hub `build` check PASSED (52s). The red X is
+  **"Requires maintainer review."** — fails by design on every new-plugin
+  PR, read from the check's own title rather than assumed (wave 17's
+  lesson); `upload` skipping is normal. PR 14207 open, mergeable, one
+  file.
+  **STILL UNPLAYED, and it shipped in the pinned build:** the 8
+  annotation quest tags and step 258's stopping-point fix. Position 254
+  sits right in front of 258 ("Continue Lost tribe until you need to go
+  to the goblin village"), then 263 Biohazard and 282. Owner's call to
+  pin ahead of that, explicitly on the grounds that the pin is a
+  two-minute change if 258 misbehaves. The Lady of the Lake outline is
+  also still unconfirmed.
 
 - SESSION WAVE 19 (2026-08-09 late, LIVE play-test then a long desk run;
   main at `354056a`, 5 commits, PUSHED; hub pin still `3638c2f`):
