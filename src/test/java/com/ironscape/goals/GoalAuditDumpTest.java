@@ -149,6 +149,34 @@ public class GoalAuditDumpTest
 	}
 
 	/**
+	 * The plugin's MOVEMENT_WORD pattern, verbatim.
+	 *
+	 * tools/preflight.mjs has to know which subs read as travel
+	 * instructions, because that is what decides whether a step with no
+	 * detector can still tick by walking there. It used to keep its own
+	 * hand-copied regex, which is the same shape of fault as the percent
+	 * codec that drifted the moment encode and decode lived in two
+	 * classes: the copy is right until someone edits one side, and then
+	 * the check confidently reports a step as tickable that the plugin
+	 * cannot tick. Dumping the real pattern means there is only one.
+	 */
+	@Test
+	public void dumpMovementWord() throws Exception
+	{
+		java.lang.reflect.Field field =
+			com.ironscape.IronscapePlugin.class.getDeclaredField("MOVEMENT_WORD");
+		field.setAccessible(true);
+		java.util.regex.Pattern pattern = (java.util.regex.Pattern) field.get(null);
+
+		File out = new File("build/movement-word.txt");
+		out.getParentFile().mkdirs();
+		try (PrintWriter writer = new PrintWriter(out, StandardCharsets.UTF_8))
+		{
+			writer.println(pattern.pattern());
+		}
+	}
+
+	/**
 	 * Which detector path can complete each sub, and what the annotation
 	 * file says about it. Written for tools/audit-item-gating.mjs: whether
 	 * making annotation items gate completion CHANGES a step depends

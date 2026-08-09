@@ -145,9 +145,24 @@ const locationByStep = new Map();
 }
 
 // The movement verbs that make a sub a travel INSTRUCTION rather than an
-// action that merely happens somewhere -- copied from the plugin's
-// MOVEMENT_WORD, and the reason 'Run south to Port sarim' ticks itself.
-const MOVEMENT = /\b(?:go|walk|run|head|return|travel|enter|exit|climb|cross|move|proceed|sail|ride|fly|swim|tele|teleport|tabs?|charter)\b|spirit tree/i;
+// action that merely happens somewhere -- the reason 'Run south to Port
+// sarim' ticks itself.
+//
+// Read from the plugin's OWN pattern (GoalAuditDumpTest dumps it) rather
+// than hand-copied here. A copy is right until someone edits one side,
+// and a check that then calls a step tickable when the plugin cannot tick
+// it is worse than no check at all.
+const MOVEMENT = (() => {
+  const dumped = path.join(BUILD, 'movement-word.txt');
+  if (!fs.existsSync(dumped)) {
+    console.error(
+      'preflight: build/movement-word.txt is missing, so arrival ticks cannot be\n'
+      + '           judged. Run:  gradlew test --tests "*.GoalAuditDumpTest"');
+    process.exit(1);
+  }
+  // Java and JS share this regex dialect; \b, (?:), and | all mean the same.
+  return new RegExp(fs.readFileSync(dumped, 'utf8').trim() + '|spirit tree', 'i');
+})();
 
 // ---- the checks ----------------------------------------------------------
 function inspect(step) {

@@ -1326,9 +1326,17 @@ public class IronscapePlugin extends Plugin
 	 * A sub reads as a movement instruction — anywhere in the text, since
 	 * travel is often compound ("Use the spirit tree and go to the
 	 * battlefield"). Gates place-name arrival ticks.
+	 *
+	 * "make your way", "cart" and "carpet" name a journey without using a
+	 * movement VERB, so the guide's three such steps ("Make your way to
+	 * Wintertodt", "Take the cart to Shilo Village", "Carpet back to
+	 * Shantay pass") could not tick by any route at all. Each of those
+	 * words was measured against the whole guide before being added here
+	 * and matches exactly one step, so this widens nothing else.
 	 */
 	private static final java.util.regex.Pattern MOVEMENT_WORD = java.util.regex.Pattern.compile(
-		"\\b(?:go|walk|run|head|return|travel|enter|exit|climb|cross|move|proceed|sail|ride|fly|swim|tele|teleport|tabs?|charter)\\b",
+		"\\b(?:go|walk|run|head|return|travel|enter|exit|climb|cross|move|proceed|sail|ride|fly|swim|tele|teleport|tabs?|charter|cart|carpet)\\b"
+			+ "|\\bmake (?:your|my) way\\b",
 		java.util.regex.Pattern.CASE_INSENSITIVE);
 
 	/**
