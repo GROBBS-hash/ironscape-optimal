@@ -72,12 +72,23 @@ try {
 //    client that was already gone. So it only speaks when a candidate
 //    process exists, where it settles the question the process list
 //    cannot answer: is that process one of OURS?
+//
+//    Only [Client] lines count. `gradlew test` logs to this SAME file as
+//    [Test worker], so matching "com.ironscape" anywhere made this check
+//    circular: run the tests, and the next check reads its own output back
+//    as evidence of a live client. That happened for real on 2026-08-09 —
+//    a worktree test run, plus the installed RuneLite.exe standing in as
+//    the candidate process, produced a confident RUNNING with no client
+//    running at all. A false block is not a safe failure: it is how you
+//    learn to ignore the check.
 if (reasons.length && fs.existsSync(LOG)) {
   const age = Date.now() - fs.statSync(LOG).mtimeMs;
   if (age < FRESH_MS) {
     const tail = fs.readFileSync(LOG, 'utf8').slice(-20000);
-    if (tail.includes('com.ironscape')) {
-      reasons.push(`client.log wrote com.ironscape lines ${Math.round(age / 1000)}s ago`
+    const fromClient = tail.split('\n')
+      .filter((l) => l.includes('com.ironscape') && l.includes('[Client]'));
+    if (fromClient.length) {
+      reasons.push(`client.log wrote com.ironscape [Client] lines ${Math.round(age / 1000)}s ago`
         + ' — so one of the processes above is running our plugin');
     }
   }
