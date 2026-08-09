@@ -6544,6 +6544,18 @@
     "I'm looking for a quest!",
     "Yes."
    ]
+  },
+  "1ba377b2f6:0": {
+   "requires": {
+    "varbit": 532,
+    "value": 10
+   }
+  },
+  "58ad4841dd:0": {
+   "requires": {
+    "varp": 68,
+    "value": 14
+   }
   }
  }
 }
