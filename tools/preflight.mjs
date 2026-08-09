@@ -116,8 +116,25 @@ const namesSomewhere = (text) => {
 // "Lumbridge Castle" or "Ferox Enclave" that the plugin routes perfectly
 // well. Third over-report from this one check; each time the cause was a
 // source of targetFor's that the tool did not know about.
-const placeKeys = new Set(Object.keys(JSON.parse(fs.readFileSync(
-  path.join(RES, 'places/places.json'), 'utf8')).places).map((k) => k.toLowerCase()));
+const allPlaces = JSON.parse(fs.readFileSync(
+  path.join(RES, 'places/places.json'), 'utf8')).places;
+const placeKeys = new Set(Object.keys(allPlaces).map((k) => k.toLowerCase()));
+
+// Mirrors IronscapePlugin.isBareDestination: a step that is nothing but a
+// place -- "Lumby", "Varrock east bank" -- names where to be without using
+// a movement verb. Quest and transport entries share the place namespace
+// and are excluded, or the bare steps "Cabin fever" and "One small favour"
+// would read as destinations. Both sides decide that from the SAME type
+// field in places.json, so they cannot disagree about which names count.
+// NB: uses PlaceManager.key()'s normalisation, not this file's norm() --
+// norm() drops apostrophes and the plugin keeps them, so sharing it would
+// silently disagree about every place with one in its name.
+const placeKey = (s) => s.toLowerCase().trim().replace(/’/g, "'").replace(/&amp;/g, '&');
+const isBareDestination = (text) => {
+  const t = placeKey(text).replace(/^(?:the|to|at|in|then|and)\s+/, '').trim();
+  const place = allPlaces[t];
+  return !!place && place.type !== 'quest' && place.type !== 'transport';
+};
 // getLoose strips a directional prefix before giving up, so "North of
 // Ardougne" routes to Ardougne.
 const resolvesAsPlace = (name) => {
@@ -187,7 +204,8 @@ function inspect(step) {
   // would have put a wrong label on the step.
   const arr0 = arrival.get(step.sub);
   const canArrive = (arr0 && arr0.tier !== 'NONE')
-    || (MOVEMENT.test(step.text) && (!!target || namesSomewhere(step.text)));
+    || ((MOVEMENT.test(step.text) || isBareDestination(step.text))
+        && (!!target || namesSomewhere(step.text)));
   const canAutoTick = step.path !== 'none' || hasCheckpoint || !!errands || canArrive;
   if (!canAutoTick) flags.push('MANUAL ONLY      no detector, no checkpoint, no chain, no arrival');
   else if (step.path === 'none' && canArrive && !hasCheckpoint && !errands) {

@@ -216,6 +216,26 @@ public class PlaceManager
 	}
 
 	/**
+	 * Is this name a place you TRAVEL to, as opposed to a quest?
+	 *
+	 * Quest start points live in the same namespace so a quest name can be
+	 * clicked for a route, but they are not destinations in their own
+	 * right: the guide has bare steps reading "Cabin fever" and "One small
+	 * favour", and treating those as "be here" would let walking past the
+	 * giver tick off a whole quest. The type field already records the
+	 * difference, so this is a data question rather than a guess.
+	 */
+	public synchronized boolean isTravelDestination(String name)
+	{
+		Place place = local.get(key(name));
+		if (place == null)
+		{
+			place = bundled.get(key(name));
+		}
+		return place != null && !"quest".equals(place.type) && !"transport".equals(place.type);
+	}
+
+	/**
 	 * Like get(), but forgiving about directional prefixes — the guide's
 	 * authored location tags say "West of Lumbridge" or "South-west of
 	 * Castle Wars"; the base place is close enough for navigation.

@@ -1340,6 +1340,39 @@ public class IronscapePlugin extends Plugin
 		java.util.regex.Pattern.CASE_INSENSITIVE);
 
 	/**
+	 * Leading filler on a step that is otherwise just a destination —
+	 * "To Lumby", "Then Varrock east bank".
+	 */
+	private static final java.util.regex.Pattern DESTINATION_FILLER =
+		java.util.regex.Pattern.compile("^(?:the|to|at|in|then|and)\\s+", java.util.regex.Pattern.CASE_INSENSITIVE);
+
+	/**
+	 * Is this sub nothing but a destination? The guide writes some travel
+	 * steps as a bare place — "Lumby", "Varrock east bank" — which name
+	 * where to be without using a movement VERB, so MOVEMENT_WORD cannot
+	 * see them and they could not tick by any route.
+	 *
+	 * Deliberately strict: the WHOLE text has to be the place, so "Kill a
+	 * chicken at Fred's farm" is untouched and cannot tick by showing up.
+	 * Quest and transport names are excluded by PlaceManager, because they
+	 * share the place namespace — without that, the bare steps "Cabin
+	 * fever" and "One small favour" would tick by walking past the giver.
+	 *
+	 * These steps still have to get past annotationItemsCarried, which is
+	 * what makes this safe rather than eager: "Lumby" carries a six-item
+	 * kit, so it ticks on arriving PREPARED, never on merely passing through.
+	 */
+	private boolean isBareDestination(String text)
+	{
+		if (text == null)
+		{
+			return false;
+		}
+		String trimmed = DESTINATION_FILLER.matcher(text.trim()).replaceFirst("").trim();
+		return !trimmed.isEmpty() && placeManager.isTravelDestination(trimmed);
+	}
+
+	/**
 	 * Frontier step id whose manual ⌖ capture is holding auto-navigation:
 	 * while the frontier stays on this step, the captured route is not
 	 * recomputed away. Null = no hold.
@@ -1808,7 +1841,8 @@ public class IronscapePlugin extends Plugin
 			}
 			String text = sub.getPlainText();
 			if (MOVEMENT_WORD.matcher(text).find()
-				|| CHARTER.matcher(text).find() || SPIRIT_TREE.matcher(text).find())
+				|| CHARTER.matcher(text).find() || SPIRIT_TREE.matcher(text).find()
+				|| isBareDestination(text))
 			{
 				String location = owner.getMetadata().get("location");
 				boolean somewhere = placeManager.lastPlaceIn(text) != null
@@ -4433,7 +4467,8 @@ public class IronscapePlugin extends Plugin
 		// gnome stronghold") but IS the movement instruction.
 		if (!travelGoalSubs.contains(sub.getId())
 			&& !networkTravel
-			&& !MOVEMENT_WORD.matcher(sub.getPlainText()).find())
+			&& !MOVEMENT_WORD.matcher(sub.getPlainText()).find()
+			&& !isBareDestination(sub.getPlainText()))
 		{
 			return false;
 		}
