@@ -1098,8 +1098,18 @@ public class IronscapePlugin extends Plugin
 		{
 			return true;
 		}
-		int space = full.indexOf(' ');
-		String first = space > 0 ? full.substring(0, space) : full;
+		// The game's article is not the guide's: she is "The Lady of the
+		// Lake" in the menu and "Lady of the lake" in the step, which failed
+		// BOTH tests — the full name for the extra word, and the leading-word
+		// fallback because "the" is below the floor (owner's screenshot,
+		// before this had ever run).
+		String bare = full.startsWith("the ") ? full.substring(4) : full;
+		if (bare != full && containsWord(haystack, bare))
+		{
+			return true;
+		}
+		int space = bare.indexOf(' ');
+		String first = space > 0 ? bare.substring(0, space) : bare;
 		return first.length() >= 4 && containsWord(haystack, first);
 	}
 
@@ -1438,6 +1448,14 @@ public class IronscapePlugin extends Plugin
 		"\\b(?:go|walk|run|head|return|travel|enter|exit|climb|cross|move|proceed|sail|ride|fly|swim|tele|teleport|tabs?|charter|cart|carpet)\\b"
 			+ "|\\bmake (?:your|my) way\\b",
 		java.util.regex.Pattern.CASE_INSENSITIVE);
+
+	/**
+	 * Is the route currently pointed at a BANK because the frontier step's
+	 * kit is banked? Withdrawing the kit is not "progress" and fires no
+	 * event, so without re-checking, the route stays on the bank after the
+	 * reason for it has gone.
+	 */
+	private volatile boolean navRoutedToBank;
 
 	/**
 	 * The sub tells you to hold a CONVERSATION — "speak to Lady of the
@@ -3623,6 +3641,15 @@ public class IronscapePlugin extends Plugin
 		// menu (owner: "options not showing"). Reapply per tick; cheap.
 		highlightStageDialog();
 		detectConversation();
+		// A bank stop is the one route whose REASON can disappear without
+		// any event: the kit comes out of the bank and nothing tells the
+		// router. Same 10-tick cadence the errand re-post uses, and only
+		// while a bank is actually why we routed, so it costs nothing on
+		// every other step.
+		if (navRoutedToBank && tickCounter % 10 == 0)
+		{
+			maybeNavigateToNext();
+		}
 		currentSubIsQuest = current != null && questGoalBySub.containsKey(current.sub.getId());
 
 		updateStepOverlay();
@@ -6168,8 +6195,16 @@ public class IronscapePlugin extends Plugin
 		WorldPoint bankFirst = bankFirstTarget(window.get(0));
 		if (bankFirst != null)
 		{
+			// Remember that a BANK is why we are routing here, so the tick
+			// handler knows to look again. Withdrawing the kit completes
+			// nothing, and every other trigger is an event — death, login,
+			// a teleport, a stage change, progress — so with the items in
+			// hand the route simply stayed pointed at the bank until the
+			// owner pressed Go (2026-08-09, in play, Doric's quest).
+			navRoutedToBank = true;
 			return bankFirst;
 		}
+		navRoutedToBank = false;
 
 		// "Use the spirit tree and go to X": the journey STARTS at the
 		// nearest spirit tree, not at the far-off destination — Shortest
