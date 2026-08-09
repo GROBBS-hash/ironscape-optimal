@@ -81,6 +81,8 @@ class StepRow extends JPanel
 	private static final Color CHIP_FG = new Color(0xc2, 0xab, 0x7c);
 	private static final Color CHIP_QUEST_FG = new Color(0x8f, 0xbf, 0x8f);
 	private static final Color NOTE_FG = new Color(0xb8, 0xb1, 0xa5);
+	/** Warning chips — the same red the missing-item counts use (MISSING_HEX). */
+	private static final Color WARN_FG = new Color(0xe5, 0x73, 0x73);
 	private static final Color NOTE_LABEL_FG = new Color(0x87, 0x7e, 0x6f);
 	private static final Color ITEM_NAME_FG = new Color(0xc9, 0xc4, 0xbc);
 
@@ -125,6 +127,16 @@ class StepRow extends JPanel
 		addGearBadge();
 		addAnnotationLink();
 		addMetadataChips();
+
+		// Right-click anywhere on the card to jump here. Attached to the card
+		// AND to each row's text/panel, because a child component that gets
+		// the click never bubbles it to the card.
+		attachStepMenu(this);
+		for (SubRowUi row : subRows)
+		{
+			attachStepMenu(row.panel);
+			attachStepMenu(row.text);
+		}
 
 		// Trailing commentary paragraphs — informational, not tickable.
 		// Boxed "NOTE" blocks (cards & chips restyle): the old grey italic
@@ -701,6 +713,62 @@ class StepRow extends JPanel
 		add(badge);
 	}
 
+	/**
+	 * "Start from here": make this the step the guide is on, WITHOUT ticking
+	 * anything off.
+	 *
+	 * The guide's own notes sometimes say to do things out of order — "Goblin
+	 * Diplomacy is now required before starting The Lost Tribe… complete it
+	 * first, then do The Lost Tribe afterward". Until now the only way to move
+	 * on was to tick the steps you were stepping over, which records them as
+	 * done when they are not, and pollutes the manual-tick record the plugin
+	 * uses to spot detection that silently failed.
+	 *
+	 * Sets position to index - 1 because findWindow starts at position + 1, so
+	 * this lands the frontier ON the step you clicked. Steps behind position
+	 * are already treated as deliberately skipped and drop out of the window,
+	 * which is what makes the jump reversible: right-click the earlier step
+	 * when you come back and it becomes the frontier again.
+	 */
+	private void attachStepMenu(java.awt.Component component)
+	{
+		component.addMouseListener(new java.awt.event.MouseAdapter()
+		{
+			@Override
+			public void mousePressed(java.awt.event.MouseEvent e)
+			{
+				maybeShowMenu(e);
+			}
+
+			@Override
+			public void mouseReleased(java.awt.event.MouseEvent e)
+			{
+				maybeShowMenu(e);
+			}
+
+			private void maybeShowMenu(java.awt.event.MouseEvent e)
+			{
+				// Platforms disagree about which of press/release is the
+				// trigger, so both ask and only one answers.
+				if (!e.isPopupTrigger())
+				{
+					return;
+				}
+				javax.swing.JPopupMenu menu = new javax.swing.JPopupMenu();
+				javax.swing.JMenuItem here =
+					new javax.swing.JMenuItem("Start from here (step " + step.getGlobalIndex() + ")");
+				here.setToolTipText("Make this the step the guide is on"
+					+ " — nothing gets ticked off, and you can jump back the same way");
+				here.addActionListener(a -> {
+					ctx.getProgress().setPosition(ctx.getVariant(), step.getGlobalIndex() - 1);
+					ctx.getOnProgressChanged().run();
+				});
+				menu.add(here);
+				menu.show(e.getComponent(), e.getX(), e.getY());
+			}
+		});
+	}
+
 	/** Header for multi-action steps: master checkbox + label + step-level buttons. */
 	private JPanel buildHeader()
 	{
@@ -1015,11 +1083,27 @@ class StepRow extends JPanel
 	{
 		String location = step.getMetadata().get("location");
 		String quest = step.getMetadata().get("quest");
-		if (location == null && quest == null)
+		// Structural annotations: a step the game has retired, and a
+		// prerequisite the guide's step ORDER predates. Both are things the
+		// prose note says and nothing else surfaces, and either can appear on
+		// a step carrying no location or quest metadata at all — so they are
+		// read before the early return, not after it.
+		String obsolete = ctx.getAnnotations().getObsolete(step.getId());
+		String prerequisite = ctx.getAnnotations().getPrerequisiteQuest(step.getId());
+		if (location == null && quest == null && obsolete == null && prerequisite == null)
 		{
 			return;
 		}
 		List<JLabel> chips = new ArrayList<>();
+		if (obsolete != null)
+		{
+			chips.add(noticeChip("⚠ No longer possible", obsolete, WARN_FG));
+		}
+		if (prerequisite != null)
+		{
+			chips.add(noticeChip("⚠ Needs " + prerequisite + " first",
+				"The guide does this quest later — see the step's note", WARN_FG));
+		}
 		if (location != null)
 		{
 			chips.add(chip("📍 " + location, location, CHIP_FG));
@@ -1098,9 +1182,9 @@ class StepRow extends JPanel
 	}
 
 	/** One bordered chip; clicking routes to its place via Shortest Path. */
-	private JLabel chip(String label, String target, Color fg)
+	/** The chip look, shared by the ones you can click and the ones you can't. */
+	private void styleChip(JLabel chip, Color fg)
 	{
-		JLabel chip = new JLabel(label);
 		chip.setFont(new Font(Font.DIALOG, Font.PLAIN, 10));
 		chip.setForeground(fg);
 		chip.setOpaque(true);
@@ -1108,6 +1192,28 @@ class StepRow extends JPanel
 		chip.setBorder(BorderFactory.createCompoundBorder(
 			BorderFactory.createLineBorder(BOX_EDGE, 1),
 			BorderFactory.createEmptyBorder(1, 5, 1, 5)));
+	}
+
+	/**
+	 * A chip that SAYS something rather than going somewhere.
+	 *
+	 * The clickable chip below routes to a place and advertises that in its
+	 * tooltip and cursor. A warning has no destination, so it gets neither —
+	 * a hand cursor over "No longer possible" promises a route that does not
+	 * exist and would navigate to the reason text.
+	 */
+	private JLabel noticeChip(String label, String tooltip, Color fg)
+	{
+		JLabel chip = new JLabel(label);
+		styleChip(chip, fg);
+		chip.setToolTipText(tooltip);
+		return chip;
+	}
+
+	private JLabel chip(String label, String target, Color fg)
+	{
+		JLabel chip = new JLabel(label);
+		styleChip(chip, fg);
 		chip.setCursor(java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.HAND_CURSOR));
 		chip.setToolTipText("Show the route (needs the Shortest Path plugin)");
 		chip.addMouseListener(new java.awt.event.MouseAdapter()
@@ -1357,12 +1463,17 @@ class StepRow extends JPanel
 			// the text, which is what pushes ⌖/Go off the panel edge.
 			// runsHtml returns a whole <html><body> document, so the prefix has
 			// to go INSIDE the body — Swing's parser drops anything before it.
+			//
+			// Green (the panel's existing SATISFIED_HEX, not a new colour) with
+			// a colon, so it reads as a label rather than blending into the
+			// prose; it greys with the rest of the card once the step is done.
 			int bodyAt = html.indexOf("<body>");
 			if (!multi && bodyAt >= 0)
 			{
 				int at = bodyAt + "<body>".length();
 				html = html.substring(0, at)
-					+ "<span style='color:#8c8578'>" + step.getGlobalIndex() + "</span>&nbsp;&nbsp;"
+					+ "<span style='color:" + (completed ? "#808080" : SATISFIED_HEX) + "'>"
+					+ step.getGlobalIndex() + ":</span>&nbsp;&nbsp;"
 					+ html.substring(at);
 			}
 			text.setText(html);

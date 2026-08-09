@@ -90,6 +90,34 @@ public class StepAnnotation
 	public String quest;
 
 	/**
+	 * This step can no longer be done — the game changed under the guide.
+	 * The string is the REASON, shown on the chip's tooltip.
+	 *
+	 * "Get 100% hosidius favour" is the case: the Kourend favour system was
+	 * removed in January 2024, so the step has no completion path and never
+	 * will. Without a flag it reads as ordinary work, and the only way past
+	 * it is to tick a step you never did.
+	 *
+	 * Deliberately NOT auto-skipped. Skipping for the player would move the
+	 * frontier on evidence the plugin cannot check — the guide's own note is
+	 * the only source — and a wrong auto-skip is invisible. It marks the
+	 * step; "Start from here" on the next one moves past it.
+	 */
+	public String obsolete;
+
+	/**
+	 * A quest that must be FINISHED before this step can be started, when
+	 * the guide's step order predates the requirement.
+	 *
+	 * The Lost Tribe now requires Goblin Diplomacy, which the guide does 25
+	 * steps LATER — so following the order as written stalls at a quest you
+	 * cannot start. Informational only: it never gates completion, because
+	 * the step is genuinely doable once the prerequisite is met and nothing
+	 * here should be able to wedge a step shut.
+	 */
+	public String prerequisiteQuest;
+
+	/**
 	 * Mid-quest side pickups ("Do Tree gnome village, get Glarial's
 	 * pebble on the way"). Quest Helper owns the quest flow but knows
 	 * nothing about the errand — while the sub's quest is IN_PROGRESS,

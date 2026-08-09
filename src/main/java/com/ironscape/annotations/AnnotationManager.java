@@ -214,6 +214,30 @@ public class AnnotationManager
 		return b == null ? null : b.note;
 	}
 
+	/** Why this step can no longer be done; null = it still can. */
+	public synchronized String getObsolete(String annotationId)
+	{
+		StepAnnotation l = local.get(annotationId);
+		if (l != null && l.obsolete != null)
+		{
+			return l.obsolete;
+		}
+		StepAnnotation b = bundled.get(annotationId);
+		return b == null ? null : b.obsolete;
+	}
+
+	/** A quest that must be finished before this step can start; null = none. */
+	public synchronized String getPrerequisiteQuest(String annotationId)
+	{
+		StepAnnotation l = local.get(annotationId);
+		if (l != null && l.prerequisiteQuest != null)
+		{
+			return l.prerequisiteQuest;
+		}
+		StepAnnotation b = bundled.get(annotationId);
+		return b == null ? null : b.prerequisiteQuest;
+	}
+
 	/** "N of any item from a set" check (warm clothing); null = none. */
 	public synchronized StepAnnotation.GearCheck getGearCheck(String annotationId)
 	{

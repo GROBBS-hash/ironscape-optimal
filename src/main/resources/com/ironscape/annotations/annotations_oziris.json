@@ -956,7 +956,8 @@
      "name": "gp",
      "quantity": null
     }
-   ]
+   ],
+   "prerequisiteQuest": "Goblin Diplomacy"
   },
   "67baf2f956": {
    "requires": {
@@ -6824,6 +6825,9 @@
   },
   "58ad4841dd": {
    "quest": "Biohazard"
+  },
+  "732e8c7412": {
+   "obsolete": "The Kourend favour system was removed in January 2024. All Hosidius content (fruit stalls, farming patches, Tithe Farm, the Mess) is freely accessible now, so there is nothing left to do here."
   }
  }
 }
