@@ -55,7 +55,17 @@ public class QuestHandoffOverlay extends Overlay
 		/** Our step finished mid-quest: come back to us. */
 		STOP,
 		/** Our route just stood down: the quest is Quest Helper's now. */
-		START
+		START,
+		/**
+		 * You logged in part way through a quest.
+		 *
+		 * Not a handoff at all — nothing moved, which is exactly the
+		 * problem. START fires on the stand-down EDGE, and logging back in
+		 * has no edge: guidance was already Quest Helper's when you left.
+		 * So the one moment you have genuinely forgotten where you were was
+		 * the one moment nothing told you (owner, 2026-08-09).
+		 */
+		RESUME
 	}
 
 	/** Everything the banner shows. Rebuilt only when a handoff fires. */
@@ -81,6 +91,17 @@ public class QuestHandoffOverlay extends Overlay
 		public static Model start(String quest)
 		{
 			return new Model(Kind.START, quest, null);
+		}
+
+		/**
+		 * You just logged in and this quest is already in progress. Same
+		 * instruction as START, different reason, so it says the reason —
+		 * "takes over here" would be a lie about a handoff that happened
+		 * some other session.
+		 */
+		public static Model resume(String quest)
+		{
+			return new Model(Kind.RESUME, quest, null);
 		}
 	}
 
@@ -123,33 +144,69 @@ public class QuestHandoffOverlay extends Overlay
 
 		graphics.setFont(FontManager.getRunescapeBoldFont());
 		FontMetrics boldMetrics = graphics.getFontMetrics();
-		String headline = stopping
-			? "STOP following Quest Helper"
-			: "Quest Helper takes over here";
+		String headline;
+		if (stopping)
+		{
+			headline = "STOP following Quest Helper";
+		}
+		else if (model.kind == Kind.RESUME)
+		{
+			headline = "You left off mid-quest";
+		}
+		else
+		{
+			headline = "Quest Helper takes over here";
+		}
 
 		graphics.setFont(FontManager.getRunescapeFont());
 		FontMetrics metrics = graphics.getFontMetrics();
 		int maxTextWidth = Math.min(MAX_WIDTH, viewport.width - 2 * PADDING) - 2 * PADDING;
-		List<String> body = new ArrayList<>(wrap(stopping
-			? model.quest + " is deliberately left part-finished - the guide comes back to it."
+		String bodyText;
+		if (stopping)
+		{
+			bodyText = model.quest + " is deliberately left part-finished - the guide comes back to it.";
+		}
+		else if (model.kind == Kind.RESUME)
+		{
+			bodyText = model.quest + " is still in progress. Use Quest Helper: search "
+				+ model.quest + ".";
+		}
+		else
+		{
 			// Two short lines, not four long ones (owner, on seeing it in
 			// play): a banner is read at a glance or not at all. What has to
 			// survive the cut is the instruction and the reassurance that the
 			// guide comes back - the route vanishing with no explanation is
 			// the single most-reported "navigation is broken".
-			: "Use Quest Helper: search " + model.quest + ".",
-			metrics, maxTextWidth));
+			bodyText = "Use Quest Helper: search " + model.quest + ".";
+		}
+		List<String> body = new ArrayList<>(wrap(bodyText, metrics, maxTextWidth));
 		// Telling someone to stop following Quest Helper without saying HOW
 		// leaves its arrows on screen fighting our route (owner, 2026-08-08).
 		// We cannot highlight its X for them — that button lives in Quest
 		// Helper's own Swing side panel, not in a game widget we can draw on
 		// — so the next best thing is naming exactly where it is. The same
 		// applies in reverse: name the panel to select it in.
-		body.addAll(wrap(stopping
-			? "Close it in the Quest Helper side panel: click the X "
-				+ "next to the quest's name, under \"reload quest\"."
-			: "Our route stops here; the guide resumes when you finish it.",
-			metrics, maxTextWidth));
+		String followUp;
+		if (stopping)
+		{
+			followUp = "Close it in the Quest Helper side panel: click the X "
+				+ "next to the quest's name, under \"reload quest\".";
+		}
+		else if (model.kind == Kind.RESUME)
+		{
+			// NOT "our route stops here" — on login it often has not. The
+			// step's kit is frequently in the bank, and bank-first routes
+			// there before standing down (the owner's own Observatory login
+			// did exactly that), so claiming the route has stopped would
+			// contradict the line he is being drawn along.
+			followUp = "The guide picks up again once the quest is done.";
+		}
+		else
+		{
+			followUp = "Our route stops here; the guide resumes when you finish it.";
+		}
+		body.addAll(wrap(followUp, metrics, maxTextWidth));
 		List<String> next = model.next == null
 			? List.of() : wrap("Next: " + model.next, metrics, maxTextWidth);
 

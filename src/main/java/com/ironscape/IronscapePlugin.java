@@ -2720,6 +2720,10 @@ public class IronscapePlugin extends Plugin
 				navOnLoginPending = false;
 				logNavDecision("login: resuming route to the next target");
 				maybeNavigateToNext();
+				// AFTER the nav decision, deliberately: if that decision was
+				// the stand-down, it has already said this and announceStandDown
+				// will have claimed the step id.
+				announceMidQuestResume();
 			}
 		}
 		if (recentTeleportTicks > 0)
@@ -6253,6 +6257,58 @@ public class IronscapePlugin extends Plugin
 			handoffModel = com.ironscape.overlay.QuestHandoffOverlay.Model.start(quest.getName());
 			handoffBannerTicks = HANDOFF_BANNER_TICKS;
 			notifier.notify(quest.getName() + " is Quest Helper's from here.");
+		}
+	}
+
+	/**
+	 * You logged in part way through a quest — say which one.
+	 *
+	 * The gap this closes: the STOP and START banners both fire on an EDGE,
+	 * and logging back in has no edge. Guidance was already Quest Helper's
+	 * when you logged out, so nothing transitions and nothing fires — the
+	 * one moment you have genuinely forgotten where you were is the one
+	 * moment the plugin says nothing (owner, on logging in mid-Observatory).
+	 *
+	 * Deliberately narrow, because a banner on every login would be noise
+	 * and would devalue the rare STOP one (wave 19's weighting argument):
+	 *
+	 *   - only on a REAL login, once, off the same resume hook as nav;
+	 *   - only when the frontier step's own quest is IN_PROGRESS. Not
+	 *     started means there is nothing to resume, and finished means the
+	 *     step is about to tick itself;
+	 *   - only if the stand-down has not already announced this step, so a
+	 *     login that lands straight on the stand-down says it once, not
+	 *     twice;
+	 *   - only when Quest Helper is actually installed. Naming a panel the
+	 *     player does not have is worse than silence.
+	 *
+	 * Client thread (quest state, chat, overlay model).
+	 */
+	private void announceMidQuestResume()
+	{
+		if (!questHelperInstalled())
+		{
+			return;
+		}
+		Current current = findCurrent();
+		if (current == null || current.step.getId().equals(standDownAnnouncedStepId))
+		{
+			return;
+		}
+		Quest quest = stepQuest(current);
+		if (quest == null || cachedQuestState(quest) != QuestState.IN_PROGRESS)
+		{
+			return;
+		}
+		standDownAnnouncedStepId = current.step.getId();
+		client.addChatMessage(ChatMessageType.CONSOLE, "",
+			"<col=00ff00>IRONSCAPE: " + quest.getName() + " is still in progress"
+				+ " - use Quest Helper to pick it up.</col>", null);
+		if (config.showHandoffBanner())
+		{
+			handoffModel = com.ironscape.overlay.QuestHandoffOverlay.Model.resume(quest.getName());
+			handoffBannerTicks = HANDOFF_BANNER_TICKS;
+			notifier.notify("You left off part way through " + quest.getName() + ".");
 		}
 	}
 
