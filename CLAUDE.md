@@ -738,6 +738,120 @@ refresh when "Failed to login" appears.
   capture; hub pin at b8c994d, now ~70 commits behind — bump after a
   calm session.
 
+- SESSION WAVE 18 (2026-08-09 evening, LIVE play-test, main at `0bb0f05`,
+  10 commits, all pushed; hub pin still `3638c2f`, now 10 behind):
+  **the word "the" caused three separate failures, and a stale backlog
+  number nearly sent the session down the wrong road.**
+  **CHECKPOINTS VERIFIED, NOT CHANGED.** Biohazard `varp 68 >= 14` and Lost
+  Tribe `varbit 532 >= 10` are both CORRECT, checked against `qh-tree.mjs`
+  rather than recalled. The convention is exact and now recorded: **the value
+  is the QH state whose work the NEXT step begins.** Two independent textual
+  matches prove it — state 5 IS the Varrock library and state 6 IS the Goblin
+  Village, which is precisely where the guide's two "until you need to go
+  to…" steps stop. Biohazard state 12 is the Varrock pub leg, 14 is "return
+  to Elena", so "Continue Biohazard" ends at Guidor. NOTE for next time: I
+  first claimed these earlier values were "confirmed in play". They were not
+  — steps 256/258 sit AHEAD of position 240. The textual argument stands
+  alone and needed no play data.
+  **THE "23 TRAVEL STEPS" WAS STALE.** Top of the value list, and wave 16b's
+  arrival correction had already absorbed nearly all of it. Measured with
+  preflight's own classifier: the real class was **6 steps with no movement
+  VERB**, in two halves. Three verbless journeys ("Make your way to
+  Wintertodt", "Take the cart to Shilo Village", "Carpet back to Shantay
+  pass") — each added word measured against the whole guide first, each
+  matches exactly one step. Three bare place names ("Lumby", "Varrock
+  east/west bank"): safe only because `annotationItemsCarried` already
+  demands the kit in hand, so "Lumby" ticks on arriving PREPARED. The naive
+  bare-name rule was MEASURED AND NARROWED — 2 of its 5 hits were QUESTS
+  ("Cabin fever", "One small favour") living in the place namespace as giver
+  pins, so walking past a giver would have ticked off a whole quest. They are
+  excluded on `type`, a data field, not a guess.
+  **ARRIVING IS NOT TALKING** (owner report). "Go under the mountain and
+  speak to Lady of the lake" ticked on reaching the pin. **One fault, three
+  symptoms**: the tick advanced the frontier, so the sub stopped being
+  current, which is what removed the NPC outline and the dialogue help at the
+  exact moment they were due. Fixed in two stages — a guard (`TALK_INSTRUCTION`
+  blocks arrival; exactly 3 steps guide-wide), then a real **conversation
+  detector** reading the dialogue box's own NAME widget (`InterfaceID.ChatLeft
+  .NAME`). No proxy, no radius, no timing window. Narrow by design: the step
+  must NAME the speaker (so #330 "ask every question" stays a hand tick), only
+  subs `hasAnyGoal` rejects are eligible (so "talk to the duke to START Rune
+  mysteries" keeps completing off quest state, not off hello), and checkpoints
+  and chains still outrank it. Closes the talk steps open since wave 16b —
+  Juliet, Reldo, the Oracle, Martin. **101 -> 89 hand-tick steps.**
+  **"THE" BROKE THREE THINGS.** The menu says "**The** Lady of the Lake"; the
+  step says "Lady of the lake". (1) The conversation detector compared full
+  names then fell back to the leading word — "the", under its own 4-char floor
+  — so it **would have failed on the very step it was written for**, caught
+  from a SCREENSHOT before it ever ran. (2) The scene NPC matcher had the
+  identical bug, which is why she was never outlined. (3) The 4-char floor
+  itself nearly hid it. If a fourth turns up, build a shared name-normaliser;
+  three data points on one NPC did not justify it yet. Same class as wave 13's
+  quest-name aliases — the guide and the game disagree about articles as a
+  matter of course.
+  **HER OUTLINE HAD A SECOND CAUSE, and it is a whole bug class.**
+  `places.json` held BOTH `lady of the lake` and `lady of the lake in taverly`
+  at IDENTICAL coordinates. An NPC name inside a LONGER place span is read as
+  the place talking (the rule that stops "Barbarian" lighting up in "Barbarian
+  Village"), so the alias suppressed her. Silent failure — no warning, no log
+  line. **NEW `tools/audit-place-spans.mjs`.** Its first version was WRONG and
+  the record matters: "one display contains another at the same spot" reported
+  ~40 pairs, ALL fine ("Desert Treasure I" contains "Desert Treasure"; "Ceril
+  Carnillean" contains "Ceril") because a fuller proper NAME hides nothing —
+  the NPC matches at full length and the equal-length rule keeps it. The real
+  shape is a name plus a **locational qualifier**. Validated in BOTH
+  directions via `--places` against the buggy revision: finds the Lady and
+  nothing else, clean on current. Two things mirrored from `PlaceManager`
+  rather than recalled, both of which I had wrong: the alternation is built
+  from **displays**, not keys, and sorted **longest-first**, which is exactly
+  why one scan returns the alias and never the name inside it.
+  **NAV STAYED AT THE BANK** (owner report, log-confirmed). Bank-first routed
+  him to Falador west bank; with the clay and ore in hand it never moved on.
+  Cause: nav recomputes on EVENTS — death, login, teleport, stage change,
+  progress — and **withdrawing a kit is none of them**. `navRoutedToBank` now
+  re-checks every 10 ticks while a bank is why it routed, the cadence errands
+  already use. CONFIRMED IN PLAY.
+  **47 CAPTURES HAD NEVER SHIPPED.** ⌖ captures are local by design, but the
+  owner makes them *so users do not have to*, which only works if bundled —
+  and a reinstall would have taken them. **21 harvested.** Held back with
+  reasons: 22 stale BRUHsailer-era keys (the multi-sub ids give them away —
+  Oziris is atomic, every live key ends `:0`), 3 CAVE INTERIORS (blurite, ZMI
+  warriors, Brimstail — SP cannot draw into an interior and Brimstail already
+  has a bundled ENTRANCE pin these would override; **owner's call, still
+  open**), 1 tombstone. "Charter to port sarim" landing 341 tiles away at Port
+  Khazard is CORRECT — wave 7 makes a charter ⌖ the BOARDING dock. Merged
+  never replaced: 10 keys already carried scraper item lists; verified after,
+  0 keys lost, 0 fields changed. **Harvest at the end of every session.**
+  **FACILITIES: small class, and the bottleneck is the WIKI.** "Make 5 molten
+  glass" needs a furnace and never says so, which is why it was hand-pinned.
+  `seed-facilities` now also reads the facility a step's PRODUCT implies, and
+  `tools/audit-implied-facilities.mjs` measures it: **9 steps, 2 pinned**. The
+  DRY RUN mattered more than the audit — it found a landmine predating the
+  change: **six steps match the `range` facility while meaning the SKILL**
+  ("Get range void from PC", "chin to at least 87 range"), rejected only
+  because that wiki page returns no pins. Luck, not correctness; the day it
+  resolves the seeder sends people to a fire in Lumbridge to get void. A range
+  now needs cooking evidence. **The real blocker is template disagreement:**
+  Furnace publishes `{{Map}}` (why furnaces always worked), Potter's Wheel uses
+  `{{ObjectLocLine}}` AND `Potter's_wheel` is a REDIRECT `action=raw` will not
+  follow (wave 6's gotcha again), and Range/Altar publish no location list at
+  all so no page-scraping will ever seed them. `seed-npc-spots` already parses
+  ObjectLocLine — reuse it. Also caught before shipping: BLOWING molten glass
+  into orbs uses a pipe and happens anywhere, so only MAKING it implies a
+  furnace.
+  **THE 39 UNROUTABLE, MEASURED: mostly a LABELLING problem.** ~24 are advice,
+  grinds or structural markers where a pin would be arbitrary; ~8 are endgame
+  bosses far past where nav matters; **~7 are genuinely worth pinning** (smith
+  dart tips, mithril grapple, ammonite crabs, compost bins, toadflax, tree
+  spirits, molten glass+gems). Much smaller than it looked, and what blocks
+  the pinnable ones is missing wiki pin data, not logic.
+  **CONFIRMED IN PLAY:** the conversation detector, nav leaving the bank, both
+  ticking end to end. **NOT confirmed:** the Lady's OUTLINE (fixed after he
+  last stood there).
+  **PROCESS:** built in a throwaway `git worktree` twice while the client was
+  live, and checked for a running client before EVERY gradle command — the
+  wave 17 failure did not recur. Owner asked for SHORTER session reports.
+
 - SESSION WAVE 17 (2026-08-09, all-day LIVE play-test, main at `3be94ca`,
   13 commits, all pushed; hub pin still `3638c2f`): **a UI-and-information
   session. Almost nothing was a detection bug; nearly everything was the

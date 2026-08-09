@@ -534,7 +534,60 @@ and inventory outline.
 
 ---
 
-## NEXT SESSION — start here (rewritten 2026-08-09, end of wave 17)
+## NEXT SESSION — start here (rewritten 2026-08-09, end of wave 18)
+
+**Run `node tools/preflight.mjs` before playing.** 89 hand-tick steps now
+(was 101 at the start of wave 18).
+
+### 1. Confirm the Lady of the Lake's OUTLINE — the only unverified fix
+
+Everything else from wave 18 was confirmed in play. This one was fixed
+after you had already left her. Untick the step, stand next to her, and
+check she gets a silhouette.
+
+Two causes were fixed: her name carries an article the step omits, and a
+duplicate pin (`lady of the lake in taverly`) was suppressing her. If she
+is STILL dark, it is a third cause and the log will not show it — say so
+and I will read `NpcTargetOverlay` directly rather than guess again.
+
+### 2. Three captures need your call
+
+Held back from the harvest because Shortest Path cannot draw a route into
+a cave interior, and the rule since wave 5 is to anchor at the entrance:
+
+- blurite mine (`bbbd9a9020` → 3036,9582)
+- ZMI Zamorak warriors (`b3a38e5fec` → 3018,5615)
+- Brimstail ess mine (`06b3df5fd7` → 2409,9812) — this one already has a
+  bundled ENTRANCE pin at 2403,3418 that yours would override
+
+If you meant them as the precise SPOT rather than the route target, the
+mechanism is an errand chain's route/satisfaction split, which expresses
+both. Your call per pin.
+
+### 3. Then, in value order
+
+- **Target drift** (wave 13's list) — now the single biggest driver of
+  manual pinning. Per-step ⌖ captures; only you can make them. Wave 13
+  tried and failed to find a general rule twice, so this is hand work.
+- **`{{ObjectLocLine}}` parsing in `seed-facilities`** — cheap, and
+  `seed-npc-spots` already has the parser. Unlocks the pottery wheel;
+  also fix `Potter's_wheel`, a redirect `action=raw` will not follow.
+  Range and Altar are NOT fixable this way — no location list exists.
+- **The ~7 genuinely pinnable steps** out of the 39 (smith dart tips,
+  mithril grapple, ammonite crabs, compost bins, toadflax, tree spirits,
+  molten glass+gems). The other ~32 want a LABEL, not a pin.
+
+### Standing habits worth keeping
+
+- **Harvest ⌖ captures at the end of every session.** 47 had accumulated
+  locally and none of them shipped. That is the whole point of you making
+  them.
+- Hub pin still `3638c2f`, now **10 commits behind**. Bump after a calm
+  session — wave 18 was not calm.
+
+---
+
+## Previous session list (written 2026-08-09, end of wave 17)
 
 **Run `node tools/preflight.mjs` before playing.** It now knows all of
 `targetFor`'s sources, so its numbers can be trusted — which they could not
