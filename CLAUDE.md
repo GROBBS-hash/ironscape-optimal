@@ -738,6 +738,113 @@ refresh when "Failed to login" appears.
   capture; hub pin at b8c994d, now ~70 commits behind — bump after a
   calm session.
 
+- SESSION WAVE 17 (2026-08-09, all-day LIVE play-test, main at `3be94ca`,
+  13 commits, all pushed; hub pin still `3638c2f`): **a UI-and-information
+  session. Almost nothing was a detection bug; nearly everything was the
+  panel or an overlay telling the owner something untrue.**
+  **THE PLUGIN HUB IS NOT STUCK ON US.** Read the checks properly: the red
+  X is titled *"Requires maintainer review"* and fails BY DESIGN until a
+  human approves. `build` passes, `mergeable: true`, one file, two lines.
+  106 open new-plugin PRs, oldest 22 days, ours 17 — mid-pack, though the
+  queue is NOT FIFO (PRs numbered 600 later merge same-day; small plugins
+  get picked off). A reviewer on Discord (`/ghauth` unlocks #development)
+  asked "are you doing networking" and pointed at `import
+  java.net.URLEncoder`. We never made a request — it was a string helper
+  stashing a place name in a Swing href — but **the import is what a scan
+  sees**, so both it and URLDecoder are now a hand-rolled percent codec,
+  with encode+decode in ONE class so they cannot drift (the existing tests
+  caught the one real difference immediately: URLEncoder writes space as
+  "+", ours "%20"). His HTML remark was NOT acted on: there is no HTML in
+  the properties file, the PR body or the README, only Swing JLabel
+  markup, which RuneLite's own plugins use throughout. Asked for
+  specifics.
+  **THE PANEL WAS LYING IN THREE WAYS.** (1) Quest kits showed seven
+  numberless carry-list items where QH said plainly "1 x Pot" — we HAD the
+  numbers and were throwing them away, since cross-check parsed
+  getItemRequirements for names only. `seed-quest-requirements.mjs` fills
+  in 38 quantities across 20 quest steps, and dodges the trap that QH's
+  constructor DEFAULTS to 1: taken literally that puts a green "Astral
+  rune 1/1" on While Guthix Sleeps, so a defaulted 1 is trusted only for
+  things you hold one of, never a stackable (9 left alone). (2) A
+  requirement badge counted the BANK past what the step asked —
+  "clay 10/6" with six in the bag — now capped at the requirement, because
+  where the items are is what the colour and 🏦 already say. (3) "copper
+  0/4" beside four in the bank: `item_ids.json` has `"copper" -> 436` and
+  that map is read in exactly ONE place, `lookupIconId`, so the name got a
+  copper-ore SPRITE while counting matched by NAME and found nothing. A
+  right picture over a wrong count is the most convincing way to be wrong.
+  `audit-goals` could not catch it because it treats item_ids KEYS as
+  proof a name is real — same audit-vs-plugin drift as the codec. Fixed as
+  a CLASS: the alias chain already turns "mind" into "mind rune", so it
+  now turns "copper" into "copper ore" (measured first — exactly two keys
+  are one word short of a real item, and "laws" already worked).
+  **OVERLAYS: green means us, cyan means Quest Helper.** Four overlays
+  drew in (0,255,255) — QH's exact cyan — so the two plugins painted over
+  each other with nothing to tell them apart. All four now take a
+  configurable colour (the first colour setting the plugin has had),
+  defaulting to green. Both ITEM overlays drew a rounded rect around the
+  SLOT; they now use `ItemManager.getItemOutline`, the same API QH uses,
+  so ours trace the sprite. Inventory hints also NARROWED — the default
+  branch unioned step kit + sub kit + every goal, so seven items glowed
+  where QH lit one garlic. Now: active errand stage's items, else the
+  sub's detected goals, else NUMBERED requirements, never the carry list.
+  Murder Mystery went 7 outlines -> 1. The SHOP overlay deliberately keeps
+  the wide list.
+  **NEW: `tools/preflight.mjs`** — reads the persisted route position and
+  says what the next N steps can and cannot do (MANUAL ONLY / NO ROUTE /
+  CARRY-LIST KIT). **Its own numbers were wrong three times before they
+  were right**, each time because it modelled `targetFor` from memory
+  instead of its sources: it did not know quest steps route to the GIVER,
+  that place names resolve via `firstPlaceIn`, or — the big one — that a
+  step's own 📍 LOCATION tag is a routing source. That last correction took
+  "nowhere to route" from **132 to 44** guide-wide, and the inflated figure
+  had already been written into CLAUDE.md and repeated to the owner.
+  Corrected in place. Also counts ARRIVAL as a completion path (a step with
+  no detector still ticks by walking there), taking hand-tick from 139 to
+  **101**. A check nobody believes is worse than no check.
+  **EARLY-GUIDE PASS** (the owner's question: have the improvements been
+  applied backwards?). Audits and seeders always were — they are
+  guide-wide. Play-verification never can be, since he will not re-walk
+  those steps, so their defects can only ever be found by a NEW user, and
+  the hand-tick recording that would have been evidence only started two
+  days ago (2 data points, both on steps we had just "fixed"). Measured:
+  the completed region is in BETTER shape than what is ahead (11% vs 23%
+  hand-tick). Real finds: **X Marks the Spot**, the first quest a new user
+  meets, had four dig steps with no pins and no detection — now pinned and
+  checkpointed off `VarbitID.CLUEQUEST` (8063), resolved through QH's
+  QuestVarbits registry rather than guessed; and the clue hunter gloves/
+  boots dig at 2579,3378, whose wiki page independently confirmed the garb
+  pin we already had. **Ten missing PLACES seeded** from the guide's own
+  unresolved 📍 tags (Keldagrim 9 steps, Dorgesh-Kaan 4, Trollheim, Desert
+  Quarry, Weiss...); God Wars Dungeon pinned at its SURFACE entrance per
+  the ZMI rule, and "South of Khazard" keyed `khazard` because getLoose
+  strips the direction. 22 unresolved tags -> 12, of which 10 are not
+  places ("Various" alone is 59 steps).
+  **CHECKPOINTS: only 2 of 8 "continue quest" steps can carry one.** Lost
+  Tribe `varbit 532 >= 10` and Biohazard `varp 68 >= 14`. Recorded why the
+  rest cannot: **Dragon Slayer's DRAGONQUESTVAR (177) also carries bit
+  flags 11-20**, so any `>=` is true the moment one is set (the barcrawl
+  trap); Gertrude's Cat references no var at all; and Merlin's magic words
+  is a step QH ITSELF says to tick by hand.
+  **CONFIRMED IN PLAY:** the QH stand-down, chain-completion ticking the
+  Merlin step on login, dialogue highlighting actually colouring an option
+  (which retroactively settles wave 16's open question — the path works,
+  so Morgan's failure really was the two causes found there), bank-first
+  routing to Catherby for banked copper.
+  **NOT A BUG, third occurrence:** a teleport marker on a WORLD TILE is
+  Shortest Path's own transport suggestion. Ours only ever highlight UI
+  widgets. Our hint had correctly logged `none` — because it measures the
+  PLAYER's leg as a straight line (Catherby->Taverley reads 123 tiles;
+  the real walk crosses White Wolf Mountain). That is the exact limitation
+  wave 14 measured and left open, on the very same mountain that started
+  it. Both obvious fixes were already rejected on data.
+  **PROCESS FAILURE worth keeping: I ran `gradlew test` twice while the
+  owner's client was live**, the thing wave 11 recorded as breaking a
+  running client. No damage this time (a later `clean` build removed any
+  half-written classes), but the rule exists because the failure is
+  invisible until the panel dies. Check for the client before EVERY build,
+  not just the first.
+
 - SESSION WAVE 16b (2026-08-08 late, LIVE play-test after the desk work;
   main at `c913f26`, pushed; hub pin stays `3638c2f`): **three reports, and
   the lesson is that none of them needed a game to find.**

@@ -534,7 +534,54 @@ and inventory outline.
 
 ---
 
-## NEXT SESSION — start here (rewritten 2026-08-09, end of wave 16's play-test)
+## NEXT SESSION — start here (rewritten 2026-08-09, end of wave 17)
+
+**Run `node tools/preflight.mjs` before playing.** It now knows all of
+`targetFor`'s sources, so its numbers can be trusted — which they could not
+be for most of wave 17.
+
+### Unproven, in the order you will meet them
+
+1. **"Continue Biohazard"** (`varp 68 >= 14`) and **"Continue Lost tribe"**
+   (`varbit 532 >= 10`). Both on your route, neither has ever fired. If either
+   ticks early or never, the value is wrong and I want to hear it from you
+   rather than assume.
+2. **The narrowed inventory outlines.** Watch whether the one item you need is
+   the one glowing. On a step with no detected goal you now get the numbered
+   requirements only — if that ever feels too sparse, the fallback is the thing
+   to loosen.
+3. **Green outlines against scenery.** Item sprites sit on a dark inventory
+   background; a green NPC silhouette on grass is a different test. There is a
+   **Highlight colour** setting now — retune it yourself, no rebuild needed.
+4. **Keep Le Faye's descent legs** still cannot be reached on this account.
+   Needs a fresh Merlin's Crystal or another one-way interior.
+
+### Then, in value order
+
+- **23 travel steps with no travel goal** — the biggest remaining detector
+  win, and the one that wants you at the keyboard because of its blast radius.
+- **39 unroutable steps** guide-wide. Sampled: most are grinds ("do slayer
+  until 65") where a pin would be arbitrary. Genuinely pinnable stragglers:
+  "Mine 15 clay south of Khazard", "Camp Cave horrors for mask".
+- **The wave 13 target-drift list** — per-step ⌖ captures, which only you can
+  make.
+
+### Plugin Hub
+
+Nothing is failing: the red check is the standard "requires maintainer
+review" gate. The networking flag ron pointed at is cleared. **His HTML
+remark is unanswered** — there is no HTML in the properties file, PR body or
+README, only Swing JLabel markup, so it needs specifics before anyone acts.
+Also worth asking him whether an auto-accept path exists; if it does,
+clearing flags beats waiting.
+
+**Pin stays at `3638c2f`.** When it moves it should point at a build that
+INCLUDES the java.net removal, or the review will look at the version that
+raised the question.
+
+---
+
+## Previous session list (written 2026-08-09, end of wave 16's play-test)
 
 **Run this first, every session, before you play:**
 
