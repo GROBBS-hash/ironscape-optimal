@@ -384,7 +384,19 @@ public class ItemTracker
 		// means the potion, any dose, and the new dose rule would have
 		// read a stated "(1)" as "one-dose only", quietly making the badge
 		// stricter than the sentence.
-		Map.entry("agility pots", "agility potion"));
+		Map.entry("agility pots", "agility potion"),
+		// Second review pass (owner, 2026-08-09) — the five the first page
+		// left open. Same shape as every row above: right id, right
+		// sprite, a count that could never leave 0.
+		Map.entry("b gloves", "barrows gloves"),
+		Map.entry("dramen branches", "dramen branch"),
+		Map.entry("pack of normal compost", "compost pack"),
+		Map.entry("translation notes", "translated notes"),
+		// "Get range void from PC" buys the whole ranged set, but only the
+		// helm is a distinct item name to count — the top and robe are
+		// shared with the melee/mage sets. So this counts the piece that
+		// identifies the set, not the set.
+		Map.entry("range void", "void ranger helm"));
 
 	/**
 	 * The in-game item names a guide phrase might refer to, most literal
