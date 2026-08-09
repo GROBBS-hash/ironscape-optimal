@@ -4447,6 +4447,66 @@
    "x": 2930,
    "y": 10197,
    "plane": 0
+  },
+  "keldagrim": {
+   "display": "Keldagrim",
+   "x": 2879,
+   "y": 10176,
+   "plane": 0
+  },
+  "dorgesh-kaan": {
+   "display": "Dorgesh-Kaan",
+   "x": 2723,
+   "y": 5314,
+   "plane": 0
+  },
+  "mos le'harmless": {
+   "display": "Mos Le'Harmless",
+   "x": 3735,
+   "y": 2999,
+   "plane": 0
+  },
+  "trollheim": {
+   "display": "Trollheim",
+   "x": 2891,
+   "y": 3678,
+   "plane": 0
+  },
+  "desert quarry": {
+   "display": "Desert Quarry",
+   "x": 3172,
+   "y": 2912,
+   "plane": 0
+  },
+  "weiss": {
+   "display": "Weiss",
+   "x": 2870,
+   "y": 3940,
+   "plane": 0
+  },
+  "braindeath island": {
+   "display": "Braindeath Island",
+   "x": 2144,
+   "y": 5120,
+   "plane": 0
+  },
+  "isafdar": {
+   "display": "Isafdar",
+   "x": 2244,
+   "y": 3182,
+   "plane": 0
+  },
+  "khazard": {
+   "display": "Port Khazard",
+   "x": 2653,
+   "y": 3159,
+   "plane": 0
+  },
+  "god wars dungeon": {
+   "display": "God Wars Dungeon",
+   "x": 2918,
+   "y": 3745,
+   "plane": 0
   }
  }
 }
