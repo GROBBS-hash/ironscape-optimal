@@ -272,10 +272,18 @@ function inspect(step) {
 const where = positionFromProfile();
 const position = +arg('--position', where ? where.position : 0);
 const count = +arg('--steps', 15);
-const window = showAll ? steps : steps.slice(position, position + count);
+// Mirrors IronscapePlugin.findWindow, which starts at position + 1: the step
+// AT position is the one you just finished, not the one coming. Starting at
+// position put an already-done step at the head of every report -- harmless
+// looking, but this check exists to say what is AHEAD, and the whole point of
+// mirroring the plugin is that the two cannot disagree about which step that
+// is. It also matters for reading a report after "Start from here", which
+// sets position to index - 1 for exactly this reason.
+const from = showAll ? 0 : position + 1;
+const window = showAll ? steps : steps.slice(from, from + count);
 
 if (!showAll) {
-  console.log(`IRONSCAPE PRE-FLIGHT — ${window.length} steps from position ${position}`
+  console.log(`IRONSCAPE PRE-FLIGHT — ${window.length} steps from step ${from} (position ${position})`
     + (where && !process.argv.includes('--position') ? `  (profile "${where.profile}")` : ''));
   console.log('Everything below is something you would otherwise find by standing in front of it.\n');
 }
@@ -291,7 +299,9 @@ for (let i = 0; i < window.length; i++) {
   }
   if (notes.some((n) => n.startsWith('quest step'))) totals.quest++;
   if (showAll || (!flags.length && !notes.length)) continue;
-  const n = showAll ? i : position + i;
+  // `from`, not `position` — the window starts at position + 1, and a label
+  // derived from the old start silently renamed every row by one.
+  const n = from + i;
   console.log(`${String(n).padStart(4)}  ${step.id}  ${step.text.slice(0, 68)}`);
   for (const f of flags) console.log(`        ${f}`);
   for (const nt of notes) console.log(`        ok: ${nt}`);
