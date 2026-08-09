@@ -5426,15 +5426,56 @@ public class IronscapePlugin extends Plugin
 			wanted.addAll(stage.items);
 			return hintIdsFor(wanted);
 		}
-		for (StepAnnotation.ItemNeed need : annotationManager.getItems(current.step.getId()))
-		{
-			wanted.add(need.name);
-		}
-		for (StepAnnotation.ItemNeed need : annotationManager.getItems(current.sub.getId()))
-		{
-			wanted.add(need.name);
-		}
+		// FOCUS, in priority order. Outlining every item a step mentions is
+		// what made this overlay noise: on a step carrying seven items,
+		// seven glowed, while Quest Helper outlined the one garlic its
+		// current instruction wanted (owner, in play).
+		//
+		// So narrow to what THIS action is about, and never to the guide's
+		// carry list — an unnumbered item is "have this on you around now",
+		// not "use this next", which is the same distinction the panel
+		// draws by colouring those counts grey.
+		//
+		// Honest limit: our unit is a whole guide step, often several
+		// actions, so this approximates QH rather than matching it. Errand
+		// stages are the exception — a stage's `items` is per-action, which
+		// is why that branch above returns immediately.
 		List<GoalDetector.ItemGoal> goals = itemGoalsBySub.get(current.sub.getId());
+		java.util.List<String> focus = new java.util.ArrayList<>();
+		if (goals != null)
+		{
+			for (GoalDetector.ItemGoal goal : goals)
+			{
+				focus.add(goal.getItemName());
+			}
+		}
+		if (focus.isEmpty())
+		{
+			// No detected goal: fall back to what the step REQUIRES, which
+			// is the numbered items only. Optional and quest-granted ones
+			// are not this action's business either.
+			for (String id : new String[]{current.step.getId(), current.sub.getId()})
+			{
+				for (StepAnnotation.ItemNeed need : annotationManager.getItems(id))
+				{
+					if (need.quantity != null
+						&& !Boolean.TRUE.equals(need.optional)
+						&& !Boolean.TRUE.equals(need.granted))
+					{
+						focus.add(need.name);
+					}
+				}
+			}
+		}
+		// The SHOP overlay keeps the wide list: standing in a shop, seeing
+		// every item this step might have you buy is help, not noise.
+		for (String id : new String[]{current.step.getId(), current.sub.getId()})
+		{
+			for (StepAnnotation.ItemNeed need : annotationManager.getItems(id))
+			{
+				wanted.add(need.name);
+			}
+		}
 		if (goals != null)
 		{
 			for (GoalDetector.ItemGoal goal : goals)
@@ -5449,18 +5490,23 @@ public class IronscapePlugin extends Plugin
 			// the shorter word suffix too.
 			String full = tab.group(1).toLowerCase(Locale.ROOT);
 			wanted.add(full);
+			focus.add(full);
 			if (full.contains(" "))
 			{
 				wanted.add(full.substring(full.indexOf(' ') + 1));
+				focus.add(full.substring(full.indexOf(' ') + 1));
 			}
 		}
 		// "Chronicle tele" with the Chronicle in the BAG rather than worn:
 		// the equipment-slot hint stands down (see activeEquippedTeleport),
 		// so outline the inventory copy instead of pointing nowhere.
+		// Both lists: the sub NAMES this one, so it is precisely the "use
+		// this next" case the focus list is for.
 		if (CHRONICLE_TELE.matcher(current.sub.getPlainText()).find()
 			&& itemTracker.wornCountOf("chronicle") == 0)
 		{
 			wanted.add("chronicle");
+			focus.add("chronicle");
 		}
 		// The same list drives the SHOP overlay, which cannot use the ids
 		// below: what you are there to buy is by definition not in your
@@ -5474,7 +5520,7 @@ public class IronscapePlugin extends Plugin
 			}
 		}
 		shopHintItemNames = names;
-		return hintIdsFor(wanted);
+		return hintIdsFor(focus);
 	}
 
 	/** Inventory slot item ids whose names match any wanted name. */
