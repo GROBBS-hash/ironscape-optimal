@@ -3355,9 +3355,21 @@ public class IronscapePlugin extends Plugin
 				// The guide speaks in plurals ("fire strike imps", "kill
 				// cows"); the NPC is named in the singular ("Imp"). Match
 				// the name and its plural forms, word-bounded either side.
+				// The game's article is not the guide's: the menu says "The
+				// Lady of the Lake" and the step says "Lady of the lake", so
+				// the full name matched nothing and she was never outlined
+				// (owner, 2026-08-09). Try the bare name too — the same
+				// mismatch the conversation detector hit on this NPC.
+				String bare = clean.startsWith("the ") ? clean.substring(4) : clean;
 				if (!errandOnly)
 				{
-					for (String variant : pluralVariants(clean))
+					List<String> forms = new ArrayList<>();
+					forms.addAll(java.util.Arrays.asList(pluralVariants(clean)));
+					if (!bare.equals(clean))
+					{
+						forms.addAll(java.util.Arrays.asList(pluralVariants(bare)));
+					}
+					for (String variant : forms)
 					{
 						int at = subText.indexOf(variant);
 						if (at > 0
