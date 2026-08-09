@@ -1231,10 +1231,18 @@ class StepRow extends JPanel
 		final JCheckBox checkBox;
 		final JEditorPane text;
 		final SubStep sub;
+		/**
+		 * Whether this row belongs to a step that also draws a header. Only
+		 * a headerless (single-action) row numbers itself — on a multi-action
+		 * step the header carries the number and repeating it on every clause
+		 * would be noise.
+		 */
+		final boolean multi;
 
 		SubRowUi(SubStep sub, boolean multi)
 		{
 			this.sub = sub;
+			this.multi = multi;
 			boolean completed = ctx.getProgress().isSubCompleted(ctx.getVariant(), step, sub);
 
 			checkBox = new JCheckBox();
@@ -1332,6 +1340,30 @@ class StepRow extends JPanel
 					names.add(goal.getItemName());
 				}
 				html = RichText.linkifyWikiItems(html, names);
+			}
+			// The step's position in the guide, so "where am I?" is answerable
+			// from the card instead of by counting. Only headerless steps need
+			// it (see the `multi` field), which on the atomic Oziris guide is
+			// every step — the "Step N" header this mirrors never renders.
+			//
+			// It is the GLOBAL index, deliberately: the same number the saved
+			// position holds and the same one tools/preflight.mjs prints, so a
+			// step named in conversation is the step you are looking at. The
+			// header's own label counts within a SECTION, which would have
+			// been a second, disagreeing numbering.
+			//
+			// Prefixed INTO the html rather than added as a label: the row is
+			// checkbox | text | buttons, and a fourth column takes width from
+			// the text, which is what pushes ⌖/Go off the panel edge.
+			// runsHtml returns a whole <html><body> document, so the prefix has
+			// to go INSIDE the body — Swing's parser drops anything before it.
+			int bodyAt = html.indexOf("<body>");
+			if (!multi && bodyAt >= 0)
+			{
+				int at = bodyAt + "<body>".length();
+				html = html.substring(0, at)
+					+ "<span style='color:#8c8578'>" + step.getGlobalIndex() + "</span>&nbsp;&nbsp;"
+					+ html.substring(at);
 			}
 			text.setText(html);
 			// JEditorPane's preferred width is the longest UNWRAPPED line,
