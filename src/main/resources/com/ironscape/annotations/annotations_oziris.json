@@ -344,7 +344,12 @@
      "name": "axe",
      "quantity": null
     }
-   ]
+   ],
+   "target": {
+    "x": 3280,
+    "y": 3504,
+    "plane": 0
+   }
   },
   "e295543bde": {
    "items": [
@@ -386,6 +391,11 @@
    "requires": {
     "skill": "MAGIC",
     "level": 13
+   },
+   "target": {
+    "x": 3082,
+    "y": 3439,
+    "plane": 0
    }
   },
   "4381dc2ab1": {
@@ -426,7 +436,12 @@
      "name": "gloves (equip)",
      "quantity": null
     }
-   ]
+   ],
+   "target": {
+    "x": 3013,
+    "y": 3355,
+    "plane": 0
+   }
   },
   "495faaa6f4-2": {
    "items": [
@@ -2081,7 +2096,12 @@
      "ingredient": true
     }
    ],
-   "note": "Make Molten glass: 1x Bucket of sand + 1x Soda ash each."
+   "note": "Make Molten glass: 1x Bucket of sand + 1x Soda ash each.",
+   "target": {
+    "x": 2975,
+    "y": 3369,
+    "plane": 0
+   }
   },
   "9594bb2c0e": {
    "items": [
@@ -2220,7 +2240,12 @@
      "name": "pickaxe",
      "quantity": 1
     }
-   ]
+   ],
+   "target": {
+    "x": 3284,
+    "y": 3366,
+    "plane": 0
+   }
   },
   "5b2af09171": {
    "items": [
@@ -2228,7 +2253,12 @@
      "name": "tinderbox",
      "quantity": 1
     }
-   ]
+   ],
+   "target": {
+    "x": 3078,
+    "y": 3440,
+    "plane": 0
+   }
   },
   "bbbd9a9020": {
    "items": [
@@ -2244,7 +2274,12 @@
      "name": "small fishing net",
      "quantity": 1
     }
-   ]
+   ],
+   "target": {
+    "x": 3275,
+    "y": 3143,
+    "plane": 0
+   }
   },
   "e260d5c680": {
    "items": [
@@ -5286,7 +5321,12 @@
      "name": "pickaxe",
      "quantity": 1
     }
-   ]
+   ],
+   "target": {
+    "x": 2971,
+    "y": 3343,
+    "plane": 0
+   }
   },
   "f92ed3a61e": {
    "items": [
@@ -5493,7 +5533,12 @@
      "name": "coins",
      "quantity": 1500
     }
-   ]
+   ],
+   "target": {
+    "x": 3202,
+    "y": 3432,
+    "plane": 0
+   }
   },
   "84d6f71d36": {
    "items": [
@@ -5517,7 +5562,12 @@
      "name": "coins",
      "quantity": 2400
     }
-   ]
+   ],
+   "target": {
+    "x": 2674,
+    "y": 3144,
+    "plane": 0
+   }
   },
   "167258a523": {
    "items": [
@@ -6628,6 +6678,83 @@
     }
    ],
    "note": "Dig next to the oak tree south-west of the Fishing Guild, just north of East Ardougne. Wiki-sourced pin; the same page gives the garb spot we already have at 1595,3628."
+  },
+  "bba2aebccd": {
+   "target": {
+    "x": 2534,
+    "y": 3435,
+    "plane": 0
+   }
+  },
+  "fbc8aac4d7": {
+   "target": {
+    "x": 2547,
+    "y": 3574,
+    "plane": 0
+   }
+  },
+  "d0595ee8b5": {
+   "target": {
+    "x": 1627,
+    "y": 3948,
+    "plane": 0
+   }
+  },
+  "5005c25791": {
+   "target": {
+    "x": 3226,
+    "y": 3414,
+    "plane": 0
+   }
+  },
+  "d08d1b5285": {
+   "target": {
+    "x": 3239,
+    "y": 3433,
+    "plane": 0
+   }
+  },
+  "139019034f": {
+   "target": {
+    "x": 3276,
+    "y": 3371,
+    "plane": 0
+   }
+  },
+  "348519879e": {
+   "target": {
+    "x": 3024,
+    "y": 3376,
+    "plane": 0
+   }
+  },
+  "84171b2638": {
+   "target": {
+    "x": 2973,
+    "y": 3340,
+    "plane": 0
+   }
+  },
+  "839fa6997d": {
+   "target": {
+    "x": 2673,
+    "y": 3147,
+    "plane": 0
+   }
+  },
+  "484e59e194": {
+   "target": {
+    "x": 2673,
+    "y": 3147,
+    "plane": 0
+   }
+  },
+  "7d6dffa38b": {
+   "target": {
+    "x": 3219,
+    "y": 3395,
+    "plane": 1
+   }
   }
  }
 }
