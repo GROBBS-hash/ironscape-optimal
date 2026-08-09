@@ -6556,6 +6556,60 @@
     "varp": 68,
     "value": 14
    }
+  },
+  "fec8743718:0": {
+   "target": {
+    "x": 3230,
+    "y": 3209,
+    "plane": 0
+   },
+   "requires": {
+    "varbit": 8063,
+    "value": 3
+   },
+   "note": "Dig north of Bob’s Axes in Lumbridge.",
+   "items": [
+    {
+     "name": "spade",
+     "quantity": 1
+    }
+   ]
+  },
+  "729fca4753:0": {
+   "target": {
+    "x": 3203,
+    "y": 3212,
+    "plane": 0
+   },
+   "requires": {
+    "varbit": 8063,
+    "value": 4
+   },
+   "note": "Dig behind (west of) Lumbridge Castle."
+  },
+  "ed91d62a6d:0": {
+   "target": {
+    "x": 3109,
+    "y": 3264,
+    "plane": 0
+   },
+   "requires": {
+    "varbit": 8063,
+    "value": 5
+   },
+   "note": "Dig in Draynor Village, north of the market."
+  },
+  "1032e35280:0": {
+   "target": {
+    "x": 3078,
+    "y": 3259,
+    "plane": 0
+   },
+   "requires": {
+    "varbit": 8063,
+    "value": 6
+   },
+   "note": "Dig by Martin the Master Gardener at the Draynor pig pen — this one yields the casket."
   }
  }
 }
