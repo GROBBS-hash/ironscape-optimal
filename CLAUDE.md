@@ -738,6 +738,49 @@ refresh when "Failed to login" appears.
   capture; hub pin at b8c994d, now ~70 commits behind — bump after a
   calm session.
 
+- SESSION WAVE 20 (2026-08-09 late, short desk run; main at `d684bb3`,
+  2 commits, PUSHED; hub pin still `3638c2f`): **both review pages
+  answered in one pass, and four of the five pin verdicts were no-ops.**
+  Item names: all 5 approved and shipped as COLLOQUIAL entries (b gloves,
+  dramen branches, pack of normal compost, translation notes, range
+  void). `range void` counts the **helm only** — the step buys the whole
+  ranged set but the top and robe share names with the melee/mage sets,
+  so the badge reads 1/1 off the piece that identifies the set. Flagged
+  to the owner; not yet re-decided.
+  **THE PAGE ASKED FOUR SETTLED QUESTIONS.** Its quest-start rows read
+  `build/quest-start-review.json`, written 14 minutes BEFORE wave 19's own
+  "fix four pins" commit — so four approvals landed on pins that already
+  held the proposed coordinates. Fresh audit: **1 row, not 5.** Only Tai
+  Bwo Wannai Trio was live (re-pinned to QH's 2791,3019, overriding wave
+  19's hold — owner's call). Exactly what `decisions-declined.json` exists
+  to prevent, through the back door: **a stale artifact re-asks a settled
+  question as effectively as no record does.** Every other input on that
+  page reads live from resources, so this was the only source that could
+  drift; it now RUNS the audit instead of trusting `build/`. Regenerated:
+  0 rows.
+  **AUDIT-GOALS SECTION 1 CRIED WOLF ON BOTH NAMES JUST APPROVED** —
+  it resolved against the prices mapping, which cannot see UNTRADEABLES,
+  and the workaround was hand-adding each real one to `SPECIAL`, where
+  "this is a substitute family" and "trust me, this item exists" read
+  identically. Section 4 moved to RuneLite's 21k name cache in wave 19;
+  section 1 does now too. All four sections clean.
+  `check-client` counted ONE client as two (the gradlew launcher's
+  classpath names the project) — verdict was always right, only the count
+  was wrong, but "two clients" reads exactly like the wave 11 accident.
+  Fix confirmed on a real launch.
+  **THE HUB-PIN GAP IN THESE NOTES WAS WRONG BY 5x**: recorded as "10
+  behind" (wave 18) and repeated as "~16", actually **84** — pin
+  `3638c2f` is 2026-08-08 12:05, mid wave 12. Same class as wave 17's
+  inflated "132 unroutable" that got written in here and repeated to the
+  owner. **Count it, do not carry it forward.**
+  **UNPLAYED AND STILL OPEN** (unchanged from wave 19, client relaunched
+  on this build): the 8 annotation quest tags — highest risk, they hand
+  guidance to QH where we kept our route, and position 251 sits right in
+  front of steps 256/258 which are the Lost Tribe and Biohazard legs;
+  step 258's stopping-point fix; the Lady of the Lake outline. Hub pin
+  should follow a calm play session, not precede one — 84 commits is a
+  large thing to pin sight-unseen.
+
 - SESSION WAVE 19 (2026-08-09 late, LIVE play-test then a long desk run;
   main at `354056a`, 5 commits, PUSHED; hub pin still `3638c2f`):
   **the theme was audits that confirmed the wrong answer.**
