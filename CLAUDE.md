@@ -738,6 +738,81 @@ refresh when "Failed to login" appears.
   capture; hub pin at b8c994d, now ~70 commits behind — bump after a
   calm session.
 
+- SESSION WAVE 21 (2026-08-09 late/2026-08-10, desk run + a brief look in
+  game; main at `c245c7c`, 3 commits, PUSHED; hub pin `f634cbf`, gap **4**
+  — counted, and 3 of the 4 are tools-only): **step 258 was NEVER
+  TESTABLE, and the guide had said so all along in a note nobody had
+  read.** Its own "Modern alternative" says Goblin Diplomacy is now
+  required BEFORE The Lost Tribe, which the guide does 25 steps LATER at
+  281 — so the route as written stalls at a quest you cannot start, and
+  `varbit 532 = 0` was correct, not a defect. Confirmed against the wiki
+  afterwards (`Quest details|requirements`): Goblin Diplomacy AND Rune
+  Mysteries; Rune Mysteries finishes at 192, so Goblin Diplomacy is the
+  only out-of-order one. The wiki's `startmap = 3210,3222,plane:1` also
+  independently confirms our `the lost tribe` pin.
+  **258 ITSELF DESK-VERIFIED SOUND** (all three watch items): the quest
+  tag resolves through stepQuest's annotation branch, the checkpoint is
+  `varbit 532 >= 6` (state 6 IS the Goblin Village), and the stopping
+  clause strips to leave 📍Varrock. A fourth risk found and already
+  closed: the stripped text still contains a quest NAME, and `the lost
+  tribe` is a quest-type place at the Lumbridge giver — `firstPlaceIn`
+  only routes a quest place after start/begin/do/complete/finish, and
+  "Continue" is deliberately not among them. So the failure would have
+  been Lumbridge, not Goblin Village.
+  **THE NOTES WERE MEASURED BEFORE ANYTHING WAS BUILT.** 14 "Modern
+  alternative" notes: exactly **1** asks for a reorder, **1** marks a step
+  dead (431 Kourend favour, removed Jan 2024), the other 12 are training
+  advice. A note-parsing reorder engine would have been built for N=1 —
+  and their step references do not map onto our index by any constant
+  offset (256's note says "278" for our 281; 533's says "step 1.1.145a",
+  a different scheme entirely). **Resolve these by NAME, never by number.**
+  Shipped instead: right-click **"Start from here"** (sets position to
+  index-1, since findWindow starts at position+1; ticks nothing, and
+  steps behind position already drop out of the window, which is what
+  makes it reversible), plus two annotation fields — `obsolete` (a
+  reason string) and `prerequisiteQuest`. Both INFORMATIONAL: obsolete
+  deliberately does not auto-skip (it would move the frontier on evidence
+  the plugin cannot check, and a wrong auto-skip is invisible), and
+  prerequisiteQuest never gates completion. Their chips do NOT reuse
+  `chip()` — that is a navigation affordance with a hand cursor and a
+  "show the route" tooltip, and a warning has no destination.
+  **STEP NUMBERS: the panel had a "Step N" header that has never once
+  rendered on this guide** — it is built for multi-action steps and Oziris
+  is atomic, so every card takes the headerless path. "Hard to know where
+  I'm up to" was the panel simply never showing one. Numbered with the
+  GLOBAL index (what position stores and preflight prints), not the
+  header's section-relative one, so a step named in conversation is the
+  step on screen. Green + colon, greys when done (owner's restyle).
+  Prefixed INTO the html: a fourth column takes width from the text, which
+  is what pushes ⌖/Go off the edge — and it goes inside `<body>`, since
+  runsHtml returns a whole document and Swing drops anything before it.
+  **TWO TOOLS WERE ANSWERING A DIFFERENT QUESTION THAN THEY PRINTED.**
+  `check-client` timed the log FILE and reported that as the age of OUR
+  output — any plugin keeps the file warm (a worldhopper ping wrote at
+  23:29 while our newest line was 22:45), so it announced "117s ago" for
+  a line 47 minutes old and blocked. Both directions follow: a stale line
+  plus the everyday RuneLite is a false BLOCK, one stack trace pushing our
+  lines out of a fixed 20KB window is a false CLEAR. It now times the last
+  matching LINE. It immediately proved itself both ways — cleared a dead
+  client, then correctly blocked on a genuinely live one (119s).
+  `preflight` decided "quest step" from the DETECTOR PATH alone, so it
+  could not see a step whose quest comes from an annotation tag — which is
+  exactly what the tag exists for. **All 8 tagged steps were invisible**,
+  including the one under test. Now mirrors stepQuest's real chain;
+  144 -> 152 quest steps, +8, which is the 8 tags and nothing else.
+  Recounted while there: **87** hand-tick and **39** no-route guide-wide
+  (CLAUDE.md said 89).
+  **HARVEST: correctly EMPTY.** 23 unbundled local targets = 22 stale
+  BRUHsailer keys (multi-sub ids; Oziris is atomic so live keys end `:0`)
+  + 1 live, which is the Brimstail interior already DECLINED with its
+  reason in `decisions-declined.json`. The record did its job and stopped
+  the re-ask.
+  **OPEN:** 258/263/282 still UNPLAYED and now blocked behind Goblin
+  Diplomacy at 281 — the natural next run is "Start from here" on 281,
+  then back to 256. Lady of the Lake outline still unconfirmed (data side
+  verified: the duplicate alias is gone, audit-place-spans clean). Audits
+  0/0/0/0 and 6 known NOGOAL buy subs.
+
 - SESSION WAVE 20 (2026-08-09 late, short desk run; main at `d684bb3`,
   2 commits, PUSHED; hub pin still `3638c2f`): **both review pages
   answered in one pass, and four of the five pin verdicts were no-ops.**
