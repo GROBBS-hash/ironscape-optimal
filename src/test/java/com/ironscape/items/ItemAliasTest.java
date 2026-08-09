@@ -2,6 +2,7 @@ package com.ironscape.items;
 
 import java.util.Arrays;
 import org.junit.Test;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class ItemAliasTest
@@ -46,6 +47,27 @@ public class ItemAliasTest
 		assertTrue(hasAlias("iron", "iron ore"));
 		// The plural the guide actually writes must work too.
 		assertTrue(hasAlias("coppers", "copper ore"));
+	}
+
+	/**
+	 * A goal that spells out a dose means THAT dose.
+	 *
+	 * canonical() folds "(4)" away so that "drink a restore potion" is
+	 * satisfied by any dose, which is right nearly everywhere and wrong
+	 * for "decant them until you have like 6 full pots": before this,
+	 * twenty-four 1-dose vials read 6/6 while the step's entire job is
+	 * turning them into four-dose ones. Written to fail under the old
+	 * rule — the first assertion is the one that did.
+	 */
+	@Test
+	public void aStatedDoseMeansThatDose()
+	{
+		assertFalse(ItemTracker.nameMatchesGoal("Superantipoison(1)", "superantipoison(4)"));
+		assertFalse(ItemTracker.nameMatchesGoal("Superantipoison(2)", "superantipoison(4)"));
+		assertTrue(ItemTracker.nameMatchesGoal("Superantipoison(4)", "superantipoison(4)"));
+		// Dose-LESS goals keep taking any dose, which is most of the guide.
+		assertTrue(ItemTracker.nameMatchesGoal("Superantipoison(1)", "super antipoison"));
+		assertTrue(ItemTracker.nameMatchesGoal("Restore potion(3)", "restore potion"));
 	}
 
 	@Test

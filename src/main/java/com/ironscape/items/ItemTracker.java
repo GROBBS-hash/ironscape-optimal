@@ -151,8 +151,9 @@ public class ItemTracker
 			}
 			return total;
 		}
+		String[] chain = aliases(name);
 		Integer base = null;
-		for (String candidate : aliases(name))
+		for (String candidate : chain)
 		{
 			Integer count = counts.get(candidate);
 			if (count != null)
@@ -164,7 +165,7 @@ public class ItemTracker
 		// Even with zero of the item itself, a substitute still counts —
 		// look substitutes up under every alias, not just the matched one.
 		int substitutes = 0;
-		for (String candidate : aliases(name))
+		for (String candidate : chain)
 		{
 			String[] alternates = SUBSTITUTES.get(candidate);
 			if (alternates == null)
@@ -183,15 +184,35 @@ public class ItemTracker
 		// matches above always win.
 		if (base == null && substitutes == 0)
 		{
-			String want = canonical(name);
+			// canonical of the RESOLVED key (chain[0]), not the raw name.
+			// aliases() is where "gp"->coins, "noted X"->X, teletab->tab
+			// and the whole COLLOQUIAL map get applied, so measuring the
+			// raw name here meant a colloquial could never reach this
+			// fallback: "super antipoison" -> "superantipoison" was a
+			// dead entry against the carried "Superantipoison(1)", which
+			// is what the new dose test caught on its very first run.
+			String want = canonical(chain.length > 0 ? chain[0] : name);
+			// A goal that NAMES a dose means that dose. canonical() folds
+			// "(4)" away so any dose satisfies any other, which is right
+			// for "drink a restore potion" and wrong for "decant them
+			// until you have 6 full pots" — twenty-four 1-dose vials would
+			// read 6/6 while the step's whole job is turning them into
+			// four-dose ones. Dose-less goals are untouched: this only
+			// engages when the annotation spells the dose out.
+			String wantDose = doseOf(name);
 			if (!want.isEmpty())
 			{
 				for (Map.Entry<String, Integer> entry : counts.entrySet())
 				{
-					if (canonical(entry.getKey()).equals(want))
+					if (!canonical(entry.getKey()).equals(want))
 					{
-						return entry.getValue();
+						continue;
 					}
+					if (wantDose != null && !wantDose.equals(doseOf(entry.getKey())))
+					{
+						continue;
+					}
+					return entry.getValue();
 				}
 			}
 		}
@@ -209,13 +230,26 @@ public class ItemTracker
 		return resolve(Map.of(itemName.toLowerCase(Locale.ROOT), 1), goalName) > 0;
 	}
 
+	/** The "(4)" of "Superantipoison(4)", or null when it names no dose. */
+	private static String doseOf(String name)
+	{
+		java.util.regex.Matcher m = DOSE.matcher(name);
+		return m.find() ? m.group(1) : null;
+	}
+
+	private static final java.util.regex.Pattern DOSE =
+		java.util.regex.Pattern.compile("\\((\\d+)\\)");
+
 	/**
 	 * Spelling-drift-proof form of an item name: lowercase, punctuation
 	 * gone (so possessive 's collapses), every word depluralized.
 	 * "Wizard's mind bomb" and "wizard mind bombs" both become
 	 * "wizard mind bomb".
 	 */
-	static String canonical(String name)
+	// Public so the audit dump can emit the REAL canonical forms rather
+	// than a second copy of this method (com.ironscape.goals is a
+	// different package). Pure function; nothing else changes.
+	public static String canonical(String name)
 	{
 		StringBuilder sb = new StringBuilder();
 		// Numeric potion doses collapse: "Restore potion(3)" and the
@@ -254,24 +288,24 @@ public class ItemTracker
 
 	/** Guide slang -> the item's real in-game name. */
 	private static final Map<String, String> COLLOQUIAL = Map.ofEntries(
-		Map.entry("poh tab", "teleport to house"),
-		Map.entry("poh tabs", "teleport to house"),
-		Map.entry("house tab", "teleport to house"),
-		Map.entry("house tabs", "teleport to house"),
-		Map.entry("varrock tab", "varrock teleport"),
-		Map.entry("falador tab", "falador teleport"),
-		Map.entry("fally tab", "falador teleport"),
-		Map.entry("lumbridge tab", "lumbridge teleport"),
-		Map.entry("lumby tab", "lumbridge teleport"),
-		Map.entry("camelot tab", "camelot teleport"),
-		Map.entry("ardougne tab", "ardougne teleport"),
-		Map.entry("ardy tab", "ardougne teleport"),
+		Map.entry("poh tab", "teleport to house (tablet)"),
+		Map.entry("poh tabs", "teleport to house (tablet)"),
+		Map.entry("house tab", "teleport to house (tablet)"),
+		Map.entry("house tabs", "teleport to house (tablet)"),
+		Map.entry("varrock tab", "varrock teleport (tablet)"),
+		Map.entry("falador tab", "falador teleport (tablet)"),
+		Map.entry("fally tab", "falador teleport (tablet)"),
+		Map.entry("lumbridge tab", "lumbridge teleport (tablet)"),
+		Map.entry("lumby tab", "lumbridge teleport (tablet)"),
+		Map.entry("camelot tab", "camelot teleport (tablet)"),
+		Map.entry("ardougne tab", "ardougne teleport (tablet)"),
+		Map.entry("ardy tab", "ardougne teleport (tablet)"),
 		// The POH tab's in-game name is "Teleport to house"; the guide also
 		// says "house teleport". Redirected tabs (scroll of redirection) are
 		// literally named "<Place> teleport" in game — wiki-confirmed.
-		Map.entry("house teleport", "teleport to house"),
-		Map.entry("house teleports", "teleport to house"),
-		Map.entry("redirected poh tab", "teleport to house"),
+		Map.entry("house teleport", "teleport to house (tablet)"),
+		Map.entry("house teleports", "teleport to house (tablet)"),
+		Map.entry("redirected poh tab", "teleport to house (tablet)"),
 		Map.entry("rimmington tab", "rimmington teleport"),
 		Map.entry("taverley tab", "taverley teleport"),
 		Map.entry("pollnivneach tab", "pollnivneach teleport"),
@@ -281,7 +315,7 @@ public class ItemTracker
 		Map.entry("yanille tab", "yanille teleport"),
 		Map.entry("trollheim tab", "trollheim teleport"),
 		Map.entry("prifddinas tab", "prifddinas teleport"),
-		Map.entry("catherby tab", "catherby teleport"),
+		Map.entry("catherby tab", "catherby teleport (tablet)"),
 		// The sawmill's "regular plank" is the item just called "Plank".
 		Map.entry("regular plank", "plank"),
 		Map.entry("regular planks", "plank"),
@@ -290,8 +324,8 @@ public class ItemTracker
 		Map.entry("wines", "jug of wine"),
 		Map.entry("teleports", "teleport card"),
 		Map.entry("chocolate", "chocolate bar"),
-		Map.entry("dueling ring", "ring of dueling(8)"),
-		Map.entry("dueling rings", "ring of dueling(8)"),
+		Map.entry("dueling ring", "ring of dueling"),
+		Map.entry("dueling rings", "ring of dueling"),
 		Map.entry("soft leather", "leather"),
 		Map.entry("priest robes", "priest gown (top)"),
 		Map.entry("silver", "silver bar"),
@@ -300,7 +334,57 @@ public class ItemTracker
 		// Shops sell "Pot of flour"; the bare item "Flour" exists but is
 		// unobtainable — which is why the existence audit passed it.
 		Map.entry("flour", "pot of flour"),
-		Map.entry("flours", "pot of flour"));
+		Map.entry("flours", "pot of flour"),
+		// The black hat Betty sells is named, in game, just "Wizard hat"
+		// (id 1017) — the black one is the plain one, and every hat that
+		// SAYS black ("Black wizard hat (g)/(t)", 12453/12455) is a trim
+		// variant the guide does not mean. So the guide's phrase is a
+		// DESCRIPTION, not a name, and no amount of plural handling
+		// bridges it.
+		//
+		// Two things conspired to hide that. item_ids maps the phrase to
+		// the right id, so the badge wore a correct SPRITE while counting
+		// matched by NAME and found nothing (the copper-ore shape again,
+		// owner in play). And the id's gameval constant is BLACKWIZHAT,
+		// which reads like a real item name and disagrees with the item's
+		// actual display name — checking the constant CONFIRMS the wrong
+		// answer. The live item mapping (prices.runescape.wiki) is the
+		// authority on names; the constant is not.
+		Map.entry("black wizards hat", "wizard hat"),
+		// Four more of the same shape, found by cross-checking every
+		// item_ids id against the live item mapping rather than against
+		// the gameval constant. All four are LIVE goals whose badge would
+		// have shown the right sprite over a count frozen at 0, and none
+		// had been reported because nobody has stood there holding one.
+		Map.entry("green d'hide top", "green d'hide body"),
+		Map.entry("mithril grapple", "mith grapple"),
+		Map.entry("armor seeds", "crystal armour seed"),
+		Map.entry("enhanced weapon seeds", "enhanced crystal weapon seed"),
+		// The item is "Superantipoison(1)" — ONE word. canonical() strips
+		// the dose but not the space, so the guide's "super antipoison"
+		// misses it by a single character.
+		Map.entry("super antipoison", "superantipoison"),
+		Map.entry("super antipoisons", "superantipoison"),
+		// Reviewed in build/item-names-review.html (owner, 2026-08-09).
+		// Every one had the right id and sprite and counted nothing.
+		Map.entry("d bones", "dragon bones"),
+		Map.entry("dragon scim", "dragon scimitar"),
+		Map.entry("rune scim", "rune scimitar"),
+		Map.entry("empty buckets", "bucket"),
+		Map.entry("maples", "maple logs"),
+		Map.entry("nats", "nature rune"),
+		Map.entry("normal compost", "compost"),
+		Map.entry("normal log", "logs"),
+		Map.entry("red chins", "red chinchompa"),
+		Map.entry("willow branches", "willow branch"),
+		Map.entry("lantern lenses", "lantern lens"),
+		// Approved as "Agility potion(1)" but deliberately seeded WITHOUT
+		// the dose. The review page offers the id's exact name, and that
+		// id happens to be the 1-dose one — but the guide's "agility pots"
+		// means the potion, any dose, and the new dose rule would have
+		// read a stated "(1)" as "one-dose only", quietly making the badge
+		// stricter than the sentence.
+		Map.entry("agility pots", "agility potion"));
 
 	/**
 	 * The in-game item names a guide phrase might refer to, most literal
