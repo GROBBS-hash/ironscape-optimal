@@ -739,8 +739,9 @@ refresh when "Failed to login" appears.
   calm session.
 
 - SESSION WAVE 21 (2026-08-09 late/2026-08-10, desk run + a brief look in
-  game; main at `c245c7c`, 3 commits, PUSHED; hub pin `f634cbf`, gap **4**
-  — counted, and 3 of the 4 are tools-only): **step 258 was NEVER
+  game; main at `ca9328e`, 4 commits, PUSHED; hub pin `f634cbf`, gap **5**
+  — counted at the end, and only ONE commit touches the plugin; the rest
+  are tools and this record): **step 258 was NEVER
   TESTABLE, and the guide had said so all along in a note nobody had
   read.** Its own "Modern alternative" says Goblin Diplomacy is now
   required BEFORE The Lost Tribe, which the guide does 25 steps LATER at
