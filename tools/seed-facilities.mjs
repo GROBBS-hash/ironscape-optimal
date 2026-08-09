@@ -43,6 +43,50 @@ const FACILITY_PAGES = {
 };
 const FACILITY_RE = new RegExp('\\b(' + Object.keys(FACILITY_PAGES).join('|') + ')\\b', 'i');
 
+// The guide usually states the PRODUCT and leaves the equipment implied:
+// "Make 5 molten glass" needs a furnace and never says the word, so the
+// pattern above could not see it and the owner had to pin it by hand in
+// play. Every pin a person sets is one every future user would have had
+// to set too, which is the thing this tool exists to prevent.
+//
+// High-precision on purpose: a loose rule sends people to the wrong
+// building, which is worse than sending them nowhere. Each phrase names
+// a product that cannot be made anywhere else. Note "molten glass" needs
+// its verb -- BLOWING it into orbs uses a pipe and happens anywhere.
+// Kept in step with tools/audit-implied-facilities.mjs, which measures
+// the class and is where a new phrase should be justified first.
+const IMPLIED_FACILITY = [
+  ['furnace', /\b(?:smelt|mak(?:e|ing) \d* ?molten glass|make \d* ?(?:bronze|iron|steel|silver|gold|mithril|adamant|rune) bars?|cannonballs?)\b/i],
+  ['anvil', /\b(?:smith|smithing) (?:\d+ )?(?:a |an |the )?(?:bronze|iron|steel|mithril|adamant|rune)\b/i],
+  ['spinning wheel', /\bspin (?:\d+ )?(?:ball of wool|wool|flax|bow ?string)/i],
+  ['pottery wheel', /\b(?:unfired|make (?:\d+ )?(?:pot|pie dish|bowl)s?)\b/i],
+  ['windmill', /\b(?:grind (?:\d+ )?wheat|make (?:\d+ )?flour|pot of flour)\b/i],
+  ['loom', /\bweave\b/i],
+  ['range', /\bcook (?:\d+ )?(?:the )?(?:raw|shrimp|trout|salmon|lobster|meat|karambwan)/i],
+];
+
+// "range" is the single most dangerous word in this list, because in this
+// guide it is almost always the SKILL: "Get range void from PC", "chin to
+// at least 87 range", "Do Turael slayer until 37 Range". Six steps match
+// it that way and none of them wants a cooking range. They have only ever
+// been rejected because the wiki page happened to return no pins -- luck,
+// not correctness, and the day that page resolves the seeder would send
+// people to a fire in Lumbridge to get void. So a range needs COOKING
+// evidence in the same step before it counts.
+const COOKS = /\b(?:cook|bake|nettle|bowl of water|raw )\b/i;
+
+/** The facility a step needs: named outright, else implied by what it makes. */
+function facilityFor(text) {
+  const named = text.match(FACILITY_RE);
+  if (named) {
+    const facility = named[1].toLowerCase();
+    if (facility === 'range' && !COOKS.test(text)) return null;
+    return facility;
+  }
+  const implied = IMPLIED_FACILITY.find(([, re]) => re.test(text));
+  return implied ? implied[0] : null;
+}
+
 const guide = JSON.parse(fs.readFileSync(GUIDE_FILE, 'utf8'));
 const annotations = JSON.parse(fs.readFileSync(ANNOTATIONS_FILE, 'utf8'));
 const places = JSON.parse(fs.readFileSync(PLACES_FILE, 'utf8')).places;
@@ -73,13 +117,13 @@ for (const ch of guide.chapters) {
   for (const sec of ch.sections) {
     for (const step of sec.steps) {
       const text = runText(step.content);
-      const m = text.match(FACILITY_RE);
-      if (!m) continue;
+      const facility = facilityFor(text);
+      if (!facility) continue;
       const id = stepId(text);
       if (annotations.annotations[id]?.target) continue;
       const town = townOf(text, step.metadata?.location);
       if (!town) continue;
-      wanted.push({ id, text: text.slice(0, 80), facility: m[1].toLowerCase(), town });
+      wanted.push({ id, text: text.slice(0, 80), facility, town });
     }
   }
 }
