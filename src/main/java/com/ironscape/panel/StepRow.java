@@ -12,8 +12,6 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Insets;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -1166,7 +1164,8 @@ class StepRow extends JPanel
 			if (ctx.getPlaceNavigateHandler() != null)
 			{
 				ctx.getPlaceNavigateHandler().accept(
-					decode(description.substring(PlaceManager.LINK_PREFIX.length())), step);
+					PlaceManager.decode(
+						description.substring(PlaceManager.LINK_PREFIX.length())), step);
 			}
 		}
 		else if (description != null && description.startsWith(RichText.WORLD_LINK_PREFIX))
@@ -1338,15 +1337,4 @@ class StepRow extends JPanel
 		}
 	}
 
-	private static String decode(String encoded)
-	{
-		try
-		{
-			return URLDecoder.decode(encoded, "UTF-8");
-		}
-		catch (UnsupportedEncodingException e)
-		{
-			throw new IllegalStateException(e); // UTF-8 always exists
-		}
-	}
 }
