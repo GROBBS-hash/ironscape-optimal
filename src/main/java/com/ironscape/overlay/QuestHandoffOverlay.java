@@ -49,13 +49,39 @@ public class QuestHandoffOverlay extends Overlay
 	/** Never let the banner span an ultrawide client edge to edge. */
 	private static final int MAX_WIDTH = 460;
 
+	/** Which way guidance just moved. */
+	public enum Kind
+	{
+		/** Our step finished mid-quest: come back to us. */
+		STOP,
+		/** Our route just stood down: the quest is Quest Helper's now. */
+		START
+	}
+
 	/** Everything the banner shows. Rebuilt only when a handoff fires. */
 	@Value
 	public static class Model
 	{
+		Kind kind;
 		String quest;
-		/** The guide's next action, already truncated. */
+		/** The guide's next action, already truncated; null hides the line. */
 		String next;
+
+		/** Our step finished part way through a quest — stop following QH. */
+		public static Model stop(String quest, String next)
+		{
+			return new Model(Kind.STOP, quest, next);
+		}
+
+		/**
+		 * We just cleared the route because the quest is Quest Helper's.
+		 * No "next" line: the next thing to do IS the quest in the headline,
+		 * and repeating it back reads like a second instruction.
+		 */
+		public static Model start(String quest)
+		{
+			return new Model(Kind.START, quest, null);
+		}
 	}
 
 	private final Client client;
@@ -93,24 +119,39 @@ public class QuestHandoffOverlay extends Overlay
 			return null;
 		}
 
+		boolean stopping = model.kind == Kind.STOP;
+
 		graphics.setFont(FontManager.getRunescapeBoldFont());
 		FontMetrics boldMetrics = graphics.getFontMetrics();
-		String headline = "STOP following Quest Helper";
+		String headline = stopping
+			? "STOP following Quest Helper"
+			: "Quest Helper takes over here";
 
 		graphics.setFont(FontManager.getRunescapeFont());
 		FontMetrics metrics = graphics.getFontMetrics();
 		int maxTextWidth = Math.min(MAX_WIDTH, viewport.width - 2 * PADDING) - 2 * PADDING;
-		List<String> body = new ArrayList<>(
-			wrap(model.quest + " is deliberately left part-finished — the guide comes back to it.",
-				metrics, maxTextWidth));
+		List<String> body = new ArrayList<>(wrap(stopping
+			? model.quest + " is deliberately left part-finished - the guide comes back to it."
+			// Two short lines, not four long ones (owner, on seeing it in
+			// play): a banner is read at a glance or not at all. What has to
+			// survive the cut is the instruction and the reassurance that the
+			// guide comes back - the route vanishing with no explanation is
+			// the single most-reported "navigation is broken".
+			: "Use Quest Helper: search " + model.quest + ".",
+			metrics, maxTextWidth));
 		// Telling someone to stop following Quest Helper without saying HOW
 		// leaves its arrows on screen fighting our route (owner, 2026-08-08).
 		// We cannot highlight its X for them — that button lives in Quest
 		// Helper's own Swing side panel, not in a game widget we can draw on
-		// — so the next best thing is naming exactly where it is.
-		body.addAll(wrap("Close it in the Quest Helper side panel: click the X "
-			+ "next to the quest's name, under \"reload quest\".", metrics, maxTextWidth));
-		List<String> next = wrap("Next: " + model.next, metrics, maxTextWidth);
+		// — so the next best thing is naming exactly where it is. The same
+		// applies in reverse: name the panel to select it in.
+		body.addAll(wrap(stopping
+			? "Close it in the Quest Helper side panel: click the X "
+				+ "next to the quest's name, under \"reload quest\"."
+			: "Our route stops here; the guide resumes when you finish it.",
+			metrics, maxTextWidth));
+		List<String> next = model.next == null
+			? List.of() : wrap("Next: " + model.next, metrics, maxTextWidth);
 
 		int textWidth = boldMetrics.stringWidth(headline);
 		for (String line : body)

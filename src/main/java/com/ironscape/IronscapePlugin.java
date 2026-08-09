@@ -496,6 +496,16 @@ public class IronscapePlugin extends Plugin
 	private int handoffBannerTicks;
 
 	/**
+	 * The step whose "Quest Helper takes over" banner has already been shown.
+	 *
+	 * The stand-down is re-decided on every navigation event, so without this
+	 * the banner would re-fire on each one. Keyed by STEP rather than by a
+	 * boolean edge so it survives the route flicking away and back (a bank
+	 * stop, a death) and still fires again on the next quest step.
+	 */
+	private String standDownAnnouncedStepId;
+
+	/**
 	 * ~18 seconds. Long enough to finish the dialogue you are in and read
 	 * it, short enough that it never becomes furniture. It expires rather
 	 * than needing a dismiss click - a banner you must close to keep
@@ -1254,7 +1264,17 @@ public class IronscapePlugin extends Plugin
 		{
 			return goal.getQuest();
 		}
-		String questName = current.step.getMetadata().get("quest");
+		// An annotation tag first: it is how a step the guide never labels
+		// ("Continue Lost tribe…") becomes a quest leg the plugin can see.
+		String questName = annotationManager.getQuest(current.sub.getId());
+		if (questName == null)
+		{
+			questName = annotationManager.getQuest(current.step.getId());
+		}
+		if (questName == null)
+		{
+			questName = current.step.getMetadata().get("quest");
+		}
 		if (questName == null)
 		{
 			return null;
@@ -4934,7 +4954,7 @@ public class IronscapePlugin extends Plugin
 				// game. Put it across the viewport and ping the notifier too.
 				if (config.showHandoffBanner())
 				{
-					handoffModel = new com.ironscape.overlay.QuestHandoffOverlay.Model(
+					handoffModel = com.ironscape.overlay.QuestHandoffOverlay.Model.stop(
 						quest.getName(), next);
 					handoffBannerTicks = HANDOFF_BANNER_TICKS;
 					notifier.notify("Guide step done - stop following Quest Helper. Next: " + next);
@@ -5882,6 +5902,12 @@ public class IronscapePlugin extends Plugin
 			return;
 		}
 		clientThread.invokeLater(() -> {
+			// Every outcome below re-decides whether a BANK is why we routed,
+			// so start from "no". Left sticky, the flag outlived its route:
+			// a bank stop on one step kept the 10-tick re-check running on
+			// the next, and — worse — the branches that set it only on the
+			// way IN left it true after standing down.
+			navRoutedToBank = false;
 			// A waiting gravestone outranks EVERYTHING — captures, errands,
 			// stand-downs: without the gear there is no route to follow.
 			if (deathPoint != null)
@@ -5981,7 +6007,20 @@ public class IronscapePlugin extends Plugin
 					WorldPoint kitBank = bankFirstTarget(questCurrent);
 					if (kitBank != null)
 					{
-						logNavDecision("routing to a bank first — the step's kit is banked");
+						// Remember the bank here TOO, not just in
+						// findNextTarget. Withdrawing a kit completes nothing
+						// and fires no event, so without this the 10-tick
+						// re-check never ran on a QUEST step: the route sat on
+						// the bank with the items already in the bag, and the
+						// stand-down below — the whole handoff to Quest Helper
+						// — could not arrive on its own (2026-08-09, in play,
+						// Black Knights' Fortress with its kit banked).
+						navRoutedToBank = true;
+						// Name the bank. "routing to a bank first" alone could
+						// not say WHICH, so a report of "it sent me across
+						// town" took reconstructing from four other lines.
+						logNavDecision("routing to a bank first — the step's kit is banked: "
+							+ kitBank);
 						eventBus.post(new PluginMessage("shortestpath", "path",
 							Map.of("target", kitBank)));
 						return;
@@ -6004,6 +6043,7 @@ public class IronscapePlugin extends Plugin
 				{
 					logNavDecision("standing down: Quest Helper is installed"
 						+ " and this step's quest is in progress");
+					announceStandDown(questCurrent);
 					eventBus.post(new PluginMessage("shortestpath", "clear"));
 					return;
 				}
@@ -6059,6 +6099,49 @@ public class IronscapePlugin extends Plugin
 				eventBus.post(new PluginMessage("shortestpath", "clear"));
 			}
 		});
+	}
+
+	/**
+	 * Say — once per step — that we just handed the wheel to Quest Helper.
+	 *
+	 * The mirror of the "STOP following Quest Helper" banner, and asked for
+	 * in the same shape (owner, 2026-08-09). Note what it is NOT: a prompt on
+	 * every quest step. It fires only where we actively CLEAR a route we were
+	 * drawing, which is the moment that otherwise looks like a fault — the
+	 * line simply vanishes. On this step that lands after the bank trip, not
+	 * before it, which is the whole reason it hangs off the stand-down rather
+	 * than off the quest going in progress.
+	 *
+	 * Client thread only (called from inside the navigation lambda).
+	 */
+	private void announceStandDown(Current questCurrent)
+	{
+		if (questCurrent == null || loginGraceTicks > 0)
+		{
+			return;
+		}
+		String stepId = questCurrent.step.getId();
+		if (stepId.equals(standDownAnnouncedStepId))
+		{
+			return;
+		}
+		Quest quest = stepQuest(questCurrent);
+		if (quest == null)
+		{
+			return;
+		}
+		standDownAnnouncedStepId = stepId;
+		// ASCII only, coloured instead: the game font has no glyph for the
+		// tidy typographic characters and renders them as "?".
+		client.addChatMessage(ChatMessageType.CONSOLE, "",
+			"<col=00ff00>IRONSCAPE: Use Quest Helper for " + quest.getName()
+				+ " - our route stops here and resumes when you finish it.</col>", null);
+		if (config.showHandoffBanner())
+		{
+			handoffModel = com.ironscape.overlay.QuestHandoffOverlay.Model.start(quest.getName());
+			handoffBannerTicks = HANDOFF_BANNER_TICKS;
+			notifier.notify(quest.getName() + " is Quest Helper's from here.");
+		}
 	}
 
 	private String lastNavDecision;
@@ -6339,9 +6422,10 @@ public class IronscapePlugin extends Plugin
 			}
 		}
 		// A travel sub's destination is the LAST place it names.
+		String routableText = withoutStoppingPoint(sub.getPlainText());
 		WorldPoint inText = travelGoalSubs.contains(sub.getId())
-			? placeManager.lastPlaceIn(sub.getPlainText())
-			: placeManager.firstPlaceIn(sub.getPlainText());
+			? placeManager.lastPlaceIn(routableText)
+			: placeManager.firstPlaceIn(routableText);
 		if (inText != null)
 		{
 			return inText;
@@ -6352,6 +6436,29 @@ public class IronscapePlugin extends Plugin
 		// going nowhere.
 		String location = step.getMetadata().get("location");
 		return location == null ? null : placeManager.getLoose(location);
+	}
+
+	/**
+	 * "…until you need to go to X" names where you STOP, not where to go.
+	 *
+	 * "Continue Lost tribe until you need to go to the goblin village" is
+	 * tagged 📍Varrock and the work IS in Varrock — but the only place name
+	 * in the sentence is the one you leave for, so the route pointed 268
+	 * tiles away, at the thing the step ends before reaching. Dropping the
+	 * clause lets it fall back to the step's own area tag.
+	 *
+	 * Phrase-exact rather than a rule about "until": measured across the
+	 * guide, 27 steps say "until" and exactly TWO have this shape, both in
+	 * the Lost Tribe pair. The other 25 are level and quantity targets
+	 * ("chin until 70 range"), which name no place and must not be touched.
+	 */
+	private static final java.util.regex.Pattern STOPPING_POINT =
+		java.util.regex.Pattern.compile(
+			"(?i)\\buntil\\s+you\\s+(?:need|have)\\s+to\\b.*$");
+
+	private static String withoutStoppingPoint(String text)
+	{
+		return text == null ? null : STOPPING_POINT.matcher(text).replaceFirst("");
 	}
 
 	private void navigateToStep(String annotationId)

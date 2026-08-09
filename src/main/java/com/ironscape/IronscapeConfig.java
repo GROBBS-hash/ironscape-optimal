@@ -58,8 +58,8 @@ public interface IronscapeConfig extends Config
 
 	@ConfigItem(
 		keyName = "showHandoffBanner",
-		name = "Show \"back to the guide\" banner",
-		description = "When a guide step finishes part way through a quest, draw an on-screen banner (and send a notification) telling you to stop following Quest Helper"
+		name = "Show Quest Helper handoff banners",
+		description = "Draw an on-screen banner (and send a notification) when guidance changes hands: when our route stands down for a quest, and when a guide step finishes part way through one and you should stop following Quest Helper"
 	)
 	default boolean showHandoffBanner()
 	{
