@@ -47,6 +47,14 @@ try {
     if (/GradleDaemon|gradle-launcher/i.test(cmd)) {
       continue; // a daemon compiles; it is not a client
     }
+    if (/org\.gradle\.wrapper/i.test(cmd)) {
+      // The `gradlew run` launcher itself. Its classpath names this project,
+      // so it matched the client test below and one live client reported as
+      // TWO — which reads exactly like the wave 11 accident where a stray
+      // second client really was left running. Name it for what it is.
+      reasons.push(`pid ${proc.ProcessId} is the gradlew launcher (parent of a run, not a second client)`);
+      continue;
+    }
     if (/IronscapePluginTest|IRONMAN Guide|ironscape/i.test(cmd)) {
       reasons.push(`pid ${proc.ProcessId} looks like our dev client`);
     } else if (/RuneLite\.exe/i.test(proc.CommandLine || '')) {

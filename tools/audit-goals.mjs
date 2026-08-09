@@ -32,6 +32,26 @@ for (const name of Object.keys(JSON.parse(
   fs.readFileSync(path.join(RES, 'items/item_ids.json'), 'utf8')))) {
   known.add(name.toLowerCase());
 }
+// RuneLite's own name cache — 21k names, and unlike the prices mapping it
+// can see UNTRADEABLES. Section 4 switched to this authority in wave 19;
+// section 1 did not, so it kept flagging real items purely because they
+// cannot be traded, and the workaround was to hand-add each one to
+// SPECIAL below. That list then does double duty and hides things: an
+// entry meaning "this is a substitute family, not an item name" reads
+// identically to one meaning "trust me, this item exists".
+//
+// It cried wolf on both of tonight's approved colloquials at once —
+// Barrows gloves and the Void ranger helm are as real as items get.
+{
+  const live = await liveItemNames(path.join(__dirname, '.wiki-cache/item-names-cache.json'));
+  if (live) {
+    for (const name of live.values()) {
+      known.add(name.toLowerCase());
+    }
+  } else {
+    console.warn('WARNING: live item names unavailable — untradeables may flag as unresolvable.\n');
+  }
+}
 
 // Names ItemTracker resolves via SUBSTITUTES or special-cases, not
 // aliases — keep in sync with ItemTracker.java.

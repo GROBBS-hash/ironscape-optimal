@@ -19,6 +19,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import crypto from 'node:crypto';
+import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -197,7 +198,33 @@ for (const s of allSteps) {
 
 // Quest-start pins that still disagree with Quest Helper after the
 // not-a-defect classes are stripped out (audit-quest-start-pins --json).
+//
+// REGENERATED, never just read. This section used to trust whatever was
+// sitting in build/, and on 2026-08-09 that file was fourteen minutes
+// older than the commit that FIXED four of its rows — so the page asked
+// the owner four questions that were already settled, he answered all
+// four, and four of the five verdicts were no-ops against pins that
+// already held the proposed coordinates.
+//
+// That is the exact failure decisions-declined.json exists to prevent,
+// arriving through the back door: a stale artifact re-asks a settled
+// question just as effectively as no record does. Every other input on
+// this page is read live from src/main/resources, so this was the only
+// row source that could drift. The audit is pure node over those same
+// resources, so there is no reason not to just run it.
 const questStartFile = path.join(ROOT, 'build/quest-start-review.json');
+try {
+  execFileSync(process.execPath, [path.join(ROOT, 'tools/audit-quest-start-pins.mjs')],
+    { stdio: 'ignore' });
+} catch {
+  // The audit needs the Quest Helper source cache; without it there is
+  // nothing to compare against. Fall through to whatever build/ holds,
+  // but say so rather than presenting stale rows as current.
+  if (fs.existsSync(questStartFile)) {
+    console.warn('WARNING: could not re-run audit-quest-start-pins — the quest-start '
+      + 'rows below come from a build artifact that may predate recent pin fixes.');
+  }
+}
 if (fs.existsSync(questStartFile)) {
   for (const r of JSON.parse(fs.readFileSync(questStartFile, 'utf8'))) {
     rows.push({
