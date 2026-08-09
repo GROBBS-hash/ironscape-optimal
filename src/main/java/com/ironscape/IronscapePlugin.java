@@ -4603,6 +4603,42 @@ public class IronscapePlugin extends Plugin
 			}
 		}
 
+		// The step's OBJECTIVE is possession, and its own sentence says so:
+		// "decant them until you have like 6 full pots", "Make sure you have
+		// all ghosts ahoy items". The detector cannot name what to count
+		// there ("6 full pots" is not an item), so the annotation carries it
+		// — but annotation items are display-only, which left these steps
+		// with NO completion path at all: the badge read a green 6/6 over a
+		// checkbox nothing could ever tick (owner, standing on it).
+		//
+		// The obvious rule — "no path + all numbered annotation items held"
+		// — was MEASURED AND REJECTED. It changes 25 steps and roughly 2 are
+		// right, because annotation items are overwhelmingly what you BRING,
+		// not what the step is FOR: a spade would tick all six "dig up the
+		// clue" steps on sight, and the barcrawl card would tick all ten
+		// bars at once. That is wave 13's finding arriving from the opposite
+		// direction, and the flags do not separate the cases.
+		//
+		// What separates them is the SENTENCE. A step whose objective is
+		// having something says so in words, so that is what is matched, and
+		// the blast radius is 2 steps guide-wide.
+		//
+		// Two guards, both earned by a real false positive in the
+		// measurement:
+		//   - PARENTHETICALS DON'T COUNT. "Use Brimstails to go to ess mines
+		//     (scrying orb 2/3, make sure you have it with you)" is a
+		//     TRAVEL instruction with a reminder attached; holding the orb
+		//     must not tick it. Stripping bracketed asides drops it.
+		//   - A CHECKPOINT OWNS ITS SUB. Same rule as wave 6's varbits: an
+		//     authored requires clause exists precisely because heuristics
+		//     fired early, so it does not get outvoted by one. That step's
+		//     region checkpoint is its real completion path — invisible to
+		//     completion-paths.tsv, which is why it read as unreachable.
+		if (inFrontierStep && possessionObjectiveMet(step, sub))
+		{
+			return true;
+		}
+
 		// No item/quest goal: a movement step. Arriving at its target
 		// (⌖ capture or recognised place name) completes it — but only at
 		// the frontier.
@@ -4743,6 +4779,82 @@ public class IronscapePlugin extends Plugin
 			}
 		}
 		return true;
+	}
+
+	/**
+	 * Bracketed asides, removed. "(scrying orb 2/3, make sure you have it
+	 * with you)" is a reminder hung off a travel instruction, not the
+	 * instruction — reading the whole string treats the two as the same
+	 * sentence and they are not.
+	 */
+	private static final java.util.regex.Pattern PARENTHETICAL =
+		java.util.regex.Pattern.compile("\\([^)]*\\)");
+
+	/**
+	 * Steps whose objective IS having the things. Deliberately literal: the
+	 * sentence has to say it, because possession is otherwise indis-
+	 * tinguishable from carrying the tools for the job.
+	 */
+	private static final java.util.regex.Pattern POSSESSION_OBJECTIVE =
+		java.util.regex.Pattern.compile(
+			"\\b(?:until you have|make sure you have|until you own|so you have)\\b",
+			java.util.regex.Pattern.CASE_INSENSITIVE);
+
+	/**
+	 * Does this sub's own sentence make POSSESSION the objective, and is
+	 * that possession satisfied?
+	 *
+	 * See the call site for why this is matched on text rather than on the
+	 * shape of the annotation: the wide rule was measured at 25 steps, ~2
+	 * of them correct.
+	 *
+	 * Client thread (item id resolution).
+	 */
+	private boolean possessionObjectiveMet(GuideStep step, SubStep sub)
+	{
+		String text = PARENTHETICAL.matcher(sub.getPlainText()).replaceAll(" ");
+		if (!POSSESSION_OBJECTIVE.matcher(text).find())
+		{
+			return false;
+		}
+		String annotationId = step.getSubSteps().size() == 1 ? step.getId() : sub.getId();
+		// An authored checkpoint is the sub's completion path and outranks
+		// every heuristic, this one included (wave 6).
+		if (annotationManager.getRequirement(annotationId) != null
+			|| annotationManager.getRequirement(sub.getId()) != null)
+		{
+			return false;
+		}
+		List<StepAnnotation.ItemNeed> needs = annotationManager.getItems(annotationId);
+		boolean counted = false;
+		for (StepAnnotation.ItemNeed need : needs)
+		{
+			if (need.quantity == null || need.quantity <= 0
+				|| Boolean.TRUE.equals(need.granted)
+				|| Boolean.TRUE.equals(need.consumed)
+				|| Boolean.TRUE.equals(need.optional)
+				|| Boolean.TRUE.equals(need.ingredient))
+			{
+				// Unnumbered or not-an-objective: no opinion either way. A
+				// step made entirely of these never reaches "counted" and so
+				// never completes here, which is the safe direction.
+				continue;
+			}
+			if (itemTracker.iconIdFor(need.name) <= 0)
+			{
+				return false; // can't count it, so can't claim it is satisfied
+			}
+			int required = need.quantity;
+			int count = itemTracker.bankCountable(need.name, required)
+				? itemTracker.countOf(need.name)
+				: itemTracker.carriedCountOf(need.name);
+			if (count < required)
+			{
+				return false;
+			}
+			counted = true;
+		}
+		return counted;
 	}
 
 	/**

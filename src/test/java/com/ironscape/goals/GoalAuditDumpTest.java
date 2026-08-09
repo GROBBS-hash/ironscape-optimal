@@ -271,6 +271,36 @@ public class GoalAuditDumpTest
 			mark.accept(g.getSub().getId(), "depletion");
 		}
 
+		// Detector goals are not the only way a sub completes, and pretending
+		// otherwise made this dump LIE in the safe-looking direction: it
+		// reported 164 subs as having no completion path, and the first one
+		// examined ("Use Brimstails to go to ess mines") completes perfectly
+		// well off an annotated region checkpoint. Every consumer treats
+		// "none" as "only a human can tick this" — preflight's hand-tick
+		// count, audit-item-gating's blast radius — so an under-count here
+		// becomes an over-count of work everywhere downstream.
+		//
+		// Annotations carry two completion paths of their own: an authored
+		// requires clause (varbit/varp/region/equipped), which OWNS its sub
+		// and outranks every heuristic; and possession, for steps whose
+		// sentence makes having the items the objective.
+		com.google.gson.JsonObject annotations;
+		try (java.io.InputStream in = GoalAuditDumpTest.class.getResourceAsStream(
+			"/com/ironscape/annotations/annotations_oziris.json"))
+		{
+			annotations = new Gson()
+				.fromJson(new java.io.InputStreamReader(in, StandardCharsets.UTF_8),
+					com.google.gson.JsonObject.class)
+				.getAsJsonObject("annotations");
+		}
+		// Mirrors IronscapePlugin.possessionObjectiveMet — see the guards
+		// there. Kept in step with it by dumping the same two conditions,
+		// not by re-deriving them from step text.
+		java.util.regex.Pattern parenthetical = java.util.regex.Pattern.compile("\\([^)]*\\)");
+		java.util.regex.Pattern possession = java.util.regex.Pattern.compile(
+			"\\b(?:until you have|make sure you have|until you own|so you have)\\b",
+			java.util.regex.Pattern.CASE_INSENSITIVE);
+
 		File out = new File("build/completion-paths.tsv");
 		out.getParentFile().mkdirs();
 		try (PrintWriter writer = new PrintWriter(out, StandardCharsets.UTF_8))
@@ -279,6 +309,31 @@ public class GoalAuditDumpTest
 			{
 				for (com.ironscape.guide.SubStep sub : step.getSubSteps())
 				{
+					String annotationId = step.getSubSteps().size() == 1
+						? step.getId() : sub.getId();
+					com.google.gson.JsonObject entry = annotations.getAsJsonObject(annotationId);
+					com.google.gson.JsonObject subEntry = annotations.getAsJsonObject(sub.getId());
+					boolean checkpoint = (entry != null && entry.has("requires"))
+						|| (subEntry != null && subEntry.has("requires"));
+					if (checkpoint)
+					{
+						mark.accept(sub.getId(), "checkpoint");
+					}
+					else if (possession.matcher(
+						parenthetical.matcher(sub.getPlainText()).replaceAll(" ")).find()
+						&& entry != null && entry.has("items"))
+					{
+						for (com.google.gson.JsonElement item : entry.getAsJsonArray("items"))
+						{
+							com.google.gson.JsonObject need = item.getAsJsonObject();
+							if (need.has("quantity") && !need.get("quantity").isJsonNull()
+								&& need.get("quantity").getAsInt() > 0)
+							{
+								mark.accept(sub.getId(), "possession");
+								break;
+							}
+						}
+					}
 					java.util.Set<String> kinds = paths.get(sub.getId());
 					writer.println("PATH\t" + sub.getId()
 						+ "\t" + (kinds == null ? "none" : String.join(",", kinds))
