@@ -31,6 +31,23 @@ public class ItemAliasTest
 		assertTrue(hasAlias("log", "logs"));
 	}
 
+	/**
+	 * "Grab 4 copper" is what every guide says; the item is "Copper ore".
+	 * The badge sat at 0/4 next to a copper-ore icon, because item_ids gave
+	 * the name a SPRITE while counting matched by NAME and found nothing
+	 * (owner, in play). Same shorthand as the elemental runes, one metal
+	 * over.
+	 */
+	@Test
+	public void bareOreNamesResolveToTheOre()
+	{
+		assertTrue(hasAlias("copper", "copper ore"));
+		assertTrue(hasAlias("tin", "tin ore"));
+		assertTrue(hasAlias("iron", "iron ore"));
+		// The plural the guide actually writes must work too.
+		assertTrue(hasAlias("coppers", "copper ore"));
+	}
+
 	@Test
 	public void teleportTabPhrasesResolveToWikiNames()
 	{

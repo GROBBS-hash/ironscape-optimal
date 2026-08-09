@@ -388,7 +388,15 @@ public class ItemTracker
 			firstSingular,   // of-phrase:  "bolts of cloth" -> "bolt of cloth"
 			key + "s",       // plural:     "log" -> "logs"
 			key + " rune",   // elemental:  "mind" -> "mind rune"
-			singular + " rune")); // "minds" -> "mind rune"
+			singular + " rune", // "minds" -> "mind rune"
+			// ORES, the same shorthand one metal over: everybody says
+			// "grab 4 copper", the item is "Copper ore", and the badge sat
+			// at 0/4 beside a copper-ore ICON — because item_ids gave the
+			// name a sprite while counting matched by name and found
+			// nothing (owner, in play). Safe for the same reason the rune
+			// alias is: it only ever resolves if that item really exists.
+			key + " ore",
+			singular + " ore"));
 		// Shop packs: the guide says "bucket pack", the item is "Empty
 		// bucket pack". (Feather/bait packs really are named "X pack",
 		// so the un-prefixed key stays first.)
