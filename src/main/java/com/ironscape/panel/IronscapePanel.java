@@ -766,7 +766,8 @@ public class IronscapePanel extends PluginPanel
 			navigateHandler,
 			placeNavigateHandler,
 			worldHopHandler,
-			this::questStep);
+			this::questStep,
+			() -> jumpToCurrent(true));
 	}
 
 	/**

@@ -738,6 +738,30 @@ class StepRow extends JPanel
 	 * which is what makes the jump reversible: right-click the earlier step
 	 * when you come back and it becomes the frontier again.
 	 */
+	/**
+	 * Make `index` the step the guide is on, and SHOW that it happened.
+	 *
+	 * Setting the position alone changes nothing on screen — no tick, no
+	 * restyle — so the first version of the jump link read as a dead click
+	 * even though it had already moved the position. Scrolling to the new
+	 * current step is the feedback; it is also what the Resume button does,
+	 * so the two cannot land in different places.
+	 */
+	private void goToStep(int index)
+	{
+		ctx.getProgress().setPosition(ctx.getVariant(), index - 1);
+		if (ctx.getJumpToCurrentHandler() != null)
+		{
+			// Already re-points the route, so onProgressChanged would only
+			// make the plugin react twice to one click.
+			ctx.getJumpToCurrentHandler().run();
+		}
+		else
+		{
+			ctx.getOnProgressChanged().run();
+		}
+	}
+
 	private void attachStepMenu(java.awt.Component component)
 	{
 		component.addMouseListener(new java.awt.event.MouseAdapter()
@@ -767,10 +791,7 @@ class StepRow extends JPanel
 					new javax.swing.JMenuItem("Start from here (step " + step.getGlobalIndex() + ")");
 				here.setToolTipText("Make this the step the guide is on"
 					+ " — nothing gets ticked off, and you can jump back the same way");
-				here.addActionListener(a -> {
-					ctx.getProgress().setPosition(ctx.getVariant(), step.getGlobalIndex() - 1);
-					ctx.getOnProgressChanged().run();
-				});
+				here.addActionListener(a -> goToStep(step.getGlobalIndex()));
 				menu.add(here);
 				menu.show(e.getComponent(), e.getX(), e.getY());
 			}
@@ -1182,20 +1203,34 @@ class StepRow extends JPanel
 		// numbering question altogether.
 		if (prerequisiteStep != null)
 		{
-			// WRAPS rather than truncates. The first cut rendered as "→ Go to
-			// step 28…" because it capped the label at TEXT_WIDTH — that is
-			// the narrow text COLUMN (112px, sized to sit beside the checkbox
-			// and the ⌖/Go buttons), while this line spans the whole card.
-			// Trimming to a measured width would only move the guess from
-			// characters to pixels; a JLabel given an html body width wraps
-			// on its own, so nothing is cut however long the step name is.
-			JLabel jump = new JLabel("<html><body style='width:" + JUMP_WIDTH + "px'>"
-				+ "→ Step " + prerequisiteStep.getGlobalIndex() + ": "
+			// Reads as a BUTTON: bold, green, boxed. As a plain line it sat
+			// directly under the equally-green Quest Helper tip and looked
+			// like more prose, so nothing said it could be clicked.
+			//
+			// It WRAPS rather than truncates. The first cut rendered as
+			// "→ Go to step 28…" because it capped the label at TEXT_WIDTH,
+			// which is the narrow text COLUMN (112px, sized to sit beside the
+			// checkbox and the ⌖/Go buttons) while this line spans the whole
+			// card. Trimming to a measured width would only have moved the
+			// guess from characters to pixels; an html body width wraps on
+			// its own and loses nothing. That width is the row budget MINUS
+			// the box's own border and padding, or the outline runs past the
+			// card edge and takes ⌖/Go with it.
+			JLabel jump = new JLabel("<html><body style='width:" + (JUMP_WIDTH - 14) + "px'>"
+				+ "<b>GO TO STEP " + prerequisiteStep.getGlobalIndex() + "</b> — "
 				+ RichText.escape(prerequisiteStep.getPlainText()) + "</body></html>");
 			jump.setFont(new Font(Font.DIALOG, Font.PLAIN, 11));
-			jump.setForeground(CHIP_QUEST_FG);
+			jump.setForeground(CAPTURED_COLOR);
 			jump.setAlignmentX(LEFT_ALIGNMENT);
-			jump.setBorder(BorderFactory.createEmptyBorder(3, 22, 1, 0));
+			// NOT opaque: a JLabel paints its background across the whole
+			// component, including the 22px content inset, which would draw a
+			// filled bar running back to the card edge. The outline alone is
+			// what makes it read as a button.
+			jump.setBorder(BorderFactory.createCompoundBorder(
+				BorderFactory.createEmptyBorder(4, 22, 2, 0),
+				BorderFactory.createCompoundBorder(
+					BorderFactory.createLineBorder(CAPTURED_COLOR, 1),
+					BorderFactory.createEmptyBorder(3, 6, 3, 6))));
 			jump.setCursor(java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.HAND_CURSOR));
 			jump.setToolTipText("<html>Go to step " + prerequisiteStep.getGlobalIndex() + ": "
 				+ RichText.escape(prerequisiteStep.getPlainText()) + "<br>"
@@ -1206,9 +1241,7 @@ class StepRow extends JPanel
 				@Override
 				public void mouseClicked(java.awt.event.MouseEvent e)
 				{
-					ctx.getProgress().setPosition(
-						ctx.getVariant(), prerequisiteStep.getGlobalIndex() - 1);
-					ctx.getOnProgressChanged().run();
+					goToStep(prerequisiteStep.getGlobalIndex());
 				}
 			});
 			add(jump);

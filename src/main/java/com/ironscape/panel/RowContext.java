@@ -91,4 +91,15 @@ class RowContext
 	 * another refers to "step 1.1.145a" entirely differently).
 	 */
 	java.util.function.Function<String, com.ironscape.guide.GuideStep> questStep;
+
+	/**
+	 * Scroll the panel to whatever the current step now is, and re-point the
+	 * route — what the Resume button does.
+	 *
+	 * Moving the player's POSITION changes nothing on screen by itself: no
+	 * checkbox flips, no card restyles, so a jump looked like a dead click
+	 * even though it had worked. Ticking a box is self-evidencing; moving
+	 * the position is not, and needs to show its own result.
+	 */
+	Runnable jumpToCurrentHandler;
 }
