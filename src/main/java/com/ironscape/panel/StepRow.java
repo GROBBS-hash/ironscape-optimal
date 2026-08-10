@@ -1201,8 +1201,18 @@ class StepRow extends JPanel
 		{
 			waiting = null; // nothing to go back FOR once it is done
 		}
+		// An earlier leg of this step's own quest is still unfinished — you
+		// are ahead of yourself. Suppressed when it would just repeat the
+		// prerequisite button above (same destination, two buttons).
+		GuideStep earlierLeg = ctx.getEarlierQuestLeg() == null
+			? null : ctx.getEarlierQuestLeg().apply(step.getId());
+		if (earlierLeg != null && waiting != null
+			&& earlierLeg.getId().equals(waiting.getId()))
+		{
+			earlierLeg = null;
+		}
 		if (location == null && quest == null && obsolete == null
-			&& prerequisite == null && waiting == null)
+			&& prerequisite == null && waiting == null && earlierLeg == null)
 		{
 			return;
 		}
@@ -1210,6 +1220,14 @@ class StepRow extends JPanel
 		if (obsolete != null)
 		{
 			chips.add(noticeChip("⚠ No longer possible", obsolete, WARN_FG));
+		}
+		if (earlierLeg != null)
+		{
+			chips.add(noticeChip(
+				"⚠ Start this quest first — step " + earlierLeg.getGlobalIndex()
+					+ " is unfinished",
+				"This step continues a quest whose earlier steps are not done yet.",
+				WARN_FG));
 		}
 		GuideStep prerequisiteStep = prerequisite == null || ctx.getQuestStep() == null
 			? null : ctx.getQuestStep().apply(prerequisite);
@@ -1299,6 +1317,11 @@ class StepRow extends JPanel
 		if (waiting != null)
 		{
 			add(jumpButton("BACK TO STEP", waiting));
+		}
+		// ... and from a later leg back to where the quest actually starts.
+		if (earlierLeg != null)
+		{
+			add(jumpButton("BACK TO STEP", earlierLeg));
 		}
 
 		// Nothing can tick this one for you. 139 steps guide-wide are in that

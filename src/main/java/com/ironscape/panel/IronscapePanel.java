@@ -768,7 +768,8 @@ public class IronscapePanel extends PluginPanel
 			worldHopHandler,
 			this::questStep,
 			() -> jumpToCurrent(true),
-			dependentSteps()::get);
+			dependentSteps()::get,
+			earlierQuestLegs()::get);
 	}
 
 	/**
@@ -815,6 +816,54 @@ public class IronscapePanel extends PluginPanel
 			}
 		}
 		return map;
+	}
+
+	/**
+	 * Step id -> the earliest UNFINISHED step of the same quest that comes
+	 * before it. Empty for a guide followed in order; populated the moment
+	 * you work a quest's legs out of sequence.
+	 *
+	 * Guide order and quest order are not the same thing. The Lost Tribe is
+	 * split across steps 256, 258, 282 and 284, so finishing the deferred
+	 * Goblin Diplomacy at 281 advanced the frontier to 282 — "Continue Lost
+	 * tribe", for a quest not yet started.
+	 *
+	 * Needs no annotation: the quest comes from the guide's own metadata or
+	 * our tag, and "unfinished" from progress. That makes it true of every
+	 * quest the guide splits up, rather than only the one that exposed it.
+	 */
+	private java.util.Map<String, GuideStep> earlierQuestLegs()
+	{
+		java.util.Map<String, GuideStep> result = new java.util.HashMap<>();
+		if (guide == null)
+		{
+			return result;
+		}
+		java.util.Map<String, GuideStep> firstUnfinished = new java.util.HashMap<>();
+		for (GuideStep step : guide.getAllSteps())
+		{
+			String quest = step.getMetadata().get("quest");
+			if (quest == null)
+			{
+				quest = annotationManager.getQuest(step.getId());
+			}
+			if (quest == null)
+			{
+				continue;
+			}
+			String key = quest.trim().toLowerCase(java.util.Locale.ROOT);
+			// Read before recording, so a step never points at itself.
+			GuideStep earlier = firstUnfinished.get(key);
+			if (earlier != null)
+			{
+				result.put(step.getId(), earlier);
+			}
+			else if (!progressManager.isCompleted(guide.getVariant(), step.getId()))
+			{
+				firstUnfinished.put(key, step);
+			}
+		}
+		return result;
 	}
 
 	private GuideStep questStep(String questName)

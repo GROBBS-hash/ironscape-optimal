@@ -113,4 +113,17 @@ class RowContext
 	 * playing forwards, whereas the relation is true either way.
 	 */
 	java.util.function.Function<String, com.ironscape.guide.GuideStep> dependentStep;
+
+	/**
+	 * Step id -> an EARLIER unfinished step of that step's own quest, when
+	 * there is one: "you are ahead of yourself".
+	 *
+	 * Finishing a deferred prerequisite advances the frontier to whatever
+	 * comes next in guide ORDER, which after a jump is a later leg of the
+	 * quest you have not started — the panel pointed at "Continue Lost tribe"
+	 * with The Lost Tribe untouched. Computed from quest tags and completion
+	 * rather than annotated per step, so it covers every quest the guide
+	 * splits across non-adjacent steps, not just the one that exposed it.
+	 */
+	java.util.function.Function<String, com.ironscape.guide.GuideStep> earlierQuestLeg;
 }
