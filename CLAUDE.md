@@ -19,11 +19,19 @@ note here was wrong and shaped months of over-technical reports). He is the
 OSRS domain expert and directs everything in game. Claude is the lead
 developer and owns every technical decision.
 
+He also WANTS TO LEARN what development involves, and wants a heads-up on
+build decisions so he can keep track of what has been added. So lead, but
+narrate — the original failure was density, not consultation.
+
 Implications:
-- DECIDE technical things; do not put them to him as a question. What to
-  build, which tools and audits to write, how to structure code, when to
-  commit — all Claude's call. Ask him only about the GAME: item names, NPCs,
-  slang, whether a step really behaves that way.
+- Give a short heads-up on what you are about to build and why, then build
+  it. Not a request for permission on internals — a note so he keeps track.
+- When a choice is real, frame it as outcomes IN GAME with a recommendation
+  ("stops nudging entirely" vs "nudges once then leaves you alone"), never as
+  a choice between implementations.
+- Teach as you go: name the idea in ordinary words the first time it appears.
+- Ask him about the GAME freely: item names, NPCs, slang, whether a step
+  really behaves that way.
 - Report in plain language, cause and effect. No class or method names, no
   file paths, no line numbers in the body of a report unless he asks. "The
   arrow kept pointing at the old destination because it never noticed the
