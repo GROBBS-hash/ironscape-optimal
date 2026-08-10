@@ -79,4 +79,16 @@ class RowContext
 
 	/** Hops to a world number ("world 444" links). Null if unwired. */
 	Consumer<Integer> worldHopHandler;
+
+	/**
+	 * Quest name -> the step whose task IS that quest; null when no step is
+	 * tagged with it. Feeds the "go and do this first" button on a step with
+	 * a prerequisiteQuest.
+	 *
+	 * Resolved by NAME rather than by the step numbers in the guide's own
+	 * notes: those were written against the original numbering and do not map
+	 * onto ours by any constant offset (one note calls our step 281 "278",
+	 * another refers to "step 1.1.145a" entirely differently).
+	 */
+	java.util.function.Function<String, com.ironscape.guide.GuideStep> questStep;
 }

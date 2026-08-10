@@ -765,7 +765,45 @@ public class IronscapePanel extends PluginPanel
 			clearTargetHandler,
 			navigateHandler,
 			placeNavigateHandler,
-			worldHopHandler);
+			worldHopHandler,
+			this::questStep);
+	}
+
+	/**
+	 * The step whose task IS the named quest — the destination for the "do
+	 * this first" button on a step with a prerequisiteQuest.
+	 *
+	 * Matched on the QUEST TAG only (the guide's own metadata, or our
+	 * annotation tag), never on the step's text. A text scan would pick the
+	 * earliest step that merely MENTIONS the quest, which on a prep step
+	 * ("buy a bronze sword for Horror from the deep") is the wrong
+	 * destination entirely — the same trap that made quest tagging exclude
+	 * prep steps in the first place. If no step carries the tag this returns
+	 * null and the caller shows the warning with no button, which is the
+	 * honest failure: a button to nowhere is worse than none.
+	 *
+	 * Earliest match wins — that is where you BEGIN the quest.
+	 */
+	private GuideStep questStep(String questName)
+	{
+		if (guide == null || questName == null)
+		{
+			return null;
+		}
+		String want = questName.trim();
+		for (GuideStep step : guide.getAllSteps())
+		{
+			String tag = step.getMetadata().get("quest");
+			if (tag == null)
+			{
+				tag = annotationManager.getQuest(step.getId());
+			}
+			if (tag != null && tag.trim().equalsIgnoreCase(want))
+			{
+				return step;
+			}
+		}
+		return null;
 	}
 
 	/**

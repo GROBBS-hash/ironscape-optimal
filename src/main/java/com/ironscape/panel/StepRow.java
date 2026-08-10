@@ -1099,10 +1099,14 @@ class StepRow extends JPanel
 		{
 			chips.add(noticeChip("⚠ No longer possible", obsolete, WARN_FG));
 		}
+		GuideStep prerequisiteStep = prerequisite == null || ctx.getQuestStep() == null
+			? null : ctx.getQuestStep().apply(prerequisite);
 		if (prerequisite != null)
 		{
 			chips.add(noticeChip("⚠ Needs " + prerequisite + " first",
-				"The guide does this quest later — see the step's note", WARN_FG));
+				prerequisiteStep == null
+					? "The guide does this quest later — see the step's note"
+					: "The guide does it at step " + prerequisiteStep.getGlobalIndex(), WARN_FG));
 		}
 		if (location != null)
 		{
@@ -1159,6 +1163,47 @@ class StepRow extends JPanel
 				+ "\" in the Quest Helper plugin for click-by-click quest guidance.<br>"
 				+ "(The Plugin Hub forbids plugins starting it for you.)</html>");
 			add(tip);
+		}
+
+		// The jump the note asks for, with OUR step number on it.
+		//
+		// The note's own number is wrong for us and cannot be fixed where it
+		// is written: it is Oziris's prose, scraped into the guide payload, so
+		// a hand-edit there dies at the next re-scrape — the same reason quest
+		// tags live in annotations. Resolving the quest by NAME sidesteps the
+		// numbering question altogether.
+		if (prerequisiteStep != null)
+		{
+			// Truncated, not just max-sized: a JLabel does not ellipsize, it
+			// reports the full width and gets clipped, which is what pushes
+			// ⌖/Go off the card edge.
+			String name = prerequisiteStep.getPlainText();
+			if (name.length() > 34)
+			{
+				name = name.substring(0, 31) + "...";
+			}
+			JLabel jump = new JLabel("→ Go to step " + prerequisiteStep.getGlobalIndex()
+				+ ": " + name);
+			jump.setFont(new Font(Font.DIALOG, Font.PLAIN, 11));
+			jump.setForeground(CHIP_QUEST_FG);
+			jump.setAlignmentX(LEFT_ALIGNMENT);
+			jump.setBorder(BorderFactory.createEmptyBorder(3, 22, 1, 0));
+			jump.setCursor(java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.HAND_CURSOR));
+			jump.setToolTipText("Make that the step the guide is on — nothing gets ticked off,"
+				+ " and you can come back the same way");
+			jump.addMouseListener(new java.awt.event.MouseAdapter()
+			{
+				@Override
+				public void mouseClicked(java.awt.event.MouseEvent e)
+				{
+					ctx.getProgress().setPosition(
+						ctx.getVariant(), prerequisiteStep.getGlobalIndex() - 1);
+					ctx.getOnProgressChanged().run();
+				}
+			});
+			// A long step name would widen the card and push ⌖/Go off the edge.
+			jump.setMaximumSize(new Dimension(TEXT_WIDTH, jump.getPreferredSize().height));
+			add(jump);
 		}
 
 		// Nothing can tick this one for you. 139 steps guide-wide are in that
