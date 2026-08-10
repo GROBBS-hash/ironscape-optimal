@@ -757,6 +757,107 @@ refresh when "Failed to login" appears.
   capture; hub pin at b8c994d, now ~70 commits behind — bump after a
   calm session.
 
+- SESSION WAVE 23 (2026-08-10 evening, live play-test 262 -> 265; main at
+  `9f79d9d`, 6 commits, PUSHED; hub pin `bb3e11e`, now **13** behind — counted,
+  not carried): **the owner corrected a premise this file had wrong from the
+  first line.** He has NO coding background at all; the "new to Java but knows
+  React/Supabase and Apps Script" note at the top of this file was wrong and had
+  shaped months of over-technical reports. He then corrected my over-swing
+  ("decide silently") in the same session: he WANTS to learn what development
+  involves and wants a heads-up on build decisions so he can track what has been
+  added. **The failure was density, not consultation.** Both settings are now in
+  the Developer context section and in [[owner-is-not-a-developer]].
+  **261 AND 263 BOTH CONFIRMED IN PLAY.** 261 (the wave 22 skill-gate fix) ticked
+  at 22:19:01, one second after the QH stand-down lifted — and the PROOF is the
+  timing, not the log line, which reads the lumped "goal satisfied
+  (items/quest/level/arrival)" and cannot say which goal did it. Runecraft was
+  already 10 all evening, so a skill gate would have ticked it hours earlier.
+  263 needed no such reasoning: `auto-completed sub 58ad4841dd:0 (quest
+  checkpoint (varbit/varp/region))`, off `varp 68` reaching 14 exactly as wave 18
+  predicted. **282 is the last unplayed one.** I proposed making the lumped label
+  name its goal, then DROPPED it on checking: 263/282 complete via the checkpoint
+  path, which already logs a distinct line, so the work would have improved
+  nothing we were about to test.
+  **THE TELEPORT HINT NEVER ASKED WHETHER NAV HAD STOOD DOWN** (owner: "our
+  navigation is still interrupting... we have a lumbridge tp overlay while im on
+  the quest helper"). The log was conclusive and the shape is wave 12's exactly:
+  nav logged `standing down` at 21:44:25 and the hint went on offering a home
+  teleport at 21:47, 21:48, 21:49 and 21:51, because it computes its own
+  destination via `targetFor()` and had no idea the router had abandoned it. Two
+  parts answering the same question separately, drifting. Gated on the same
+  condition, placed AFTER the gravestone and errand branches so their designed
+  precedence over QH survives. Deliberately silent rather than aiming at the
+  bank when a kit is banked — a hint pointing anywhere while QH guides IS the
+  complaint. CONFIRMED IN PLAY: `teleport-hint: none - Quest Helper owns this
+  step's route`.
+  **THE BANK NUDGE'S "ONCE" WAS KEYED ON THE WRONG THING.** Wave 20 made it one
+  suggestion per (step, bank); the branch picks the NEAREST bank, so walking far
+  enough changed the key and restarted the count — four banks in two minutes
+  (Varrock east, Al Kharid, Falador, one underground). **Whenever something is
+  meant to happen once, the whole behaviour hinges on ONCE PER WHAT**, and
+  getting it wrong makes the limit quietly do nothing while looking fixed for a
+  whole session. Keyed by step alone now.
+  **CASTABLE() NEVER CHECKED ELEMENTAL RUNES** (owner, off a fired hint): it
+  tested Magic level, LAW runes and quest unlocks only, so a Varrock teleport was
+  offered to a player holding one law rune and no air or fire. The elements were
+  skipped because a staff makes a rune count meaningless — the cautious way not
+  to hide the hint from someone wielding one. **Model the staff, do not stop
+  asking**: each spell now carries its elemental cost and `ELEMENT_STAVES` pays
+  it, combination staves counting for BOTH elements (a mud battlestaff is never
+  called a water staff, which is why it is a table and not a name rule). Owner
+  also set `MIN_TILES_SAVED = 75` on top of the 60% test — 60% of a 150-tile jog
+  is a 90-tile jog, not worth the runes. Floor binds short journeys, percentage
+  long ones. NEITHER PLAY-TESTED.
+  **DIG SITE KIT** (owner report, wiki-confirmed): opal and charcoal ARE
+  obtainable in quest — and the wiki's items list UNDERSELLS the opal as a "small
+  chance while panning" where the walkthrough says plainly to pan until you get
+  one for the level 3 test. **Read the walkthrough, not just the items list.**
+  Found a third next door: the trowel is handed over with the Level 1
+  certificate and was the only one of four quest-issued tools not flagged, so it
+  sat red beside three that did not. Caught before shipping: **ItemNeed has no
+  `note` field**, so the per-item guidance I first wrote would have been dropped
+  by Gson in silence, with the panel looking identical. Moved to the step note.
+  **ITEM-ID REVIEW: ALL 88 LEFT AS NAMES** (owner's call, and correct). The first
+  paste pinned 74 of them, which the tool's own header names as a regression
+  (`fire rune` is its worked example). Evidence: `tinderbox` is one of six
+  SUBSTITUTES keys and appears in **29 annotation entries** — pinning it would
+  have killed the bruma-torch substitute across all of them. New `--leave-all`
+  flag; verified both ways (re-run reports 0 to review, 88 settled). Two rows the
+  tool calls genuine pins are settled as leave and worth knowing: `ugthanki dung`
+  (4601 vs 4602, and The Feud makes the poisoned one FROM the plain one, so you
+  can hold both) and `coins` (617 FAKE_COINS).
+  **DX-1 SHIPPED AND CONFIRMED IN PLAY — data fixes no longer need a restart.**
+  Three restarts in one evening, one of them for the Dig Site data alone, is what
+  motivated it. `DataFiles` routes every data read through an optional folder
+  (config `dataFolder`, empty by default so a real install is untouched); point
+  it at a checkout's `resources/com/ironscape` and those files win, keeping the
+  REPO as the single source rather than a copy that drifts. Lookup is by file
+  name, searched recursively, because resources sit in per-topic subfolders; an
+  unreadable override falls back to the bundled copy so a half-written file
+  cannot blank the data. `::ironreload` re-reads and calls `loadGuideState()`,
+  which already rebuilds everything derived. Owner set the folder and got
+  "reloaded guide data from data folder". **USE THIS FOR EVERY DATA FIX FROM NOW
+  ON** — edit the repo file, tell him to reload.
+  DX-2..DX-4 agreed and in BACKLOG.md: a plain-language pre-session briefing
+  (preflight exists but prints developer output nobody runs), a bulk
+  granted-vs-bring review page for 100+ quest kits (tonight's trowel is one
+  instance of that class), and a panel "something is wrong here" button that
+  captures state so his reports arrive with evidence.
+  **HUB:** PR 14207 open, `build` PASSES, the red X is its own
+  "Requires maintainer review." No reviewer response since 2026-07-28; owner
+  replied 07-29, nudged 08-03. Queue measured: 197 open, **56 older than ours**,
+  but **140 merged in the last week** — moving fast and NOT in order. Advised
+  against a second nudge this week (Discord #development is the better lever);
+  owner agreed to hold.
+  **PROCESS:** every build ran in a throwaway `git worktree` while the client was
+  live — no repeat of wave 17. `check-client` FALSE-BLOCKED TWICE, both times on
+  the just-exited client's dying line inside the 120s freshness window (78s, 76s);
+  waited it out rather than overriding, since learning to override it is exactly
+  how wave 17 happened. If it costs a third session a minute a restart, teach it
+  to tell a dead client's last line from a live one's.
+  **OPEN:** 282 unplayed; the teleport castability + 75-tile floor unproven in
+  play; DX-2..DX-4 unstarted; hub pin 13 behind.
+
 - SESSION WAVE 22 (2026-08-10, long live play-test 254 -> 262; main at
   `907aef7`, ~18 commits, PUSHED; **hub pin BUMPED `f634cbf` -> `bb3e11e`**,
   22 commits, now 6 behind again): **step 258 is CONFIRMED IN PLAY** — the
