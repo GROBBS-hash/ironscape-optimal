@@ -4096,7 +4096,8 @@ public class IronscapePlugin extends Plugin
 				Current current = window.get(i);
 				// Reviewed requirements complete a WHOLE step when ALL are met.
 				List<StepRequirement> requirements = stepSkillRequirements.get(current.step.getId());
-				if (requirements != null && requirementsMet(requirements))
+				if (requirements != null && requirementsMet(requirements)
+					&& !skillGateForAQuest(current, requirements))
 				{
 					completeStep(current.step, "annotated requirements met");
 					completedSomething = true;
@@ -5454,6 +5455,34 @@ public class IronscapePlugin extends Plugin
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * Is this requirement list a PREREQUISITE for the step's quest rather
+	 * than the step's finish line?
+	 *
+	 * "Train Runecraft to 10, then complete Temple of the Eye" is two jobs
+	 * in one step, and reaching 10 completed the whole thing (owner, in
+	 * play) because a met requirement completes the step outright. But that
+	 * level is the GATE on the quest -- Temple of the Eye needs Runecraft
+	 * 10 and will not start without it -- so meeting it means the work can
+	 * now begin, not that it is done.
+	 *
+	 * So a skill-only list on a quest step stops completing it. The quest
+	 * goal does that instead, by which time the level is necessarily met,
+	 * and the badge still shows progress toward it the whole way.
+	 *
+	 * Var/region/equipped checkpoints are untouched: those are authored
+	 * precisely to mark where a step stops, which is the opposite case.
+	 * Four steps guide-wide pair a skill requirement with a quest.
+	 */
+	private boolean skillGateForAQuest(Current current, List<StepRequirement> requirements)
+	{
+		if (hasVarCheckpoint(requirements))
+		{
+			return false;
+		}
+		return stepQuest(current) != null;
 	}
 
 	/** ALL requirements met? (Reviewed annotations; runs on the client thread.) */
