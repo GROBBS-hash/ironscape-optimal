@@ -4226,11 +4226,13 @@
     },
     {
      "name": "opal",
-     "quantity": 1
+     "quantity": 1,
+     "granted": true
     },
     {
      "name": "charcoal",
-     "quantity": 1
+     "quantity": 1,
+     "granted": true
     },
     {
      "name": "specimen brush",
@@ -4249,9 +4251,11 @@
     },
     {
      "name": "trowel",
-     "quantity": 1
+     "quantity": 1,
+     "granted": true
     }
-   ]
+   ],
+   "note": "Opal, charcoal and the trowel all come from the quest itself.\nOpal: pan at the river until you get an uncut opal - a student asks for one in the level 3 test.\nCharcoal: search the specimen tray north of the tent with a specimen jar if you did not bring any.\nTrowel: handed over with the Level 1 certificate."
   },
   "a58a921f81": {
    "items": [
