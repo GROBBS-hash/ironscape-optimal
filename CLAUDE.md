@@ -738,6 +738,108 @@ refresh when "Failed to login" appears.
   capture; hub pin at b8c994d, now ~70 commits behind — bump after a
   calm session.
 
+- SESSION WAVE 22 (2026-08-10, long live play-test 254 -> 262; main at
+  `907aef7`, ~18 commits, PUSHED; **hub pin BUMPED `f634cbf` -> `bb3e11e`**,
+  22 commits, now 6 behind again): **step 258 is CONFIRMED IN PLAY** — the
+  thing that had been shipping untested since wave 19. Log is conclusive:
+  `checkpoint 7ca10e694f:0: varbit 532=6 (need 6)` then `auto-completed …
+  (quest checkpoint)`, no route to Goblin Village, stand-down fired. 263
+  and 282 are the same mechanism and STILL UNPLAYED.
+  Pin bump verified the way a reviewer does — clean build from a FRESH
+  CLONE at that sha, not the incremental tree. `build` passed; the red X
+  reads "Requires maintainer review." from the check's own title.
+  **THE GUIDE'S OWN NOTE HAD THE ANSWER ALL ALONG** (wave 21's finding,
+  now played): Goblin Diplomacy really is required before The Lost Tribe —
+  wiki `requirements` lists it AND Rune Mysteries, and Rune Mysteries
+  finishes at 192, so Goblin Diplomacy at 281 is the only out-of-order
+  one. Resolve these notes by NAME: the note calls our 281 "278".
+  Shipped for it: right-click **"Start from here"**, `obsolete` and
+  `prerequisiteQuest` annotations, a **GO TO STEP** button and its inverse
+  **BACK TO STEP** (derived by INVERTING prerequisiteQuest, not remembered
+  from the click — session state would die on restart and offer nothing to
+  someone arriving by playing forwards), and an **out-of-order warning**:
+  any step whose own quest has an EARLIER unfinished leg says so and links
+  back. Computed from quest tags + progress, so it covers every quest the
+  guide splits up (The Lost Tribe runs 256, 258, 282, 284) and re-points
+  itself as you go.
+  **STEP NUMBERS** now render (global index, green + colon, greys when
+  done) — the "Step N" header they mirror had never once drawn on this
+  guide, because it is built for multi-action steps and Oziris is atomic.
+  **WIDTH: a JLabel cannot be constrained by an html body width.** It
+  reports the UNWRAPPED width and never caps its own maximum size
+  (Component#getMaximumSize returns Short.MAX_VALUE), so a Y_AXIS
+  BoxLayout hands it whatever it asks — a label given 148px measured
+  228px, and "fixing" it that way made the card WIDER (228 -> 255).
+  `htmlPane` has always done it properly (explicit setSize, preferred AND
+  maximum pinned); use it, do not invent a third mechanism. Fixed the
+  Quest Helper tip line too, which had been overflowing since long before
+  today (step 278's self-check line proves it).
+  **TWO TOOLS ANSWERED A DIFFERENT QUESTION THAN THEY PRINTED** (wave 21
+  theme, again): `check-client` timed the log FILE and reported it as our
+  plugin's age — a worldhopper ping kept it warm while our newest line was
+  47 min old. Times the last matching LINE now, and immediately blocked a
+  build correctly. `preflight` started its window at `position` while
+  findWindow starts at `position + 1`, so every report opened with an
+  already-finished step; fixing that then exposed a SECOND bug — the row
+  labels came from the old start, silently renaming every row by one,
+  caught by checking a printed id against the guide.
+  **PRIEST ROBES — TWO BUGS, AND MY FIRST HYPOTHESIS WAS WRONG BOTH
+  TIMES.** (1) The step ticked after one gown half because
+  `purchaseListAcquired` had ARMED ON AN EMPTY LIST long ago: the flag
+  persists, so seeding items later could never re-engage the gate. Empty
+  lists no longer arm, and the list's CONTENTS are part of the key so
+  EDITING one re-gates. (2) I then blamed name-collapse, wrote a test, and
+  the test DISPROVED it — because the premise was wrong in the other
+  direction: **"Priest gown (top)" is a WIKI PAGE TITLE, not an item
+  name.** Both halves are called exactly "Priest gown" (426 PRIEST_GOWN,
+  428 PRIEST_ROBE), counts are keyed by in-game name and SUMMED, and the
+  alias chain drops trailing parentheticals — so two entries could only
+  ever report the pair's total. Second time a wiki title stood in for an
+  item name (wave 19's "black wizards hat"): **treat page titles as
+  suspect.** Fix: new **`ItemNeed.id`** counts one exact item, with `name`
+  free as a label; id-keyed tallies sit beside the name ones (in memory
+  only — the persisted bank snapshot is names, so a banked half is
+  invisible until the bank is opened once). Because the label is
+  deliberately unlike any real name, NOTHING could verify these — so
+  `audit-goals` section 5 now checks each id against RuneLite's id->name
+  cache, verified in BOTH directions (pointed one at 1038 Red partyhat and
+  one at a nonexistent id; it named both).
+  **`tools/review-item-ids.mjs`** — 88 names shared by more than one real
+  item, with each candidate's sprite AND gameval constant, since the
+  constant is the giveaway (`…_WORN`, `ROGUETRADER_…` = variant). A shared
+  name is usually FINE and pinning an id there would break substitutes and
+  family sums; only pin non-interchangeable pairs. **The naive count was
+  279 — nearly all noted twins, which canonicalize() already folds.**
+  **48 SKILL REQUIREMENTS HAD NEVER RENDERED A BADGE**, and it took two
+  fixes: the badge row asks by SUB id while a bare-step `requires` is
+  keyed by STEP id, AND `addItemBadge` renders the item list then RETURNS,
+  so any step listing items skipped the badge entirely. Completion always
+  read them by step id, so the data was right and only the panel was
+  silent. I reported the first fix as done before it was visible.
+  **GRIND-THEN-QUEST STEPS** (3 guide-wide): new `trainAt` routes to the
+  training spot while a skill gate is unmet, plus **`trainWith`** naming
+  what the training CONSUMES — because it is a LOOP, and a pin describes
+  only half of it (owner: "it should pull us to the bank to grab more
+  essence"). Essence in the bag = altar, empty = nearest bank, both ending
+  at the level. Bank-first stands down on these steps: the quest kit
+  belongs to the job AFTER the grind and it was seizing a route it never
+  released (once per step+bank since wave 20). Chosen over an errand chain
+  deliberately — a chain on a quest step re-posts over QH every 10 ticks.
+  **AND THE SKILL GATE NO LONGER COMPLETES THE STEP**: an annotation
+  `requires` is a COMPLETION condition, so hitting Runecraft 10 ticked off
+  a step whose quest was untouched. A skill-only list on a quest step now
+  defers to the quest goal. Var/region/equipped checkpoints untouched —
+  those mark where a step STOPS, the opposite case.
+  **SHORTEST PATH MISATTRIBUTION, 5th+ TIME, and the general answer was
+  not enough**: "Pick up: 1 Air rune…" is SP's, proven from the OWNER'S
+  CONFIG rather than argued — `includeBankPath=true` +
+  `showBankPickupInfo=true`, and `drawTransports=false` disproved my own
+  first theory. Read the config first next time.
+  **OPEN:** 263 Biohazard and 282 unplayed; 261 needs Temple of the Eye
+  FINISHED to confirm it ticks off the quest; the 88-row item-id review
+  page is unanswered; `trainAt` pins wanted for 485 (Perilous Moons, 48
+  Slayer) and 509 (Lunar Diplomacy, 70 Mining); hub pin 6 behind.
+
 - SESSION WAVE 21 (2026-08-09 late/2026-08-10, desk run + a brief look in
   game; main at `ca9328e`, 4 commits, PUSHED; hub pin `f634cbf`, gap **5**
   — counted at the end, and only ONE commit touches the plugin; the rest
