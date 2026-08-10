@@ -767,7 +767,8 @@ public class IronscapePanel extends PluginPanel
 			placeNavigateHandler,
 			worldHopHandler,
 			this::questStep,
-			() -> jumpToCurrent(true));
+			() -> jumpToCurrent(true),
+			dependentSteps()::get);
 	}
 
 	/**
@@ -785,6 +786,37 @@ public class IronscapePanel extends PluginPanel
 	 *
 	 * Earliest match wins — that is where you BEGIN the quest.
 	 */
+	/**
+	 * The inverse of prerequisiteQuest: prerequisite step id -> the step held
+	 * up by it. Built once per rebuild rather than scanned per row.
+	 *
+	 * Earliest dependent wins if several steps ever name the same
+	 * prerequisite — going back to the first one you were blocked on is the
+	 * only answer that is right for all of them.
+	 */
+	private java.util.Map<String, GuideStep> dependentSteps()
+	{
+		java.util.Map<String, GuideStep> map = new java.util.HashMap<>();
+		if (guide == null)
+		{
+			return map;
+		}
+		for (GuideStep step : guide.getAllSteps())
+		{
+			String needs = annotationManager.getPrerequisiteQuest(step.getId());
+			if (needs == null)
+			{
+				continue;
+			}
+			GuideStep target = questStep(needs);
+			if (target != null)
+			{
+				map.putIfAbsent(target.getId(), step);
+			}
+		}
+		return map;
+	}
+
 	private GuideStep questStep(String questName)
 	{
 		if (guide == null || questName == null)

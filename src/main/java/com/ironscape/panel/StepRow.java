@@ -762,6 +762,58 @@ class StepRow extends JPanel
 		}
 	}
 
+	/**
+	 * The green boxed jump control, used for both directions of a
+	 * prerequisite: "GO TO STEP 281" on the step that is blocked, "BACK TO
+	 * STEP 256" on the one blocking it. One builder so the pair cannot drift
+	 * apart in look or behaviour.
+	 *
+	 * Reads as a BUTTON — bold, green, outlined. As a plain line it sat
+	 * directly under the equally-green Quest Helper tip and looked like more
+	 * prose, so nothing said it could be clicked.
+	 *
+	 * It WRAPS rather than truncates. The first cut rendered as "→ Go to step
+	 * 28…" because it capped the label at TEXT_WIDTH, which is the narrow
+	 * text COLUMN (112px, sized to sit beside the checkbox and the ⌖/Go
+	 * buttons) while this line spans the whole card. Trimming to a measured
+	 * width would only have moved the guess from characters to pixels; an
+	 * html body width wraps on its own and loses nothing. That width is the
+	 * row budget MINUS the box's own border and padding, or the outline runs
+	 * past the card edge and takes ⌖/Go with it.
+	 */
+	private JLabel jumpButton(String lead, GuideStep target)
+	{
+		JLabel jump = new JLabel("<html><body style='width:" + (JUMP_WIDTH - 14) + "px'>"
+			+ "<b>" + lead + " " + target.getGlobalIndex() + "</b> — "
+			+ RichText.escape(target.getPlainText()) + "</body></html>");
+		jump.setFont(new Font(Font.DIALOG, Font.PLAIN, 11));
+		jump.setForeground(CAPTURED_COLOR);
+		jump.setAlignmentX(LEFT_ALIGNMENT);
+		// NOT opaque: a JLabel paints its background across the whole
+		// component, including the 22px content inset, which would draw a
+		// filled bar running back to the card edge. The outline alone is
+		// what makes it read as a button.
+		jump.setBorder(BorderFactory.createCompoundBorder(
+			BorderFactory.createEmptyBorder(4, 22, 2, 0),
+			BorderFactory.createCompoundBorder(
+				BorderFactory.createLineBorder(CAPTURED_COLOR, 1),
+				BorderFactory.createEmptyBorder(3, 6, 3, 6))));
+		jump.setCursor(java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.HAND_CURSOR));
+		jump.setToolTipText("<html>Go to step " + target.getGlobalIndex() + ": "
+			+ RichText.escape(target.getPlainText()) + "<br>"
+			+ "Makes that the step the guide is on — nothing gets ticked off,"
+			+ " and you can come back the same way.</html>");
+		jump.addMouseListener(new java.awt.event.MouseAdapter()
+		{
+			@Override
+			public void mouseClicked(java.awt.event.MouseEvent e)
+			{
+				goToStep(target.getGlobalIndex());
+			}
+		});
+		return jump;
+	}
+
 	private void attachStepMenu(java.awt.Component component)
 	{
 		component.addMouseListener(new java.awt.event.MouseAdapter()
@@ -1119,7 +1171,17 @@ class StepRow extends JPanel
 		// read before the early return, not after it.
 		String obsolete = ctx.getAnnotations().getObsolete(step.getId());
 		String prerequisite = ctx.getAnnotations().getPrerequisiteQuest(step.getId());
-		if (location == null && quest == null && obsolete == null && prerequisite == null)
+		// The step held up by THIS one, if any — the return trip. Read up here
+		// with the others: a prerequisite step need not carry any metadata of
+		// its own, and returning early would drop its button silently.
+		GuideStep waiting = ctx.getDependentStep() == null
+			? null : ctx.getDependentStep().apply(step.getId());
+		if (waiting != null && ctx.getProgress().isCompleted(ctx.getVariant(), waiting.getId()))
+		{
+			waiting = null; // nothing to go back FOR once it is done
+		}
+		if (location == null && quest == null && obsolete == null
+			&& prerequisite == null && waiting == null)
 		{
 			return;
 		}
@@ -1203,48 +1265,13 @@ class StepRow extends JPanel
 		// numbering question altogether.
 		if (prerequisiteStep != null)
 		{
-			// Reads as a BUTTON: bold, green, boxed. As a plain line it sat
-			// directly under the equally-green Quest Helper tip and looked
-			// like more prose, so nothing said it could be clicked.
-			//
-			// It WRAPS rather than truncates. The first cut rendered as
-			// "→ Go to step 28…" because it capped the label at TEXT_WIDTH,
-			// which is the narrow text COLUMN (112px, sized to sit beside the
-			// checkbox and the ⌖/Go buttons) while this line spans the whole
-			// card. Trimming to a measured width would only have moved the
-			// guess from characters to pixels; an html body width wraps on
-			// its own and loses nothing. That width is the row budget MINUS
-			// the box's own border and padding, or the outline runs past the
-			// card edge and takes ⌖/Go with it.
-			JLabel jump = new JLabel("<html><body style='width:" + (JUMP_WIDTH - 14) + "px'>"
-				+ "<b>GO TO STEP " + prerequisiteStep.getGlobalIndex() + "</b> — "
-				+ RichText.escape(prerequisiteStep.getPlainText()) + "</body></html>");
-			jump.setFont(new Font(Font.DIALOG, Font.PLAIN, 11));
-			jump.setForeground(CAPTURED_COLOR);
-			jump.setAlignmentX(LEFT_ALIGNMENT);
-			// NOT opaque: a JLabel paints its background across the whole
-			// component, including the 22px content inset, which would draw a
-			// filled bar running back to the card edge. The outline alone is
-			// what makes it read as a button.
-			jump.setBorder(BorderFactory.createCompoundBorder(
-				BorderFactory.createEmptyBorder(4, 22, 2, 0),
-				BorderFactory.createCompoundBorder(
-					BorderFactory.createLineBorder(CAPTURED_COLOR, 1),
-					BorderFactory.createEmptyBorder(3, 6, 3, 6))));
-			jump.setCursor(java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.HAND_CURSOR));
-			jump.setToolTipText("<html>Go to step " + prerequisiteStep.getGlobalIndex() + ": "
-				+ RichText.escape(prerequisiteStep.getPlainText()) + "<br>"
-				+ "Makes that the step the guide is on — nothing gets ticked off,"
-				+ " and you can come back the same way.</html>");
-			jump.addMouseListener(new java.awt.event.MouseAdapter()
-			{
-				@Override
-				public void mouseClicked(java.awt.event.MouseEvent e)
-				{
-					goToStep(prerequisiteStep.getGlobalIndex());
-				}
-			});
-			add(jump);
+			add(jumpButton("GO TO STEP", prerequisiteStep));
+		}
+
+		// The return trip, on the prerequisite step itself (resolved above).
+		if (waiting != null)
+		{
+			add(jumpButton("BACK TO STEP", waiting));
 		}
 
 		// Nothing can tick this one for you. 139 steps guide-wide are in that

@@ -102,4 +102,15 @@ class RowContext
 	 * the position is not, and needs to show its own result.
 	 */
 	Runnable jumpToCurrentHandler;
+
+	/**
+	 * Step id -> the step that is WAITING on it: the inverse of
+	 * prerequisiteQuest, for the return trip.
+	 *
+	 * Derived from the annotation rather than remembered from the click that
+	 * brought you here. Session state would be lost on a restart and would
+	 * offer nothing to someone who arrived at the prerequisite by simply
+	 * playing forwards, whereas the relation is true either way.
+	 */
+	java.util.function.Function<String, com.ironscape.guide.GuideStep> dependentStep;
 }
