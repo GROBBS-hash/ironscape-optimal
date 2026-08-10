@@ -56,6 +56,14 @@ class StepRow extends JPanel
 	private static final int TEXT_WIDTH = 112;
 	private static final int INDENT_PER_LEVEL = 10;
 
+	/**
+	 * Room for a full-card-width line that starts at the 22px content inset —
+	 * the "go to step N" jump. NOT TEXT_WIDTH, which is the narrow column
+	 * beside the checkbox and buttons. Derived the same way as the chip row's
+	 * own 184px budget: 184 total minus that inset.
+	 */
+	private static final int JUMP_WIDTH = 162;
+
 	private static final Color CAPTURED_COLOR = new Color(0x4c, 0xaf, 0x50);
 	private static final String SATISFIED_HEX = "#4caf50";
 	private static final String IN_BANK_HEX = "#ffa000";
@@ -1174,23 +1182,25 @@ class StepRow extends JPanel
 		// numbering question altogether.
 		if (prerequisiteStep != null)
 		{
-			// Truncated, not just max-sized: a JLabel does not ellipsize, it
-			// reports the full width and gets clipped, which is what pushes
-			// ⌖/Go off the card edge.
-			String name = prerequisiteStep.getPlainText();
-			if (name.length() > 34)
-			{
-				name = name.substring(0, 31) + "...";
-			}
-			JLabel jump = new JLabel("→ Go to step " + prerequisiteStep.getGlobalIndex()
-				+ ": " + name);
+			// WRAPS rather than truncates. The first cut rendered as "→ Go to
+			// step 28…" because it capped the label at TEXT_WIDTH — that is
+			// the narrow text COLUMN (112px, sized to sit beside the checkbox
+			// and the ⌖/Go buttons), while this line spans the whole card.
+			// Trimming to a measured width would only move the guess from
+			// characters to pixels; a JLabel given an html body width wraps
+			// on its own, so nothing is cut however long the step name is.
+			JLabel jump = new JLabel("<html><body style='width:" + JUMP_WIDTH + "px'>"
+				+ "→ Step " + prerequisiteStep.getGlobalIndex() + ": "
+				+ RichText.escape(prerequisiteStep.getPlainText()) + "</body></html>");
 			jump.setFont(new Font(Font.DIALOG, Font.PLAIN, 11));
 			jump.setForeground(CHIP_QUEST_FG);
 			jump.setAlignmentX(LEFT_ALIGNMENT);
 			jump.setBorder(BorderFactory.createEmptyBorder(3, 22, 1, 0));
 			jump.setCursor(java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.HAND_CURSOR));
-			jump.setToolTipText("Make that the step the guide is on — nothing gets ticked off,"
-				+ " and you can come back the same way");
+			jump.setToolTipText("<html>Go to step " + prerequisiteStep.getGlobalIndex() + ": "
+				+ RichText.escape(prerequisiteStep.getPlainText()) + "<br>"
+				+ "Makes that the step the guide is on — nothing gets ticked off,"
+				+ " and you can come back the same way.</html>");
 			jump.addMouseListener(new java.awt.event.MouseAdapter()
 			{
 				@Override
@@ -1201,8 +1211,6 @@ class StepRow extends JPanel
 					ctx.getOnProgressChanged().run();
 				}
 			});
-			// A long step name would widen the card and push ⌖/Go off the edge.
-			jump.setMaximumSize(new Dimension(TEXT_WIDTH, jump.getPreferredSize().height));
 			add(jump);
 		}
 
