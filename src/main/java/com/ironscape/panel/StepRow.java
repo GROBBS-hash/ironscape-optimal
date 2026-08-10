@@ -57,12 +57,32 @@ class StepRow extends JPanel
 	private static final int INDENT_PER_LEVEL = 10;
 
 	/**
-	 * Room for a full-card-width line that starts at the 22px content inset —
-	 * the "go to step N" jump. NOT TEXT_WIDTH, which is the narrow column
-	 * beside the checkbox and buttons. Derived the same way as the chip row's
-	 * own 184px budget: 184 total minus that inset.
+	 * Html body widths for the full-card-width lines — the ones that start at
+	 * the 22px content inset rather than in the narrow TEXT_WIDTH column.
+	 *
+	 * The viewport is 223px, and the card's own self-check reports anything
+	 * wider. Each of these is the body width only: add the label's border
+	 * insets to get the real width. The jump button and the notice chips
+	 * carry a box (border + padding) and so get less room than a bare line.
 	 */
-	private static final int JUMP_WIDTH = 162;
+	private static final int LINE_WIDTH = 180;
+	private static final int BOXED_LINE_WIDTH = 150;
+
+	/**
+	 * Stop BoxLayout stretching a label past its content.
+	 *
+	 * A JLabel does not cap its own maximum size — Component#getMaximumSize
+	 * hands back Short.MAX_VALUE — so in a Y_AXIS BoxLayout it is free to
+	 * widen to whatever the container offers, and an html view re-laid out at
+	 * that width reports the stretched size back as the card's preferred
+	 * width. That is how a label given a 148px body still measured 228px and
+	 * pushed the card past the viewport. Call this AFTER the font and border
+	 * are set, since the preferred size depends on both.
+	 */
+	private static void lockWidth(javax.swing.JComponent component)
+	{
+		component.setMaximumSize(component.getPreferredSize());
+	}
 
 	private static final Color CAPTURED_COLOR = new Color(0x4c, 0xaf, 0x50);
 	private static final String SATISFIED_HEX = "#4caf50";
@@ -783,7 +803,7 @@ class StepRow extends JPanel
 	 */
 	private JLabel jumpButton(String lead, GuideStep target)
 	{
-		JLabel jump = new JLabel("<html><body style='width:" + (JUMP_WIDTH - 14) + "px'>"
+		JLabel jump = new JLabel("<html><body style='width:" + BOXED_LINE_WIDTH + "px'>"
 			+ "<b>" + lead + " " + target.getGlobalIndex() + "</b> — "
 			+ RichText.escape(target.getPlainText()) + "</body></html>");
 		jump.setFont(new Font(Font.DIALOG, Font.PLAIN, 11));
@@ -811,6 +831,7 @@ class StepRow extends JPanel
 				goToStep(target.getGlobalIndex());
 			}
 		});
+		lockWidth(jump);
 		return jump;
 	}
 
@@ -1245,11 +1266,17 @@ class StepRow extends JPanel
 			// was too terse to act on, and it matters more since our own
 			// route stands down entirely on these steps — if the panel does
 			// not send you to QH, nothing does.
-			JLabel tip = new JLabel("Use Quest Helper → " + quest);
+			// Wraps: as a plain label this ran off the card for any longish
+			// quest name, which is what the self-check meant by "card wider
+			// than viewport … on step 4043e0d8dc" ("Do Elemental workshop 1")
+			// long before today's buttons existed.
+			JLabel tip = new JLabel("<html><body style='width:" + LINE_WIDTH + "px'>"
+				+ "Use Quest Helper → " + RichText.escape(quest) + "</body></html>");
 			tip.setFont(new Font(Font.DIALOG, Font.PLAIN, 11));
 			tip.setForeground(CHIP_QUEST_FG);
 			tip.setAlignmentX(LEFT_ALIGNMENT);
 			tip.setBorder(BorderFactory.createEmptyBorder(3, 22, 1, 0));
+			lockWidth(tip);
 			tip.setToolTipText("<html>Select \"" + RichText.escape(quest)
 				+ "\" in the Quest Helper plugin for click-by-click quest guidance.<br>"
 				+ "(The Plugin Hub forbids plugins starting it for you.)</html>");
@@ -1282,11 +1309,13 @@ class StepRow extends JPanel
 		if (ctx.getManualOnly() != null && !step.getSubSteps().isEmpty()
 			&& ctx.getManualOnly().test(step.getSubSteps().get(0).getId()))
 		{
-			JLabel manual = new JLabel("tick by hand — nothing here to detect");
+			JLabel manual = new JLabel("<html><body style='width:" + LINE_WIDTH + "px'>"
+				+ "tick by hand — nothing here to detect</body></html>");
 			manual.setFont(new Font(Font.DIALOG, Font.ITALIC, 11));
 			manual.setForeground(new Color(0x87, 0x7e, 0x6f));
 			manual.setAlignmentX(LEFT_ALIGNMENT);
 			manual.setBorder(BorderFactory.createEmptyBorder(3, 22, 1, 0));
+			lockWidth(manual);
 			manual.setToolTipText("<html>This step has no item, quest, level or travel goal,"
 				+ " no varbit checkpoint and no errand chain,<br>"
 				+ "so it cannot complete on its own. Tick it when you have done it.</html>");
@@ -1317,9 +1346,14 @@ class StepRow extends JPanel
 	 */
 	private JLabel noticeChip(String label, String tooltip, Color fg)
 	{
-		JLabel chip = new JLabel(label);
+		// Wrapped, unlike a place chip: those are short by nature ("📍
+		// Lumbridge"), while a warning names a quest and ran the card off the
+		// viewport at 213px. A chip is too small to scroll or ellipsize into.
+		JLabel chip = new JLabel("<html><body style='width:" + BOXED_LINE_WIDTH + "px'>"
+			+ label + "</body></html>");
 		styleChip(chip, fg);
 		chip.setToolTipText(tooltip);
+		lockWidth(chip);
 		return chip;
 	}
 
