@@ -283,3 +283,43 @@ if (!fs.existsSync(constantsTsv)) {
     }
   }
 }
+
+// 5. ANNOTATION ITEMS THAT NAME AN ID. ItemNeed.id counts one exact item,
+//    which means its `name` is only a LABEL — nothing matches on it, so
+//    sections 1-2 above cannot say anything useful about these entries. A
+//    wrong id would sit there counting the wrong item, or nothing at all,
+//    and look perfectly healthy.
+//
+//    The id is checked against RuneLite's own id -> name cache, and the
+//    label against the real name with any parenthetical dropped: the whole
+//    point of these entries is that the parenthetical is ours, added to
+//    tell apart two items the game gives the SAME name ("Priest gown" is
+//    both 426 and 428).
+console.log('\n=== annotation items whose ID does not match their label ===');
+{
+  const liveNames = await liveItemNames(path.join(ROOT, 'tools/.wiki-cache/item-names-cache.json'));
+  if (!liveNames) {
+    console.log('(skipped — could not reach the live item mapping)');
+  } else {
+    let checked = 0;
+    let flagged = 0;
+    for (const [key, entry] of Object.entries(ann)) {
+      for (const need of entry.items || []) {
+        if (need.id == null) continue;
+        checked++;
+        const real = liveNames.get(Number(need.id));
+        if (!real) {
+          flagged++;
+          console.log(`  [${key}] "${need.name}" -> id ${need.id} (NO SUCH ITEM ID)`);
+          continue;
+        }
+        const label = String(need.name).replace(/\s*\([^)]*\)\s*$/, '').trim();
+        if (canonical(label) !== canonical(real)) {
+          flagged++;
+          console.log(`  [${key}] "${need.name}" -> ${need.id} is really "${real}"`);
+        }
+      }
+    }
+    console.log(`${flagged} mismatched of ${checked} id-keyed annotation item(s)`);
+  }
+}
