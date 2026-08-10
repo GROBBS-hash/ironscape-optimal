@@ -84,6 +84,18 @@ public class AnnotationManager
 		return b == null ? null : b.target;
 	}
 
+	/** Where to train while the step's skill requirement is unmet; null if none. */
+	public synchronized StepAnnotation.Target getTrainAt(String stepId)
+	{
+		StepAnnotation l = local.get(stepId);
+		if (l != null && l.trainAt != null)
+		{
+			return l.trainAt;
+		}
+		StepAnnotation b = bundled.get(stepId);
+		return b == null ? null : b.trainAt;
+	}
+
 	/** The step's auto-completion requirement, local winning over bundled. Null if none. */
 	public synchronized StepAnnotation.Requirement getRequirement(String stepId)
 	{

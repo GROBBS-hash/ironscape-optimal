@@ -977,7 +977,17 @@
      "name": "pickaxe",
      "quantity": 1
     }
-   ]
+   ],
+   "link": {
+    "label": "Runecraft training (wiki)",
+    "url": "https://oldschool.runescape.wiki/w/Pay-to-play_Runecraft_training"
+   },
+   "note": "Runecraft 10 is a HARD requirement for Temple of the Eye - it is not boostable.\nRates per essence (rune or pure): air 5 (level 1), mind 5.5 (2), water 6 (5), earth 6.5 (9). Around 30-37 essence covers level 9 to 10.\nRune Mysteries gives an air talisman; Enter the Abyss reaches every altar without one.",
+   "trainAt": {
+    "x": 2982,
+    "y": 3514,
+    "plane": 0
+   }
   },
   "49d23fd82b": {
    "items": [

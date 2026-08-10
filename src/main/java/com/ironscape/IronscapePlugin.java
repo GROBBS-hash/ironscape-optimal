@@ -552,6 +552,29 @@ public class IronscapePlugin extends Plugin
 	 * looks these up by step id — so the data was right and only the panel
 	 * was silent.
 	 */
+	/**
+	 * Does this sub carry a SKILL requirement the player has not reached?
+	 * Only skills count — a varbit checkpoint says nothing about whether a
+	 * grind is still ahead.
+	 */
+	private boolean skillRequirementUnmet(SubStep sub)
+	{
+		List<StepRequirement> requirements = requirementsFor(sub.getId());
+		if (requirements == null)
+		{
+			return false;
+		}
+		for (StepRequirement requirement : requirements)
+		{
+			if (requirement.skill != null
+				&& realLevelBySkill.getOrDefault(requirement.skill, 1) < requirement.threshold)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
 	private List<StepRequirement> requirementsFor(String subId)
 	{
 		List<StepRequirement> own = subRequirements.get(subId);
@@ -6693,6 +6716,23 @@ public class IronscapePlugin extends Plugin
 		if (target != null)
 		{
 			return new WorldPoint(target.x, target.y, target.plane);
+		}
+		// A step that says "train X to N, THEN do the quest" is two jobs,
+		// and the guide is atomic so it cannot be split. While the level is
+		// missing the quest is not startable at all — Temple of the Eye
+		// needs Runecraft 10 and is not boostable — so route to the
+		// training spot, and stop the moment the level lands.
+		if (skillRequirementUnmet(sub))
+		{
+			StepAnnotation.Target train = annotationManager.getTrainAt(step.getId());
+			if (train == null)
+			{
+				train = annotationManager.getTrainAt(sub.getId());
+			}
+			if (train != null)
+			{
+				return new WorldPoint(train.x, train.y, train.plane);
+			}
 		}
 		// An UNSTARTED quest goal routes to the quest's START point — the
 		// same pin the quest-start marker floats at. The 📍 fallback routed

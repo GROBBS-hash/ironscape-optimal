@@ -26,6 +26,27 @@ public class StepAnnotation
 	/** Where this step happens, for Shortest Path navigation. */
 	public Target target;
 
+	/**
+	 * Where to go and TRAIN while this step's skill requirement is unmet.
+	 *
+	 * "Train Runecraft to 10, then complete Temple of the Eye" is two jobs
+	 * in one step, and the guide is atomic so it cannot be split into
+	 * sub-steps. Routing to the quest is useless until the level is there
+	 * (Temple of the Eye needs Runecraft 10 and is not boostable), and a
+	 * plain ⌖ would then keep pointing at the training spot for the rest of
+	 * the step.
+	 *
+	 * So this is used ONLY while `requires` (or requiresAll) names a skill
+	 * the player has not reached. The moment they do, routing falls back to
+	 * the step's normal target — the quest giver — and once the quest is
+	 * started Quest Helper takes over as usual. Three steps guide-wide have
+	 * this grind-then-quest shape.
+	 *
+	 * An explicit ⌖ capture still wins: a location captured by hand is a
+	 * deliberate statement about where to be.
+	 */
+	public Target trainAt;
+
 	/** Items this step needs — the panel shows a live have/need count for each. */
 	public List<ItemNeed> items;
 
