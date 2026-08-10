@@ -4786,7 +4786,7 @@ public class IronscapePlugin extends Plugin
 		String annotationId = step.getSubSteps().size() == 1 ? step.getId() : sub.getId();
 		for (StepAnnotation.ItemNeed need : annotationManager.getItems(annotationId))
 		{
-			if (itemTracker.iconIdFor(need.name) <= 0)
+			if (need.id == null && itemTracker.iconIdFor(need.name) <= 0)
 			{
 				continue; // unresolvable name: can't count it, don't block on it
 			}
@@ -4806,14 +4806,30 @@ public class IronscapePlugin extends Plugin
 			}
 			int required = need.quantity == null ? 1 : need.quantity;
 			int count = itemTracker.bankCountable(need.name, required)
-				? itemTracker.countOf(need.name)
-				: itemTracker.carriedCountOf(need.name);
+				? ownedCount(need)
+				: carriedCount(need);
 			if (count < required)
 			{
 				return false;
 			}
 		}
 		return true;
+	}
+
+	/**
+	 * Owned/carried counts for an annotation item, by ID when it names one.
+	 * See StepAnnotation.ItemNeed.id — some items share a name and can only
+	 * be told apart by id.
+	 */
+	private int ownedCount(StepAnnotation.ItemNeed need)
+	{
+		return need.id != null ? itemTracker.countOfId(need.id) : itemTracker.countOf(need.name);
+	}
+
+	private int carriedCount(StepAnnotation.ItemNeed need)
+	{
+		return need.id != null
+			? itemTracker.carriedCountOfId(need.id) : itemTracker.carriedCountOf(need.name);
 	}
 
 	/**
@@ -4875,14 +4891,14 @@ public class IronscapePlugin extends Plugin
 				// never completes here, which is the safe direction.
 				continue;
 			}
-			if (itemTracker.iconIdFor(need.name) <= 0)
+			if (need.id == null && itemTracker.iconIdFor(need.name) <= 0)
 			{
 				return false; // can't count it, so can't claim it is satisfied
 			}
 			int required = need.quantity;
 			int count = itemTracker.bankCountable(need.name, required)
-				? itemTracker.countOf(need.name)
-				: itemTracker.carriedCountOf(need.name);
+				? ownedCount(need)
+				: carriedCount(need);
 			if (count < required)
 			{
 				return false;
@@ -4972,7 +4988,7 @@ public class IronscapePlugin extends Plugin
 			// BANKED, the panel showed them green with a 🏦 badge, and the
 			// step would not tick. A gate stricter than its own badge is
 			// unexplainable to the player (owner, 2026-08-08).
-			if (itemTracker.countOf(need.name) < required)
+			if (ownedCount(need) < required)
 			{
 				return false;
 			}

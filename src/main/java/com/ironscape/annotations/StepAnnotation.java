@@ -357,6 +357,22 @@ public class StepAnnotation
 		/** How many are needed; null means 1. */
 		public Integer quantity;
 		/**
+		 * Count THIS EXACT item id instead of matching by name — for the
+		 * items whose names cannot tell them apart.
+		 *
+		 * Both halves of the priest gown are called exactly "Priest gown"
+		 * (426 and 428), so a name-matched pair of entries can only ever
+		 * report the pair's total, and the panel showed one half as 1/1
+		 * twice. With an id each entry counts its own half, and `name` is
+		 * free to be the DISAMBIGUATING label ("Priest gown (top)") since
+		 * nothing has to match on it any more.
+		 *
+		 * Use it only where a name genuinely cannot work: id matching skips
+		 * the alias, substitute and family logic that makes everything else
+		 * forgiving, and an id pins one exact item for ever.
+		 */
+		public Integer id;
+		/**
 		 * Keep-if-you-get-it, not a requirement ("keep robes, opal and
 		 * buttons"): the badge shows a muted "(optional)" tag and an unmet
 		 * count stays grey, never alarm red.

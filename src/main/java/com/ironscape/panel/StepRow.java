@@ -507,7 +507,14 @@ class StepRow extends JPanel
 				name.setFont(new Font(Font.DIALOG, Font.PLAIN, 11));
 				name.setForeground(ITEM_NAME_FG);
 				name.setIconTextGap(4);
-				ctx.getItems().attachIcon(need.name, name);
+				if (need.id != null)
+				{
+					ctx.getItems().attachIconById(need.id, name);
+				}
+				else
+				{
+					ctx.getItems().attachIcon(need.name, name);
+				}
 
 				JLabel count = new JLabel();
 				count.setFont(new Font(Font.DIALOG, Font.BOLD, 11));
@@ -648,9 +655,12 @@ class StepRow extends JPanel
 		// useless mid-Aggie, so their count is what's in your hands
 		// (6,924 bank coins showed "enough" for a 65-coin dye run).
 		boolean ingredient = Boolean.TRUE.equals(need.ingredient);
-		int have = ingredient
-			? ctx.getItems().carriedCountOf(need.name) : ctx.getItems().countOf(need.name);
-		int carried = ctx.getItems().carriedCountOf(need.name);
+		// An id-keyed need counts that exact item; see StepAnnotation.ItemNeed.id.
+		int owned = need.id != null
+			? ctx.getItems().countOfId(need.id) : ctx.getItems().countOf(need.name);
+		int carried = need.id != null
+			? ctx.getItems().carriedCountOfId(need.id) : ctx.getItems().carriedCountOf(need.name);
+		int have = ingredient ? carried : owned;
 
 		// green: carrying enough | orange + 🏦: enough, but some is banked
 		// | red: not enough anywhere | grey: the step is already done,

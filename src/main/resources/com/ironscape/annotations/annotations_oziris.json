@@ -6837,8 +6837,14 @@
    },
    "items": [
     {
-     "name": "priest gown",
-     "quantity": 2
+     "name": "Priest gown (top)",
+     "id": 426,
+     "quantity": 1
+    },
+    {
+     "name": "Priest gown (bottom)",
+     "id": 428,
+     "quantity": 1
     },
     {
      "name": "leather boots",

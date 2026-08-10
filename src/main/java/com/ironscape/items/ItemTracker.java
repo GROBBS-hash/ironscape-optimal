@@ -57,6 +57,11 @@ public class ItemTracker
 	/** Bank snapshot by lowercase item name (client thread only). */
 	private Map<String, Integer> bankByName = new HashMap<>();
 
+	/** Id-keyed tallies, for variants that share one name. See countById. */
+	private final Map<Integer, Integer> carriedById = new HashMap<>();
+	private final Map<Integer, Integer> ownedById = new HashMap<>();
+	private Map<Integer, Integer> bankById = new HashMap<>();
+
 	/** Which account the current bank snapshot belongs to. */
 	private long accountHash = -1;
 
@@ -84,6 +89,24 @@ public class ItemTracker
 	public synchronized int wornCountOf(String name)
 	{
 		return resolve(wornByName, name);
+	}
+
+	/**
+	 * Count one EXACT item id, for annotation entries that name an id
+	 * because the item's name is shared with another item.
+	 *
+	 * No alias, substitute or family logic: an id is already unambiguous,
+	 * and every one of those mechanisms exists to paper over names.
+	 */
+	public synchronized int countOfId(int id)
+	{
+		return ownedById.getOrDefault(id, 0);
+	}
+
+	/** As countOfId, inventory + worn only. */
+	public synchronized int carriedCountOfId(int id)
+	{
+		return carriedById.getOrDefault(id, 0);
 	}
 
 	/**
@@ -592,6 +615,21 @@ public class ItemTracker
 		}
 	}
 
+	/**
+	 * Sprite for an EXACT item id — an id-keyed need already knows precisely
+	 * which item it means, so it should not go looking the name up again.
+	 * "Priest gown (top)" is not a name any item has; it only ever resolved
+	 * because the alias chain drops the parenthetical, and it would have
+	 * given both halves the same sprite.
+	 */
+	public void attachIconById(int id, javax.swing.JLabel label)
+	{
+		if (id > 0)
+		{
+			itemManager.getImage(id).addTo(label);
+		}
+	}
+
 	/** The item id whose sprite represents this guide item name; -1 = none found. */
 	public synchronized int iconIdFor(String name)
 	{
@@ -814,6 +852,10 @@ public class ItemTracker
 		if (id == InventoryID.BANK)
 		{
 			bankByName = countByName(event.getItemContainer());
+			// Only chance to see the bank BY ID — the persisted snapshot is
+			// names only, so this is what an id-keyed need can know about
+			// banked stock (see countById).
+			bankById = countById(event.getItemContainer());
 			saveBank();
 			rebuild();
 		}
@@ -929,6 +971,17 @@ public class ItemTracker
 			wornByName.putAll(worn);
 			ownedByName.clear();
 			ownedByName.putAll(total);
+
+			// Id tallies alongside the name ones. Inventory and worn are read
+			// live, so they are always right; the bank half is whatever the
+			// last bank event saw this session (see countById).
+			carriedById.clear();
+			carriedById.putAll(countById(client.getItemContainer(InventoryID.INV)));
+			countById(client.getItemContainer(InventoryID.WORN))
+				.forEach((id, count) -> carriedById.merge(id, count, Integer::sum));
+			ownedById.clear();
+			ownedById.putAll(bankById);
+			carriedById.forEach((id, count) -> ownedById.merge(id, count, Integer::sum));
 		}
 	}
 
@@ -947,6 +1000,45 @@ public class ItemTracker
 			return;
 		}
 		countByName(container).forEach((name, count) -> counts.merge(name, count, Integer::sum));
+	}
+
+	/**
+	 * The same tally, keyed by canonical item ID — for the items a NAME
+	 * cannot tell apart.
+	 *
+	 * Both halves of the priest gown are called exactly "Priest gown" (ids
+	 * 426 and 428, and the wiki records that same single name for both), so
+	 * a name tally can only ever report the pair's total: "1/2", without
+	 * saying which half you are missing. Only an annotation that names the
+	 * ID can, and only these maps can answer it.
+	 *
+	 * IN MEMORY ONLY, unlike bankByName. The persisted bank snapshot stores
+	 * names, so a half sitting in the bank is invisible to an id-keyed need
+	 * until the bank is opened once in this session. That is acceptable
+	 * where it is used — an id need is for telling variants apart on a
+	 * shopping step you are carrying out — and changing the snapshot format
+	 * is a much larger job than this earns.
+	 */
+	private Map<Integer, Integer> countById(ItemContainer container)
+	{
+		Map<Integer, Integer> counts = new HashMap<>();
+		if (container == null)
+		{
+			return counts;
+		}
+		for (Item item : container.getItems())
+		{
+			if (item.getId() < 0 || item.getQuantity() <= 0)
+			{
+				continue;
+			}
+			if (itemManager.getItemComposition(item.getId()).getPlaceholderTemplateId() != -1)
+			{
+				continue;
+			}
+			counts.merge(itemManager.canonicalize(item.getId()), item.getQuantity(), Integer::sum);
+		}
+		return counts;
 	}
 
 	private Map<String, Integer> countByName(ItemContainer container)
