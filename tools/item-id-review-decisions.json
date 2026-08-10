@@ -1,0 +1,444 @@
+{
+ "decisions": {
+  "coins": {
+   "leave": true,
+   "decided": "2026-08-10",
+   "via": "--leave-all"
+  },
+  "tinderbox": {
+   "leave": true,
+   "decided": "2026-08-10",
+   "via": "--leave-all"
+  },
+  "rope": {
+   "leave": true,
+   "decided": "2026-08-10",
+   "via": "--leave-all"
+  },
+  "knife": {
+   "leave": true,
+   "decided": "2026-08-10",
+   "via": "--leave-all"
+  },
+  "pestle and mortar": {
+   "leave": true,
+   "decided": "2026-08-10",
+   "via": "--leave-all"
+  },
+  "logs": {
+   "leave": true,
+   "decided": "2026-08-10",
+   "via": "--leave-all"
+  },
+  "bucket of water": {
+   "leave": true,
+   "decided": "2026-08-10",
+   "via": "--leave-all"
+  },
+  "ghostspeak amulet": {
+   "leave": true,
+   "decided": "2026-08-10",
+   "via": "--leave-all"
+  },
+  "bucket": {
+   "leave": true,
+   "decided": "2026-08-10",
+   "via": "--leave-all"
+  },
+  "beer": {
+   "leave": true,
+   "decided": "2026-08-10",
+   "via": "--leave-all"
+  },
+  "raw chicken": {
+   "leave": true,
+   "decided": "2026-08-10",
+   "via": "--leave-all"
+  },
+  "pot of flour": {
+   "leave": true,
+   "decided": "2026-08-10",
+   "via": "--leave-all"
+  },
+  "scrying orb": {
+   "leave": true,
+   "decided": "2026-08-10",
+   "via": "--leave-all"
+  },
+  "chisel": {
+   "leave": true,
+   "decided": "2026-08-10",
+   "via": "--leave-all"
+  },
+  "climbing boots": {
+   "leave": true,
+   "decided": "2026-08-10",
+   "via": "--leave-all"
+  },
+  "swamp paste": {
+   "leave": true,
+   "decided": "2026-08-10",
+   "via": "--leave-all"
+  },
+  "small fishing net": {
+   "leave": true,
+   "decided": "2026-08-10",
+   "via": "--leave-all"
+  },
+  "steel nails": {
+   "leave": true,
+   "decided": "2026-08-10",
+   "via": "--leave-all"
+  },
+  "cosmic rune": {
+   "leave": true,
+   "decided": "2026-08-10",
+   "via": "--leave-all"
+  },
+  "bronze wire": {
+   "leave": true,
+   "decided": "2026-08-10",
+   "via": "--leave-all"
+  },
+  "earth rune": {
+   "leave": true,
+   "decided": "2026-08-10",
+   "via": "--leave-all"
+  },
+  "papyrus": {
+   "leave": true,
+   "decided": "2026-08-10",
+   "via": "--leave-all"
+  },
+  "raw beef": {
+   "leave": true,
+   "decided": "2026-08-10",
+   "via": "--leave-all"
+  },
+  "excalibur": {
+   "leave": true,
+   "decided": "2026-08-10",
+   "via": "--leave-all"
+  },
+  "vial of water": {
+   "leave": true,
+   "decided": "2026-08-10",
+   "via": "--leave-all"
+  },
+  "cooked meat": {
+   "leave": true,
+   "decided": "2026-08-10",
+   "via": "--leave-all"
+  },
+  "bones": {
+   "leave": true,
+   "decided": "2026-08-10",
+   "via": "--leave-all"
+  },
+  "vial": {
+   "leave": true,
+   "decided": "2026-08-10",
+   "via": "--leave-all"
+  },
+  "air rune": {
+   "leave": true,
+   "decided": "2026-08-10",
+   "via": "--leave-all"
+  },
+  "water rune": {
+   "leave": true,
+   "decided": "2026-08-10",
+   "via": "--leave-all"
+  },
+  "greenman's ale": {
+   "leave": true,
+   "decided": "2026-08-10",
+   "via": "--leave-all"
+  },
+  "orange": {
+   "leave": true,
+   "decided": "2026-08-10",
+   "via": "--leave-all"
+  },
+  "law rune": {
+   "leave": true,
+   "decided": "2026-08-10",
+   "via": "--leave-all"
+  },
+  "bullseye lantern": {
+   "leave": true,
+   "decided": "2026-08-10",
+   "via": "--leave-all"
+  },
+  "cabbage": {
+   "leave": true,
+   "decided": "2026-08-10",
+   "via": "--leave-all"
+  },
+  "cake": {
+   "leave": true,
+   "decided": "2026-08-10",
+   "via": "--leave-all"
+  },
+  "lockpick": {
+   "leave": true,
+   "decided": "2026-08-10",
+   "via": "--leave-all"
+  },
+  "goutweed": {
+   "leave": true,
+   "decided": "2026-08-10",
+   "via": "--leave-all"
+  },
+  "astral rune": {
+   "leave": true,
+   "decided": "2026-08-10",
+   "via": "--leave-all"
+  },
+  "fire rune": {
+   "leave": true,
+   "decided": "2026-08-10",
+   "via": "--leave-all"
+  },
+  "fruit blast": {
+   "leave": true,
+   "decided": "2026-08-10",
+   "via": "--leave-all"
+  },
+  "cocktail glass": {
+   "leave": true,
+   "decided": "2026-08-10",
+   "via": "--leave-all"
+  },
+  "sapphire lantern": {
+   "leave": true,
+   "decided": "2026-08-10",
+   "via": "--leave-all"
+  },
+  "stake": {
+   "leave": true,
+   "decided": "2026-08-10",
+   "via": "--leave-all"
+  },
+  "death rune": {
+   "leave": true,
+   "decided": "2026-08-10",
+   "via": "--leave-all"
+  },
+  "anti-dragon shield": {
+   "leave": true,
+   "decided": "2026-08-10",
+   "via": "--leave-all"
+  },
+  "key": {
+   "leave": true,
+   "decided": "2026-08-10",
+   "via": "--leave-all"
+  },
+  "shears": {
+   "leave": true,
+   "decided": "2026-08-10",
+   "via": "--leave-all"
+  },
+  "woad leaf": {
+   "leave": true,
+   "decided": "2026-08-10",
+   "via": "--leave-all"
+  },
+  "holy symbol": {
+   "leave": true,
+   "decided": "2026-08-10",
+   "via": "--leave-all"
+  },
+  "egg": {
+   "leave": true,
+   "decided": "2026-08-10",
+   "via": "--leave-all"
+  },
+  "blood rune": {
+   "leave": true,
+   "decided": "2026-08-10",
+   "via": "--leave-all"
+  },
+  "dragonstone": {
+   "leave": true,
+   "decided": "2026-08-10",
+   "via": "--leave-all"
+  },
+  "grain": {
+   "leave": true,
+   "decided": "2026-08-10",
+   "via": "--leave-all"
+  },
+  "beer glass": {
+   "leave": true,
+   "decided": "2026-08-10",
+   "via": "--leave-all"
+  },
+  "plant cure": {
+   "leave": true,
+   "decided": "2026-08-10",
+   "via": "--leave-all"
+  },
+  "onion seed": {
+   "leave": true,
+   "decided": "2026-08-10",
+   "via": "--leave-all"
+  },
+  "ugthanki dung": {
+   "leave": true,
+   "decided": "2026-08-10",
+   "via": "--leave-all"
+  },
+  "pigeon cage": {
+   "leave": true,
+   "decided": "2026-08-10",
+   "via": "--leave-all"
+  },
+  "empty cup": {
+   "leave": true,
+   "decided": "2026-08-10",
+   "via": "--leave-all"
+  },
+  "captain's log": {
+   "leave": true,
+   "decided": "2026-08-10",
+   "via": "--leave-all"
+  },
+  "slayer gloves": {
+   "leave": true,
+   "decided": "2026-08-10",
+   "via": "--leave-all"
+  },
+  "silverlight": {
+   "leave": true,
+   "decided": "2026-08-10",
+   "via": "--leave-all"
+  },
+  "phoenix crossbow": {
+   "leave": true,
+   "decided": "2026-08-10",
+   "via": "--leave-all"
+  },
+  "torch": {
+   "leave": true,
+   "decided": "2026-08-10",
+   "via": "--leave-all"
+  },
+  "nature rune": {
+   "leave": true,
+   "decided": "2026-08-10",
+   "via": "--leave-all"
+  },
+  "wine of zamorak": {
+   "leave": true,
+   "decided": "2026-08-10",
+   "via": "--leave-all"
+  },
+  "cup of tea": {
+   "leave": true,
+   "decided": "2026-08-10",
+   "via": "--leave-all"
+  },
+  "panning tray": {
+   "leave": true,
+   "decided": "2026-08-10",
+   "via": "--leave-all"
+  },
+  "feather": {
+   "leave": true,
+   "decided": "2026-08-10",
+   "via": "--leave-all"
+  },
+  "prayer potion(4)": {
+   "leave": true,
+   "decided": "2026-08-10",
+   "via": "--leave-all"
+  },
+  "mind rune": {
+   "leave": true,
+   "decided": "2026-08-10",
+   "via": "--leave-all"
+  },
+  "silverlight key": {
+   "leave": true,
+   "decided": "2026-08-10",
+   "via": "--leave-all"
+  },
+  "nettle tea": {
+   "leave": true,
+   "decided": "2026-08-10",
+   "via": "--leave-all"
+  },
+  "karamjan rum": {
+   "leave": true,
+   "decided": "2026-08-10",
+   "via": "--leave-all"
+  },
+  "white apron": {
+   "leave": true,
+   "decided": "2026-08-10",
+   "via": "--leave-all"
+  },
+  "fishbowl": {
+   "leave": true,
+   "decided": "2026-08-10",
+   "via": "--leave-all"
+  },
+  "asgarnian ale": {
+   "leave": true,
+   "decided": "2026-08-10",
+   "via": "--leave-all"
+  },
+  "m'speak amulet": {
+   "leave": true,
+   "decided": "2026-08-10",
+   "via": "--leave-all"
+  },
+  "empty sack": {
+   "leave": true,
+   "decided": "2026-08-10",
+   "via": "--leave-all"
+  },
+  "watering can": {
+   "leave": true,
+   "decided": "2026-08-10",
+   "via": "--leave-all"
+  },
+  "leather boots": {
+   "leave": true,
+   "decided": "2026-08-10",
+   "via": "--leave-all"
+  },
+  "newspaper": {
+   "leave": true,
+   "decided": "2026-08-10",
+   "via": "--leave-all"
+  },
+  "rune scimitar": {
+   "leave": true,
+   "decided": "2026-08-10",
+   "via": "--leave-all"
+  },
+  "boots of lightness": {
+   "leave": true,
+   "decided": "2026-08-10",
+   "via": "--leave-all"
+  },
+  "big frog leg": {
+   "leave": true,
+   "decided": "2026-08-10",
+   "via": "--leave-all"
+  },
+  "helm of neitiznot": {
+   "leave": true,
+   "decided": "2026-08-10",
+   "via": "--leave-all"
+  },
+  "dragon defender": {
+   "leave": true,
+   "decided": "2026-08-10",
+   "via": "--leave-all"
+  }
+ }
+}

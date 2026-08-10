@@ -13,16 +13,27 @@ improved by Jesper (osrsper). Credit them prominently in the plugin.
 
 ## Developer context — read this first
 
-The project owner is **new to Java**. He is not new to software generally —
-he has React/Supabase and Google Apps Script experience — but Java, Gradle,
-and the RuneLite plugin lifecycle are all unfamiliar.
+The project owner has **no coding knowledge at all** (corrected by him
+2026-08-10; the old "new to Java but knows React/Supabase and Apps Script"
+note here was wrong and shaped months of over-technical reports). He is the
+OSRS domain expert and directs everything in game. Claude is the lead
+developer and owns every technical decision.
 
 Implications:
-- Explain build errors rather than silently fixing them.
-- Prefer boring, readable Java over clever Java.
-- Comment the RuneLite-specific lifecycle bits (`@Subscribe`, `startUp()`,
-  `shutDown()`, injection) because those are non-obvious to newcomers.
-- When something needs to be installed or configured, give exact commands.
+- DECIDE technical things; do not put them to him as a question. What to
+  build, which tools and audits to write, how to structure code, when to
+  commit — all Claude's call. Ask him only about the GAME: item names, NPCs,
+  slang, whether a step really behaves that way.
+- Report in plain language, cause and effect. No class or method names, no
+  file paths, no line numbers in the body of a report unless he asks. "The
+  arrow kept pointing at the old destination because it never noticed the
+  route had been handed over" — not the code path that did it.
+- Keep reports SHORT. Lead with what changed for him in play, then what to
+  watch for next.
+- Propose the tools, audits and systems worth building. He cannot know what
+  is possible, so unprompted recommendations are where the value is.
+- Still prefer boring, readable Java, and still comment the RuneLite
+  lifecycle bits — for the next developer, not for him.
 
 ## Core architecture
 

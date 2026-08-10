@@ -3003,10 +3003,30 @@ public class IronscapePlugin extends Plugin
 					// hint offered a Lumbridge teleport one ladder below it).
 					boolean chainHolding = hintErrand == null
 						&& !errandChain(current.step, current.sub).isEmpty();
+					// Nav has HANDED OFF to Quest Helper on this step, so the
+					// hint must stand down with it. It never asked: it called
+					// targetFor() straight, computing a first leg toward a
+					// destination the router had already abandoned. In play
+					// (2026-08-10, Temple of the Eye) nav logged the stand-down
+					// at 21:44:25 and the hint went on offering a Lumbridge home
+					// teleport at 21:47, 21:48, 21:49 and 21:51 — on top of the
+					// route QH was drawing correctly.
+					//
+					// The same two exceptions nav makes are made here, in the
+					// same order, because they are already ahead of this in the
+					// chain below: a gravestone outranks everything (wave 7) and
+					// an active errand deliberately outranks QH (waves 4/8).
+					//
+					// Deliberately quiet rather than clever: when the kit is
+					// banked nav still suggests a bank, and this could aim there
+					// too, but a hint pointing somewhere while QH guides is the
+					// exact complaint. Silence is never wrong here.
+					boolean handedOff = questHelperOwnsGuidance() && questHelperInstalled();
 					WorldPoint routeTarget = chainHolding ? null
 						: deathPoint != null ? deathPoint
 						: hintErrand != null
 							? errandRoutePoint(hintErrand)
+						: handedOff ? null
 							: targetFor(current.step, current.sub);
 					// A sub that names its own transport gets no alternative
 					// first-leg suggestions — the guide already said how to
@@ -3034,6 +3054,8 @@ public class IronscapePlugin extends Plugin
 								+ (castable(named) ? "" : " (not castable yet — boost/runes)"))
 						: chainHolding
 							? "none — errand chain complete, holding"
+						: handedOff
+							? "none — Quest Helper owns this step's route"
 						: leg == null
 							? "none — no first leg beats walking to " + routeTarget
 								+ metricNote(routeTarget)

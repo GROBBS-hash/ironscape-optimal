@@ -118,6 +118,24 @@ for (const [name, usage] of used) {
 }
 rows.sort((a, b) => (b.annotations + b.goals) - (a.annotations + a.goals));
 
+// `--leave-all` settles every outstanding row as "leave as name" without a
+// click. That is the RIGHT default and the reason it exists: a shared name
+// is usually fine, and leaving one is reversible while a pin is not — an
+// id skips the alias, substitute and family logic on purpose, so pinning
+// "tinderbox" would stop a bruma torch counting at Wintertodt across all
+// 29 entries that name it. Refine a single name later, in play, when a
+// real step actually miscounts; delete its line here to be asked again.
+if (process.argv.includes('--leave-all')) {
+  const today = new Date().toISOString().slice(0, 10);
+  for (const r of rows) {
+    decided.decisions[r.name] = { leave: true, decided: today, via: '--leave-all' };
+  }
+  fs.writeFileSync(DECISIONS, JSON.stringify(decided, null, 1) + '\n');
+  console.log(`${rows.length} name(s) settled as "leave as name" -> ${path.relative(ROOT, DECISIONS)}`);
+  console.log('Nothing was pinned. Re-run without the flag to review what is left.');
+  process.exit(0);
+}
+
 const html = `<!doctype html>
 <meta charset="utf-8">
 <title>Item id review — IRONSCAPE</title>
