@@ -6828,6 +6828,31 @@
   },
   "732e8c7412": {
    "obsolete": "The Kourend favour system was removed in January 2024. All Hosidius content (fruit stalls, farming patches, Tithe Farm, the Mess) is freely accessible now, so there is nothing left to do here."
+  },
+  "e9b783141c": {
+   "target": {
+    "x": 3207,
+    "y": 3415,
+    "plane": 0
+   },
+   "items": [
+    {
+     "name": "priest gown (top)",
+     "quantity": 1
+    },
+    {
+     "name": "priest gown (bottom)",
+     "quantity": 1
+    },
+    {
+     "name": "leather boots",
+     "quantity": 1
+    },
+    {
+     "name": "leather gloves",
+     "quantity": 1
+    }
+   ]
   }
  }
 }
