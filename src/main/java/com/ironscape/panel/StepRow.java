@@ -389,11 +389,41 @@ class StepRow extends JPanel
 		// actual "cash 200,000" completion goal from the panel.
 		List<StepAnnotation.ItemNeed> needs = new ArrayList<>();
 		java.util.Set<String> seenNames = new java.util.HashSet<>();
+		// Item ids the annotation spells out for this step. A DETECTED goal
+		// that resolves to one of them is the same item said less precisely
+		// — "Buy priest robes" detects one goal, which the annotation splits
+		// into the two halves it actually means — so badging both showed
+		// "Priest robes 1/2" above the pair that says which half is missing.
+		// Display only: the goal still drives completion, and the purchase
+		// gate still demands every annotated item.
+		java.util.Set<Integer> annotatedIds = new java.util.HashSet<>();
+		for (StepAnnotation.ItemNeed annotated : ctx.getAnnotations().getItems(annotationId))
+		{
+			if (annotated.id != null)
+			{
+				annotatedIds.add(annotated.id);
+			}
+		}
+		if (goalSubId != null && !goalSubId.equals(annotationId))
+		{
+			for (StepAnnotation.ItemNeed annotated : ctx.getAnnotations().getItems(goalSubId))
+			{
+				if (annotated.id != null)
+				{
+					annotatedIds.add(annotated.id);
+				}
+			}
+		}
 		if (goalSubId != null)
 		{
 			for (GoalDetector.ItemGoal goal : ctx.getItemGoals()
 				.getOrDefault(goalSubId, Collections.emptyList()))
 			{
+				if (!annotatedIds.isEmpty()
+					&& annotatedIds.contains(ctx.getItems().iconIdFor(goal.getItemName())))
+				{
+					continue;
+				}
 				if (seenNames.add(goal.getItemName().toLowerCase(java.util.Locale.ROOT)))
 				{
 					StepAnnotation.ItemNeed need = new StepAnnotation.ItemNeed();
