@@ -573,6 +573,9 @@ public class IronscapePlugin extends Plugin
 	/** The later-step quest the player started live; null = none. */
 	private Quest jumpedAheadQuest;
 
+	/** Round-robin position in the amortised quest-state scan (see onGameTick). */
+	private int questScanCursor;
+
 	/**
 	 * Where the player died — the gravestone (or Wilderness item pile)
 	 * stands there. While set, navigation routes HERE above everything
@@ -2841,24 +2844,44 @@ public class IronscapePlugin extends Plugin
 		// later-step quest in progress" test was ON almost permanently —
 		// every auto-navigation silently dead. Quests already in progress
 		// when the session starts just baseline on first observation.
-		// Every 5 ticks, not every tick: this loop runs one clientscript
-		// per guide quest (~100), and per-tick it was enough script-engine
-		// load to break Quest Helper's pathing. 3s transition latency is
-		// harmless; the scan doubles as the cachedQuestState refresher.
-		if (current != null && loginGraceTicks == 0
-			&& (tickCounter % 5 == 0 || lastQuestState.isEmpty()))
+		// Quest.getState runs a CLIENTSCRIPT, and this scan covers every
+		// quest the guide mentions (~100). Run per-tick it was enough
+		// script-engine load to break Quest Helper's pathing, with the
+		// player having to hit "reload quest" to recover (wave 7).
+		//
+		// Moving it to every 5th tick fixed the average but kept the SPIKE:
+		// ~100 scripts landing on one tick, five times a second's worth of
+		// work in a single frame, and the symptom came back on a quest where
+		// QH is pathing hard. So the pass is now AMORTISED — a fifth of the
+		// quests each tick, round-robin — which completes a full sweep just
+		// as often while never running more than ~20 scripts in one tick.
+		//
+		// The cursor rides over a stable snapshot of the key order. A quest
+		// arriving mid-sweep only shifts when it is first seen, and a
+		// missed transition is picked up on the next pass: `previous` is
+		// null until a quest has been observed once, so nothing can arm
+		// jumped-ahead spuriously.
+		if (current != null && loginGraceTicks == 0 && !minStepIndexByQuest.isEmpty())
 		{
 			int frontierIndex = current.step.getGlobalIndex();
-			for (Map.Entry<Quest, Integer> entry : minStepIndexByQuest.entrySet())
+			List<Quest> order = new ArrayList<>(minStepIndexByQuest.keySet());
+			int perTick = Math.max(1, (order.size() + 4) / 5);
+			if (questScanCursor >= order.size())
 			{
-				QuestState state = entry.getKey().getState(client);
-				QuestState previous = lastQuestState.put(entry.getKey(), state);
+				questScanCursor = 0;
+			}
+			for (int scanned = 0; scanned < perTick; scanned++)
+			{
+				Quest quest = order.get(questScanCursor);
+				questScanCursor = (questScanCursor + 1) % order.size();
+				QuestState state = quest.getState(client);
+				QuestState previous = lastQuestState.put(quest, state);
 				if (previous == QuestState.NOT_STARTED && state == QuestState.IN_PROGRESS
-					&& entry.getValue() > frontierIndex)
+					&& minStepIndexByQuest.getOrDefault(quest, 0) > frontierIndex)
 				{
-					jumpedAheadQuest = entry.getKey();
+					jumpedAheadQuest = quest;
 					log.info("jumped-ahead ON ({} started live, first guide step ahead of frontier)",
-						entry.getKey().getName());
+						quest.getName());
 				}
 			}
 			// Disarm when the jaunt ends: the quest wrapped up, or the
