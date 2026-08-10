@@ -47,6 +47,22 @@ public class StepAnnotation
 	 */
 	public Target trainAt;
 
+	/**
+	 * What the training at `trainAt` CONSUMES — the other half of the loop.
+	 *
+	 * Runecrafting is bank, altar, bank, altar: with essence in the bag the
+	 * place to be is the altar, and with none it is the nearest bank. A
+	 * pin alone only ever describes half of that, and the first cut of
+	 * trainAt kept pointing at the altar while the player stood there with
+	 * an empty inventory (owner: "it should pull us to the bank to grab
+	 * more essence").
+	 *
+	 * Counted as CARRIED, not owned: the whole question is whether there is
+	 * anything to work with right now, and the bank total is what sends you
+	 * to the bank in the first place.
+	 */
+	public String trainWith;
+
 	/** Items this step needs — the panel shows a live have/need count for each. */
 	public List<ItemNeed> items;
 

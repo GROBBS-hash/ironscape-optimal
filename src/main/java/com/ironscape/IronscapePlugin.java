@@ -6528,16 +6528,21 @@ public class IronscapePlugin extends Plugin
 	private WorldPoint bankFirstTarget(Current current)
 	{
 		// A step still behind its SKILL gate is a grind, and its kit belongs
-		// to the job AFTER the grind. "Train Runecraft to 10, then complete
-		// Temple of the Eye" banks a bucket, chisel and pickaxe for the
-		// quest; routing to a bank for those between essence runs sent the
-		// player away from the altar to fetch things the current job does
-		// not use, and the route then sat on the bank (owner, in play).
+		// to the job AFTER it. "Train Runecraft to 10, then complete Temple
+		// of the Eye" banks a bucket, chisel and pickaxe for the QUEST;
+		// bank-first saw them banked and seized the route, and since it
+		// suggests a bank only once per (step, bank), the route then sat
+		// there and never came back (owner, in play).
 		//
-		// Scoped to steps that name a trainAt, so this only affects the ones
-		// deliberately marked grind-then-quest. Elsewhere an unmet skill
-		// requirement still gets its bank stop, since there is nowhere
-		// better to be sent and the kit is worth collecting on the way.
+		// The grind still gets its bank leg — targetFor's training loop
+		// sends the player to a bank whenever the TRAINING material has run
+		// out, which is the trip that actually matters here. What stands
+		// down is only the pull toward a kit the current job does not use.
+		//
+		// Scoped to steps naming a trainAt, so nothing else changes:
+		// elsewhere an unmet skill requirement still earns its bank stop,
+		// since there is nowhere better to send anyone and the kit is worth
+		// collecting on the way.
 		if (skillRequirementUnmet(current.sub)
 			&& (annotationManager.getTrainAt(current.step.getId()) != null
 				|| annotationManager.getTrainAt(current.sub.getId()) != null))
@@ -6748,6 +6753,23 @@ public class IronscapePlugin extends Plugin
 			}
 			if (train != null)
 			{
+				// The loop, not just the spot: with materials in the bag the
+				// place to be is the altar, with none it is the nearest bank.
+				// Pointing at the altar while the player stands on it holding
+				// nothing is the half of the job a pin cannot express.
+				String with = annotationManager.getTrainWith(step.getId());
+				if (with == null)
+				{
+					with = annotationManager.getTrainWith(sub.getId());
+				}
+				if (with != null && itemTracker.carriedCountOf(with) <= 0)
+				{
+					WorldPoint bank = nearestBank();
+					if (bank != null)
+					{
+						return bank;
+					}
+				}
 				return new WorldPoint(train.x, train.y, train.plane);
 			}
 		}

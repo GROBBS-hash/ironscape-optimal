@@ -96,6 +96,18 @@ public class AnnotationManager
 		return b == null ? null : b.trainAt;
 	}
 
+	/** What the training at getTrainAt consumes; null if none. */
+	public synchronized String getTrainWith(String stepId)
+	{
+		StepAnnotation l = local.get(stepId);
+		if (l != null && l.trainWith != null)
+		{
+			return l.trainWith;
+		}
+		StepAnnotation b = bundled.get(stepId);
+		return b == null ? null : b.trainWith;
+	}
+
 	/** The step's auto-completion requirement, local winning over bundled. Null if none. */
 	public synchronized StepAnnotation.Requirement getRequirement(String stepId)
 	{
