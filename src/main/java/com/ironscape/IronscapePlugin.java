@@ -4931,12 +4931,37 @@ public class IronscapePlugin extends Plugin
 		{
 			return true;
 		}
-		String armedKey = sub.getId() + "|" + PURCHASE_LIST_KEY;
+		List<StepAnnotation.ItemNeed> gating = gateableItems(step, sub);
+		if (gating.isEmpty())
+		{
+			// Nothing on the list, so nothing to have acquired. Do NOT arm:
+			// the flag persists across sessions, so arming on an empty list
+			// silently disarms the gate for ever — and then SEEDING a list
+			// later can never engage it. That is exactly what happened to
+			// "Buy priest robes …, boots, gloves": armed on an empty list
+			// long before its four items were annotated, so the step ticked
+			// off its one detected goal (the gown TOP) the moment one half
+			// was bought.
+			return true;
+		}
+		// The signature is part of the key, so EDITING the list re-gates the
+		// step instead of inheriting an arming that was granted for a
+		// different shopping list. Seeding item lists is ongoing work; a flag
+		// that outlives the list it was about is a trap that gets re-sprung
+		// every time one is added.
+		StringBuilder signature = new StringBuilder();
+		for (StepAnnotation.ItemNeed need : gating)
+		{
+			signature.append(need.name.toLowerCase(Locale.ROOT)).append('x')
+				.append(need.quantity == null ? 1 : need.quantity).append(';');
+		}
+		String armedKey = sub.getId() + "|" + PURCHASE_LIST_KEY + "|"
+			+ Integer.toHexString(signature.toString().hashCode());
 		if (progressManager.acquisitionBaseline(activeVariant, armedKey) != null)
 		{
 			return true;
 		}
-		for (StepAnnotation.ItemNeed need : gateableItems(step, sub))
+		for (StepAnnotation.ItemNeed need : gating)
 		{
 			int required = need.quantity == null ? 1 : need.quantity;
 			// Counts the BANK, unlike most goals. What this gate asks is

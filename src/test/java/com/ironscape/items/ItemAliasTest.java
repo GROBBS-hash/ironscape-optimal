@@ -79,4 +79,26 @@ public class ItemAliasTest
 		assertTrue(hasAlias("rimmington tab", "rimmington teleport"));
 		assertTrue(hasAlias("trollheim tab", "trollheim teleport"));
 	}
+
+	/**
+	 * A parenthetical that names a VARIANT picks that variant only.
+	 *
+	 * The priest gown is two separate items, "(top)" and "(bottom)", both
+	 * needed for Biohazard. Buying one half ticked the whole shopping step
+	 * because each half satisfied both annotation entries. Same shape as the
+	 * dose rule above: naming the variant means that variant.
+	 */
+	@Test
+	public void variantParentheticalsAreDistinctItems()
+	{
+		assertTrue(ItemTracker.nameMatchesGoal("Priest gown (top)", "priest gown (top)"));
+		assertTrue(ItemTracker.nameMatchesGoal("Priest gown (bottom)", "priest gown (bottom)"));
+		assertFalse(ItemTracker.nameMatchesGoal("Priest gown (top)", "priest gown (bottom)"));
+		assertFalse(ItemTracker.nameMatchesGoal("Priest gown (bottom)", "priest gown (top)"));
+		// KNOWN GAP, deliberately not asserted either way: a goal naming
+		// neither half ("priest gown") matches NEITHER, because canonical()
+		// keeps the variant word. Nothing relies on it — the guide says
+		// "priest robes", which the colloquial map sends to the top — so it
+		// is recorded here rather than fixed on speculation.
+	}
 }
