@@ -605,7 +605,17 @@ class StepRow extends JPanel
 				list.add(line);
 			}
 			add(list);
-			return;
+			// FALL THROUGH when there is also an action badge. A step can
+			// have both an item list and a skill requirement — "Train
+			// Runecraft to 10, then complete Temple of the Eye" carries the
+			// quest's bucket, chisel and pickaxe — and returning here meant
+			// the level badge never rendered on ANY step that listed items.
+			// hasActionBadge was already computed above for exactly this
+			// question; it just was not asked a second time.
+			if (!hasActionBadge)
+			{
+				return;
+			}
 		}
 
 		JLabel badge = new JLabel();
