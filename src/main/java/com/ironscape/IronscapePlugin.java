@@ -1483,6 +1483,12 @@ public class IronscapePlugin extends Plugin
 	 */
 	private static final int SURFACE_MAX_Y = 4000;
 
+	/**
+	 * Fewest tiles a suggested teleport must SAVE to be worth making, on
+	 * top of the 60% test. A percentage alone approves any short hop.
+	 */
+	private static final int MIN_TILES_SAVED = 75;
+
 	/** How close (tiles) counts as "arrived" at a PRECISE ⌖ target. */
 	private static final int ARRIVE_RADIUS = 8;
 
@@ -7203,40 +7209,51 @@ public class IronscapePlugin extends Plugin
 		final int component;
 		final int level;
 		final int laws;
+		/** Elemental cost: air, water, earth, fire — a staff can supply these. */
+		final int air;
+		final int water;
+		final int earth;
+		final int fire;
 		final WorldPoint destination;
 		final Quest requiredQuest;
 
 		TeleportSpell(String name, int component, int level, int laws,
+			int air, int water, int earth, int fire,
 			WorldPoint destination, Quest requiredQuest)
 		{
 			this.name = name;
 			this.component = component;
 			this.level = level;
 			this.laws = laws;
+			this.air = air;
+			this.water = water;
+			this.earth = earth;
+			this.fire = fire;
 			this.destination = destination;
 			this.requiredQuest = requiredQuest;
 		}
 	}
 
 	private static final TeleportSpell[] TELEPORT_SPELLS = {
+		//                                              lvl law air wat ear fir
 		new TeleportSpell("Varrock Teleport",
 			net.runelite.api.gameval.InterfaceID.MagicSpellbook.VARROCK_TELEPORT,
-			25, 1, new WorldPoint(3213, 3424, 0), null),
+			25, 1, 3, 0, 0, 1, new WorldPoint(3213, 3424, 0), null),
 		new TeleportSpell("Lumbridge Teleport",
 			net.runelite.api.gameval.InterfaceID.MagicSpellbook.LUMBRIDGE_TELEPORT,
-			31, 1, new WorldPoint(3222, 3218, 0), null),
+			31, 1, 3, 0, 1, 0, new WorldPoint(3222, 3218, 0), null),
 		new TeleportSpell("Falador Teleport",
 			net.runelite.api.gameval.InterfaceID.MagicSpellbook.FALADOR_TELEPORT,
-			37, 1, new WorldPoint(2965, 3379, 0), null),
+			37, 1, 3, 1, 0, 0, new WorldPoint(2965, 3379, 0), null),
 		new TeleportSpell("Camelot Teleport",
 			net.runelite.api.gameval.InterfaceID.MagicSpellbook.CAMELOT_TELEPORT,
-			45, 1, new WorldPoint(2757, 3479, 0), null),
+			45, 1, 5, 0, 0, 0, new WorldPoint(2757, 3479, 0), null),
 		new TeleportSpell("Ardougne Teleport",
 			net.runelite.api.gameval.InterfaceID.MagicSpellbook.ARDOUGNE_TELEPORT,
-			51, 2, new WorldPoint(2662, 3305, 0), Quest.PLAGUE_CITY),
+			51, 2, 0, 2, 0, 0, new WorldPoint(2662, 3305, 0), Quest.PLAGUE_CITY),
 		new TeleportSpell("Watchtower Teleport",
 			net.runelite.api.gameval.InterfaceID.MagicSpellbook.WATCHTOWER_TELEPORT,
-			58, 2, new WorldPoint(2547, 3113, 0), Quest.WATCHTOWER),
+			58, 2, 0, 0, 2, 0, new WorldPoint(2547, 3113, 0), Quest.WATCHTOWER),
 	};
 
 	/** One chosen first leg toward a far target: a Grouping minigame, a spell, or the free home teleport. */
@@ -7433,7 +7450,14 @@ public class IronscapePlugin extends Plugin
 		// never a mix, because 400 walked tiles and a 300-tile straight line
 		// are different quantities and ranking them together is meaningless.
 		boolean walked = travelDistances.reachable(target);
-		int bestDistance = (int) (playerDistance * 0.6);
+		// Two bars, and a candidate must clear BOTH: 60% of the journey, and
+		// an absolute 75 tiles saved. The percentage alone let a teleport win
+		// a trip it barely improved — 60% of a 150-tile jog is a 90-tile jog,
+		// which is not worth the runes (owner's call, 2026-08-10). The floor
+		// binds on short journeys, the percentage on long ones, so a 1,000-
+		// tile trip still demands a real shortcut rather than 75 tiles off.
+		int bestDistance = Math.min((int) (playerDistance * 0.6),
+			playerDistance - MIN_TILES_SAVED);
 		// The FREE home teleport competes first (SP suggests it; we never
 		// did — the owner stood in Draynor with SP saying "home teleport"
 		// and our overlay dark). Free beats paid on ties, so it leads.
@@ -7520,8 +7544,60 @@ public class IronscapePlugin extends Plugin
 	{
 		return client.getRealSkillLevel(Skill.MAGIC) >= spell.level
 			&& itemTracker.carriedCountOf("law runes") >= spell.laws
+			&& hasElement("air", spell.air) && hasElement("water", spell.water)
+			&& hasElement("earth", spell.earth) && hasElement("fire", spell.fire)
 			&& (spell.requiredQuest == null
 				|| cachedQuestState(spell.requiredQuest) == QuestState.FINISHED);
+	}
+
+	/**
+	 * Staves that supply an element without spending a rune. Combination
+	 * staves count for BOTH of their elements, which is the whole reason
+	 * this table exists rather than a name guess: a mud battlestaff is not
+	 * called a water staff and never would be matched by a suffix rule.
+	 */
+	private static final Map<String, String[]> ELEMENT_STAVES = Map.of(
+		"air", new String[]{"staff of air", "air battlestaff", "mystic air staff",
+			"smoke battlestaff", "mystic smoke staff", "mist battlestaff",
+			"mystic mist staff", "dust battlestaff", "mystic dust staff"},
+		"water", new String[]{"staff of water", "water battlestaff", "mystic water staff",
+			"mud battlestaff", "mystic mud staff", "steam battlestaff",
+			"mystic steam staff", "mist battlestaff", "mystic mist staff", "kodai wand"},
+		"earth", new String[]{"staff of earth", "earth battlestaff", "mystic earth staff",
+			"mud battlestaff", "mystic mud staff", "lava battlestaff",
+			"mystic lava staff", "dust battlestaff", "mystic dust staff"},
+		"fire", new String[]{"staff of fire", "fire battlestaff", "mystic fire staff",
+			"lava battlestaff", "mystic lava staff", "steam battlestaff",
+			"mystic steam staff", "smoke battlestaff", "mystic smoke staff"});
+
+	/**
+	 * Can the player pay this spell's cost in one element — either the
+	 * runes are in the bag, or a staff supplying it is held or worn?
+	 *
+	 * The elemental cost used to go unchecked entirely, so a Varrock
+	 * teleport was suggested to anyone holding a single law rune, with no
+	 * air or fire to their name (owner, in play, 2026-08-10). It was left
+	 * out because a staff makes a rune count meaningless, and skipping the
+	 * check was the cautious way to avoid hiding a hint from someone
+	 * wielding one — the fix is to model the staff, not to stop asking.
+	 *
+	 * carriedCountOf covers worn equipment as well as inventory, which is
+	 * what makes a WIELDED staff count.
+	 */
+	private boolean hasElement(String element, int needed)
+	{
+		if (needed <= 0)
+		{
+			return true;
+		}
+		for (String staff : ELEMENT_STAVES.get(element))
+		{
+			if (itemTracker.carriedCountOf(staff) > 0)
+			{
+				return true;
+			}
+		}
+		return itemTracker.carriedCountOf(element + " runes") >= needed;
 	}
 
 	/**
