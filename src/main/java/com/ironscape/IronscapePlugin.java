@@ -540,6 +540,29 @@ public class IronscapePlugin extends Plugin
 	 */
 	private final Map<String, List<StepRequirement>> subRequirements = new HashMap<>();
 
+	/**
+	 * The requirements that apply to a SUB: its own, else its step's.
+	 *
+	 * The badge row asks by sub id ("67baf2f956:0") while a bare-step
+	 * `requires` is stored under the STEP id, so looking the sub id up in
+	 * the step map could only ever miss. On this guide every step has one
+	 * sub, which made that miss total: all 48 annotated skill requirements
+	 * were invisible, and "Train Runecraft to 10" showed no runecraft
+	 * badge at all (owner, in play). Completion was never affected — it
+	 * looks these up by step id — so the data was right and only the panel
+	 * was silent.
+	 */
+	private List<StepRequirement> requirementsFor(String subId)
+	{
+		List<StepRequirement> own = subRequirements.get(subId);
+		if (own != null)
+		{
+			return own;
+		}
+		int colon = subId.lastIndexOf(':');
+		return stepSkillRequirements.get(colon > 0 ? subId.substring(0, colon) : subId);
+	}
+
 	/** Quest goals by sub-step id, for the in-order evaluator. */
 	private final Map<String, GoalDetector.QuestGoal> questGoalBySub = new HashMap<>();
 
@@ -1898,11 +1921,7 @@ public class IronscapePlugin extends Plugin
 			// Reviewed annotation skill requirements get the SAME badge
 			// row as items and level goals ("smithing 29/15") instead of
 			// living only in the step's prose — uniform look (owner ask).
-			List<StepRequirement> requirements = subRequirements.get(subId);
-			if (requirements == null)
-			{
-				requirements = stepSkillRequirements.get(subId);
-			}
+			List<StepRequirement> requirements = requirementsFor(subId);
 			if (requirements != null)
 			{
 				StringBuilder sb = new StringBuilder();
@@ -2033,11 +2052,7 @@ public class IronscapePlugin extends Plugin
 			}
 			if (skill == null)
 			{
-				List<StepRequirement> requirements = subRequirements.get(subId);
-				if (requirements == null)
-				{
-					requirements = stepSkillRequirements.get(subId);
-				}
+				List<StepRequirement> requirements = requirementsFor(subId);
 				if (requirements != null)
 				{
 					for (StepRequirement requirement : requirements)
