@@ -327,7 +327,10 @@ public class ItemTracker
 		Map.entry("dueling ring", "ring of dueling"),
 		Map.entry("dueling rings", "ring of dueling"),
 		Map.entry("soft leather", "leather"),
-		Map.entry("priest robes", "priest gown (top)"),
+		// Both halves are called exactly "Priest gown" in game; "(top)" is a
+		// wiki page title, not an item name. It only ever resolved because
+		// the alias chain drops a trailing parenthetical.
+		Map.entry("priest robes", "priest gown"),
 		Map.entry("silver", "silver bar"),
 		// The farming shop's pack of normal compost is just "Compost pack".
 		Map.entry("normal compost pack", "compost pack"),

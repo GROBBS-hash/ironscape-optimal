@@ -81,24 +81,30 @@ public class ItemAliasTest
 	}
 
 	/**
-	 * A parenthetical that names a VARIANT picks that variant only.
+	 * Two items, ONE in-game name — count them, do not try to tell them
+	 * apart.
 	 *
-	 * The priest gown is two separate items, "(top)" and "(bottom)", both
-	 * needed for Biohazard. Buying one half ticked the whole shopping step
-	 * because each half satisfied both annotation entries. Same shape as the
-	 * dose rule above: naming the variant means that variant.
+	 * The priest gown is a top and a bottom, both needed for Biohazard, and
+	 * in game BOTH are called exactly "Priest gown" (owner, in the shop:
+	 * "they both have the same name in game, just different items"). Only
+	 * the WIKI distinguishes them, as page titles — "Priest gown (top)" is
+	 * not a name any item has.
+	 *
+	 * So a first attempt annotated the halves separately, and each entry
+	 * read the same number: counts are keyed by in-game name and summed
+	 * (countByName), and the alias chain drops a trailing parenthetical, so
+	 * both entries resolved to the same "priest gown" total and one half
+	 * showed as 1/1 twice. No name-based matcher can separate them; the
+	 * quantity is what carries the meaning.
 	 */
 	@Test
-	public void variantParentheticalsAreDistinctItems()
+	public void bothPriestGownHalvesShareOneInGameName()
 	{
-		assertTrue(ItemTracker.nameMatchesGoal("Priest gown (top)", "priest gown (top)"));
-		assertTrue(ItemTracker.nameMatchesGoal("Priest gown (bottom)", "priest gown (bottom)"));
-		assertFalse(ItemTracker.nameMatchesGoal("Priest gown (top)", "priest gown (bottom)"));
-		assertFalse(ItemTracker.nameMatchesGoal("Priest gown (bottom)", "priest gown (top)"));
-		// KNOWN GAP, deliberately not asserted either way: a goal naming
-		// neither half ("priest gown") matches NEITHER, because canonical()
-		// keeps the variant word. Nothing relies on it — the guide says
-		// "priest robes", which the colloquial map sends to the top — so it
-		// is recorded here rather than fixed on speculation.
+		assertTrue(ItemTracker.nameMatchesGoal("Priest gown", "priest gown"));
+		// The wiki's disambiguating title still resolves, via the
+		// paren-dropping alias — which is exactly why it could not
+		// distinguish the halves.
+		assertTrue(ItemTracker.nameMatchesGoal("Priest gown", "priest gown (top)"));
+		assertTrue(ItemTracker.nameMatchesGoal("Priest gown", "priest gown (bottom)"));
 	}
 }

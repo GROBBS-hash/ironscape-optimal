@@ -6837,12 +6837,8 @@
    },
    "items": [
     {
-     "name": "priest gown (top)",
-     "quantity": 1
-    },
-    {
-     "name": "priest gown (bottom)",
-     "quantity": 1
+     "name": "priest gown",
+     "quantity": 2
     },
     {
      "name": "leather boots",
