@@ -1527,10 +1527,12 @@ public class IronscapePlugin extends Plugin
 	private volatile boolean navRoutedToBank;
 
 	/**
-	 * "stepId@bank" of the bank stop we last SUGGESTED while Quest Helper
-	 * owned guidance, so we suggest it once instead of re-seizing the route
-	 * every ten ticks. Survives across navigation passes deliberately —
-	 * see the QH-owns bank branch.
+	 * Step id of the last bank stop SUGGESTED while Quest Helper owned
+	 * guidance, so we suggest one once per step instead of re-seizing the
+	 * route every ten ticks. Deliberately NOT keyed by the bank too: this
+	 * picks the nearest one, so walking far enough would otherwise restart
+	 * the "once". Survives across navigation passes — see the QH-owns bank
+	 * branch.
 	 */
 	private String lastBankSuggestion;
 
@@ -6314,13 +6316,21 @@ public class IronscapePlugin extends Plugin
 						// away from the suggestion. The non-quest bank route
 						// below still re-posts freely: nothing else is drawing
 						// there, so there is nothing to fight.
-						// Keyed by STEP as well as bank, so a new step (or a
-						// different bank) is a fresh suggestion, while repeats
-						// within one step stay quiet. Not cleared where
-						// navRoutedToBank is: that resets at the top of every
-						// pass, which is exactly the once-per-pass behaviour
-						// being fixed.
-						String suggestion = questCurrent.step.getId() + "@" + kitBank;
+						// Keyed by STEP ALONE. It used to include the bank, and
+						// that leaked the whole fix: this picks the NEAREST
+						// bank, so every time the player moved far enough for a
+						// different one to win, the key changed and the
+						// "once" started over. In play it re-posted four
+						// different banks in two minutes — Varrock east, Al
+						// Kharid, Falador, then one underground — which reads
+						// exactly like the pestering wave 20 set out to stop
+						// (owner, 2026-08-10). Suggest a bank once per step and
+						// then leave the player alone, wherever they wander.
+						//
+						// Not cleared where navRoutedToBank is: that resets at
+						// the top of every pass, which is exactly the
+						// once-per-pass behaviour being fixed.
+						String suggestion = questCurrent.step.getId();
 						if (!suggestion.equals(lastBankSuggestion))
 						{
 							lastBankSuggestion = suggestion;
