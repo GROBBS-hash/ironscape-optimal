@@ -439,7 +439,7 @@ public class AnnotationManager
 		Map<String, StepAnnotation> merged = new HashMap<>();
 		for (String file : BUNDLED_FILES)
 		{
-			try (InputStream in = AnnotationManager.class.getResourceAsStream(file))
+			try (InputStream in = com.ironscape.DataFiles.open(AnnotationManager.class, file))
 			{
 				if (in == null)
 				{

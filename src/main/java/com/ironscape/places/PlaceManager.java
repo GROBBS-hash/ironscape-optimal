@@ -66,14 +66,14 @@ public class PlaceManager
 	public synchronized void load()
 	{
 		bundled = read(() -> {
-			InputStream in = PlaceManager.class.getResourceAsStream("places.json");
+			InputStream in = com.ironscape.DataFiles.open(PlaceManager.class, "places.json");
 			return in == null ? null : new InputStreamReader(in, StandardCharsets.UTF_8);
 		});
 		// Item SOURCES ("glarial's pebble" -> Golrie's cell) share the place
 		// namespace: same links, same routing, plus a how-to note chatted on
 		// click. Real places win a name clash.
 		read(() -> {
-			InputStream in = PlaceManager.class.getResourceAsStream("item_sources.json");
+			InputStream in = com.ironscape.DataFiles.open(PlaceManager.class, "item_sources.json");
 			return in == null ? null : new InputStreamReader(in, StandardCharsets.UTF_8);
 		}).forEach(bundled::putIfAbsent);
 		local = read(() -> localFile.exists() ? new FileReader(localFile) : null);
@@ -139,7 +139,7 @@ public class PlaceManager
 
 	private void loadQuestGivers()
 	{
-		try (InputStream in = PlaceManager.class.getResourceAsStream("quest_givers.json"))
+		try (InputStream in = com.ironscape.DataFiles.open(PlaceManager.class, "quest_givers.json"))
 		{
 			if (in == null)
 			{
@@ -180,7 +180,7 @@ public class PlaceManager
 
 	private void loadShopKeepers()
 	{
-		try (InputStream in = PlaceManager.class.getResourceAsStream("shop_npcs.json"))
+		try (InputStream in = com.ironscape.DataFiles.open(PlaceManager.class, "shop_npcs.json"))
 		{
 			if (in == null)
 			{

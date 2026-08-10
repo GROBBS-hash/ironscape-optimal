@@ -12,6 +12,53 @@ Screenshots `SS-01` … `SS-20` in `docs/screenshots/`.
 
 ---
 
+## PLANNED — developer-experience work (agreed with owner 2026-08-10)
+
+Four items, ranked by friction removed. Owner approved all four; **DX-1 started
+first**. These are about the speed of the loop, not the plugin's behaviour —
+every one of them exists because a fix that took two minutes to write took
+fifteen to get in front of the owner, or because a defect was found by walking
+into it rather than by a check.
+
+**DX-1 — Load data files from disk so a data fix needs no rebuild or restart.**
+Most corrections are DATA (kit items, pins, notes, `granted` flags), not code.
+The Dig Site fix on 2026-08-10 was pure data and still cost a rebuild, a
+two-minute safety wait and a client restart, mid-session, three times in one
+evening. Annotations and places bundle into the jar, so today the only way to
+change one is to build the jar again. Plan: an optional override FOLDER (config,
+empty by default so nothing changes for real users) that is preferred over the
+bundled copy when a file of the same name exists, plus a reload trigger, so the
+repo file itself can be the live source during a play-test.
+Prior work: `AnnotationManager` already merges a LOCAL file over the bundled one
+for ⌖ captures — this generalises that idea rather than inventing it.
+**Care:** reload must happen on the client thread, must rebuild the derived
+caches (goal detection, place lookup, checkpoint maps), and must not disturb
+progress or the frontier position.
+
+**DX-2 — A pre-session briefing the OWNER can read.**
+`tools/preflight.mjs` already computes it and prints developer output, so it
+helps nobody unless Claude remembers to run it. Wanted: plain language, run
+automatically at session start, and stated in his terms ("these two steps ahead
+of you can only be ticked by hand"). ~89 hand-tick and ~39 no-route steps exist
+guide-wide; without this they arrive one per session forever.
+
+**DX-3 — Clear the quest-kit "granted vs bring" backlog in one sitting.**
+Tonight's trowel was one instance of a class: kits listing items the quest hands
+you, which sit permanently red. 100+ quests, checkable against the wiki in bulk,
+then a click-through review page (the format that worked for item names —
+see [[review-ui-for-input]]). Needs an evening of the OWNER's attention, so
+schedule it rather than squeeze it in.
+Prior work: `audit-quest-granted.mjs`, `quest-granted-reviewed.json`, and the
+KIT-SEEDING POLICY already exist. This is the review UI plus a bulk wiki pass.
+
+**DX-4 — A "something is wrong here" button in the panel.**
+Captures position, step, sub, what nav was routing to and why, and the recent
+decision lines, into one file. Today a report costs Claude a reconstruction from
+four other log lines, and it only went smoothly on 2026-08-10 because the log
+was open live. Do this once Claude is no longer watching the log in real time.
+
+---
+
 ## Reconciliation summary — what the session log already covers
 
 | Original assumption | Reality per CLAUDE.md |

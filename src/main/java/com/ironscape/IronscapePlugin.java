@@ -1693,6 +1693,9 @@ public class IronscapePlugin extends Plugin
 		migrateLegacyFiles();
 		migrateLegacyConfig();
 		activeVariant = GuideVariant.OZIRIS;
+		// Before ANY load below: decides whether those loads read the jar
+		// or a folder on disk.
+		DataFiles.setFolder(config.dataFolder());
 		annotationManager.load();
 		placeManager.load();
 		loadMinigameLandings();
@@ -2195,6 +2198,48 @@ public class IronscapePlugin extends Plugin
 		lastTickPosition = null;
 		goals = null;
 		log.info("IRONSCAPE Optimal stopped");
+	}
+
+	/**
+	 * {@code ::ironreload} — re-read the data files and rebuild everything
+	 * derived from them, without a rebuild or a client restart.
+	 *
+	 * <p>Only useful with a data folder configured (see {@link DataFiles});
+	 * without one this re-reads the same jar and changes nothing, which the
+	 * reply says so nobody is left wondering why their edit did not take.
+	 *
+	 * <p>Runs on the client thread, which is where the command arrives, so
+	 * the caches it rebuilds are never half-written under a reader.
+	 * Progress and route position are untouched: those live in the config
+	 * profile, not in these files.
+	 */
+	@Subscribe
+	public void onCommandExecuted(net.runelite.api.events.CommandExecuted event)
+	{
+		if (!"ironreload".equalsIgnoreCase(event.getCommand()))
+		{
+			return;
+		}
+		DataFiles.setFolder(config.dataFolder());
+		annotationManager.load();
+		placeManager.load();
+		loadMinigameLandings();
+		loadGuideState();
+		// Derived per-tick caches that outlive a reload would otherwise
+		// describe the OLD data until the next natural rebuild.
+		checkpointMetBySub.clear();
+		SwingUtilities.invokeLater(() ->
+		{
+			if (panel != null)
+			{
+				panel.refresh();
+			}
+		});
+		String where = DataFiles.overriding()
+			? "data folder" : "the bundled files (no data folder set)";
+		log.info("::ironreload — reloaded from {}", where);
+		client.addChatMessage(ChatMessageType.CONSOLE, "",
+			"IRONSCAPE: reloaded guide data from " + where + ".", null);
 	}
 
 	/**
