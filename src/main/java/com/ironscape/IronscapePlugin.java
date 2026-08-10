@@ -6527,6 +6527,23 @@ public class IronscapePlugin extends Plugin
 	 */
 	private WorldPoint bankFirstTarget(Current current)
 	{
+		// A step still behind its SKILL gate is a grind, and its kit belongs
+		// to the job AFTER the grind. "Train Runecraft to 10, then complete
+		// Temple of the Eye" banks a bucket, chisel and pickaxe for the
+		// quest; routing to a bank for those between essence runs sent the
+		// player away from the altar to fetch things the current job does
+		// not use, and the route then sat on the bank (owner, in play).
+		//
+		// Scoped to steps that name a trainAt, so this only affects the ones
+		// deliberately marked grind-then-quest. Elsewhere an unmet skill
+		// requirement still gets its bank stop, since there is nowhere
+		// better to be sent and the kit is worth collecting on the way.
+		if (skillRequirementUnmet(current.sub)
+			&& (annotationManager.getTrainAt(current.step.getId()) != null
+				|| annotationManager.getTrainAt(current.sub.getId()) != null))
+		{
+			return null;
+		}
 		java.util.List<String[]> needs = new java.util.ArrayList<>();
 		List<GoalDetector.ItemGoal> goals = itemGoalsBySub.get(current.sub.getId());
 		if (goals != null)
