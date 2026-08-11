@@ -51,6 +51,36 @@ schedule it rather than squeeze it in.
 Prior work: `audit-quest-granted.mjs`, `quest-granted-reviewed.json`, and the
 KIT-SEEDING POLICY already exist. This is the review UI plus a bulk wiki pass.
 
+**DX-5 — Index EVERY teleport item and use it once it is unlocked.**
+Owner, 2026-08-11, having just earned the Ardougne cloak: the first-leg
+hint knows minigame teleports, standard spellbook teleports, the free home
+teleport and the Chronicle, and nothing else. It does not know about diary
+cloaks, teleport jewellery (glory, games necklace, ring of dueling, skills
+necklace, combat bracelet, digsite pendant), or the tablet family — so it
+kept offering a Varrock teleport for a West Ardougne target while an
+Ardougne cloak sat in the bag that lands next door. Wiki-search the lot,
+index destination + charge/unlock condition, and let them compete like the
+spells do. This grows with the account: every diary finished adds options,
+and the hint should start using them the day they unlock.
+Prior work: `TELEPORT_SPELLS` and `ELEMENT_STAVES` are the shape to copy;
+`minigame_landings.json` is the shape for the data file. Charges matter —
+"ring of dueling" is really `Ring of dueling(8)`, so the count is part of
+the name (checked while seeding teleport items, wave 25).
+
+**DX-6 — Stop second-guessing Shortest Path's route.**
+Owner's question: how do Quest Helper and friends send data to Shortest
+Path, and why do we not just do that? **We already do** — the same
+documented PluginMessage API ("shortestpath" / "path" / target), and we
+post a destination for every step. What SP owns is the ROUTE, transports
+included. Our first-leg hint is a SECOND, cruder journey calculation done
+here, and its only real job is to highlight the button to click, which SP
+cannot do. That duplication is exactly why the two disagree on screen.
+Worth investigating: does SP publish its chosen path back (a message, a
+readable state) so the hint can highlight the leg SP ALREADY PICKED
+instead of computing a rival answer? If it does, the whole first-leg
+distance model becomes a fallback for when SP is silent, and the class of
+"our overlay says one thing, the line says another" reports disappears.
+
 **DX-4 — A "something is wrong here" button in the panel.**
 Captures position, step, sub, what nav was routing to and why, and the recent
 decision lines, into one file. Today a report costs Claude a reconstruction from

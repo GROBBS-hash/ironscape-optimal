@@ -757,6 +757,84 @@ refresh when "Failed to login" appears.
   capture; hub pin at b8c994d, now ~70 commits behind — bump after a
   calm session.
 
+- SESSION WAVE 25 (2026-08-11 evening, long live play-test 268 -> 270; main at
+  `2ecd06a`, ~14 commits, PUSHED; hub pin `bb3e11e`, **44** behind — counted):
+  **THE THEME IS READING THE EVIDENCE THAT IS ALREADY IN FRONT OF ME.** Three
+  separate faults today were visible in the owner's first screenshot and I
+  re-read them as something else, costing him five rebuilds.
+  **THE CHECKLIST TRUNCATION WAS A BROKEN STRING, NOT THE LAYOUT.** Task lines
+  read "A", "Sell", "U", "Steal a cake from the Ea". I fixed the label to a
+  JEditorPane (right, wave 22's lesson), then the pane width (right), then
+  narrowed it further (unnecessary) — three rounds on a layout that had been
+  correct after the first. The tell was in the data all along: **A|sk, Ea|st,
+  pet|s, U|se, Wilderne|ss, ru|sty, fi|shing, Two-pint|s** — every label cut at
+  its first lowercase s. `split("(?<=\.)\s")` had reached the file as
+  `split("(?<=.)s")`, the escapes eaten by generating that method through a JS
+  script. **FOURTH casualty of that habit in one day** after a literal NUL byte
+  and two runs of literal newlines. Rule: write Java to a FILE and splice it,
+  never hand-escape one language through another. Corollary: "A" and "Sell" are
+  whole FIRST LINES — wrapping and clipping cannot produce those, only the data
+  can.
+  **THE CHECKLIST VANISHED when its step completed**, and the cause was wider:
+  it read both the LIST and the STATE from the per-tick cache, which is only
+  written for the step being guided. So every other chain step rendered blank
+  too. List now comes from the annotation (always present), state from the
+  cache, absent state = all DONE on a finished step / all TODO on an unreached
+  one. `checklistLabel` moved into ErrandProgress so panel and plugin build the
+  same key from one copy.
+  **ARDOUGNE DIARY CONFIRMED IN PLAY** — routes to the unfinished tasks only,
+  advances as each completes, chain-complete ticked the step. Varrock easy (14
+  tasks) seeded the same way, unplayed. Death runes now name the **Civilian**
+  via item_sources: the step names nobody, so the nearest-NPC fallback had hung
+  the death-rune icon on RATS.
+  **CAT STEPS, and the wiki lookup earned its keep twice**: 200 death runes is
+  not the base rate — it is 100, and 200 only WITH the easy Ardougne diary,
+  which is exactly why the guide puts that step immediately before. And the
+  trade needs a GROWN cat: a kitten becomes one after 3 hours following you and
+  until then needs feeding and attention or it runs away.
+  **THE PURCHASE FILTER WAS TOO BROAD**: audit-teleport-items skipped any step
+  containing "buy", so "Chronicle tele and buy a new KITTEN" lost its Chronicle
+  (owner). The item must appear AFTER the verb to count as bought.
+  **`check-all` BUILT — one command, one verdict** — and it earned its place by
+  being WRONG on its first outing twice. It reported "ok" over a deliberately
+  broken item name (it read 1028 out of "1 of 1028 annotation items
+  unresolvable"), found only because the fault was INJECTED rather than
+  assumed. Then it reported "unit tests FAILED" when gradle had never started —
+  wrong wrapper for Windows, then Node refusing to spawn a .bat, then an
+  unquoted path with a space. A false alarm is not a safe failure; it is how a
+  check gets ignored. What made each round diagnosable was printing the error
+  when nothing matches the expected pattern.
+  **DX-4 SHIPPED: `::ironwrong`** writes position, step, sub, quest state, where
+  the route pointed, player position, whether QH is installed, and the last 25
+  nav/hint decisions to one file. **DX-2 and DX-3 shipped in wave 24.**
+  **THREE HAND-TICK STEPS AUTOMATED**, and the measurement mattered more than
+  the fixes: 86 hand-tick steps, of which **64 are genuinely advice** ("Use
+  Authenticator", "Bank", "Sell your silk"). New `Requirement.quest` ("this
+  quest is finished") for the 13-quest step; all 24 easy/medium diary tier
+  flags for another; Karamja is the exception with no COMPLETE flag, only a
+  count (10 and 19). Four quest names differ from the guide's wording beyond
+  case — **"Rat catchers" is one word in game (Ratcatchers)** — and an
+  unresolved name now fails CLOSED and warns. 86 -> 83.
+  **`audit-manual-steps` FIRST REPORTED 130 AGAINST PREFLIGHT'S 86** because it
+  re-derived the population and did not know a step can tick by ARRIVING. It
+  now shells out to `preflight --manual-list`: one tool owns "can anything tick
+  this?".
+  **`check-client` CAN NOW TELL A DEAD CLIENT'S LAST LINE FROM A LIVE ONE'S** —
+  when a recent line is the only evidence and no dev-client PROCESS exists, it
+  re-reads two seconds later; a live client keeps writing. Four launches had
+  each waited out the 120s window.
+  **OPEN — the hint fired for VARROCK teleport toward a WEST ARDOUGNE target
+  while the player was ~350 tiles away** (widget 14286874, confirmed against
+  the API constants). Varrock lands ~750 from there, so the 60%-and-75-tiles
+  rule should have rejected it. Reason line now prints the leg distance AND the
+  bar it had to beat. **SUSPICION, not yet checked:** the target is INSIDE West
+  Ardougne, reachable only via the Plague City route, and the bundled walked-
+  distance table floods through UNGATED transports — if it walks through that
+  wall, every distance to that corner is wrong and the hint is a symptom.
+  Also open: 282 unplayed; Varrock diary chain unplayed; DX-5 (index every
+  teleport item — diary cloaks, jewellery, tablets) and DX-6 (stop
+  second-guessing SP's route) added to BACKLOG.md.
+
 - SESSION WAVE 24 (2026-08-11, live play-test 265 -> 269 plus a long desk
   stretch; ~12 commits, PUSHED; hub pin `bb3e11e`, now **25** behind — counted):
   **DX-1 PAID FOR ITSELF WITHIN THE HOUR.** Every data fix this session landed
