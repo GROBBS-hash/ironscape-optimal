@@ -7402,6 +7402,181 @@
      "note": "Talk to Toby in Varrock Square to claim the Varrock armour."
     }
    ]
+  },
+  "bffabf0a18": {
+   "requiresAll": [
+    {
+     "quest": "A Soul's Bane"
+    },
+    {
+     "quest": "Another Slice of H.A.M."
+    },
+    {
+     "quest": "Icthlarin's Little Helper"
+    },
+    {
+     "quest": "Contact!"
+    },
+    {
+     "quest": "In Search of the Myreque"
+    },
+    {
+     "quest": "In Aid of the Myreque"
+    },
+    {
+     "quest": "Eagles' Peak"
+    },
+    {
+     "quest": "Enakhra's Lament"
+    },
+    {
+     "quest": "Ratcatchers"
+    },
+    {
+     "quest": "Olaf's Quest"
+    },
+    {
+     "quest": "Between a Rock..."
+    },
+    {
+     "quest": "Tai Bwo Wannai Trio"
+    },
+    {
+     "quest": "Zogre Flesh Eaters"
+    }
+   ]
+  },
+  "14df939806": {
+   "requiresAll": [
+    {
+     "varbit": 4458,
+     "value": 1,
+     "label": "Ardougne easy"
+    },
+    {
+     "varbit": 4459,
+     "value": 1,
+     "label": "Ardougne medium"
+    },
+    {
+     "varbit": 4462,
+     "value": 1,
+     "label": "Falador easy"
+    },
+    {
+     "varbit": 4463,
+     "value": 1,
+     "label": "Falador medium"
+    },
+    {
+     "varbit": 4466,
+     "value": 1,
+     "label": "Wilderness easy"
+    },
+    {
+     "varbit": 4467,
+     "value": 1,
+     "label": "Wilderness medium"
+    },
+    {
+     "varbit": 4471,
+     "value": 1,
+     "label": "Western easy"
+    },
+    {
+     "varbit": 4472,
+     "value": 1,
+     "label": "Western medium"
+    },
+    {
+     "varbit": 4475,
+     "value": 1,
+     "label": "Kandarin easy"
+    },
+    {
+     "varbit": 4476,
+     "value": 1,
+     "label": "Kandarin medium"
+    },
+    {
+     "varbit": 4479,
+     "value": 1,
+     "label": "Varrock easy"
+    },
+    {
+     "varbit": 4480,
+     "value": 1,
+     "label": "Varrock medium"
+    },
+    {
+     "varbit": 4483,
+     "value": 1,
+     "label": "Desert easy"
+    },
+    {
+     "varbit": 4484,
+     "value": 1,
+     "label": "Desert medium"
+    },
+    {
+     "varbit": 4487,
+     "value": 1,
+     "label": "Morytania easy"
+    },
+    {
+     "varbit": 4488,
+     "value": 1,
+     "label": "Morytania medium"
+    },
+    {
+     "varbit": 4491,
+     "value": 1,
+     "label": "Fremennik easy"
+    },
+    {
+     "varbit": 4492,
+     "value": 1,
+     "label": "Fremennik medium"
+    },
+    {
+     "varbit": 4495,
+     "value": 1,
+     "label": "Lumbridge easy"
+    },
+    {
+     "varbit": 4496,
+     "value": 1,
+     "label": "Lumbridge medium"
+    },
+    {
+     "varbit": 7925,
+     "value": 1,
+     "label": "Kourend easy"
+    },
+    {
+     "varbit": 7926,
+     "value": 1,
+     "label": "Kourend medium"
+    },
+    {
+     "varbit": 2423,
+     "value": 10,
+     "label": "Karamja easy"
+    },
+    {
+     "varbit": 6288,
+     "value": 19,
+     "label": "Karamja medium"
+    }
+   ],
+   "note": "Ticks itself when all twelve easy and medium diaries are done.\nKaramja is counted differently by the game - it has no \"complete\" flag for easy or medium, only a running task count, so those two are matched on 10 and 19 tasks."
+  },
+  "f3ae871e1a:0": {
+   "requires": {
+    "varbit": 5557,
+    "value": 1,
+    "label": "autoweed"
+   }
   }
  }
 }

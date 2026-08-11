@@ -5404,6 +5404,22 @@ public class IronscapePlugin extends Plugin
 			List<StepRequirement> parsed = new ArrayList<>();
 			for (com.ironscape.annotations.StepAnnotation.Requirement requires : requirementList)
 			{
+				if (requires.quest != null)
+				{
+					// Resolved ONCE here rather than per tick, and warned
+					// about loudly: a name the enum does not know would
+					// otherwise be an invisible always-false condition.
+					StepRequirement parsedQuest = new StepRequirement((Integer) null);
+					parsedQuest.questName = requires.quest;
+					parsedQuest.quest = questByName(requires.quest);
+					if (parsedQuest.quest == null)
+					{
+						log.warn("annotation {} names a quest the game does not know: '{}'",
+							stepId, requires.quest);
+					}
+					parsed.add(parsedQuest);
+					continue;
+				}
 				if (requires.region != null)
 				{
 					parsed.add(new StepRequirement(requires.region));
@@ -5625,6 +5641,20 @@ public class IronscapePlugin extends Plugin
 	{
 		for (StepRequirement requirement : requirements)
 		{
+			if (requirement.questName != null)
+			{
+				// "Do these quests: A soul's bane, Contact!, ..." — thirteen
+				// named quests and no way to say so until now, so a step
+				// whose completion is perfectly knowable was a hand tick.
+				// An unresolved name is NOT met: failing closed leaves the
+				// step visible rather than letting it complete early.
+				if (requirement.quest == null
+					|| cachedQuestState(requirement.quest) != QuestState.FINISHED)
+				{
+					return false;
+				}
+				continue;
+			}
 			if (requirement.region != null)
 			{
 				// TEMPLATE region — the essence mine (and most quest interiors)
@@ -5704,6 +5734,19 @@ public class IronscapePlugin extends Plugin
 		final Integer region;
 		/** Equipment checkpoint: met while this item name is WORN. */
 		final String equipped;
+		/**
+		 * Quest checkpoint: met when this quest is FINISHED. Deliberately
+		 * NOT final — it was added long after the constructors below, and
+		 * threading a null through every one of them to express "this is
+		 * not a quest requirement" is churn with no reader.
+		 *
+		 * The NAME is kept beside the resolved quest so an unresolved name
+		 * fails CLOSED: a typo must leave the step unticked and visible,
+		 * never quietly drop out of an "all of these" list and let the
+		 * step complete early.
+		 */
+		String questName;
+		Quest quest;
 
 		StepRequirement(Integer region)
 		{

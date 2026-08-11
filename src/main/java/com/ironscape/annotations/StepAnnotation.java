@@ -540,6 +540,25 @@ public class StepAnnotation
 		/** Badge text for checkpoints, shown as "<label> 0/1", e.g. "stamp". */
 		public String label;
 		/**
+		 * A quest that must be FINISHED for this requirement to be met.
+		 *
+		 * For steps that ARE a list of quests: "Do these quests for QP and
+		 * diaries: A soul's bane, Another slice of H.A.M, …" names thirteen,
+		 * and the plugin could express "this skill level" or "this varbit"
+		 * but never "these quests are done" — so a step whose completion is
+		 * perfectly knowable sat as a hand tick.
+		 *
+		 * Meant for `requiresAll`, one entry per quest. The name is matched
+		 * the same way every other quest name in this plugin is, aliases
+		 * included, so "Rat catchers" and "Icthlarin's little helper" resolve
+		 * despite the guide's casing.
+		 *
+		 * NOT a substitute for the `quest` TAG on the annotation root, which
+		 * says "this step is a leg of that quest" and hands guidance to Quest
+		 * Helper. This one only answers "is it finished?".
+		 */
+		public String quest;
+		/**
 		 * Position checkpoint: met while the player stands in this map
 		 * region (WorldPoint.getRegionID()). For destinations the place
 		 * list can't express — interiors and off-map areas like the rune
