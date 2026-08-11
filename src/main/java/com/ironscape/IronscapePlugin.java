@@ -6333,8 +6333,7 @@ public class IronscapePlugin extends Plugin
 			if (deathPoint != null)
 			{
 				logNavDecision("routing to gravestone at " + deathPoint);
-				eventBus.post(new PluginMessage("shortestpath", "path",
-					Map.of("target", deathPoint)));
+				postPath(deathPoint);
 				return;
 			}
 			// A manual ⌖ capture pinned the route to where the player is
@@ -6369,7 +6368,7 @@ public class IronscapePlugin extends Plugin
 				{
 					logNavDecision("holding: stage draws no route"
 						+ (errand.note == null ? "" : " — " + errand.note));
-					eventBus.post(new PluginMessage("shortestpath", "clear"));
+					postClear();
 					return;
 				}
 				// The ONE path in this method that used to post a route
@@ -6387,8 +6386,7 @@ public class IronscapePlugin extends Plugin
 				logNavDecision("routing to errand stage " + errandRoute
 					+ (errand.item == null ? "" : " for " + errand.item)
 					+ (errand.note == null ? "" : " — " + errand.note));
-				eventBus.post(new PluginMessage("shortestpath", "path",
-					Map.of("target", errandRoute)));
+				postPath(errandRoute);
 				return;
 			}
 			// Chain COMPLETE but the sub's own goal isn't (standing at the
@@ -6400,7 +6398,7 @@ public class IronscapePlugin extends Plugin
 				&& !errandChain(chainCurrent.step, chainCurrent.sub).isEmpty())
 			{
 				logNavDecision("errand chain complete — holding until the sub's goal ticks");
-				eventBus.post(new PluginMessage("shortestpath", "clear"));
+				postClear();
 				return;
 			}
 			// Player jumped ahead to a later step's quest: ANY route we
@@ -6409,7 +6407,7 @@ public class IronscapePlugin extends Plugin
 			if (playerJumpedAhead)
 			{
 				logNavDecision("cleared: jumped ahead to a later step's quest");
-				eventBus.post(new PluginMessage("shortestpath", "clear"));
+				postClear();
 				return;
 			}
 			// Quest in progress = Quest Helper's show for the DETAILS. But
@@ -6480,8 +6478,7 @@ public class IronscapePlugin extends Plugin
 							// town" took reconstructing from four other lines.
 							logNavDecision("routing to a bank first — the step's kit is banked: "
 								+ kitBank);
-							eventBus.post(new PluginMessage("shortestpath", "path",
-								Map.of("target", kitBank)));
+							postPath(kitBank);
 						}
 						return;
 					}
@@ -6504,7 +6501,7 @@ public class IronscapePlugin extends Plugin
 					logNavDecision("standing down: Quest Helper is installed"
 						+ " and this step's quest is in progress");
 					announceStandDown(questCurrent);
-					eventBus.post(new PluginMessage("shortestpath", "clear"));
+					postClear();
 					return;
 				}
 				// An explicit ⌖ on the step (bundled or player-captured)
@@ -6535,12 +6532,12 @@ public class IronscapePlugin extends Plugin
 				{
 					logNavDecision("routing to step area " + (location == null ? area : location)
 						+ " (quest owns guidance)");
-					eventBus.post(new PluginMessage("shortestpath", "path", Map.of("target", area)));
+					postPath(area);
 				}
 				else
 				{
 					logNavDecision("cleared: quest owns guidance, step has no routable area");
-					eventBus.post(new PluginMessage("shortestpath", "clear"));
+					postClear();
 				}
 				return;
 			}
@@ -6548,7 +6545,7 @@ public class IronscapePlugin extends Plugin
 			if (target != null)
 			{
 				logNavDecision("routing to " + target);
-				eventBus.post(new PluginMessage("shortestpath", "path", Map.of("target", target)));
+				postPath(target);
 			}
 			else
 			{
@@ -6556,7 +6553,7 @@ public class IronscapePlugin extends Plugin
 				// route so a STALE one (last step's quest etc.) doesn't
 				// keep pointing somewhere you no longer need to go.
 				logNavDecision("cleared: no routable target in the window");
-				eventBus.post(new PluginMessage("shortestpath", "clear"));
+				postClear();
 			}
 		});
 	}
@@ -7179,8 +7176,7 @@ public class IronscapePlugin extends Plugin
 				WorldPoint nearest = nearestOf(network);
 				if (nearest != null)
 				{
-					eventBus.post(new PluginMessage("shortestpath", "path",
-						Map.of("target", nearest)));
+					postPath(nearest);
 				}
 			});
 			return;
@@ -7241,7 +7237,7 @@ public class IronscapePlugin extends Plugin
 					clickedQuest = quest;
 					clickedQuestTicks = 200;
 					questStartMarker = point;
-					eventBus.post(new PluginMessage("shortestpath", "path", Map.of("target", point)));
+					postPath(point);
 				}
 				else if (questIsTheTask && state == QuestState.IN_PROGRESS)
 				{
@@ -7258,7 +7254,7 @@ public class IronscapePlugin extends Plugin
 				{
 					// Finished quest, or a landmark reference on some other
 					// step — the name means the PLACE now, so just route.
-					eventBus.post(new PluginMessage("shortestpath", "path", Map.of("target", point)));
+					postPath(point);
 				}
 			});
 			return;
@@ -7290,8 +7286,7 @@ public class IronscapePlugin extends Plugin
 					client.addChatMessage(ChatMessageType.CONSOLE, "",
 						"IRONSCAPE: next: " + stage.note, null);
 				}
-				eventBus.post(new PluginMessage("shortestpath", "path",
-					Map.of("target", new WorldPoint(stage.x, stage.y, stage.plane))));
+				postPath(new WorldPoint(stage.x, stage.y, stage.plane));
 				return;
 			}
 			// Item sources carry a how-to ("ask Golrie... key from the
@@ -7302,7 +7297,7 @@ public class IronscapePlugin extends Plugin
 				client.addChatMessage(ChatMessageType.CONSOLE, "",
 					"IRONSCAPE: " + note, null);
 			}
-			eventBus.post(new PluginMessage("shortestpath", "path", Map.of("target", point)));
+			postPath(point);
 		});
 	}
 
@@ -7328,8 +7323,152 @@ public class IronscapePlugin extends Plugin
 	{
 		// Post on the client thread: Shortest Path reads game state
 		// (player position as the route start) in its handler.
-		clientThread.invokeLater(() ->
-			eventBus.post(new PluginMessage("shortestpath", "path", Map.of("target", point))));
+		clientThread.invokeLater(() -> postPath(point));
+	}
+
+	/**
+	 * Ask Shortest Path to route to a point, and ask it to tell us which
+	 * transports it picked on the way.
+	 *
+	 * The "config" key is Shortest Path's documented per-request config
+	 * override. We set "postTransports" because it defaults to OFF (it
+	 * lives in their Debug section) — without it they never answer, and
+	 * we are not making the user go and find a setting. It only controls
+	 * whether they post the message; it does not change the route they
+	 * draw.
+	 *
+	 * It must go on EVERY path post, not once at startup: their override
+	 * map is wiped by any "clear" message, including our own.
+	 */
+	private void postPath(WorldPoint target)
+	{
+		eventBus.post(new PluginMessage("shortestpath", "path",
+			Map.of("target", target, "config", Map.of("postTransports", true))));
+	}
+
+	/**
+	 * Tell Shortest Path to stop drawing. Caller is already on the client
+	 * thread (unlike {@link #clearPath}, which hops onto it first).
+	 */
+	private void postClear()
+	{
+		spRoute = null;
+		eventBus.post(new PluginMessage("shortestpath", "clear"));
+	}
+
+	/**
+	 * One transport on the route Shortest Path actually chose — where you
+	 * board it, where it puts you, the object to click, and the option to
+	 * pick ("Ardougne cloak: Kandarin Monastery", "Barbarian Assault
+	 * Minigame Teleport", "Travel Spirit tree").
+	 */
+	static final class SpLeg
+	{
+		final WorldPoint origin;
+		final WorldPoint destination;
+		final String objectInfo;
+		final String displayInfo;
+
+		SpLeg(WorldPoint origin, WorldPoint destination, String objectInfo, String displayInfo)
+		{
+			this.origin = origin;
+			this.destination = destination;
+			this.objectInfo = objectInfo;
+			this.displayInfo = displayInfo;
+		}
+
+		@Override
+		public String toString()
+		{
+			String what = displayInfo != null ? displayInfo : objectInfo;
+			return (what == null ? "transport" : what) + " " + origin + " -> " + destination;
+		}
+	}
+
+	/**
+	 * The transports on Shortest Path's chosen route, in travel order, or
+	 * an empty list when it routed us on foot. Empty is MEANINGFUL — it is
+	 * SP saying "no transport needed" — so it is distinct from null, which
+	 * means SP has not answered (not installed, or too old).
+	 *
+	 * Written from Shortest Path's pathfinding thread, so volatile; read
+	 * from the client thread. Nothing here touches game state.
+	 */
+	private volatile List<SpLeg> spRoute = null;
+
+	/**
+	 * Shortest Path answering with the route it picked. We asked for this
+	 * in {@link #postPath} — see the note there about why it needs
+	 * switching on.
+	 *
+	 * This is the antidote to computing a rival journey of our own: our
+	 * first-leg hint exists only to highlight the button to click, and SP
+	 * has already decided WHICH transport, knowing the player's real
+	 * unlocks, items and quest state.
+	 *
+	 * NOTE: this arrives on Shortest Path's pathfinding worker thread, not
+	 * the client thread. Store and log only.
+	 */
+	@Subscribe
+	public void onPluginMessage(PluginMessage event)
+	{
+		if (!"shortestpath".equals(event.getNamespace()) || !"transports".equals(event.getName()))
+		{
+			return;
+		}
+		Map<String, Object> data = event.getData();
+		if (data == null)
+		{
+			return;
+		}
+		List<WorldPoint> origins = pointList(data.get("origin"));
+		List<WorldPoint> destinations = pointList(data.get("destination"));
+		List<String> objectInfos = stringList(data.get("objectInfo"));
+		List<String> displayInfos = stringList(data.get("displayInfo"));
+
+		// Four parallel lists from another plugin: trust the shortest one
+		// rather than assuming they agree, so a change on their side
+		// cannot throw from inside their thread.
+		int legs = Math.min(origins.size(), destinations.size());
+		List<SpLeg> route = new ArrayList<>(legs);
+		for (int i = 0; i < legs; i++)
+		{
+			route.add(new SpLeg(origins.get(i), destinations.get(i),
+				i < objectInfos.size() ? objectInfos.get(i) : null,
+				i < displayInfos.size() ? displayInfos.get(i) : null));
+		}
+		spRoute = route;
+		logHintDecision("shortest path chose: "
+			+ (route.isEmpty() ? "no transport (walking the whole way)" : route.toString()));
+	}
+
+	private static List<WorldPoint> pointList(Object value)
+	{
+		List<WorldPoint> points = new ArrayList<>();
+		if (value instanceof List<?>)
+		{
+			for (Object item : (List<?>) value)
+			{
+				if (item instanceof WorldPoint)
+				{
+					points.add((WorldPoint) item);
+				}
+			}
+		}
+		return points;
+	}
+
+	private static List<String> stringList(Object value)
+	{
+		List<String> strings = new ArrayList<>();
+		if (value instanceof List<?>)
+		{
+			for (Object item : (List<?>) value)
+			{
+				strings.add(item instanceof String ? (String) item : null);
+			}
+		}
+		return strings;
 	}
 
 	/** Toolbar "+" button: name the player's current tile as a place. */
@@ -7358,6 +7497,10 @@ public class IronscapePlugin extends Plugin
 
 	private void clearPath()
 	{
+		// Forget their last answer too: with no route there is no chosen
+		// transport, and a stale one would have us highlighting a button
+		// for a journey nobody is making.
+		spRoute = null;
 		clientThread.invokeLater(() ->
 			eventBus.post(new PluginMessage("shortestpath", "clear")));
 	}
