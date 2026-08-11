@@ -97,15 +97,36 @@ if (process.argv.includes('--tests')) {
   }
   else {
     try {
-      execFileSync(path.join(ROOT, 'gradlew'), ['test', '--console=plain', '-q'],
-        { cwd: ROOT, stdio: ['ignore', 'pipe', 'pipe'] });
+      // gradlew is the Unix script and gradlew.bat the Windows one. The
+      // first cut ran the wrong one here and reported "unit tests FAILED"
+      // when gradle had never started — a false alarm is not a safe
+      // failure, it is how a check gets ignored.
+      const windows = process.platform === 'win32';
+      const wrapper = windows ? 'gradlew.bat' : 'gradlew';
+      // Quoted because shell:true re-parses the command line and this
+      // project lives in a path with a space in it ("IRONMAN Guide").
+      // Built as ONE string with no separate args array: Node deprecates
+      // passing args alongside shell:true, because it concatenates them
+      // unescaped. Doing the quoting here makes it explicit.
+      const command = `"${path.join(ROOT, wrapper)}" test --console=plain -q`;
+      execFileSync(command, [],
+        // shell:true on Windows because Node refuses to spawn a .bat
+        // directly (EINVAL) — which this reported as "unit tests FAILED"
+        // until the error text was printed and said so.
+        { cwd: ROOT, stdio: ['ignore', 'pipe', 'pipe'], shell: windows });
       console.log('  ok       unit tests');
     }
     catch (e) {
       broken++;
       console.log('  FAILED   unit tests');
-      console.log(((e.stdout || '') + (e.stderr || '')).split('\n')
-        .filter((l) => /FAILED|error:/.test(l)).slice(0, 6).map((l) => `           ${l}`).join('\n'));
+      const out = (e.stdout || '') + (e.stderr || '');
+      const named = out.split('\n').filter((l) => /FAILED|error:/.test(l)).slice(0, 6);
+      // ...and when nothing matches, print SOMETHING. The first version
+      // printed an empty block, which said "tests failed" and gave no way
+      // to find out why — precisely when the reason is unusual.
+      console.log((named.length ? named
+        : [e.message || 'no output captured'].concat(out.split('\n').filter(Boolean).slice(-4)))
+        .map((l) => `           ${l}`).join('\n'));
     }
   }
 }
