@@ -7,6 +7,10 @@
      "name": "wizard's mind bomb",
      "quantity": 1,
      "consumed": true
+    },
+    {
+     "name": "law rune",
+     "quantity": 1
     }
    ],
    "note": "Drink the mind bomb for the Magic boost, then cast Camelot Teleport (45 Magic, needs the boost below that)."
@@ -956,6 +960,12 @@
     {
      "name": "gp",
      "quantity": null
+    },
+    {
+     "name": "law rune",
+     "quantity": 1,
+     "optional": true,
+     "bringAhead": true
     }
    ],
    "prerequisiteQuest": "Goblin Diplomacy"
@@ -1038,6 +1048,10 @@
     {
      "name": "coal",
      "quantity": 4
+    },
+    {
+     "name": "law rune",
+     "quantity": 1
     }
    ]
   },
@@ -1053,6 +1067,10 @@
     },
     {
      "name": "orange dye",
+     "quantity": 1
+    },
+    {
+     "name": "law rune",
      "quantity": 1
     }
    ]
@@ -1729,6 +1747,12 @@
     {
      "name": "coins",
      "quantity": 560
+    },
+    {
+     "name": "law rune",
+     "quantity": 1,
+     "optional": true,
+     "bringAhead": true
     }
    ]
   },
@@ -2436,6 +2460,12 @@
     {
      "name": "scrying orb",
      "quantity": 1
+    },
+    {
+     "name": "law rune",
+     "quantity": 1,
+     "optional": true,
+     "bringAhead": true
     }
    ]
   },
@@ -4082,6 +4112,12 @@
     },
     {
      "name": "tinderbox"
+    },
+    {
+     "name": "law rune",
+     "quantity": 1,
+     "optional": true,
+     "bringAhead": true
     }
    ],
    "note": "Recommended: Combat gear, Food, Stamina potions, Antipoisons, Prayer potions."
@@ -5766,6 +5802,12 @@
     {
      "name": "coins",
      "quantity": 1152000
+    },
+    {
+     "name": "law rune",
+     "quantity": 1,
+     "optional": true,
+     "bringAhead": true
     }
    ]
   },
@@ -7181,6 +7223,50 @@
      "npc": "Two-pints",
      "item": "ardougne cloak 1",
      "note": "Talk to Two-pints in the Flying Horse Inn to claim the Ardougne cloak."
+    }
+   ]
+  },
+  "9d9c130081": {
+   "items": [
+    {
+     "name": "law rune",
+     "quantity": 1
+    }
+   ]
+  },
+  "1f4b35de1d": {
+   "items": [
+    {
+     "name": "law rune",
+     "quantity": 1
+    }
+   ]
+  },
+  "846a57d264": {
+   "items": [
+    {
+     "name": "law rune",
+     "quantity": 1
+    }
+   ]
+  },
+  "b52a282d40": {
+   "items": [
+    {
+     "name": "law rune",
+     "quantity": 1,
+     "optional": true,
+     "bringAhead": true
+    }
+   ]
+  },
+  "d52442ba8f": {
+   "items": [
+    {
+     "name": "law rune",
+     "quantity": 1,
+     "optional": true,
+     "bringAhead": true
     }
    ]
   }
