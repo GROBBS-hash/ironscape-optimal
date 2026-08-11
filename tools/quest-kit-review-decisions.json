@@ -190,6 +190,16 @@
    "granted": false,
    "decided": "2026-08-11",
    "via": "owner review — keep as a requirement, revisit in play"
+  },
+  "02641a7971 coins": {
+   "granted": false,
+   "decided": "2026-08-11",
+   "via": "owner review — keep as a requirement (reverted auto-grant: price/partial wording)"
+  },
+  "99e60ba7f5 rope": {
+   "granted": false,
+   "decided": "2026-08-11",
+   "via": "owner review — keep as a requirement (reverted auto-grant: price/partial wording)"
   }
  }
 }
