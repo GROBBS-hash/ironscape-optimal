@@ -288,7 +288,29 @@ if (!showAll) {
   console.log('Everything below is something you would otherwise find by standing in front of it.\n');
 }
 
+// PLAIN is the default, --detail restores the original developer output.
+//
+// The whole reason DX-2 exists: this check computed the right answers and
+// then printed them in a register its only reader cannot use, so it only
+// ever helped when Claude remembered to run it and translate. A check
+// nobody can read is a check nobody runs. The flag strings below are the
+// same findings, said the way the owner would say them.
+const detail = process.argv.includes('--detail');
+const PLAIN = {
+  MANUAL: (f) => 'you will need to tick this one off yourself — nothing in the game tells us when it is done',
+  'NO ROUTE': (f) => 'no map location for this one, so there will be no route line',
+  'CARRY-LIST': (f) =>
+    `its item list has no quantities (${(f.match(/(\d+) items/) || [, '?'])[1]} items), so we cannot send you to a bank for it`,
+};
+const plainFor = (flag) => {
+  for (const key of Object.keys(PLAIN)) {
+    if (flag.startsWith(key)) return PLAIN[key](flag);
+  }
+  return flag;
+};
+
 const totals = { manual: 0, noRoute: 0, carryKit: 0, quest: 0 };
+const rows = [];
 for (let i = 0; i < window.length; i++) {
   const step = window[i];
   const { flags, notes } = inspect(step);
@@ -302,14 +324,40 @@ for (let i = 0; i < window.length; i++) {
   // `from`, not `position` — the window starts at position + 1, and a label
   // derived from the old start silently renamed every row by one.
   const n = from + i;
+  rows.push({ n, step, flags, notes });
+  if (!detail) continue;
   console.log(`${String(n).padStart(4)}  ${step.id}  ${step.text.slice(0, 68)}`);
   for (const f of flags) console.log(`        ${f}`);
   for (const nt of notes) console.log(`        ok: ${nt}`);
 }
 
+if (!detail && !showAll) {
+  // Only the steps with something WRONG. "Behaves normally" is the
+  // expected case and listing it buries the two that do not.
+  const problems = rows.filter((r) => r.flags.length);
+  if (!problems.length) {
+    console.log('Nothing to warn you about — every step in this stretch should behave.\n');
+  }
+  for (const r of problems) {
+    console.log(`Step ${r.n} — "${r.step.text.slice(0, 72)}"`);
+    for (const f of r.flags) console.log(`   ${plainFor(f)}`);
+    console.log('');
+  }
+}
+
 const scope = showAll ? `all ${steps.length} steps` : `these ${window.length} steps`;
-console.log(`\nSUMMARY over ${scope}:`);
-console.log(`  ${totals.manual} can only be ticked BY HAND`);
-console.log(`  ${totals.noRoute} have nowhere to route`);
-console.log(`  ${totals.carryKit} carry a kit no bank stop can act on`);
-console.log(`  ${totals.quest} hand guidance to Quest Helper`);
+if (detail || showAll) {
+  console.log(`\nSUMMARY over ${scope}:`);
+  console.log(`  ${totals.manual} can only be ticked BY HAND`);
+  console.log(`  ${totals.noRoute} have nowhere to route`);
+  console.log(`  ${totals.carryKit} carry a kit no bank stop can act on`);
+  console.log(`  ${totals.quest} hand guidance to Quest Helper`);
+}
+else {
+  const bits = [];
+  if (totals.manual) bits.push(`${totals.manual} you will tick by hand`);
+  if (totals.noRoute) bits.push(`${totals.noRoute} with no route`);
+  if (totals.carryKit) bits.push(`${totals.carryKit} with a kit we cannot bank for`);
+  console.log(`Out of ${window.length} steps ahead: ${bits.length ? bits.join(', ') : 'nothing to flag'}`
+    + `. ${totals.quest} hand over to Quest Helper, which is normal.`);
+}
