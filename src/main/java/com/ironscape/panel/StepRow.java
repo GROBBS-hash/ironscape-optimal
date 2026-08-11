@@ -421,7 +421,14 @@ class StepRow extends JPanel
 			// It cost more than tidiness: the clipped half of the lever task
 			// is the sentence telling you to pull the lever BACK, so the
 			// player walked out of the Wilderness overland (owner, in play).
-			JEditorPane line = htmlPane("", indentPx,
+			// leftIndent ZERO, deliberately. htmlPane sizes itself as
+			// TEXT_WIDTH + 40 + leftIndent because its border sits INSIDE
+			// its width — so passing the indent here asks for a pane wider
+			// than the card, and the card clips the overflow off the right.
+			// That is why the first attempt still lost the ends of lines
+			// even once they wrapped: it was cut by exactly the indent.
+			// The NOTE block passes 0 for the same reason.
+			JEditorPane line = htmlPane("", 0,
 				new Font(Font.DIALOG, Font.PLAIN, 11), NOTE_FG);
 			line.setAlignmentX(LEFT_ALIGNMENT);
 			// The width htmlPane settled on, kept so every re-measure below
@@ -452,7 +459,10 @@ class StepRow extends JPanel
 				// Height changes here whenever a task wraps to two lines.
 				line.setPreferredSize(null);
 				line.setMaximumSize(null);
-				line.setText(body);
+				// A whole document, not a fragment: every other caller of
+				// htmlPane passes one, and Swing's html handling is happier
+				// measuring a document than a bare run of tags.
+				line.setText("<html><body>" + body + "</body></html>");
 				line.setSize(paneWidth, Short.MAX_VALUE);
 				java.awt.Dimension fitted =
 					new java.awt.Dimension(paneWidth, line.getPreferredSize().height);

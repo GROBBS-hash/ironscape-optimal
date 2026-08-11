@@ -34,6 +34,9 @@ const FRESH_MS = 120_000;
 const reasons = [];
 /** Processes that MIGHT be running our plugin; only the log can say. */
 const suspects = [];
+// Did we see an actual dev-client PROCESS? Log evidence alone cannot
+// distinguish "is running" from "was running until a moment ago".
+let devClientProcess = false;
 
 // 1. Any java process whose command line mentions this project or the
 //    plugin's launcher class. Gradle DAEMONS are excluded by name.
@@ -61,6 +64,7 @@ try {
       // Loads classes out of build/. Blocking on its own, no corroboration
       // needed — this is the process the whole check exists for.
       reasons.push(`pid ${proc.ProcessId} looks like our dev client`);
+      devClientProcess = true;
     } else if (/RuneLite\.exe/i.test(proc.CommandLine || '')) {
       // The INSTALLED launcher. It only matters if it has our plugin
       // loaded, which its name cannot tell us — so it is a SUSPECT, and
@@ -102,7 +106,8 @@ try {
 //    can push our lines out of a fixed byte window for a false CLEAR. So:
 //    read a window big enough to survive stack-trace spam, take the LAST
 //    matching line, and time that.
-if ((reasons.length || suspects.length) && fs.existsSync(LOG)) {
+/** Timestamp of the newest com.ironscape [Client] line, or null. */
+function newestPluginLineTime() {
   const size = fs.statSync(LOG).size;
   const want = Math.min(size, 2_000_000);
   const fd = fs.openSync(LOG, 'r');
@@ -110,19 +115,45 @@ if ((reasons.length || suspects.length) && fs.existsSync(LOG)) {
   fs.readSync(fd, buf, 0, want, size - want);
   fs.closeSync(fd);
 
-  let newest = null;
+  let found = null;
   for (const line of buf.toString('utf8').split('\n')) {
     if (!line.includes('com.ironscape') || !line.includes('[Client]')) continue;
     const stamp = /^(\d{4}-\d{2}-\d{2}) (\d{2}:\d{2}:\d{2})/.exec(line);
     if (!stamp) continue;
     // The client writes local time; parsing it as local compares like for like.
     const at = new Date(`${stamp[1]}T${stamp[2]}`).getTime();
-    if (!Number.isNaN(at) && (newest === null || at > newest)) newest = at;
+    if (!Number.isNaN(at) && (found === null || at > found)) found = at;
   }
+  return found;
+}
+
+if ((reasons.length || suspects.length) && fs.existsSync(LOG)) {
+  let newest = newestPluginLineTime();
 
   if (newest !== null) {
     const age = Date.now() - newest;
-    if (age < FRESH_MS) {
+    // A log line is evidence that a process WAS running our plugin, not
+    // that one still is. The dev client's dying line sits inside the
+    // freshness window for two minutes after it exits, and with only the
+    // everyday RuneLite left to blame it convicted the wrong process —
+    // blocking four launches across two sessions for a minute each.
+    //
+    // So: sample the file again. A LIVE client keeps writing (game state,
+    // nav decisions, the tick-driven caches); a dead one's last line never
+    // moves. Two seconds is enough to tell them apart, and it only costs
+    // that when the answer is genuinely in doubt.
+    if (age < FRESH_MS && !devClientProcess) {
+      const before = newest;
+      // Sleep without a shell: `timeout` needs a console and `sleep` does
+      // not exist on Windows, and this must work from whatever runs it.
+      Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 2000);
+      if (newestPluginLineTime() === before) {
+        console.log('(note: a com.ironscape line is recent but the log has stopped growing'
+          + ' and no dev client process is running — treating it as an exited client)');
+        newest = null;
+      }
+    }
+    if (newest !== null && age < FRESH_MS) {
       reasons.push(`client.log wrote a com.ironscape [Client] line ${Math.round(age / 1000)}s ago`
         + ' — so one of the processes above is running our plugin');
       // Now the suspect is convicted: something with our plugin is live,
