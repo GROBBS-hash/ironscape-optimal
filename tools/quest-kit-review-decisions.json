@@ -20,6 +20,176 @@
    "quest": "Sheep Shearer",
    "says": "20 balls of wool (unnoted) — Shears if obtaining wool to spin into balls of wool (obtained during the quest)",
    "via": "--auto (flat wiki statement)"
+  },
+  "5236ca77bb hammer": {
+   "granted": false,
+   "decided": "2026-08-11",
+   "via": "owner review — keep as a requirement, revisit in play"
+  },
+  "45e7912cca h.a.m. robes": {
+   "granted": false,
+   "decided": "2026-08-11",
+   "via": "owner review — keep as a requirement, revisit in play"
+  },
+  "cc64d9b2f4 grain": {
+   "granted": false,
+   "decided": "2026-08-11",
+   "via": "owner review — keep as a requirement, revisit in play"
+  },
+  "4043e0d8dc knife": {
+   "granted": false,
+   "decided": "2026-08-11",
+   "via": "owner review — keep as a requirement, revisit in play"
+  },
+  "e79ef96e9b candle": {
+   "granted": false,
+   "decided": "2026-08-11",
+   "via": "owner review — keep as a requirement, revisit in play"
+  },
+  "e2746be131 ale yeast": {
+   "granted": false,
+   "decided": "2026-08-11",
+   "via": "owner review — keep as a requirement, revisit in play"
+  },
+  "e880787f16 bucket of sand": {
+   "granted": false,
+   "decided": "2026-08-11",
+   "via": "owner review — keep as a requirement, revisit in play"
+  },
+  "ec01683659 ice gloves": {
+   "granted": false,
+   "decided": "2026-08-11",
+   "via": "owner review — keep as a requirement, revisit in play"
+  },
+  "ec01683659 dusty key": {
+   "granted": false,
+   "decided": "2026-08-11",
+   "via": "owner review — keep as a requirement, revisit in play"
+  },
+  "c8ad42719d bullseye lantern": {
+   "granted": false,
+   "decided": "2026-08-11",
+   "via": "owner review — keep as a requirement, revisit in play"
+  },
+  "9365098918 bucket of wax": {
+   "granted": false,
+   "decided": "2026-08-11",
+   "via": "owner review — keep as a requirement, revisit in play"
+  },
+  "9f2b21ef74 monkey bones": {
+   "granted": false,
+   "decided": "2026-08-11",
+   "via": "owner review — keep as a requirement, revisit in play"
+  },
+  "518aaf4170 hammer": {
+   "granted": false,
+   "decided": "2026-08-11",
+   "via": "owner review — keep as a requirement, revisit in play"
+  },
+  "518aaf4170 chisel": {
+   "granted": false,
+   "decided": "2026-08-11",
+   "via": "owner review — keep as a requirement, revisit in play"
+  },
+  "02641a7971 bucket of water": {
+   "granted": false,
+   "decided": "2026-08-11",
+   "via": "owner review — keep as a requirement, revisit in play"
+  },
+  "5bc5011c12 hammer": {
+   "granted": false,
+   "decided": "2026-08-11",
+   "via": "owner review — keep as a requirement, revisit in play"
+  },
+  "2be2695463 gorilla greegree": {
+   "granted": false,
+   "decided": "2026-08-11",
+   "via": "owner review — keep as a requirement, revisit in play"
+  },
+  "2be2695463 ninja greegree": {
+   "granted": false,
+   "decided": "2026-08-11",
+   "via": "owner review — keep as a requirement, revisit in play"
+  },
+  "2be2695463 zombie greegree": {
+   "granted": false,
+   "decided": "2026-08-11",
+   "via": "owner review — keep as a requirement, revisit in play"
+  },
+  "2be2695463 coins": {
+   "granted": false,
+   "decided": "2026-08-11",
+   "via": "owner review — keep as a requirement, revisit in play"
+  },
+  "d20cb8cc05 cooked rabbit": {
+   "granted": false,
+   "decided": "2026-08-11",
+   "via": "owner review — keep as a requirement, revisit in play"
+  },
+  "41184c1680 seed dibber": {
+   "granted": false,
+   "decided": "2026-08-11",
+   "via": "owner review — keep as a requirement, revisit in play"
+  },
+  "079f2f3e5a tarromin potion (unf)": {
+   "granted": false,
+   "decided": "2026-08-11",
+   "via": "owner review — keep as a requirement, revisit in play"
+  },
+  "624c2f822c logs": {
+   "granted": false,
+   "decided": "2026-08-11",
+   "via": "owner review — keep as a requirement, revisit in play"
+  },
+  "06aa0d4ce1 hammer": {
+   "granted": false,
+   "decided": "2026-08-11",
+   "via": "owner review — keep as a requirement, revisit in play"
+  },
+  "06aa0d4ce1 saw": {
+   "granted": false,
+   "decided": "2026-08-11",
+   "via": "owner review — keep as a requirement, revisit in play"
+  },
+  "99e60ba7f5 bat bones": {
+   "granted": false,
+   "decided": "2026-08-11",
+   "via": "owner review — keep as a requirement, revisit in play"
+  },
+  "c6df38e08d leather gloves": {
+   "granted": false,
+   "decided": "2026-08-11",
+   "via": "owner review — keep as a requirement, revisit in play"
+  },
+  "d35ebaf24e logs": {
+   "granted": false,
+   "decided": "2026-08-11",
+   "via": "owner review — keep as a requirement, revisit in play"
+  },
+  "80a3ae4d44 beer tankard": {
+   "granted": false,
+   "decided": "2026-08-11",
+   "via": "owner review — keep as a requirement, revisit in play"
+  },
+  "3bae3f0e67 bucket": {
+   "granted": false,
+   "decided": "2026-08-11",
+   "via": "owner review — keep as a requirement, revisit in play"
+  },
+  "4cb05055c3 bucket of water": {
+   "granted": false,
+   "decided": "2026-08-11",
+   "via": "owner review — keep as a requirement, revisit in play"
+  },
+  "2472913d40 shortbow": {
+   "granted": false,
+   "decided": "2026-08-11",
+   "via": "owner review — keep as a requirement, revisit in play"
+  },
+  "bc19e291f5 shears": {
+   "granted": false,
+   "decided": "2026-08-11",
+   "via": "owner review — keep as a requirement, revisit in play"
   }
  }
 }
