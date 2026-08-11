@@ -2271,6 +2271,11 @@ public class IronscapePlugin extends Plugin
 	@Subscribe
 	public void onCommandExecuted(net.runelite.api.events.CommandExecuted event)
 	{
+		if ("ironwrong".equalsIgnoreCase(event.getCommand()))
+		{
+			writeProblemReport();
+			return;
+		}
 		if (!"ironreload".equalsIgnoreCase(event.getCommand()))
 		{
 			return;
@@ -6628,12 +6633,105 @@ public class IronscapePlugin extends Plugin
 	 * dead" reports were undiagnosable — every stand-down branch was
 	 * silent; now the session log (mine-session-log.mjs) names the branch.
 	 */
+	/**
+	 * The last few decisions, kept so a bug report can carry them.
+	 *
+	 * Every one of these is already logged, but the owner cannot read a
+	 * client log and should not have to: reports arrive as "nav is broken"
+	 * and Claude reconstructs the moment from four other lines. Bounded and
+	 * tiny — this is a report attachment, not a second log.
+	 */
+	private final java.util.Deque<String> recentDecisions =
+		new java.util.ArrayDeque<>();
+
+	/**
+	 * DX-4. Write down everything about THIS MOMENT that a bug report needs,
+	 * so the owner can say "something is wrong here" and the evidence comes
+	 * with it.
+	 *
+	 * Reports used to arrive as a sentence — "nav is broken", "the overlay
+	 * is on the wrong thing" — and the first hour of every fix went on
+	 * reconstructing where he was and what the plugin believed. All of this
+	 * is already in the client log; none of it is readable by the person who
+	 * hit the problem.
+	 *
+	 * Runs on the client thread (the command arrives there), so every
+	 * reading below is a consistent snapshot rather than a race.
+	 */
+	private void writeProblemReport()
+	{
+		Current current = findCurrent();
+		WorldPoint me = playerPoint();
+		StringBuilder out = new StringBuilder();
+		out.append("IRONSCAPE problem report\n");
+		out.append("guide      : ").append(activeVariant).append("\n");
+		out.append("position   : ").append(progressManager.position(activeVariant)).append("\n");
+		if (current != null)
+		{
+			out.append("step       : ").append(current.step.getGlobalIndex())
+				.append("  ").append(current.step.getId()).append("\n");
+			out.append("text       : ").append(current.step.getPlainText()).append("\n");
+			out.append("sub        : ").append(current.sub.getId()).append("\n");
+			Quest quest = stepQuest(current);
+			out.append("quest      : ").append(quest == null ? "(none)"
+				: quest.getName() + " - " + cachedQuestState(quest)).append("\n");
+			WorldPoint target = targetFor(current.step, current.sub);
+			out.append("routes to  : ").append(target == null ? "(nowhere)" : target).append("\n");
+		}
+		else
+		{
+			out.append("step       : (no current step)\n");
+		}
+		out.append("you are at : ").append(me == null ? "(unknown)" : me).append("\n");
+		out.append("quest helper installed: ").append(questHelperInstalled()).append("\n");
+		out.append("\nWhat the plugin decided most recently:\n");
+		if (recentDecisions.isEmpty())
+		{
+			out.append("  (nothing yet this session)\n");
+		}
+		for (String line : recentDecisions)
+		{
+			out.append("  ").append(line).append("\n");
+		}
+		java.io.File dir = new java.io.File(
+			net.runelite.client.RuneLite.RUNELITE_DIR, CONFIG_GROUP + "/reports");
+		dir.mkdirs();
+		// Named by STEP rather than by a clock: one report per step is the
+		// useful granularity, and a second press on the same step overwrites
+		// a snapshot of the same problem rather than piling up files nobody
+		// will ever sort through.
+		java.io.File file = new java.io.File(dir, "report-step-"
+			+ (current == null ? "none" : current.step.getGlobalIndex()) + ".txt");
+		try
+		{
+			java.nio.file.Files.write(file.toPath(),
+				out.toString().getBytes(java.nio.charset.StandardCharsets.UTF_8));
+			log.info("problem report written to {}", file);
+			client.addChatMessage(ChatMessageType.CONSOLE, "",
+				"IRONSCAPE: noted. Saved " + file.getName()
+					+ " - mention it to Claude and it will be read.", null);
+		}
+		catch (IOException e)
+		{
+			log.warn("could not write problem report", e);
+		}
+	}
+	private void remember(String line)
+	{
+		recentDecisions.addLast(line);
+		while (recentDecisions.size() > 25)
+		{
+			recentDecisions.removeFirst();
+		}
+	}
+
 	private void logNavDecision(String decision)
 	{
 		if (!decision.equals(lastNavDecision))
 		{
 			lastNavDecision = decision;
 			log.info("auto-nav: {}", decision);
+			remember("nav: " + decision);
 		}
 	}
 
@@ -6654,6 +6752,7 @@ public class IronscapePlugin extends Plugin
 		{
 			lastHintDecision = decision;
 			log.info("teleport-hint: {}", decision);
+			remember("hint: " + decision);
 		}
 	}
 
