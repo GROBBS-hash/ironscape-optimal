@@ -141,6 +141,22 @@
    "plane": 0,
    "vendor": "Candle maker",
    "note": "Candle shop, Catherby - the Candle maker sells plain candles (he also hands over the black candle for Merlin's Crystal)."
+  },
+  "death runes": {
+   "display": "Death runes",
+   "x": 2478,
+   "y": 3291,
+   "plane": 0,
+   "vendor": "Civilian",
+   "note": "Death runes: use a grown CAT on a civilian in south-west West Ardougne. 100 runes normally, 200 with the easy Ardougne diary."
+  },
+  "death rune": {
+   "display": "Death rune",
+   "x": 2478,
+   "y": 3291,
+   "plane": 0,
+   "vendor": "Civilian",
+   "note": "Death runes: use a grown CAT on a civilian in south-west West Ardougne. 100 runes normally, 200 with the easy Ardougne diary."
   }
  }
 }

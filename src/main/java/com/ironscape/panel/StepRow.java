@@ -396,20 +396,33 @@ class StepRow extends JPanel
 	 */
 	private void addErrandChecklist(SubStep sub, int indentPx)
 	{
-		if (ctx.getErrandChecklist() == null)
+		// The LIST comes from the annotation, which is always there; only
+		// the STATE comes from the live cache.
+		//
+		// It used to read both from the cache, and the cache is written by
+		// the per-tick guidance pass — which only runs for the step you are
+		// standing on. So every other chain step rendered with no list at
+		// all, and the moment step 268 completed its tasks vanished
+		// entirely (owner, in play). A card should describe its step
+		// whether or not you happen to be on it.
+		java.util.List<StepAnnotation.Errand> chain = ctx.getAnnotations().getErrands(sub.getId());
+		if (chain == null || chain.isEmpty())
+		{
+			chain = ctx.getAnnotations().getErrands(step.getId());
+		}
+		if (chain == null || chain.isEmpty())
 		{
 			return;
 		}
-		java.util.LinkedHashMap<String, String> stages = ctx.getErrandChecklist().apply(sub.getId());
-		if (stages == null || stages.isEmpty())
+		java.util.LinkedHashMap<String, String> stages =
+			ctx.getErrandChecklist() == null ? null : ctx.getErrandChecklist().apply(sub.getId());
+		final boolean stepDone = isBadgeDone(sub);
+		for (int i = 0; i < chain.size(); i++)
 		{
-			return;
-		}
-		for (String key : stages.keySet())
-		{
-			// key is "index|label" — the index only keeps duplicates apart.
-			int bar = key.indexOf("|");
-			final String label = bar < 0 ? key : key.substring(bar + 1);
+			// Same "index|label" key the plugin publishes state under, built
+			// here from the same data so the two cannot disagree.
+			final String key = i + "|" + com.ironscape.annotations.ErrandProgress.checklistLabel(chain.get(i));
+			final String label = key.substring(key.indexOf("|") + 1);
 			// A JEditorPane, NOT a JLabel. A label cannot be constrained by
 			// an html body width: it reports its UNWRAPPED width and never
 			// caps its own maximum size, so every task line was CLIPPED
@@ -453,9 +466,13 @@ class StepRow extends JPanel
 			// sentences with no gaps reads as a solid block (owner).
 			line.setBorder(BorderFactory.createEmptyBorder(2, 0, 2, 0));
 			Runnable refresh = () -> {
-				java.util.LinkedHashMap<String, String> now =
-					ctx.getErrandChecklist().apply(sub.getId());
-				String state = now == null ? "TODO" : now.getOrDefault(key, "TODO");
+				java.util.LinkedHashMap<String, String> now = ctx.getErrandChecklist() == null
+					? null : ctx.getErrandChecklist().apply(sub.getId());
+				// No live state means this step is not the one being
+				// guided. A FINISHED step's tasks are all done by
+				// definition; an unreached one's are all still ahead.
+				String fallback = stepDone ? "DONE" : "TODO";
+				String state = now == null ? fallback : now.getOrDefault(key, fallback);
 				String body = RichText.escape(label);
 				// A dozen struck-through sentences all in one weight is a
 				// wall (owner: "the formatting makes it kinda hard to

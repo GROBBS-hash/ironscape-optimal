@@ -344,4 +344,34 @@ public final class ErrandProgress
 		return here.distanceTo2D(new WorldPoint(next.x, next.y, next.plane))
 			< here.distanceTo2D(mine);
 	}
+
+	/** One short line describing a stage: its note, else its item, else where it is. */
+	public static String checklistLabel(StepAnnotation.Errand stage)
+	{
+		if (stage.note != null && !stage.note.trim().isEmpty())
+		{
+			// First SENTENCE of the note: a full stop followed by a space.
+			//
+			// Written with indexOf rather than a regex on purpose. This was
+			// `split("(?<=\.)\s")` and reached the file as `split("(?<=.)s")`
+			// — the escapes were eaten generating this method through a
+			// script — which means "any character followed by an s", so
+			// every label was chopped at its first lowercase s: "Ask
+			// Wizard Cromperty…" rendered as "A". It cost three rebuilds
+			// spent adjusting a layout that had been correct since the
+			// first fix. Nothing to escape here, nothing to eat.
+			String first = stage.note.trim();
+			int sentence = first.indexOf(". ");
+			if (sentence > 0)
+			{
+				first = first.substring(0, sentence + 1);
+			}
+			return first.length() > 90 ? first.substring(0, 88) + "..." : first;
+		}
+		if (stage.item != null)
+		{
+			return com.ironscape.items.ItemTracker.capitalize(stage.item);
+		}
+		return "Go to " + stage.x + ", " + stage.y;
+	}
 }
