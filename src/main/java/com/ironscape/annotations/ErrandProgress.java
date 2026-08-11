@@ -83,12 +83,24 @@ public final class ErrandProgress
 			{
 				continue;
 			}
-			if (Boolean.TRUE.equals(stage.given))
+			if (Boolean.TRUE.equals(stage.given) || stage.bit != null)
 			{
 				// Hand-ins are INDEPENDENT: giving Da Vinci his ethenea
 				// first must not mark Hops and Chancy done behind it. Only
 				// the normal "the key served its purpose" cascade implies
 				// the earlier stages.
+				//
+				// A BIT gate is the same shape, and this is why the rule is
+				// worth stating rather than flagging per chain: a threshold
+				// is ordinal, so reaching it really does imply everything
+				// before it, but one bit says nothing whatever about
+				// another. The ten Ardougne easy diary tasks are ten
+				// unrelated errands packed into one varp, and cascading
+				// from Aleck's Emporium in Yanille (bit 11, done) marked
+				// the Fishing Trawler, the combat camp and Tindel's sword
+				// done behind it — so the chain skipped all three and
+				// routed straight to the cloak (owner, in play,
+				// 2026-08-11, confirmed against his own diary tab).
 				done.add(stageKey(stepId, chain, i));
 			}
 			else

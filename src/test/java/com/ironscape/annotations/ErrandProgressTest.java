@@ -332,4 +332,48 @@ public class ErrandProgressTest
 			assertTrue("no zone stages found — did the corpus lose them?", zoneStages > 0);
 		}
 	}
+
+	/**
+	 * A BIT gate must not cascade backwards.
+	 *
+	 * Ten Ardougne easy diary tasks share one varp, one bit each, and they
+	 * are unrelated errands: doing the one in Yanille says nothing about
+	 * the one in Port Khazard. The cascade exists for chains where a later
+	 * leg PROVES the earlier ones (holding the pebble proves you opened the
+	 * gate), and a threshold really is ordinal — but a bit is not. In play
+	 * this skipped three unfinished tasks and routed straight to the reward.
+	 */
+	@Test
+	public void bitGatedStagesAreIndependent()
+	{
+		class Bits implements ErrandProgress.World
+		{
+			int varp1196;
+			public int varValue(Integer varbit, Integer varp) { return varp1196; }
+			public int carriedCount(String item) { return 0; }
+			public int totalCount(String item) { return 0; }
+			public WorldPoint here() { return new WorldPoint(2662, 3305, 0); }
+		}
+		Bits world = new Bits();
+		List<StepAnnotation.Errand> chain = new ArrayList<>();
+		for (int bit : new int[]{5, 6, 7, 11})
+		{
+			StepAnnotation.Errand stage = new StepAnnotation.Errand();
+			stage.x = 2660; stage.y = 3300; stage.varp = 1196; stage.bit = bit;
+			chain.add(stage);
+		}
+		// Only the LAST task is done — exactly the owner's diary tab.
+		world.varp1196 = 1 << 11;
+		Set<String> done = new HashSet<>();
+		int active = ErrandProgress.advance("ardy-easy", chain, done, world);
+		assertEquals("the first UNFINISHED task must be active, not the reward",
+			0, active);
+		assertTrue("a chain with unfinished tasks is not complete",
+			!ErrandProgress.complete("ardy-easy", chain, done));
+		// ...and finishing them all does complete it.
+		world.varp1196 = (1 << 5) | (1 << 6) | (1 << 7) | (1 << 11);
+		ErrandProgress.advance("ardy-easy", chain, done, world);
+		assertTrue("all bits set — the chain is done",
+			ErrandProgress.complete("ardy-easy", chain, done));
+	}
 }
