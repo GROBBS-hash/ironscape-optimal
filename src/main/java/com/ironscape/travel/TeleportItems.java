@@ -206,6 +206,30 @@ public final class TeleportItems
 		return entries;
 	}
 
+	/**
+	 * The entry Shortest Path means by a given label.
+	 *
+	 * An exact match is right here and a fuzzy one would be wrong: this
+	 * index is built FROM Shortest Path's own table, so the strings are the
+	 * same strings. If one ever stops matching, the answer is to re-run the
+	 * seeder, not to loosen the comparison.
+	 */
+	public Entry byDisplay(String display)
+	{
+		if (display == null)
+		{
+			return null;
+		}
+		for (Entry entry : entries)
+		{
+			if (display.equals(entry.getDisplay()))
+			{
+				return entry;
+			}
+		}
+		return null;
+	}
+
 	public int size()
 	{
 		return entries.size();

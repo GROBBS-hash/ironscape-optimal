@@ -3192,6 +3192,24 @@ public class IronscapePlugin extends Plugin
 						&& leg != null && leg.home;
 					activeTeleportItem = activeMinigameTarget == null
 						&& leg != null ? leg.item : null;
+					// Shortest Path's own pick OUTRANKS ours whenever it
+					// named a teleport item, because it ranked the same
+					// choice better than we can: real walked routes, every
+					// transport type, the player's actual unlocks, and the
+					// player's own cost settings. Our table cannot even
+					// measure an item landing (it holds a distance field per
+					// NAMED landing, and the 319 item landings are not among
+					// them), so without this the item hint could never fire
+					// on a route ranked by walked distance.
+					com.ironscape.travel.TeleportItems.Entry chosen = teleportItemChosenBySp();
+					if (chosen != null)
+					{
+						activeTeleportItem = chosen;
+						activeSpellTeleport = -1;
+						routeHomeTeleportHint = false;
+						activeMinigameTarget = null;
+						hintReason = "shortest path picked a teleport item";
+					}
 					if (activeTeleportItem != null)
 					{
 						// Name the OPTION, not just the item: an Ardougne
@@ -7458,6 +7476,43 @@ public class IronscapePlugin extends Plugin
 		spRoute = route;
 		logHintDecision("shortest path chose: "
 			+ (route.isEmpty() ? "no transport (walking the whole way)" : route.toString()));
+	}
+
+	/**
+	 * The teleport ITEM Shortest Path chose as the first leg of the route it
+	 * is currently drawing, or null.
+	 *
+	 * Only the FIRST transport counts: that is the one you act on now, and
+	 * highlighting a later leg would point at a button for a journey you
+	 * have not started.
+	 *
+	 * The possession check is not redundant. Shortest Path can be set to
+	 * count teleport items in the BANK (the owner's is
+	 * INVENTORY_AND_BANK), so it will happily route through a glory sitting
+	 * in a bank — which is a fine route and a useless highlight.
+	 * Client thread: reads the inventory.
+	 */
+	private com.ironscape.travel.TeleportItems.Entry teleportItemChosenBySp()
+	{
+		List<SpLeg> route = spRoute;
+		if (route == null || route.isEmpty())
+		{
+			return null;
+		}
+		com.ironscape.travel.TeleportItems.Entry entry =
+			teleportItemIndex.byDisplay(route.get(0).displayInfo);
+		if (entry == null)
+		{
+			return null;
+		}
+		for (int id : entry.getItemIds())
+		{
+			if (itemTracker.carriedCountOfId(id) > 0)
+			{
+				return entry;
+			}
+		}
+		return null;
 	}
 
 	private static List<WorldPoint> pointList(Object value)
