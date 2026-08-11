@@ -216,6 +216,9 @@ public class IronscapePlugin extends Plugin
 	private com.ironscape.overlay.InventoryItemHintOverlay inventoryItemHintOverlay;
 
 	@Inject
+	private com.ironscape.overlay.TeleportItemHintOverlay teleportItemHintOverlay;
+
+	@Inject
 	private com.ironscape.overlay.ShopItemHintOverlay shopItemHintOverlay;
 
 	/** Inventory slot item ids the current step is about; overlay-outlined. */
@@ -1739,6 +1742,7 @@ public class IronscapePlugin extends Plugin
 		annotationManager.load();
 		placeManager.load();
 		loadMinigameLandings();
+		teleportItemIndex = com.ironscape.travel.TeleportItems.load(gson);
 		loadGuideState();
 		// "minigame|region" from the previous session — restored on the
 		// first evaluation if the player is still standing in that region.
@@ -1965,6 +1969,8 @@ public class IronscapePlugin extends Plugin
 		overlayManager.add(objectTargetOverlay);
 		inventoryItemHintOverlay.setItemIdsSupplier(() -> inventoryHintItemIds);
 		overlayManager.add(inventoryItemHintOverlay);
+		teleportItemHintOverlay.setEntrySupplier(() -> activeTeleportItem);
+		overlayManager.add(teleportItemHintOverlay);
 		shopItemHintOverlay.setItemNamesSupplier(() -> shopHintItemNames);
 		overlayManager.add(shopItemHintOverlay);
 
@@ -2202,6 +2208,7 @@ public class IronscapePlugin extends Plugin
 		overlayManager.remove(targetTileOverlay);
 		overlayManager.remove(objectTargetOverlay);
 		overlayManager.remove(inventoryItemHintOverlay);
+		overlayManager.remove(teleportItemHintOverlay);
 		overlayManager.remove(shopItemHintOverlay);
 		npcTargetNames = java.util.Collections.emptySet();
 		npcTargetIndexes = java.util.Collections.emptySet();
@@ -2270,6 +2277,7 @@ public class IronscapePlugin extends Plugin
 		annotationManager.load();
 		placeManager.load();
 		loadMinigameLandings();
+		teleportItemIndex = com.ironscape.travel.TeleportItems.load(gson);
 		loadGuideState();
 		// Derived per-tick caches that outlive a reload would otherwise
 		// describe the OLD data until the next natural rebuild.
@@ -3144,7 +3152,7 @@ public class IronscapePlugin extends Plugin
 					TeleportSpell named = prescribed
 						? prescribedSpell(current.sub.getPlainText()) : null;
 					FirstLeg leg = prescribed
-						? (named == null ? null : new FirstLeg(null, named, false))
+						? (named == null ? null : new FirstLeg(null, named, false, null))
 						: firstLegTowards(routeTarget, !minigameTeleportOnCooldown());
 					hintReason = prescribed
 						? (named == null
@@ -3182,11 +3190,21 @@ public class IronscapePlugin extends Plugin
 						&& leg != null && leg.spell != null ? leg.spell.component : -1;
 					routeHomeTeleportHint = activeMinigameTarget == null
 						&& leg != null && leg.home;
+					activeTeleportItem = activeMinigameTarget == null
+						&& leg != null ? leg.item : null;
+					if (activeTeleportItem != null)
+					{
+						// Name the OPTION, not just the item: an Ardougne
+						// cloak has five destinations and pointing at the
+						// cloak without saying which one is half an answer.
+						hintReason += " via " + activeTeleportItem.getDisplay();
+					}
 				}
 				else
 				{
 					activeSpellTeleport = -1;
 					routeHomeTeleportHint = false;
+					activeTeleportItem = null;
 				}
 				if (key != null && GROUPING_MINIGAMES.contains(key))
 				{
@@ -7528,6 +7546,85 @@ public class IronscapePlugin extends Plugin
 	 */
 	private final Map<String, WorldPoint> minigameLandings = new HashMap<>();
 
+	/**
+	 * Every teleport an ITEM can provide (diary cloaks, jewellery, tablets),
+	 * from Shortest Path's own maintained table. The hint used to know only
+	 * minigames, spells, the home teleport and the Chronicle, so it offered
+	 * a Varrock teleport for a West Ardougne target while an Ardougne cloak
+	 * that lands next door sat in the bag (owner, 2026-08-11).
+	 */
+	private com.ironscape.travel.TeleportItems teleportItemIndex =
+		com.ironscape.travel.TeleportItems.load(new com.google.gson.Gson());
+
+	/**
+	 * The teleport item the hint is pointing at, or null. Rebuilt per tick
+	 * on the client thread and read by the overlay.
+	 */
+	private volatile com.ironscape.travel.TeleportItems.Entry activeTeleportItem;
+
+	/**
+	 * Game state for the teleport index. Kept as one object rather than
+	 * passing the client in, so the index stays testable without a game.
+	 * Every read here is client-thread only, which is where the hint runs.
+	 */
+	private final com.ironscape.travel.TeleportItems.Availability itemAvailability =
+		new com.ironscape.travel.TeleportItems.Availability()
+		{
+			@Override
+			public boolean carries(int itemId)
+			{
+				return itemTracker.carriedCountOfId(itemId) > 0;
+			}
+
+			@Override
+			public int varbit(int id)
+			{
+				return client.getVarbitValue(id);
+			}
+
+			@Override
+			public int varplayer(int id)
+			{
+				return client.getVarpValue(id);
+			}
+
+			@Override
+			public int skillLevel(String skill)
+			{
+				try
+				{
+					return client.getRealSkillLevel(Skill.valueOf(skill));
+				}
+				catch (IllegalArgumentException e)
+				{
+					// Not a skill name. Fail closed — see TeleportItems.
+					return -1;
+				}
+			}
+
+			@Override
+			public int totalLevel()
+			{
+				return client.getTotalLevel();
+			}
+
+			@Override
+			public int questPoints()
+			{
+				return client.getVarpValue(net.runelite.api.gameval.VarPlayerID.QP);
+			}
+
+			@Override
+			public boolean questFinished(String questName)
+			{
+				Quest quest = questByName(questName);
+				// An unknown quest name fails CLOSED: withholding a hint
+				// costs nothing, offering a teleport the player cannot make
+				// sends them looking for an item they do not have.
+				return quest != null && cachedQuestState(quest) == QuestState.FINISHED;
+			}
+		};
+
 	private void loadMinigameLandings()
 	{
 		try (java.io.InputStream in = IronscapePlugin.class
@@ -7628,12 +7725,17 @@ public class IronscapePlugin extends Plugin
 			58, 2, 0, 0, 2, 0, new WorldPoint(2547, 3113, 0), Quest.WATCHTOWER),
 	};
 
-	/** One chosen first leg toward a far target: a Grouping minigame, a spell, or the free home teleport. */
+	/**
+	 * One chosen first leg toward a far target: a Grouping minigame, a
+	 * spell, the free home teleport, or a teleport ITEM already in the bag
+	 * (diary cloak, jewellery, tablet).
+	 */
 	private static final class FirstLeg
 	{
 		final String minigame;
 		final TeleportSpell spell;
 		final boolean home;
+		final com.ironscape.travel.TeleportItems.Entry item;
 		/**
 		 * The numbers that WON, purely so the log can show its working.
 		 *
@@ -7647,11 +7749,13 @@ public class IronscapePlugin extends Plugin
 		int legDistance;
 		int mustBeat;
 
-		FirstLeg(String minigame, TeleportSpell spell, boolean home)
+		FirstLeg(String minigame, TeleportSpell spell, boolean home,
+			com.ironscape.travel.TeleportItems.Entry item)
 		{
 			this.minigame = minigame;
 			this.spell = spell;
 			this.home = home;
+			this.item = item;
 		}
 	}
 
@@ -7889,11 +7993,28 @@ public class IronscapePlugin extends Plugin
 				bestHome = false;
 			}
 		}
-		if (bestMinigame == null && bestSpell == null && !bestHome)
+		// Teleport ITEMS compete last, so on a tie the cheaper options above
+		// keep it — a charge off a glory is a real cost, a spell you can
+		// already cast is not. They are only ever suggested when already
+		// carried, so this never sends anyone shopping.
+		com.ironscape.travel.TeleportItems.Entry bestItem = null;
+		for (com.ironscape.travel.TeleportItems.Entry entry : teleportItemIndex.available(itemAvailability))
+		{
+			int d = legDistance(entry.getDisplay(), entry.getDestination(), target, walked);
+			if (d < bestDistance)
+			{
+				bestDistance = d;
+				bestItem = entry;
+				bestSpell = null;
+				bestMinigame = null;
+				bestHome = false;
+			}
+		}
+		if (bestMinigame == null && bestSpell == null && !bestHome && bestItem == null)
 		{
 			return null;
 		}
-		FirstLeg won = new FirstLeg(bestMinigame, bestSpell, bestHome);
+		FirstLeg won = new FirstLeg(bestMinigame, bestSpell, bestHome, bestItem);
 		won.legDistance = bestDistance;
 		won.mustBeat = Math.min((int) (playerDistance * 0.6), playerDistance - MIN_TILES_SAVED);
 		return won;

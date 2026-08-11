@@ -1,0 +1,6374 @@
+[
+	{
+		"display": "Ardougne cloak: Kandarin Monastery",
+		"itemIds": [
+			13121,
+			13122,
+			13123,
+			13124,
+			20760
+		],
+		"x": 2607,
+		"y": 3221,
+		"plane": 0,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 4458,
+				"op": "=",
+				"value": 1
+			}
+		]
+	},
+	{
+		"display": "Ardougne cloak: Ardougne Farm",
+		"itemIds": [
+			13122
+		],
+		"x": 2665,
+		"y": 3374,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 4459,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 6069,
+				"op": "<",
+				"value": 3
+			}
+		]
+	},
+	{
+		"display": "Ardougne cloak: Ardougne Farm",
+		"itemIds": [
+			13123
+		],
+		"x": 2665,
+		"y": 3374,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 4460,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 6069,
+				"op": "<",
+				"value": 5
+			}
+		]
+	},
+	{
+		"display": "Ardougne cloak: Ardougne Farm",
+		"itemIds": [
+			13124,
+			20760
+		],
+		"x": 2665,
+		"y": 3374,
+		"plane": 0,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 4461,
+				"op": "=",
+				"value": 1
+			}
+		]
+	},
+	{
+		"display": "Karamja gloves: Gem Mine",
+		"itemIds": [
+			11140,
+			13103
+		],
+		"x": 2840,
+		"y": 9387,
+		"plane": 0,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 3611,
+				"op": "=",
+				"value": 2
+			}
+		]
+	},
+	{
+		"display": "Karamja gloves 4: Slayer Master",
+		"itemIds": [
+			13103
+		],
+		"x": 2869,
+		"y": 2982,
+		"plane": 1,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 4566,
+				"op": "=",
+				"value": 1
+			}
+		]
+	},
+	{
+		"display": "Desert amulet 3: Teleport",
+		"itemIds": [
+			13134,
+			13135
+		],
+		"x": 3420,
+		"y": 2917,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 4485,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4558,
+				"op": "=",
+				"value": 0
+			}
+		]
+	},
+	{
+		"display": "Desert amulet 4: Nardah",
+		"itemIds": [
+			13136
+		],
+		"x": 3426,
+		"y": 2927,
+		"plane": 0,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 4486,
+				"op": "=",
+				"value": 1
+			}
+		]
+	},
+	{
+		"display": "Desert amulet 4: Kalphite cave",
+		"itemIds": [
+			13136
+		],
+		"x": 3322,
+		"y": 3122,
+		"plane": 0,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 4486,
+				"op": "=",
+				"value": 1
+			}
+		]
+	},
+	{
+		"display": "Morytania legs: Slime Pit",
+		"itemIds": [
+			13112
+		],
+		"x": 3683,
+		"y": 9888,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 4487,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4542,
+				"op": "<",
+				"value": 2
+			}
+		]
+	},
+	{
+		"display": "Morytania legs: Slime Pit",
+		"itemIds": [
+			13113,
+			13114
+		],
+		"x": 3683,
+		"y": 9888,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 4488,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4542,
+				"op": "<",
+				"value": 5
+			}
+		]
+	},
+	{
+		"display": "Morytania legs: Slime Pit",
+		"itemIds": [
+			13115
+		],
+		"x": 3683,
+		"y": 9888,
+		"plane": 0,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 4490,
+				"op": "=",
+				"value": 1
+			}
+		]
+	},
+	{
+		"display": "Morytania legs: Burgh de Rott",
+		"itemIds": [
+			13114,
+			13115
+		],
+		"x": 3482,
+		"y": 3230,
+		"plane": 0,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 4489,
+				"op": "=",
+				"value": 1
+			}
+		]
+	},
+	{
+		"display": "Fremennik sea boots: Teleport",
+		"itemIds": [
+			13129
+		],
+		"x": 2643,
+		"y": 3675,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 4491,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 5005,
+				"op": "=",
+				"value": 0
+			}
+		]
+	},
+	{
+		"display": "Fremennik sea boots: Teleport",
+		"itemIds": [
+			13130
+		],
+		"x": 2643,
+		"y": 3675,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 4491,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 5005,
+				"op": "<",
+				"value": 3
+			}
+		]
+	},
+	{
+		"display": "Fremennik sea boots: Teleport",
+		"itemIds": [
+			13131
+		],
+		"x": 2643,
+		"y": 3675,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 4491,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 5005,
+				"op": "<",
+				"value": 5
+			}
+		]
+	},
+	{
+		"display": "Fremennik sea boots: Teleport",
+		"itemIds": [
+			13132
+		],
+		"x": 2643,
+		"y": 3675,
+		"plane": 0,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 4494,
+				"op": "=",
+				"value": 1
+			}
+		]
+	},
+	{
+		"display": "Kandarin headgear 3: Teleport",
+		"itemIds": [
+			13139
+		],
+		"x": 2730,
+		"y": 3420,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 4477,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4561,
+				"op": "=",
+				"value": 0
+			}
+		]
+	},
+	{
+		"display": "Kandarin headgear 4: Teleport",
+		"itemIds": [
+			13140
+		],
+		"x": 2730,
+		"y": 3420,
+		"plane": 0,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 4478,
+				"op": "=",
+				"value": 1
+			}
+		]
+	},
+	{
+		"display": "Wilderness sword 3: Teleport",
+		"itemIds": [
+			13110
+		],
+		"x": 3377,
+		"y": 3890,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 4468,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4541,
+				"op": "=",
+				"value": 0
+			}
+		]
+	},
+	{
+		"display": "Wilderness sword 4: Teleport",
+		"itemIds": [
+			13111
+		],
+		"x": 3377,
+		"y": 3890,
+		"plane": 0,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 4469,
+				"op": "=",
+				"value": 1
+			}
+		]
+	},
+	{
+		"display": "Western banner 3: Teleport",
+		"itemIds": [
+			13143
+		],
+		"x": 2332,
+		"y": 3681,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 4473,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4564,
+				"op": "=",
+				"value": 0
+			}
+		]
+	},
+	{
+		"display": "Western banner 4: Teleport",
+		"itemIds": [
+			13144
+		],
+		"x": 2332,
+		"y": 3681,
+		"plane": 0,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 4474,
+				"op": "=",
+				"value": 1
+			}
+		]
+	},
+	{
+		"display": "Explorer's ring 2: Teleport",
+		"itemIds": [
+			13126
+		],
+		"x": 3052,
+		"y": 3291,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 4496,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4552,
+				"op": "<",
+				"value": 3
+			}
+		]
+	},
+	{
+		"display": "Explorer's ring: Teleport",
+		"itemIds": [
+			13127,
+			13128
+		],
+		"x": 3052,
+		"y": 3291,
+		"plane": 0,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 4497,
+				"op": "=",
+				"value": 1
+			}
+		]
+	},
+	{
+		"display": "Rada's blessing: Kourend Woodland",
+		"itemIds": [
+			22941
+		],
+		"x": 1554,
+		"y": 3461,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 7925,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 7937,
+				"op": "<",
+				"value": 3
+			}
+		]
+	},
+	{
+		"display": "Rada's blessing: Kourend Woodland",
+		"itemIds": [
+			22943
+		],
+		"x": 1554,
+		"y": 3461,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 7926,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 7937,
+				"op": "<",
+				"value": 5
+			}
+		]
+	},
+	{
+		"display": "Rada's blessing: Kourend Woodland",
+		"itemIds": [
+			22945,
+			22947
+		],
+		"x": 1554,
+		"y": 3461,
+		"plane": 0,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 7927,
+				"op": "=",
+				"value": 1
+			}
+		]
+	},
+	{
+		"display": "Rada's blessing: Mount Karuulm",
+		"itemIds": [
+			22945
+		],
+		"x": 1311,
+		"y": 3806,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 7927,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 7938,
+				"op": "<",
+				"value": 3
+			}
+		]
+	},
+	{
+		"display": "Rada's blessing: Mount Karuulm",
+		"itemIds": [
+			22947
+		],
+		"x": 1311,
+		"y": 3806,
+		"plane": 0,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 7928,
+				"op": "=",
+				"value": 1
+			}
+		]
+	},
+	{
+		"display": "Games necklace: Barbarian Outpost",
+		"itemIds": [
+			3853,
+			3855,
+			3857,
+			3859,
+			3861,
+			3863,
+			3865,
+			3867
+		],
+		"x": 2520,
+		"y": 3571,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20
+	},
+	{
+		"display": "Games necklace: Burthorpe",
+		"itemIds": [
+			3853,
+			3855,
+			3857,
+			3859,
+			3861,
+			3863,
+			3865,
+			3867
+		],
+		"x": 2899,
+		"y": 3553,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20
+	},
+	{
+		"display": "Games necklace: Corporeal Beast",
+		"itemIds": [
+			3853,
+			3855,
+			3857,
+			3859,
+			3861,
+			3863,
+			3865,
+			3867
+		],
+		"x": 2965,
+		"y": 4254,
+		"plane": 2,
+		"consumable": true,
+		"maxWilderness": 20
+	},
+	{
+		"display": "Games necklace: Tears of Guthix",
+		"itemIds": [
+			3853,
+			3855,
+			3857,
+			3859,
+			3861,
+			3863,
+			3865,
+			3867
+		],
+		"x": 3245,
+		"y": 9500,
+		"plane": 2,
+		"consumable": true,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 451,
+				"op": ">",
+				"value": 1
+			}
+		]
+	},
+	{
+		"display": "Games necklace: Wintertodt",
+		"itemIds": [
+			3853,
+			3855,
+			3857,
+			3859,
+			3861,
+			3863,
+			3865,
+			3867
+		],
+		"x": 1631,
+		"y": 3940,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 5619,
+				"op": ">",
+				"value": 0
+			}
+		]
+	},
+	{
+		"display": "Ring of dueling: Emir's Arena",
+		"itemIds": [
+			2566,
+			2564,
+			2562,
+			2560,
+			2558,
+			2556,
+			2554,
+			2552
+		],
+		"x": 3315,
+		"y": 3235,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20
+	},
+	{
+		"display": "Ring of dueling: Castle Wars",
+		"itemIds": [
+			2566,
+			2564,
+			2562,
+			2560,
+			2558,
+			2556,
+			2554,
+			2552
+		],
+		"x": 2440,
+		"y": 3090,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20
+	},
+	{
+		"display": "Ring of dueling: Ferox Enclave",
+		"itemIds": [
+			2566,
+			2564,
+			2562,
+			2560,
+			2558,
+			2556,
+			2554,
+			2552
+		],
+		"x": 3151,
+		"y": 3635,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20
+	},
+	{
+		"display": "Ring of dueling: Fortis Colosseum",
+		"itemIds": [
+			2566,
+			2564,
+			2562,
+			2560,
+			2558,
+			2556,
+			2554,
+			2552
+		],
+		"x": 1793,
+		"y": 3107,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 11410,
+				"op": ">",
+				"value": 8
+			}
+		]
+	},
+	{
+		"display": "Combat bracelet: Warriors' Guild",
+		"itemIds": [
+			11118,
+			11120,
+			11122,
+			11124,
+			11972,
+			11974
+		],
+		"x": 2882,
+		"y": 3547,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 30
+	},
+	{
+		"display": "Combat bracelet: Champions' Guild",
+		"itemIds": [
+			11118,
+			11120,
+			11122,
+			11124,
+			11972,
+			11974
+		],
+		"x": 3192,
+		"y": 3368,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 30
+	},
+	{
+		"display": "Combat bracelet: Monastery",
+		"itemIds": [
+			11118,
+			11120,
+			11122,
+			11124,
+			11972,
+			11974
+		],
+		"x": 3052,
+		"y": 3490,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 30
+	},
+	{
+		"display": "Combat bracelet: Ranging Guild",
+		"itemIds": [
+			11118,
+			11120,
+			11122,
+			11124,
+			11972,
+			11974
+		],
+		"x": 2653,
+		"y": 3439,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 30
+	},
+	{
+		"display": "Skills necklace: Fishing Guild",
+		"itemIds": [
+			11105,
+			11107,
+			11109,
+			11111,
+			11968,
+			11970
+		],
+		"x": 2611,
+		"y": 3390,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 30
+	},
+	{
+		"display": "Skills necklace: Mining Guild",
+		"itemIds": [
+			11105,
+			11107,
+			11109,
+			11111,
+			11968,
+			11970
+		],
+		"x": 3049,
+		"y": 9763,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 30
+	},
+	{
+		"display": "Skills necklace: Crafting Guild",
+		"itemIds": [
+			11105,
+			11107,
+			11109,
+			11111,
+			11968,
+			11970
+		],
+		"x": 2933,
+		"y": 3295,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 30
+	},
+	{
+		"display": "Skills necklace: Cooking Guild",
+		"itemIds": [
+			11105,
+			11107,
+			11109,
+			11111,
+			11968,
+			11970
+		],
+		"x": 3144,
+		"y": 3438,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 30
+	},
+	{
+		"display": "Skills necklace: Woodcutting Guild",
+		"itemIds": [
+			11105,
+			11107,
+			11109,
+			11111,
+			11968,
+			11970
+		],
+		"x": 1662,
+		"y": 3505,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 30
+	},
+	{
+		"display": "Skills necklace: Farming Guild",
+		"itemIds": [
+			11105,
+			11107,
+			11109,
+			11111,
+			11968,
+			11970
+		],
+		"x": 1248,
+		"y": 3719,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 30
+	},
+	{
+		"display": "Skills necklace: Farming Guild",
+		"itemIds": [
+			11105,
+			11107,
+			11109,
+			11111,
+			11968,
+			11970
+		],
+		"x": 1248,
+		"y": 3725,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 30,
+		"skills": [
+			{
+				"level": 45,
+				"skill": "FARMING"
+			}
+		]
+	},
+	{
+		"display": "Amulet of glory: Edgeville",
+		"itemIds": [
+			1706,
+			1708,
+			1710,
+			1712,
+			11976,
+			11978,
+			10360,
+			10358,
+			10356,
+			10354,
+			11966,
+			11964
+		],
+		"x": 3087,
+		"y": 3496,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 30
+	},
+	{
+		"display": "Amulet of glory: Karamja",
+		"itemIds": [
+			1706,
+			1708,
+			1710,
+			1712,
+			11976,
+			11978,
+			10360,
+			10358,
+			10356,
+			10354,
+			11966,
+			11964
+		],
+		"x": 2918,
+		"y": 3176,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 30
+	},
+	{
+		"display": "Amulet of glory: Draynor Village",
+		"itemIds": [
+			1706,
+			1708,
+			1710,
+			1712,
+			11976,
+			11978,
+			10360,
+			10358,
+			10356,
+			10354,
+			11966,
+			11964
+		],
+		"x": 3105,
+		"y": 3251,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 30
+	},
+	{
+		"display": "Amulet of glory: Al Kharid",
+		"itemIds": [
+			1706,
+			1708,
+			1710,
+			1712,
+			11976,
+			11978,
+			10360,
+			10358,
+			10356,
+			10354,
+			11966,
+			11964
+		],
+		"x": 3293,
+		"y": 3163,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 30
+	},
+	{
+		"display": "Amulet of glory: Edgeville",
+		"itemIds": [
+			19707
+		],
+		"x": 3087,
+		"y": 3496,
+		"plane": 0,
+		"maxWilderness": 30
+	},
+	{
+		"display": "Amulet of glory: Karamja",
+		"itemIds": [
+			19707
+		],
+		"x": 2918,
+		"y": 3176,
+		"plane": 0,
+		"maxWilderness": 30
+	},
+	{
+		"display": "Amulet of glory: Draynor Village",
+		"itemIds": [
+			19707
+		],
+		"x": 3105,
+		"y": 3251,
+		"plane": 0,
+		"maxWilderness": 30
+	},
+	{
+		"display": "Amulet of glory: Al Kharid",
+		"itemIds": [
+			19707
+		],
+		"x": 3293,
+		"y": 3163,
+		"plane": 0,
+		"maxWilderness": 30
+	},
+	{
+		"display": "Ring of wealth: Miscellania",
+		"itemIds": [
+			11988,
+			11986,
+			11984,
+			11982,
+			11980,
+			20790,
+			20789,
+			20788,
+			20787,
+			20786
+		],
+		"x": 2534,
+		"y": 3862,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 30,
+		"varplayers": [
+			{
+				"id": 359,
+				"op": "=",
+				"value": 100
+			}
+		],
+		"quests": [
+			"Throne of Miscellania"
+		]
+	},
+	{
+		"display": "Ring of wealth: Grand Exchange",
+		"itemIds": [
+			11988,
+			11986,
+			11984,
+			11982,
+			11980,
+			20790,
+			20789,
+			20788,
+			20787,
+			20786
+		],
+		"x": 3163,
+		"y": 3478,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 30
+	},
+	{
+		"display": "Ring of wealth: Falador Park",
+		"itemIds": [
+			11988,
+			11986,
+			11984,
+			11982,
+			11980,
+			20790,
+			20789,
+			20788,
+			20787,
+			20786
+		],
+		"x": 2995,
+		"y": 3375,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 30
+	},
+	{
+		"display": "Ring of wealth: Dondakan",
+		"itemIds": [
+			11988,
+			11986,
+			11984,
+			11982,
+			11980,
+			20790,
+			20789,
+			20788,
+			20787,
+			20786
+		],
+		"x": 2824,
+		"y": 10168,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 30,
+		"varbits": [
+			{
+				"id": 299,
+				"op": "=",
+				"value": 10
+			}
+		],
+		"quests": [
+			"Between a Rock..."
+		]
+	},
+	{
+		"display": "Slayer ring: Stronghold",
+		"itemIds": [
+			11866,
+			11867,
+			11868,
+			11869,
+			11870,
+			11871,
+			11872,
+			11873
+		],
+		"x": 2431,
+		"y": 3422,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 30
+	},
+	{
+		"display": "Slayer ring: Slayer Tower",
+		"itemIds": [
+			11866,
+			11867,
+			11868,
+			11869,
+			11870,
+			11871,
+			11872,
+			11873
+		],
+		"x": 3421,
+		"y": 3537,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 30,
+		"quests": [
+			"Priest in Peril"
+		]
+	},
+	{
+		"display": "Slayer ring: Fremennik",
+		"itemIds": [
+			11866,
+			11867,
+			11868,
+			11869,
+			11870,
+			11871,
+			11872,
+			11873
+		],
+		"x": 2802,
+		"y": 9999,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 30
+	},
+	{
+		"display": "Slayer ring: Tarn's Lair",
+		"itemIds": [
+			11866,
+			11867,
+			11868,
+			11869,
+			11870,
+			11871,
+			11872,
+			11873
+		],
+		"x": 3185,
+		"y": 4601,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 30,
+		"quests": [
+			"Haunted Mine"
+		]
+	},
+	{
+		"display": "Slayer ring: Dark Beasts",
+		"itemIds": [
+			11866,
+			11867,
+			11868,
+			11869,
+			11870,
+			11871,
+			11872,
+			11873
+		],
+		"x": 2028,
+		"y": 4636,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 30,
+		"quests": [
+			"Mourning's End Part II"
+		]
+	},
+	{
+		"display": "Slayer ring: Stronghold",
+		"itemIds": [
+			21268
+		],
+		"x": 2431,
+		"y": 3422,
+		"plane": 0,
+		"maxWilderness": 30
+	},
+	{
+		"display": "Slayer ring: Slayer Tower",
+		"itemIds": [
+			21268
+		],
+		"x": 3421,
+		"y": 3537,
+		"plane": 0,
+		"maxWilderness": 30,
+		"quests": [
+			"Priest in Peril"
+		]
+	},
+	{
+		"display": "Slayer ring: Fremennik",
+		"itemIds": [
+			21268
+		],
+		"x": 2802,
+		"y": 9999,
+		"plane": 0,
+		"maxWilderness": 30
+	},
+	{
+		"display": "Slayer ring: Tarn's Lair",
+		"itemIds": [
+			21268
+		],
+		"x": 3185,
+		"y": 4601,
+		"plane": 0,
+		"maxWilderness": 30,
+		"quests": [
+			"Haunted Mine"
+		]
+	},
+	{
+		"display": "Slayer ring: Dark Beasts",
+		"itemIds": [
+			21268
+		],
+		"x": 2028,
+		"y": 4636,
+		"plane": 0,
+		"maxWilderness": 30,
+		"quests": [
+			"Mourning's End Part II"
+		]
+	},
+	{
+		"display": "Digsite pendant: Digsite",
+		"itemIds": [
+			11190,
+			11191,
+			11192,
+			11193,
+			11194
+		],
+		"x": 3341,
+		"y": 3445,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20
+	},
+	{
+		"display": "Digsite pendant: Fossil Island",
+		"itemIds": [
+			11190,
+			11191,
+			11192,
+			11193,
+			11194
+		],
+		"x": 3763,
+		"y": 3869,
+		"plane": 1,
+		"consumable": true,
+		"maxWilderness": 20,
+		"quests": [
+			"Bone Voyage"
+		]
+	},
+	{
+		"display": "Digsite pendant: Lithkren",
+		"itemIds": [
+			11190,
+			11191,
+			11192,
+			11193,
+			11194
+		],
+		"x": 3549,
+		"y": 10456,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"quests": [
+			"Dragon Slayer II"
+		]
+	},
+	{
+		"display": "Necklace of passage: Wizards' Tower",
+		"itemIds": [
+			21146,
+			21149,
+			21151,
+			21153,
+			21155
+		],
+		"x": 3114,
+		"y": 3179,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20
+	},
+	{
+		"display": "Necklace of passage: The Outpost",
+		"itemIds": [
+			21146,
+			21149,
+			21151,
+			21153,
+			21155
+		],
+		"x": 2430,
+		"y": 3349,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20
+	},
+	{
+		"display": "Necklace of passage: Eagle's Eyrie",
+		"itemIds": [
+			21146,
+			21149,
+			21151,
+			21153,
+			21155
+		],
+		"x": 3405,
+		"y": 3158,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20
+	},
+	{
+		"display": "Burning amulet: Chaos Temple",
+		"itemIds": [
+			21166,
+			21169,
+			21171,
+			21173,
+			21175
+		],
+		"x": 3234,
+		"y": 3634,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20
+	},
+	{
+		"display": "Burning amulet: Bandit Camp",
+		"itemIds": [
+			21166,
+			21169,
+			21171,
+			21173,
+			21175
+		],
+		"x": 3038,
+		"y": 3651,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20
+	},
+	{
+		"display": "Burning amulet: Lava Maze",
+		"itemIds": [
+			21166,
+			21169,
+			21171,
+			21173,
+			21175
+		],
+		"x": 3028,
+		"y": 3842,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20
+	},
+	{
+		"display": "Teleport to House tablet",
+		"itemIds": [
+			8013
+		],
+		"x": 1923,
+		"y": 5709,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 4744,
+				"op": "=",
+				"value": 0
+			}
+		]
+	},
+	{
+		"display": "Teleport to House tablet (Inside)",
+		"itemIds": [
+			8013
+		],
+		"x": 1923,
+		"y": 5709,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 4744,
+				"op": "=",
+				"value": 1
+			}
+		]
+	},
+	{
+		"display": "Teleport to House tablet",
+		"itemIds": [
+			8013
+		],
+		"x": 2953,
+		"y": 3224,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 2187,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4744,
+				"op": "=",
+				"value": 1
+			}
+		]
+	},
+	{
+		"display": "Teleport to House tablet (Outside)",
+		"itemIds": [
+			8013
+		],
+		"x": 2953,
+		"y": 3224,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 2187,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4744,
+				"op": "=",
+				"value": 0
+			}
+		]
+	},
+	{
+		"display": "Teleport to House tablet",
+		"itemIds": [
+			8013
+		],
+		"x": 2893,
+		"y": 3465,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 2187,
+				"op": "=",
+				"value": 2
+			},
+			{
+				"id": 4744,
+				"op": "=",
+				"value": 1
+			}
+		]
+	},
+	{
+		"display": "Teleport to House tablet (Outside)",
+		"itemIds": [
+			8013
+		],
+		"x": 2893,
+		"y": 3465,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 2187,
+				"op": "=",
+				"value": 2
+			},
+			{
+				"id": 4744,
+				"op": "=",
+				"value": 0
+			}
+		]
+	},
+	{
+		"display": "Teleport to House tablet",
+		"itemIds": [
+			8013
+		],
+		"x": 3340,
+		"y": 3003,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 2187,
+				"op": "=",
+				"value": 3
+			},
+			{
+				"id": 4744,
+				"op": "=",
+				"value": 1
+			}
+		]
+	},
+	{
+		"display": "Teleport to House tablet (Outside)",
+		"itemIds": [
+			8013
+		],
+		"x": 3340,
+		"y": 3003,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 2187,
+				"op": "=",
+				"value": 3
+			},
+			{
+				"id": 4744,
+				"op": "=",
+				"value": 0
+			}
+		]
+	},
+	{
+		"display": "Teleport to House tablet",
+		"itemIds": [
+			8013
+		],
+		"x": 2670,
+		"y": 3631,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 2187,
+				"op": "=",
+				"value": 4
+			},
+			{
+				"id": 4744,
+				"op": "=",
+				"value": 1
+			}
+		]
+	},
+	{
+		"display": "Teleport to House tablet (Outside)",
+		"itemIds": [
+			8013
+		],
+		"x": 2670,
+		"y": 3631,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 2187,
+				"op": "=",
+				"value": 4
+			},
+			{
+				"id": 4744,
+				"op": "=",
+				"value": 0
+			}
+		]
+	},
+	{
+		"display": "Teleport to House tablet",
+		"itemIds": [
+			8013
+		],
+		"x": 2757,
+		"y": 3178,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 2187,
+				"op": "=",
+				"value": 5
+			},
+			{
+				"id": 4744,
+				"op": "=",
+				"value": 1
+			}
+		]
+	},
+	{
+		"display": "Teleport to House tablet (Outside)",
+		"itemIds": [
+			8013
+		],
+		"x": 2757,
+		"y": 3178,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 2187,
+				"op": "=",
+				"value": 5
+			},
+			{
+				"id": 4744,
+				"op": "=",
+				"value": 0
+			}
+		]
+	},
+	{
+		"display": "Teleport to House tablet",
+		"itemIds": [
+			8013
+		],
+		"x": 2544,
+		"y": 3096,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 2187,
+				"op": "=",
+				"value": 6
+			},
+			{
+				"id": 4744,
+				"op": "=",
+				"value": 1
+			}
+		]
+	},
+	{
+		"display": "Teleport to House tablet (Outside)",
+		"itemIds": [
+			8013
+		],
+		"x": 2544,
+		"y": 3096,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 2187,
+				"op": "=",
+				"value": 6
+			},
+			{
+				"id": 4744,
+				"op": "=",
+				"value": 0
+			}
+		]
+	},
+	{
+		"display": "Teleport to House tablet",
+		"itemIds": [
+			8013
+		],
+		"x": 3239,
+		"y": 6076,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 2187,
+				"op": "=",
+				"value": 7
+			},
+			{
+				"id": 4744,
+				"op": "=",
+				"value": 1
+			}
+		]
+	},
+	{
+		"display": "Teleport to House tablet (Outside)",
+		"itemIds": [
+			8013
+		],
+		"x": 3239,
+		"y": 6076,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 2187,
+				"op": "=",
+				"value": 7
+			},
+			{
+				"id": 4744,
+				"op": "=",
+				"value": 0
+			}
+		]
+	},
+	{
+		"display": "Teleport to House tablet",
+		"itemIds": [
+			8013
+		],
+		"x": 1743,
+		"y": 3517,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 2187,
+				"op": "=",
+				"value": 8
+			},
+			{
+				"id": 4744,
+				"op": "=",
+				"value": 1
+			}
+		]
+	},
+	{
+		"display": "Teleport to House tablet (Outside)",
+		"itemIds": [
+			8013
+		],
+		"x": 1743,
+		"y": 3517,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 2187,
+				"op": "=",
+				"value": 8
+			},
+			{
+				"id": 4744,
+				"op": "=",
+				"value": 0
+			}
+		]
+	},
+	{
+		"display": "Teleport to House tablet",
+		"itemIds": [
+			8013
+		],
+		"x": 1422,
+		"y": 2963,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 2187,
+				"op": "=",
+				"value": 9
+			},
+			{
+				"id": 4744,
+				"op": "=",
+				"value": 1
+			}
+		]
+	},
+	{
+		"display": "Teleport to House tablet (Outside)",
+		"itemIds": [
+			8013
+		],
+		"x": 1422,
+		"y": 2963,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 2187,
+				"op": "=",
+				"value": 9
+			},
+			{
+				"id": 4744,
+				"op": "=",
+				"value": 0
+			}
+		]
+	},
+	{
+		"display": "Varrock tablet",
+		"itemIds": [
+			8007
+		],
+		"x": 3213,
+		"y": 3424,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20
+	},
+	{
+		"display": "Varrock tablet: GE",
+		"itemIds": [
+			8007
+		],
+		"x": 3165,
+		"y": 3479,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 4480,
+				"op": "=",
+				"value": 1
+			}
+		]
+	},
+	{
+		"display": "Falador tablet",
+		"itemIds": [
+			8009
+		],
+		"x": 2964,
+		"y": 3378,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20
+	},
+	{
+		"display": "Lumbridge tablet",
+		"itemIds": [
+			8008
+		],
+		"x": 3221,
+		"y": 3218,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20
+	},
+	{
+		"display": "Camelot tablet",
+		"itemIds": [
+			8010
+		],
+		"x": 2757,
+		"y": 3479,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20
+	},
+	{
+		"display": "Ardougne tablet",
+		"itemIds": [
+			8011
+		],
+		"x": 2662,
+		"y": 3305,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"quests": [
+			"Plague City"
+		]
+	},
+	{
+		"display": "Watchtower tablet",
+		"itemIds": [
+			8012
+		],
+		"x": 2546,
+		"y": 3112,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"quests": [
+			"Watchtower"
+		]
+	},
+	{
+		"display": "Watchtower tablet: Yanille",
+		"itemIds": [
+			8012
+		],
+		"x": 2584,
+		"y": 3097,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 4460,
+				"op": "=",
+				"value": 1
+			}
+		],
+		"quests": [
+			"Watchtower"
+		]
+	},
+	{
+		"display": "Rimmington tablet",
+		"itemIds": [
+			11741
+		],
+		"x": 2953,
+		"y": 3224,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20
+	},
+	{
+		"display": "Taverley tablet",
+		"itemIds": [
+			11742
+		],
+		"x": 2893,
+		"y": 3465,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20
+	},
+	{
+		"display": "Pollnivneach tablet",
+		"itemIds": [
+			11743
+		],
+		"x": 3340,
+		"y": 3004,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20
+	},
+	{
+		"display": "Rellekka tablet",
+		"itemIds": [
+			11744
+		],
+		"x": 2670,
+		"y": 3631,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20
+	},
+	{
+		"display": "Brimhaven tablet",
+		"itemIds": [
+			11745
+		],
+		"x": 2757,
+		"y": 3179,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20
+	},
+	{
+		"display": "Yanille tablet",
+		"itemIds": [
+			11746
+		],
+		"x": 2544,
+		"y": 3096,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20
+	},
+	{
+		"display": "Trollheim tablet",
+		"itemIds": [
+			11747
+		],
+		"x": 2890,
+		"y": 3679,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20
+	},
+	{
+		"display": "Hosidius tablet",
+		"itemIds": [
+			19651
+		],
+		"x": 1743,
+		"y": 3517,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20
+	},
+	{
+		"display": "Prifddinas tablet",
+		"itemIds": [
+			23771
+		],
+		"x": 3239,
+		"y": 6077,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20
+	},
+	{
+		"display": "Paddewwa tablet",
+		"itemIds": [
+			12781
+		],
+		"x": 3097,
+		"y": 9881,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"quests": [
+			"Desert Treasure I"
+		]
+	},
+	{
+		"display": "Senntisten tablet",
+		"itemIds": [
+			12782
+		],
+		"x": 3320,
+		"y": 3337,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"quests": [
+			"Desert Treasure I"
+		]
+	},
+	{
+		"display": "Kharyrll tablet",
+		"itemIds": [
+			12779
+		],
+		"x": 3494,
+		"y": 3473,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"quests": [
+			"Desert Treasure I"
+		]
+	},
+	{
+		"display": "Lassar tablet",
+		"itemIds": [
+			12780
+		],
+		"x": 3004,
+		"y": 3470,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"quests": [
+			"Desert Treasure I"
+		]
+	},
+	{
+		"display": "Dareeyak tablet",
+		"itemIds": [
+			12777
+		],
+		"x": 2968,
+		"y": 3696,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"quests": [
+			"Desert Treasure I"
+		]
+	},
+	{
+		"display": "Carrallanger tablet",
+		"itemIds": [
+			12776
+		],
+		"x": 3158,
+		"y": 3666,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"quests": [
+			"Desert Treasure I"
+		]
+	},
+	{
+		"display": "Annakarl tablet",
+		"itemIds": [
+			12775
+		],
+		"x": 3288,
+		"y": 3888,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"quests": [
+			"Desert Treasure I"
+		]
+	},
+	{
+		"display": "Ghorrock tablet",
+		"itemIds": [
+			12778
+		],
+		"x": 2976,
+		"y": 3875,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"quests": [
+			"Desert Treasure I"
+		]
+	},
+	{
+		"display": "Moonclan tablet",
+		"itemIds": [
+			24949
+		],
+		"x": 2113,
+		"y": 3915,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"quests": [
+			"Lunar Diplomacy"
+		]
+	},
+	{
+		"display": "Ourania tablet",
+		"itemIds": [
+			24951
+		],
+		"x": 2468,
+		"y": 3246,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"quests": [
+			"Lunar Diplomacy"
+		]
+	},
+	{
+		"display": "Waterbirth tablet",
+		"itemIds": [
+			24953
+		],
+		"x": 2546,
+		"y": 3755,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20
+	},
+	{
+		"display": "Barbarian tablet",
+		"itemIds": [
+			24955
+		],
+		"x": 2543,
+		"y": 3569,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20
+	},
+	{
+		"display": "Khazard tablet",
+		"itemIds": [
+			24957
+		],
+		"x": 2636,
+		"y": 3167,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20
+	},
+	{
+		"display": "Fishing guild tablet",
+		"itemIds": [
+			24959
+		],
+		"x": 2613,
+		"y": 3391,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20
+	},
+	{
+		"display": "Catherby tablet",
+		"itemIds": [
+			24961
+		],
+		"x": 2801,
+		"y": 3449,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20
+	},
+	{
+		"display": "Ice plateau tablet",
+		"itemIds": [
+			24963
+		],
+		"x": 2975,
+		"y": 3938,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20
+	},
+	{
+		"display": "Arceuus Library tablet",
+		"itemIds": [
+			19613
+		],
+		"x": 1632,
+		"y": 3837,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20
+	},
+	{
+		"display": "Draynor Manor tablet",
+		"itemIds": [
+			19615
+		],
+		"x": 3109,
+		"y": 3351,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20
+	},
+	{
+		"display": "Battlefront tablet",
+		"itemIds": [
+			22949
+		],
+		"x": 1347,
+		"y": 3740,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20
+	},
+	{
+		"display": "Mind Altar tablet",
+		"itemIds": [
+			19617
+		],
+		"x": 2979,
+		"y": 3510,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20
+	},
+	{
+		"display": "Salve Graveyard tablet",
+		"itemIds": [
+			19619
+		],
+		"x": 3433,
+		"y": 3461,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"quests": [
+			"Priest in Peril"
+		]
+	},
+	{
+		"display": "Fenkenstrain's Castle tablet",
+		"itemIds": [
+			19621
+		],
+		"x": 3548,
+		"y": 3529,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"quests": [
+			"Priest in Peril"
+		]
+	},
+	{
+		"display": "West Ardougne tablet",
+		"itemIds": [
+			19623
+		],
+		"x": 2500,
+		"y": 3290,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"quests": [
+			"Biohazard"
+		]
+	},
+	{
+		"display": "Harmony Island tablet",
+		"itemIds": [
+			19625
+		],
+		"x": 3797,
+		"y": 2866,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"quests": [
+			"The Great Brain Robbery"
+		]
+	},
+	{
+		"display": "Cemetery tablet",
+		"itemIds": [
+			19627
+		],
+		"x": 2981,
+		"y": 3764,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20
+	},
+	{
+		"display": "Barrows tablet",
+		"itemIds": [
+			19629
+		],
+		"x": 3564,
+		"y": 3315,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"quests": [
+			"Priest in Peril"
+		]
+	},
+	{
+		"display": "Ape Atoll tablet",
+		"itemIds": [
+			19631
+		],
+		"x": 2771,
+		"y": 9102,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"quests": [
+			"Monkey Madness I"
+		]
+	},
+	{
+		"display": "Volcanic Mine tablet",
+		"itemIds": [
+			21541
+		],
+		"x": 3811,
+		"y": 3813,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20
+	},
+	{
+		"display": "Wilderness Crabs tablet",
+		"itemIds": [
+			24251
+		],
+		"x": 3352,
+		"y": 3782,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20
+	},
+	{
+		"display": "Nardah teleport",
+		"itemIds": [
+			12402
+		],
+		"x": 3419,
+		"y": 2917,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20
+	},
+	{
+		"display": "Master scroll book: Nardah teleport",
+		"itemIds": [
+			21389
+		],
+		"x": 3419,
+		"y": 2917,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 5672,
+				"op": ">",
+				"value": 0
+			}
+		]
+	},
+	{
+		"display": "Digsite teleport",
+		"itemIds": [
+			12403
+		],
+		"x": 3325,
+		"y": 3412,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20
+	},
+	{
+		"display": "Master scroll book: Digsite teleport",
+		"itemIds": [
+			21389
+		],
+		"x": 3325,
+		"y": 3412,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 5673,
+				"op": ">",
+				"value": 0
+			}
+		]
+	},
+	{
+		"display": "Feldip hills teleport",
+		"itemIds": [
+			12404
+		],
+		"x": 2541,
+		"y": 2925,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20
+	},
+	{
+		"display": "Master scroll book: Feldip hills teleport",
+		"itemIds": [
+			21389
+		],
+		"x": 2541,
+		"y": 2925,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 5674,
+				"op": ">",
+				"value": 0
+			}
+		]
+	},
+	{
+		"display": "Lunar isle teleport",
+		"itemIds": [
+			12405
+		],
+		"x": 2094,
+		"y": 3913,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"quests": [
+			"Lunar Diplomacy"
+		]
+	},
+	{
+		"display": "Master scroll book: Lunar isle teleport",
+		"itemIds": [
+			21389
+		],
+		"x": 2094,
+		"y": 3913,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 5675,
+				"op": ">",
+				"value": 0
+			}
+		],
+		"quests": [
+			"Lunar Diplomacy"
+		]
+	},
+	{
+		"display": "Mort'ton teleport",
+		"itemIds": [
+			12406
+		],
+		"x": 3488,
+		"y": 3288,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"quests": [
+			"Priest in Peril"
+		]
+	},
+	{
+		"display": "Master scroll book: Mort'ton teleport",
+		"itemIds": [
+			21389
+		],
+		"x": 3488,
+		"y": 3288,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 5676,
+				"op": ">",
+				"value": 0
+			}
+		],
+		"quests": [
+			"Priest in Peril"
+		]
+	},
+	{
+		"display": "Pest control teleport",
+		"itemIds": [
+			12407
+		],
+		"x": 2658,
+		"y": 2659,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20
+	},
+	{
+		"display": "Master scroll book: Pest control teleport",
+		"itemIds": [
+			21389
+		],
+		"x": 2658,
+		"y": 2659,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 5677,
+				"op": ">",
+				"value": 0
+			}
+		]
+	},
+	{
+		"display": "Piscatoris teleport",
+		"itemIds": [
+			12408
+		],
+		"x": 2339,
+		"y": 3649,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20
+	},
+	{
+		"display": "Master scroll book: Piscatoris teleport",
+		"itemIds": [
+			21389
+		],
+		"x": 2339,
+		"y": 3649,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 5678,
+				"op": ">",
+				"value": 0
+			}
+		]
+	},
+	{
+		"display": "Tai bwo wannai teleport",
+		"itemIds": [
+			12409
+		],
+		"x": 2789,
+		"y": 3066,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"quests": [
+			"Tai Bwo Wannai Trio"
+		]
+	},
+	{
+		"display": "Master scroll book: Tai bwo wannai teleport",
+		"itemIds": [
+			21389
+		],
+		"x": 2789,
+		"y": 3066,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 5679,
+				"op": ">",
+				"value": 0
+			}
+		],
+		"quests": [
+			"Tai Bwo Wannai Trio"
+		]
+	},
+	{
+		"display": "Iorwerth camp teleport",
+		"itemIds": [
+			12410
+		],
+		"x": 2194,
+		"y": 3258,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"quests": [
+			"Regicide"
+		]
+	},
+	{
+		"display": "Master scroll book: Iorwerth camp teleport",
+		"itemIds": [
+			21389
+		],
+		"x": 2194,
+		"y": 3258,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 5680,
+				"op": ">",
+				"value": 0
+			}
+		],
+		"quests": [
+			"Regicide"
+		]
+	},
+	{
+		"display": "Mos le'harmless teleport",
+		"itemIds": [
+			12411
+		],
+		"x": 3701,
+		"y": 2996,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"quests": [
+			"Cabin Fever"
+		]
+	},
+	{
+		"display": "Master scroll book: Mos le'harmless teleport",
+		"itemIds": [
+			21389
+		],
+		"x": 3701,
+		"y": 2996,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 5681,
+				"op": ">",
+				"value": 0
+			}
+		],
+		"quests": [
+			"Cabin Fever"
+		]
+	},
+	{
+		"display": "Lumberyard teleport",
+		"itemIds": [
+			12642
+		],
+		"x": 3302,
+		"y": 3487,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20
+	},
+	{
+		"display": "Master scroll book: Lumberyard teleport",
+		"itemIds": [
+			21389
+		],
+		"x": 3302,
+		"y": 3487,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 5682,
+				"op": ">",
+				"value": 0
+			}
+		]
+	},
+	{
+		"display": "Zul-andra teleport",
+		"itemIds": [
+			12938
+		],
+		"x": 2196,
+		"y": 3056,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"quests": [
+			"Regicide"
+		]
+	},
+	{
+		"display": "Master scroll book: Zul-andra teleport",
+		"itemIds": [
+			21389
+		],
+		"x": 2196,
+		"y": 3056,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 5683,
+				"op": ">",
+				"value": 0
+			}
+		],
+		"quests": [
+			"Regicide"
+		]
+	},
+	{
+		"display": "Key master teleport",
+		"itemIds": [
+			13249
+		],
+		"x": 1310,
+		"y": 1250,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20
+	},
+	{
+		"display": "Master scroll book: Key master teleport",
+		"itemIds": [
+			21389
+		],
+		"x": 1310,
+		"y": 1250,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 5684,
+				"op": ">",
+				"value": 0
+			}
+		]
+	},
+	{
+		"display": "Revenant cave teleport",
+		"itemIds": [
+			21802
+		],
+		"x": 3128,
+		"y": 3832,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20
+	},
+	{
+		"display": "Master scroll book: Revenant cave teleport",
+		"itemIds": [
+			21389
+		],
+		"x": 3128,
+		"y": 3832,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 6056,
+				"op": ">",
+				"value": 0
+			}
+		]
+	},
+	{
+		"display": "Watson teleport",
+		"itemIds": [
+			23387
+		],
+		"x": 1645,
+		"y": 3580,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20
+	},
+	{
+		"display": "Master scroll book: Watson teleport",
+		"itemIds": [
+			21389
+		],
+		"x": 1645,
+		"y": 3580,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 8253,
+				"op": ">",
+				"value": 0
+			}
+		]
+	},
+	{
+		"display": "Crafting cape: Teleport",
+		"itemIds": [
+			9780,
+			9781
+		],
+		"x": 2931,
+		"y": 3286,
+		"plane": 0,
+		"maxWilderness": 20,
+		"skills": [
+			{
+				"level": 99,
+				"skill": "CRAFTING"
+			}
+		]
+	},
+	{
+		"display": "Construction cape: Tele to POH",
+		"itemIds": [
+			9789,
+			9790
+		],
+		"x": 1923,
+		"y": 5709,
+		"plane": 0,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 4744,
+				"op": "=",
+				"value": 0
+			}
+		]
+	},
+	{
+		"display": "Construction cape: Home",
+		"itemIds": [
+			9789,
+			9790
+		],
+		"x": 2952,
+		"y": 3224,
+		"plane": 0,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 2187,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4744,
+				"op": "=",
+				"value": 1
+			}
+		]
+	},
+	{
+		"display": "Construction cape: Home",
+		"itemIds": [
+			9789,
+			9790
+		],
+		"x": 2892,
+		"y": 3465,
+		"plane": 0,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 2187,
+				"op": "=",
+				"value": 2
+			},
+			{
+				"id": 4744,
+				"op": "=",
+				"value": 1
+			}
+		]
+	},
+	{
+		"display": "Construction cape: Home",
+		"itemIds": [
+			9789,
+			9790
+		],
+		"x": 3339,
+		"y": 3001,
+		"plane": 0,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 2187,
+				"op": "=",
+				"value": 3
+			},
+			{
+				"id": 4744,
+				"op": "=",
+				"value": 1
+			}
+		]
+	},
+	{
+		"display": "Construction cape: Home",
+		"itemIds": [
+			9789,
+			9790
+		],
+		"x": 2669,
+		"y": 3629,
+		"plane": 0,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 2187,
+				"op": "=",
+				"value": 4
+			},
+			{
+				"id": 4744,
+				"op": "=",
+				"value": 1
+			}
+		]
+	},
+	{
+		"display": "Construction cape: Home",
+		"itemIds": [
+			9789,
+			9790
+		],
+		"x": 2756,
+		"y": 3176,
+		"plane": 0,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 2187,
+				"op": "=",
+				"value": 5
+			},
+			{
+				"id": 4744,
+				"op": "=",
+				"value": 1
+			}
+		]
+	},
+	{
+		"display": "Construction cape: Home",
+		"itemIds": [
+			9789,
+			9790
+		],
+		"x": 2545,
+		"y": 3097,
+		"plane": 0,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 2187,
+				"op": "=",
+				"value": 6
+			},
+			{
+				"id": 4744,
+				"op": "=",
+				"value": 1
+			}
+		]
+	},
+	{
+		"display": "Construction cape: Home",
+		"itemIds": [
+			9789,
+			9790
+		],
+		"x": 3239,
+		"y": 6077,
+		"plane": 0,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 2187,
+				"op": "=",
+				"value": 7
+			},
+			{
+				"id": 4744,
+				"op": "=",
+				"value": 1
+			}
+		]
+	},
+	{
+		"display": "Construction cape: Home",
+		"itemIds": [
+			9789,
+			9790
+		],
+		"x": 1740,
+		"y": 3517,
+		"plane": 0,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 2187,
+				"op": "=",
+				"value": 8
+			},
+			{
+				"id": 4744,
+				"op": "=",
+				"value": 1
+			}
+		]
+	},
+	{
+		"display": "Construction cape: Home",
+		"itemIds": [
+			9789,
+			9790
+		],
+		"x": 1422,
+		"y": 2963,
+		"plane": 0,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 2187,
+				"op": "=",
+				"value": 9
+			},
+			{
+				"id": 4744,
+				"op": "=",
+				"value": 1
+			}
+		]
+	},
+	{
+		"display": "Construction cape: Rimmington",
+		"itemIds": [
+			9789,
+			9790
+		],
+		"x": 2952,
+		"y": 3224,
+		"plane": 0,
+		"maxWilderness": 20,
+		"skills": [
+			{
+				"level": 99,
+				"skill": "CONSTRUCTION"
+			}
+		]
+	},
+	{
+		"display": "Construction cape: Taverley",
+		"itemIds": [
+			9789,
+			9790
+		],
+		"x": 2892,
+		"y": 3465,
+		"plane": 0,
+		"maxWilderness": 20,
+		"skills": [
+			{
+				"level": 99,
+				"skill": "CONSTRUCTION"
+			}
+		]
+	},
+	{
+		"display": "Construction cape: Pollnivneach",
+		"itemIds": [
+			9789,
+			9790
+		],
+		"x": 3339,
+		"y": 3001,
+		"plane": 0,
+		"maxWilderness": 20,
+		"skills": [
+			{
+				"level": 99,
+				"skill": "CONSTRUCTION"
+			}
+		]
+	},
+	{
+		"display": "Construction cape: Hosidius",
+		"itemIds": [
+			9789,
+			9790
+		],
+		"x": 1743,
+		"y": 3517,
+		"plane": 0,
+		"maxWilderness": 20,
+		"skills": [
+			{
+				"level": 99,
+				"skill": "CONSTRUCTION"
+			}
+		]
+	},
+	{
+		"display": "Construction cape: Rellekka",
+		"itemIds": [
+			9789,
+			9790
+		],
+		"x": 2669,
+		"y": 3629,
+		"plane": 0,
+		"maxWilderness": 20,
+		"skills": [
+			{
+				"level": 99,
+				"skill": "CONSTRUCTION"
+			}
+		]
+	},
+	{
+		"display": "Construction cape: Brimhaven",
+		"itemIds": [
+			9789,
+			9790
+		],
+		"x": 2756,
+		"y": 3176,
+		"plane": 0,
+		"maxWilderness": 20,
+		"skills": [
+			{
+				"level": 99,
+				"skill": "CONSTRUCTION"
+			}
+		]
+	},
+	{
+		"display": "Construction cape: Yanille",
+		"itemIds": [
+			9789,
+			9790
+		],
+		"x": 2545,
+		"y": 3097,
+		"plane": 0,
+		"maxWilderness": 20,
+		"skills": [
+			{
+				"level": 99,
+				"skill": "CONSTRUCTION"
+			}
+		]
+	},
+	{
+		"display": "Construction cape: Prifddinas",
+		"itemIds": [
+			9789,
+			9790
+		],
+		"x": 3239,
+		"y": 6077,
+		"plane": 0,
+		"maxWilderness": 20,
+		"skills": [
+			{
+				"level": 99,
+				"skill": "CONSTRUCTION"
+			}
+		]
+	},
+	{
+		"display": "Fishing cape: Fishing Guild",
+		"itemIds": [
+			9798,
+			9799
+		],
+		"x": 2604,
+		"y": 3401,
+		"plane": 0,
+		"maxWilderness": 20,
+		"skills": [
+			{
+				"level": 99,
+				"skill": "FISHING"
+			}
+		]
+	},
+	{
+		"display": "Fishing cape: Otto's Grotto",
+		"itemIds": [
+			9798,
+			9799
+		],
+		"x": 2504,
+		"y": 3484,
+		"plane": 0,
+		"maxWilderness": 20,
+		"skills": [
+			{
+				"level": 99,
+				"skill": "FISHING"
+			}
+		]
+	},
+	{
+		"display": "Farming cape: Teleport",
+		"itemIds": [
+			9810,
+			9811
+		],
+		"x": 1248,
+		"y": 3725,
+		"plane": 0,
+		"maxWilderness": 20,
+		"skills": [
+			{
+				"level": 99,
+				"skill": "FARMING"
+			}
+		]
+	},
+	{
+		"display": "Hunter cape: Feldip Hills",
+		"itemIds": [
+			9948,
+			9949
+		],
+		"x": 2556,
+		"y": 2917,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 4819,
+				"op": "<",
+				"value": 5
+			}
+		],
+		"skills": [
+			{
+				"level": 99,
+				"skill": "HUNTER"
+			}
+		]
+	},
+	{
+		"display": "Hunter cape: Black chinchompa",
+		"itemIds": [
+			9948,
+			9949
+		],
+		"x": 3144,
+		"y": 3772,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 4819,
+				"op": "<",
+				"value": 5
+			}
+		],
+		"skills": [
+			{
+				"level": 99,
+				"skill": "HUNTER"
+			}
+		]
+	},
+	{
+		"display": "Hunter cape: Hunter Guild",
+		"itemIds": [
+			9948,
+			9949
+		],
+		"x": 1558,
+		"y": 3046,
+		"plane": 0,
+		"maxWilderness": 20,
+		"skills": [
+			{
+				"level": 99,
+				"skill": "HUNTER"
+			}
+		]
+	},
+	{
+		"display": "Strength cape: Teleport",
+		"itemIds": [
+			9750,
+			9751
+		],
+		"x": 2865,
+		"y": 3546,
+		"plane": 0,
+		"maxWilderness": 20,
+		"skills": [
+			{
+				"level": 99,
+				"skill": "STRENGTH"
+			}
+		]
+	},
+	{
+		"display": "Max cape: Tele to POH",
+		"itemIds": [
+			13280,
+			13342
+		],
+		"x": 1923,
+		"y": 5709,
+		"plane": 0,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 4744,
+				"op": "=",
+				"value": 0
+			}
+		],
+		"skills": [
+			{
+				"level": 2376,
+				"skill": "TOTAL"
+			}
+		]
+	},
+	{
+		"display": "Max cape: Tele to POH",
+		"itemIds": [
+			13280,
+			13342
+		],
+		"x": 2952,
+		"y": 3224,
+		"plane": 0,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 2187,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4744,
+				"op": "=",
+				"value": 1
+			}
+		],
+		"skills": [
+			{
+				"level": 2376,
+				"skill": "TOTAL"
+			}
+		]
+	},
+	{
+		"display": "Max cape: Tele to POH",
+		"itemIds": [
+			13280,
+			13342
+		],
+		"x": 2892,
+		"y": 3465,
+		"plane": 0,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 2187,
+				"op": "=",
+				"value": 2
+			},
+			{
+				"id": 4744,
+				"op": "=",
+				"value": 1
+			}
+		],
+		"skills": [
+			{
+				"level": 2376,
+				"skill": "TOTAL"
+			}
+		]
+	},
+	{
+		"display": "Max cape: Tele to POH",
+		"itemIds": [
+			13280,
+			13342
+		],
+		"x": 3339,
+		"y": 3001,
+		"plane": 0,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 2187,
+				"op": "=",
+				"value": 3
+			},
+			{
+				"id": 4744,
+				"op": "=",
+				"value": 1
+			}
+		],
+		"skills": [
+			{
+				"level": 2376,
+				"skill": "TOTAL"
+			}
+		]
+	},
+	{
+		"display": "Max cape: Tele to POH",
+		"itemIds": [
+			13280,
+			13342
+		],
+		"x": 2669,
+		"y": 3629,
+		"plane": 0,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 2187,
+				"op": "=",
+				"value": 4
+			},
+			{
+				"id": 4744,
+				"op": "=",
+				"value": 1
+			}
+		],
+		"skills": [
+			{
+				"level": 2376,
+				"skill": "TOTAL"
+			}
+		]
+	},
+	{
+		"display": "Max cape: Tele to POH",
+		"itemIds": [
+			13280,
+			13342
+		],
+		"x": 2756,
+		"y": 3176,
+		"plane": 0,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 2187,
+				"op": "=",
+				"value": 5
+			},
+			{
+				"id": 4744,
+				"op": "=",
+				"value": 1
+			}
+		],
+		"skills": [
+			{
+				"level": 2376,
+				"skill": "TOTAL"
+			}
+		]
+	},
+	{
+		"display": "Max cape: Tele to POH",
+		"itemIds": [
+			13280,
+			13342
+		],
+		"x": 2545,
+		"y": 3097,
+		"plane": 0,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 2187,
+				"op": "=",
+				"value": 6
+			},
+			{
+				"id": 4744,
+				"op": "=",
+				"value": 1
+			}
+		],
+		"skills": [
+			{
+				"level": 2376,
+				"skill": "TOTAL"
+			}
+		]
+	},
+	{
+		"display": "Max cape: Tele to POH",
+		"itemIds": [
+			13280,
+			13342
+		],
+		"x": 3239,
+		"y": 6077,
+		"plane": 0,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 2187,
+				"op": "=",
+				"value": 7
+			},
+			{
+				"id": 4744,
+				"op": "=",
+				"value": 1
+			}
+		],
+		"skills": [
+			{
+				"level": 2376,
+				"skill": "TOTAL"
+			}
+		]
+	},
+	{
+		"display": "Max cape: Tele to POH",
+		"itemIds": [
+			13280,
+			13342
+		],
+		"x": 1740,
+		"y": 3517,
+		"plane": 0,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 2187,
+				"op": "=",
+				"value": 8
+			},
+			{
+				"id": 4744,
+				"op": "=",
+				"value": 1
+			}
+		],
+		"skills": [
+			{
+				"level": 2376,
+				"skill": "TOTAL"
+			}
+		]
+	},
+	{
+		"display": "Max cape: Tele to POH",
+		"itemIds": [
+			13280,
+			13342
+		],
+		"x": 1422,
+		"y": 2963,
+		"plane": 0,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 2187,
+				"op": "=",
+				"value": 9
+			},
+			{
+				"id": 4744,
+				"op": "=",
+				"value": 1
+			}
+		],
+		"skills": [
+			{
+				"level": 2376,
+				"skill": "TOTAL"
+			}
+		]
+	},
+	{
+		"display": "Max cape: POH Portals: Rimmington",
+		"itemIds": [
+			13280,
+			13342
+		],
+		"x": 2952,
+		"y": 3224,
+		"plane": 0,
+		"maxWilderness": 20,
+		"skills": [
+			{
+				"level": 2376,
+				"skill": "TOTAL"
+			}
+		]
+	},
+	{
+		"display": "Max cape: POH Portals: Taverley",
+		"itemIds": [
+			13280,
+			13342
+		],
+		"x": 2892,
+		"y": 3465,
+		"plane": 0,
+		"maxWilderness": 20,
+		"skills": [
+			{
+				"level": 2376,
+				"skill": "TOTAL"
+			}
+		]
+	},
+	{
+		"display": "Max cape: POH Portals: Pollnivneach",
+		"itemIds": [
+			13280,
+			13342
+		],
+		"x": 3339,
+		"y": 3001,
+		"plane": 0,
+		"maxWilderness": 20,
+		"skills": [
+			{
+				"level": 2376,
+				"skill": "TOTAL"
+			}
+		]
+	},
+	{
+		"display": "Max cape: POH Portals: Hosidius",
+		"itemIds": [
+			13280,
+			13342
+		],
+		"x": 1743,
+		"y": 3517,
+		"plane": 0,
+		"maxWilderness": 20,
+		"skills": [
+			{
+				"level": 2376,
+				"skill": "TOTAL"
+			}
+		]
+	},
+	{
+		"display": "Max cape: POH Portals: Rellekka",
+		"itemIds": [
+			13280,
+			13342
+		],
+		"x": 2669,
+		"y": 3629,
+		"plane": 0,
+		"maxWilderness": 20,
+		"skills": [
+			{
+				"level": 2376,
+				"skill": "TOTAL"
+			}
+		]
+	},
+	{
+		"display": "Max cape: POH Portals: Brimhaven",
+		"itemIds": [
+			13280,
+			13342
+		],
+		"x": 2756,
+		"y": 3176,
+		"plane": 0,
+		"maxWilderness": 20,
+		"skills": [
+			{
+				"level": 2376,
+				"skill": "TOTAL"
+			}
+		]
+	},
+	{
+		"display": "Max cape: POH Portals: Yanille",
+		"itemIds": [
+			13280,
+			13342
+		],
+		"x": 2545,
+		"y": 3097,
+		"plane": 0,
+		"maxWilderness": 20,
+		"skills": [
+			{
+				"level": 2376,
+				"skill": "TOTAL"
+			}
+		]
+	},
+	{
+		"display": "Max cape: POH Portals: Prifddinas",
+		"itemIds": [
+			13280,
+			13342
+		],
+		"x": 3239,
+		"y": 6077,
+		"plane": 0,
+		"maxWilderness": 20,
+		"skills": [
+			{
+				"level": 2376,
+				"skill": "TOTAL"
+			}
+		]
+	},
+	{
+		"display": "Max cape: Warriors' Guild",
+		"itemIds": [
+			13280,
+			13342
+		],
+		"x": 2865,
+		"y": 3546,
+		"plane": 0,
+		"maxWilderness": 20,
+		"skills": [
+			{
+				"level": 2376,
+				"skill": "TOTAL"
+			}
+		]
+	},
+	{
+		"display": "Max cape: Fishing Teleports: Fishing Guild",
+		"itemIds": [
+			13280,
+			13342
+		],
+		"x": 2604,
+		"y": 3401,
+		"plane": 0,
+		"maxWilderness": 20,
+		"skills": [
+			{
+				"level": 2376,
+				"skill": "TOTAL"
+			}
+		]
+	},
+	{
+		"display": "Max cape: Fishing Teleports: Otto's Grotto",
+		"itemIds": [
+			13280,
+			13342
+		],
+		"x": 2504,
+		"y": 3484,
+		"plane": 0,
+		"maxWilderness": 20,
+		"skills": [
+			{
+				"level": 2376,
+				"skill": "TOTAL"
+			}
+		]
+	},
+	{
+		"display": "Max cape: Crafting Guild",
+		"itemIds": [
+			13280,
+			13342
+		],
+		"x": 2931,
+		"y": 3286,
+		"plane": 0,
+		"maxWilderness": 20,
+		"skills": [
+			{
+				"level": 2376,
+				"skill": "TOTAL"
+			}
+		]
+	},
+	{
+		"display": "Max cape: Other Teleports: Feldip Hills",
+		"itemIds": [
+			13280,
+			13342
+		],
+		"x": 2556,
+		"y": 2917,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"skills": [
+			{
+				"level": 2376,
+				"skill": "TOTAL"
+			}
+		]
+	},
+	{
+		"display": "Max cape: Other Teleports: Black chinchompa",
+		"itemIds": [
+			13280,
+			13342
+		],
+		"x": 3144,
+		"y": 3772,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"skills": [
+			{
+				"level": 2376,
+				"skill": "TOTAL"
+			}
+		]
+	},
+	{
+		"display": "Max cape: Other Teleports: Hunter Guild",
+		"itemIds": [
+			13280,
+			13342
+		],
+		"x": 1558,
+		"y": 3046,
+		"plane": 0,
+		"maxWilderness": 20,
+		"skills": [
+			{
+				"level": 2376,
+				"skill": "TOTAL"
+			}
+		]
+	},
+	{
+		"display": "Max cape: Other Teleports: Farming Guild",
+		"itemIds": [
+			13280,
+			13342
+		],
+		"x": 1248,
+		"y": 3725,
+		"plane": 0,
+		"maxWilderness": 20,
+		"skills": [
+			{
+				"level": 2376,
+				"skill": "TOTAL"
+			}
+		]
+	},
+	{
+		"display": "Max cape: Other Teleports: The Pandemonium",
+		"itemIds": [
+			13280,
+			13342
+		],
+		"x": 3048,
+		"y": 2972,
+		"plane": 0,
+		"maxWilderness": 20,
+		"skills": [
+			{
+				"level": 2376,
+				"skill": "TOTAL"
+			}
+		]
+	},
+	{
+		"display": "Quest point cape: Teleport",
+		"itemIds": [
+			9813,
+			13068
+		],
+		"x": 2729,
+		"y": 3348,
+		"plane": 0,
+		"maxWilderness": 20,
+		"skills": [
+			{
+				"level": 327,
+				"skill": "QUEST"
+			}
+		]
+	},
+	{
+		"display": "Music cape: Teleport",
+		"itemIds": [
+			13221,
+			13222
+		],
+		"x": 2689,
+		"y": 3547,
+		"plane": 0,
+		"maxWilderness": 20
+	},
+	{
+		"display": "Achievement diary cape: 1. Two-pints",
+		"itemIds": [
+			13069,
+			19476
+		],
+		"x": 2574,
+		"y": 3323,
+		"plane": 0,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 4461,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4465,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4469,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4474,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4478,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4482,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4486,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4490,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4494,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4498,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4566,
+				"op": "=",
+				"value": 1
+			}
+		]
+	},
+	{
+		"display": "Achievement diary cape: 2. Jarr",
+		"itemIds": [
+			13069,
+			19476
+		],
+		"x": 3302,
+		"y": 3122,
+		"plane": 0,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 4461,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4465,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4469,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4474,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4478,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4482,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4486,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4490,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4494,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4498,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4566,
+				"op": "=",
+				"value": 1
+			}
+		]
+	},
+	{
+		"display": "Achievement diary cape: 3. Sir Rebral",
+		"itemIds": [
+			13069,
+			19476
+		],
+		"x": 2689,
+		"y": 3547,
+		"plane": 0,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 4461,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4465,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4469,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4474,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4478,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4482,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4486,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4490,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4494,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4498,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4566,
+				"op": "=",
+				"value": 1
+			}
+		]
+	},
+	{
+		"display": "Achievement diary cape: 4. Thorodin",
+		"itemIds": [
+			13069,
+			19476
+		],
+		"x": 2689,
+		"y": 3547,
+		"plane": 0,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 4461,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4465,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4469,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4474,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4478,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4482,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4486,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4490,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4494,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4498,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4566,
+				"op": "=",
+				"value": 1
+			}
+		]
+	},
+	{
+		"display": "Achievement diary cape: 3. Sir Rebral",
+		"itemIds": [
+			13069,
+			19476
+		],
+		"x": 2978,
+		"y": 3347,
+		"plane": 0,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 4461,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4465,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4469,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4474,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4478,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4482,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4486,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4490,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4494,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4498,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4566,
+				"op": "=",
+				"value": 1
+			}
+		]
+	},
+	{
+		"display": "Achievement diary cape: 4. Thorodin",
+		"itemIds": [
+			13069,
+			19476
+		],
+		"x": 2659,
+		"y": 3627,
+		"plane": 0,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 4461,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4465,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4469,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4474,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4478,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4482,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4486,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4490,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4494,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4498,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4566,
+				"op": "=",
+				"value": 1
+			}
+		]
+	},
+	{
+		"display": "Achievement diary cape: 5. Flax keeper",
+		"itemIds": [
+			13069,
+			19476
+		],
+		"x": 2744,
+		"y": 3443,
+		"plane": 0,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 4461,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4465,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4469,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4474,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4478,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4482,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4486,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4490,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4494,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4498,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4566,
+				"op": "=",
+				"value": 1
+			}
+		]
+	},
+	{
+		"display": "Achievement diary cape: 6. Pirate Jackie the Fruit",
+		"itemIds": [
+			13069,
+			19476
+		],
+		"x": 2808,
+		"y": 3192,
+		"plane": 0,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 4461,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4465,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4469,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4474,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4478,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4482,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4486,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4490,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4494,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4498,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4566,
+				"op": "=",
+				"value": 1
+			}
+		]
+	},
+	{
+		"display": "Achievement diary cape: 7. Kaleb Paramaya",
+		"itemIds": [
+			13069,
+			19476
+		],
+		"x": 2862,
+		"y": 2997,
+		"plane": 0,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 4461,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4465,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4469,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4474,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4478,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4482,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4486,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4490,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4494,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4498,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4566,
+				"op": "=",
+				"value": 1
+			}
+		]
+	},
+	{
+		"display": "Achievement diary cape: 8. Jungle forester",
+		"itemIds": [
+			13069,
+			19476
+		],
+		"x": 2795,
+		"y": 2945,
+		"plane": 0,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 4461,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4465,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4469,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4474,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4478,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4482,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4486,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4490,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4494,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4498,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4566,
+				"op": "=",
+				"value": 1
+			}
+		]
+	},
+	{
+		"display": "Achievement diary cape: 9. TzHaar-Mej",
+		"itemIds": [
+			13069,
+			19476
+		],
+		"x": 2455,
+		"y": 5133,
+		"plane": 0,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 4461,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4465,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4469,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4474,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4478,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4482,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4486,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4490,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4494,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4498,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4566,
+				"op": "=",
+				"value": 1
+			}
+		]
+	},
+	{
+		"display": "Achievement diary cape: A. Elise",
+		"itemIds": [
+			13069,
+			19476
+		],
+		"x": 1648,
+		"y": 3665,
+		"plane": 0,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 4461,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4465,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4469,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4474,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4478,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4482,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4486,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4490,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4494,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4498,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4566,
+				"op": "=",
+				"value": 1
+			}
+		]
+	},
+	{
+		"display": "Achievement diary cape: B. Hatius Cosaintus",
+		"itemIds": [
+			13069,
+			19476
+		],
+		"x": 3234,
+		"y": 3214,
+		"plane": 0,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 4461,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4465,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4469,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4474,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4478,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4482,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4486,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4490,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4494,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4498,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4566,
+				"op": "=",
+				"value": 1
+			}
+		]
+	},
+	{
+		"display": "Achievement diary cape: C. Le-sabrè",
+		"itemIds": [
+			13069,
+			19476
+		],
+		"x": 3465,
+		"y": 3478,
+		"plane": 0,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 4461,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4465,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4469,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4474,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4478,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4482,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4486,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4490,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4494,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4498,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4566,
+				"op": "=",
+				"value": 1
+			}
+		]
+	},
+	{
+		"display": "Achievement diary cape: D. Toby",
+		"itemIds": [
+			13069,
+			19476
+		],
+		"x": 3225,
+		"y": 3415,
+		"plane": 0,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 4461,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4465,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4469,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4474,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4478,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4482,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4486,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4490,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4494,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4498,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4566,
+				"op": "=",
+				"value": 1
+			}
+		]
+	},
+	{
+		"display": "Achievement diary cape: E. Lesser Fanatic",
+		"itemIds": [
+			13069,
+			19476
+		],
+		"x": 3121,
+		"y": 3516,
+		"plane": 0,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 4461,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4465,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4469,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4474,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4478,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4482,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4486,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4490,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4494,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4498,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4566,
+				"op": "=",
+				"value": 1
+			}
+		]
+	},
+	{
+		"display": "Achievement diary cape: F. Elder Gnome child",
+		"itemIds": [
+			13069,
+			19476
+		],
+		"x": 2467,
+		"y": 3459,
+		"plane": 0,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 4461,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4465,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4469,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4474,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4478,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4482,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4486,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4490,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4494,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4498,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4566,
+				"op": "=",
+				"value": 1
+			}
+		]
+	},
+	{
+		"display": "Achievement diary cape: G. Twiggy O'Korn",
+		"itemIds": [
+			13069,
+			19476
+		],
+		"x": 3096,
+		"y": 3227,
+		"plane": 0,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 4461,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4465,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4469,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4474,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4478,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4482,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4486,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4490,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4494,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4498,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 4566,
+				"op": "=",
+				"value": 1
+			}
+		]
+	},
+	{
+		"display": "Ectophial",
+		"itemIds": [
+			4251,
+			4252
+		],
+		"x": 3660,
+		"y": 3522,
+		"plane": 0,
+		"maxWilderness": 20
+	},
+	{
+		"display": "Teleport crystal: Lletya",
+		"itemIds": [
+			6099,
+			6100,
+			6101,
+			6102,
+			13102
+		],
+		"x": 2330,
+		"y": 3171,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20
+	},
+	{
+		"display": "Teleport crystal: Prifddinas",
+		"itemIds": [
+			6099,
+			6100,
+			6101,
+			6102,
+			13102
+		],
+		"x": 3264,
+		"y": 6066,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"quests": [
+			"Song of the Elves"
+		]
+	},
+	{
+		"display": "Eternal teleport crystal: Lletya",
+		"itemIds": [
+			23946
+		],
+		"x": 2330,
+		"y": 3171,
+		"plane": 0,
+		"maxWilderness": 20
+	},
+	{
+		"display": "Eternal teleport crystal: Prifddinas",
+		"itemIds": [
+			23946
+		],
+		"x": 3264,
+		"y": 6066,
+		"plane": 0,
+		"maxWilderness": 20,
+		"quests": [
+			"Song of the Elves"
+		]
+	},
+	{
+		"display": "Royal seed pod",
+		"itemIds": [
+			19564
+		],
+		"x": 2465,
+		"y": 3495,
+		"plane": 0,
+		"maxWilderness": 30
+	},
+	{
+		"display": "Grand seed pod",
+		"itemIds": [
+			9469
+		],
+		"x": 2465,
+		"y": 3495,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 30
+	},
+	{
+		"display": "Enchanted lyre: Rellekka",
+		"itemIds": [
+			3691,
+			6125,
+			6126,
+			6127,
+			13079
+		],
+		"x": 2662,
+		"y": 3644,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20
+	},
+	{
+		"display": "Enchanted lyre: Waterbirth Island",
+		"itemIds": [
+			3691,
+			6125,
+			6126,
+			6127,
+			13079
+		],
+		"x": 2551,
+		"y": 3755,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 4493,
+				"op": "=",
+				"value": 1
+			}
+		]
+	},
+	{
+		"display": "Enchanted lyre: Jatizso",
+		"itemIds": [
+			3691,
+			6125,
+			6126,
+			6127,
+			13079
+		],
+		"x": 2409,
+		"y": 3809,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 4494,
+				"op": "=",
+				"value": 1
+			}
+		]
+	},
+	{
+		"display": "Enchanted lyre: Neitiznot",
+		"itemIds": [
+			3691,
+			6125,
+			6126,
+			6127,
+			13079
+		],
+		"x": 2336,
+		"y": 3802,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 4494,
+				"op": "=",
+				"value": 1
+			}
+		]
+	},
+	{
+		"display": "Enchanted lyre (i): Rellekka",
+		"itemIds": [
+			23458
+		],
+		"x": 2662,
+		"y": 3644,
+		"plane": 0,
+		"maxWilderness": 20
+	},
+	{
+		"display": "Enchanted lyre (i): Waterbirth Island",
+		"itemIds": [
+			23458
+		],
+		"x": 2551,
+		"y": 3755,
+		"plane": 0,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 4493,
+				"op": "=",
+				"value": 1
+			}
+		]
+	},
+	{
+		"display": "Enchanted lyre (i): Jatizso",
+		"itemIds": [
+			23458
+		],
+		"x": 2409,
+		"y": 3809,
+		"plane": 0,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 4494,
+				"op": "=",
+				"value": 1
+			}
+		]
+	},
+	{
+		"display": "Enchanted lyre (i): Neitiznot",
+		"itemIds": [
+			23458
+		],
+		"x": 2336,
+		"y": 3802,
+		"plane": 0,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 4494,
+				"op": "=",
+				"value": 1
+			}
+		]
+	},
+	{
+		"display": "Camulet: Enakhra's Temple",
+		"itemIds": [
+			6707
+		],
+		"x": 3105,
+		"y": 9315,
+		"plane": 0,
+		"maxWilderness": 20
+	},
+	{
+		"display": "Camulet: Bandit Camp Quarry",
+		"itemIds": [
+			6707
+		],
+		"x": 3191,
+		"y": 2924,
+		"plane": 0,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 4485,
+				"op": "=",
+				"value": 1
+			}
+		]
+	},
+	{
+		"display": "Kharedst's memoirs: Lunch by the Lancalliums",
+		"itemIds": [
+			21760
+		],
+		"x": 1714,
+		"y": 3611,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 6028,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 6035,
+				"op": ">",
+				"value": 0
+			}
+		]
+	},
+	{
+		"display": "Kharedst's memoirs: The Fisher's Flute",
+		"itemIds": [
+			21760
+		],
+		"x": 1803,
+		"y": 3748,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 6038,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 6035,
+				"op": ">",
+				"value": 0
+			}
+		]
+	},
+	{
+		"display": "Kharedst's memoirs: History and Hearsay",
+		"itemIds": [
+			21760
+		],
+		"x": 1478,
+		"y": 3576,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 6359,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 6035,
+				"op": ">",
+				"value": 0
+			}
+		]
+	},
+	{
+		"display": "Kharedst's memoirs: Jewelry of Jubilation",
+		"itemIds": [
+			21760
+		],
+		"x": 1544,
+		"y": 3761,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 7801,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 6035,
+				"op": ">",
+				"value": 0
+			}
+		]
+	},
+	{
+		"display": "Kharedst's memoirs: A Dark Disposition",
+		"itemIds": [
+			21760
+		],
+		"x": 1681,
+		"y": 3746,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 7857,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 6035,
+				"op": ">",
+				"value": 0
+			}
+		]
+	},
+	{
+		"display": "Book of the dead: Lunch by the Lancalliums",
+		"itemIds": [
+			25818
+		],
+		"x": 1714,
+		"y": 3611,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 6028,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 6035,
+				"op": ">",
+				"value": 0
+			}
+		]
+	},
+	{
+		"display": "Book of the dead: The Fisher's Flute",
+		"itemIds": [
+			25818
+		],
+		"x": 1803,
+		"y": 3748,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 6038,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 6035,
+				"op": ">",
+				"value": 0
+			}
+		]
+	},
+	{
+		"display": "Book of the dead: History and Hearsay",
+		"itemIds": [
+			25818
+		],
+		"x": 1478,
+		"y": 3576,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 6359,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 6035,
+				"op": ">",
+				"value": 0
+			}
+		]
+	},
+	{
+		"display": "Book of the dead: Jewelry of Jubilation",
+		"itemIds": [
+			25818
+		],
+		"x": 1544,
+		"y": 3761,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 7801,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 6035,
+				"op": ">",
+				"value": 0
+			}
+		]
+	},
+	{
+		"display": "Book of the dead: A Dark Disposition",
+		"itemIds": [
+			25818
+		],
+		"x": 1681,
+		"y": 3746,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 7857,
+				"op": "=",
+				"value": 1
+			},
+			{
+				"id": 6035,
+				"op": ">",
+				"value": 0
+			}
+		]
+	},
+	{
+		"display": "Drakan's medallion: Ver Sinhaza",
+		"itemIds": [
+			22400
+		],
+		"x": 3649,
+		"y": 3230,
+		"plane": 0,
+		"maxWilderness": 20
+	},
+	{
+		"display": "Drakan's medallion: Darkmeyer",
+		"itemIds": [
+			22400
+		],
+		"x": 3592,
+		"y": 3337,
+		"plane": 0,
+		"maxWilderness": 20,
+		"quests": [
+			"Sins of the Father"
+		]
+	},
+	{
+		"display": "Drakan's medallion: Slepe",
+		"itemIds": [
+			22400
+		],
+		"x": 3808,
+		"y": 9700,
+		"plane": 0,
+		"maxWilderness": 20
+	},
+	{
+		"display": "Mythical cape",
+		"itemIds": [
+			21913,
+			22114,
+			24855
+		],
+		"x": 2457,
+		"y": 2850,
+		"plane": 0,
+		"maxWilderness": 20
+	},
+	{
+		"display": "Stony basalt",
+		"itemIds": [
+			22601
+		],
+		"x": 2845,
+		"y": 3694,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 6528,
+				"op": "=",
+				"value": 207
+			}
+		]
+	},
+	{
+		"display": "Stony basalt: Roof",
+		"itemIds": [
+			22601
+		],
+		"x": 2837,
+		"y": 3695,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 6528,
+				"op": "=",
+				"value": 207
+			},
+			{
+				"id": 4493,
+				"op": "=",
+				"value": 1
+			}
+		],
+		"skills": [
+			{
+				"level": 73,
+				"skill": "AGILITY"
+			}
+		]
+	},
+	{
+		"display": "Icy basalt",
+		"itemIds": [
+			22599
+		],
+		"x": 2846,
+		"y": 3938,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 6528,
+				"op": "=",
+				"value": 207
+			}
+		]
+	},
+	{
+		"display": "Pharaoh's sceptre: Jalsavrah",
+		"itemIds": [
+			26948
+		],
+		"x": 1934,
+		"y": 4428,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20
+	},
+	{
+		"display": "Pharaoh's sceptre: Jaleustrophos",
+		"itemIds": [
+			26948
+		],
+		"x": 3341,
+		"y": 2827,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20
+	},
+	{
+		"display": "Pharaoh's sceptre: Jaldraocht",
+		"itemIds": [
+			26948
+		],
+		"x": 3232,
+		"y": 2897,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20
+	},
+	{
+		"display": "Pharaoh's sceptre: Jaltevas",
+		"itemIds": [
+			26948
+		],
+		"x": 3313,
+		"y": 2718,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 13839,
+				"op": "=",
+				"value": 1
+			}
+		]
+	},
+	{
+		"display": "Skull sceptre",
+		"itemIds": [
+			9013,
+			21276
+		],
+		"x": 3081,
+		"y": 3421,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20
+	},
+	{
+		"display": "Xeric's talisman: 1. Xeric's Lookout",
+		"itemIds": [
+			13393
+		],
+		"x": 1579,
+		"y": 3530,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20
+	},
+	{
+		"display": "Xeric's talisman: 2. Xeric's Glade",
+		"itemIds": [
+			13393
+		],
+		"x": 1752,
+		"y": 3566,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20
+	},
+	{
+		"display": "Xeric's talisman: 3. Xeric's Inferno",
+		"itemIds": [
+			13393
+		],
+		"x": 1504,
+		"y": 3815,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20
+	},
+	{
+		"display": "Xeric's talisman: 4. Xeric's Heart",
+		"itemIds": [
+			13393
+		],
+		"x": 1644,
+		"y": 3673,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20
+	},
+	{
+		"display": "Xeric's talisman: 5. Xeric's Honour",
+		"itemIds": [
+			13393
+		],
+		"x": 1254,
+		"y": 3560,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20
+	},
+	{
+		"display": "Chronicle",
+		"itemIds": [
+			13660
+		],
+		"x": 3200,
+		"y": 3355,
+		"plane": 0,
+		"consumable": true
+	},
+	{
+		"display": "Amulet of the eye",
+		"itemIds": [
+			26914
+		],
+		"x": 3615,
+		"y": 9461,
+		"plane": 0,
+		"maxWilderness": 20
+	},
+	{
+		"display": "Ring of the elements: Air",
+		"itemIds": [
+			26818
+		],
+		"x": 2981,
+		"y": 3276,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20
+	},
+	{
+		"display": "Ring of the elements: Water",
+		"itemIds": [
+			26818
+		],
+		"x": 3170,
+		"y": 3155,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20
+	},
+	{
+		"display": "Ring of the elements: Earth",
+		"itemIds": [
+			26818
+		],
+		"x": 3288,
+		"y": 3468,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20
+	},
+	{
+		"display": "Ring of the elements: Fire",
+		"itemIds": [
+			26818
+		],
+		"x": 3314,
+		"y": 3279,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20
+	},
+	{
+		"display": "Hallowed crystal shard",
+		"itemIds": [
+			24709
+		],
+		"x": 2400,
+		"y": 5982,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20
+	},
+	{
+		"display": "Ring of shadows: Ancient Vault",
+		"itemIds": [
+			28327
+		],
+		"x": 3296,
+		"y": 6436,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20
+	},
+	{
+		"display": "Ring of shadows: Ghorrock Dungeon",
+		"itemIds": [
+			28327
+		],
+		"x": 2912,
+		"y": 10336,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20
+	},
+	{
+		"display": "Ring of shadows: The Scar",
+		"itemIds": [
+			28327
+		],
+		"x": 2019,
+		"y": 6434,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20
+	},
+	{
+		"display": "Ring of shadows: Lassar Undercity",
+		"itemIds": [
+			28327
+		],
+		"x": 2588,
+		"y": 6435,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20
+	},
+	{
+		"display": "Ring of shadows: The Stranglewood",
+		"itemIds": [
+			28327
+		],
+		"x": 1175,
+		"y": 3424,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20
+	},
+	{
+		"display": "Pendant of ates: 1. The Darkfrost",
+		"itemIds": [
+			29893
+		],
+		"x": 1491,
+		"y": 3283,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 11175,
+				"op": "=",
+				"value": 1
+			}
+		]
+	},
+	{
+		"display": "Pendant of ates: 2. Twilight Temple",
+		"itemIds": [
+			29893
+		],
+		"x": 1668,
+		"y": 3223,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 11176,
+				"op": "=",
+				"value": 1
+			}
+		]
+	},
+	{
+		"display": "Pendant of ates: 3. Ralos' Rise",
+		"itemIds": [
+			29893
+		],
+		"x": 1459,
+		"y": 3138,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 11177,
+				"op": "=",
+				"value": 1
+			}
+		]
+	},
+	{
+		"display": "Pendant of ates: 4. North Aldarin",
+		"itemIds": [
+			29893
+		],
+		"x": 1426,
+		"y": 2995,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 11178,
+				"op": "=",
+				"value": 1
+			}
+		]
+	},
+	{
+		"display": "Pendant of ates: 5. Kastori",
+		"itemIds": [
+			29893
+		],
+		"x": 1367,
+		"y": 3086,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 11179,
+				"op": "=",
+				"value": 1
+			}
+		]
+	},
+	{
+		"display": "Pendant of ates: 6. Nemus Retreat",
+		"itemIds": [
+			29893
+		],
+		"x": 1365,
+		"y": 3276,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20,
+		"varbits": [
+			{
+				"id": 11180,
+				"op": "=",
+				"value": 1
+			}
+		]
+	},
+	{
+		"display": "Giantsoul amulet: 1. Bryophyta",
+		"itemIds": [
+			30638
+		],
+		"x": 3174,
+		"y": 9898,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20
+	},
+	{
+		"display": "Giantsoul amulet: 2. Obor",
+		"itemIds": [
+			30638
+		],
+		"x": 3096,
+		"y": 9833,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20
+	},
+	{
+		"display": "Giantsoul amulet: 3. Branda and Eldric",
+		"itemIds": [
+			30638
+		],
+		"x": 2952,
+		"y": 9574,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20
+	},
+	{
+		"display": "Sailors' amulet: The Pandemonium",
+		"itemIds": [
+			32399
+		],
+		"x": 3058,
+		"y": 2975,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20
+	},
+	{
+		"display": "Sailors' amulet: Port Roberts",
+		"itemIds": [
+			32399
+		],
+		"x": 1889,
+		"y": 3292,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20
+	},
+	{
+		"display": "Sailors' amulet: Deepfin Point",
+		"itemIds": [
+			32399
+		],
+		"x": 1943,
+		"y": 2757,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20
+	},
+	{
+		"display": "Cowbell amulet",
+		"itemIds": [
+			33104
+		],
+		"x": 3259,
+		"y": 3277,
+		"plane": 0,
+		"consumable": true,
+		"maxWilderness": 20
+	}
+]
