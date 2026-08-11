@@ -7269,6 +7269,139 @@
      "bringAhead": true
     }
    ]
+  },
+  "8397af5a03": {
+   "errands": [
+    {
+     "x": 3206,
+     "y": 3417,
+     "plane": 0,
+     "varp": 1176,
+     "bit": 1,
+     "note": "Browse Thessalia's clothes shop.",
+     "npc": "Thessalia"
+    },
+    {
+     "x": 3219,
+     "y": 3431,
+     "plane": 0,
+     "varp": 1176,
+     "bit": 8,
+     "note": "Buy a newspaper from Benny in Varrock Square.",
+     "npc": "Benny"
+    },
+    {
+     "x": 3270,
+     "y": 3411,
+     "plane": 0,
+     "varp": 1176,
+     "bit": 14,
+     "note": "Steal from the tea stall in Varrock.",
+     "object": "Tea stall"
+    },
+    {
+     "x": 3253,
+     "y": 3401,
+     "plane": 0,
+     "varp": 1176,
+     "bit": 2,
+     "note": "Ask Aubury to teleport you to the essence mine.",
+     "npc": "Aubury"
+    },
+    {
+     "x": 3258,
+     "y": 3449,
+     "plane": 0,
+     "varp": 1176,
+     "bit": 11,
+     "note": "Speak to Curator Haig Halen in the museum. Needs 50 kudos.",
+     "npc": "Curator Haig Halen"
+    },
+    {
+     "x": 3184,
+     "y": 3431,
+     "plane": 0,
+     "varp": 1176,
+     "bit": 9,
+     "note": "Give the stray dog a bone west of Varrock.",
+     "npc": "Stray dog"
+    },
+    {
+     "x": 3288,
+     "y": 3370,
+     "plane": 0,
+     "varp": 1176,
+     "bit": 3,
+     "note": "Mine iron south-east of Varrock."
+    },
+    {
+     "x": 3240,
+     "y": 3335,
+     "plane": 0,
+     "varp": 1176,
+     "bit": 6,
+     "note": "Jump the fence south of Varrock.",
+     "object": "Fence"
+    },
+    {
+     "x": 3308,
+     "y": 3495,
+     "plane": 0,
+     "varp": 1176,
+     "bit": 7,
+     "note": "Chop down a dying tree in the sawmill area.",
+     "object": "Dying tree"
+    },
+    {
+     "x": 3302,
+     "y": 3492,
+     "plane": 0,
+     "varp": 1176,
+     "bit": 4,
+     "note": "Make a regular plank at the sawmill."
+    },
+    {
+     "x": 3106,
+     "y": 3428,
+     "plane": 0,
+     "varp": 1176,
+     "bit": 13,
+     "note": "Fish a trout in the River Lum at Barbarian Village."
+    },
+    {
+     "x": 3085,
+     "y": 3407,
+     "plane": 0,
+     "varp": 1176,
+     "bit": 10,
+     "note": "Make an unfired bowl at the potters wheel, then fire it in the oven."
+    },
+    {
+     "x": 3081,
+     "y": 3420,
+     "plane": 0,
+     "varp": 1176,
+     "bit": 5,
+     "note": "Enter the Stronghold of Security and reach the second floor.",
+     "object": "Entrance"
+    },
+    {
+     "x": 3306,
+     "y": 3474,
+     "plane": 0,
+     "varp": 1176,
+     "bit": 12,
+     "note": "Craft an earth rune at the earth altar."
+    },
+    {
+     "x": 3225,
+     "y": 3415,
+     "plane": 0,
+     "npc": "Toby",
+     "item": "varrock armour 1",
+     "note": "Talk to Toby in Varrock Square to claim the Varrock armour."
+    }
+   ]
   }
  }
 }
