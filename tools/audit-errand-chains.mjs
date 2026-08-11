@@ -182,7 +182,14 @@ const UNDERGROUND = 4000;      // y at or above this is not the surface
 const band = (p) => (p.y >= UNDERGROUND ? 'underground' : 'surface');
 // Quest progress, not a place: neither a radius nor the ground between legs
 // decides anything for these, so both checks below leave them alone.
-const varGated = (s) => s.value != null && (s.varbit != null || s.varp != null);
+// Mirrors ErrandProgress.varGated: a THRESHOLD or a single BIT. Diary
+// chains gate on one bit each with no `value`, and without the bit half
+// this read every one of them as a proximity waypoint — so the Varrock
+// chain's sawmill stages, 7 tiles apart because the tree and the plank
+// really are next to each other, came back as self-satisfying. A gate is
+// a gate; distance decides nothing there.
+const varGated = (s) => (s.value != null || s.bit != null)
+  && (s.varbit != null || s.varp != null);
 
 const findings = [];
 for (const [key, entry] of Object.entries(ann)) {
