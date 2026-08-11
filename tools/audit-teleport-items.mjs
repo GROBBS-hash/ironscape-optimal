@@ -79,11 +79,17 @@ steps.forEach((step, index) => {
     // brought it. "Buy a chronicle and 2 teleport cards from Diango" is
     // where the Chronicle comes from; demanding one there would be red
     // until the moment it stopped mattering.
-    // Only PURCHASE verbs. "get" and "grab" were in this list for one run
-    // and silently dropped step 142 ("Use the falador teletab, talk to the
-    // squire and GET the portrait") — a step that plainly needs the tab
-    // brought to it.
-    if (/\b(buy|buys|buying|bought|purchase)\b/i.test(step.text)) continue;
+    // Only PURCHASE verbs, and only when the thing being bought IS the
+    // travel item. "get" and "grab" were in this list for one run and
+    // silently dropped step 142 ("Use the falador teletab, talk to the
+    // squire and GET the portrait"). Then a bare purchase test dropped
+    // "Chronicle tele and BUY A NEW KITTEN" (owner: "no chronicle icon or
+    // reminder") — the kitten is the purchase, the Chronicle is the
+    // journey. So the item must appear AFTER the verb to count as bought:
+    //   "Buy a chronicle and 2 teleport cards"  -> bought, skip
+    //   "Chronicle tele and buy a new kitten"   -> not bought, keep
+    const buy = step.text.search(/\b(buy|buys|buying|bought|purchase)\b/i);
+    if (buy >= 0 && match.index > buy) continue;
     const entry = annotations[step.id];
     const have = (entry?.items || []).map((i) => (i.name || '').toLowerCase());
     const wanted = cost.name ? [cost.name(match)] : cost.items;

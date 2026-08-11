@@ -440,12 +440,13 @@ class StepRow extends JPanel
 			// what a pane measured at one width and then laid out at a
 			// narrower one does.
 			//
-			// So: the narrowest sensible width rather than the widest that
-			// might fit. Too narrow only costs an extra line, and every
-			// line stays readable; too wide silently eats the text. The
-			// height is then measured at the SAME width the layout will
-			// use, which is the part that was actually broken.
-			final int paneWidth = TEXT_WIDTH;
+			// Widened back to the NOTE block's width once the real cause
+			// turned out to be a broken string, not the layout. At
+			// TEXT_WIDTH every task wrapped to three or four lines and the
+			// card grew enormous; the note block has always sized itself
+			// this way and fits. The height is measured at this same width,
+			// which is the part that was genuinely wrong.
+			final int paneWidth = TEXT_WIDTH + 40;
 			// No left indent: the border eats into the same width, and these
 			// lines are full sentences that need every pixel. A little
 			// vertical breathing room instead — a dozen struck-through
