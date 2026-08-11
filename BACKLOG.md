@@ -12,6 +12,43 @@ Screenshots `SS-01` … `SS-20` in `docs/screenshots/`.
 
 ---
 
+## START HERE — next session (written 2026-08-11, end of wave 25)
+
+Route position **270**, mid Ardougne. Main at `51a5a00`, everything pushed,
+tree clean. Run `node tools/check-all.mjs --tests` before handing over any
+build, and `node tools/check-client.mjs` before ANY gradle command.
+
+**Play-test first, build second.** 44 commits have gone in since the last
+version pinned for the Plugin Hub and much of it has never been seen in a
+running game. In order:
+
+1. **Step 282 "Continue Lost tribe"** — the last of the three annotation
+   quest tags, unplayed since wave 19. Same mechanism as 263, which passed.
+   Expect a stopping-point checkpoint on `varbit 532 >= 10`. Goblin
+   Diplomacy at 281 is a PREREQUISITE the guide does immediately before, so
+   watch for the out-of-order warning and its BACK TO STEP link — also
+   never seen in play.
+2. **Step 316 Varrock easy diary** — 14 seeded tasks, unplayed. The
+   Ardougne one is confirmed working, so this is the same shape.
+3. **The teleport hint's Varrock anomaly** (see wave 25). The reason line
+   now prints the leg distance and the bar it had to beat; one occurrence
+   settles whether the arithmetic or the input is wrong. First place to
+   look is whether the walked-distance table thinks it can walk INTO West
+   Ardougne through the Plague City wall.
+4. **`::ironwrong`** is live — ask him to use it rather than describe a
+   problem, and read `~/.runelite/ironscape/reports/`.
+
+**Then, if there is desk time:** DX-6 (find out whether Shortest Path will
+tell us the route it picked, so the hint stops computing a rival answer) is
+the highest-leverage item, because it retires a whole class of report. DX-5
+(index every teleport item) is the one the owner asked for and gets more
+useful with every diary he finishes.
+
+**Do not pin the hub until a session goes quietly.** The gap is large but
+the cost of pinning a bad build is a review round.
+
+---
+
 ## PLANNED — developer-experience work (agreed with owner 2026-08-10)
 
 Four items, ranked by friction removed. Owner approved all four; **DX-1 started
