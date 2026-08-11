@@ -206,6 +206,42 @@ for (const [quest, step] of [...kitStepByQuest.entries()].sort()) {
 }
 console.log(`\r${quests} quests with a kit checked; ${rows.length} item(s) to review.`);
 
+// Most rows are not judgement calls. "Tinderbox (obtainable during quest)"
+// is the wiki stating a fact, and 117 of those in a row is a page nobody
+// finishes — the owner said as much on first sight. What actually needs a
+// human is the HEDGED wording, where the sentence carries a condition or an
+// alternative: "(obtainable during quest) or Imcando hammer", "obtainable
+// during quest IF YOU BRING A BUCKET", "chance to receive robes is higher
+// during". Those change what you should carry; a flat statement does not.
+//
+// --auto settles the flat ones and leaves the hedged ones on the page.
+// Every one is still written to the decisions file with the wiki's words,
+// so an auto verdict is as reviewable and as reversible as a clicked one.
+// ANY conditional or alternative sends the row to a human. `\bif\b` rather
+// than "if you", because the first --auto run granted Sheep Shearer's
+// "Shears IF OBTAINING wool to spin into balls of wool (obtained during the
+// quest)" — where "obtained during the quest" attaches to the WOOL, not the
+// shears. One clause of distance between the phrase and the item is enough
+// to make the sentence unreadable by rule, and a wrong grant hides an item
+// the player then arrives without.
+const HEDGED = /small chance|may take|some time|\bchance\b|\bif\b|\bor\b|possibl|rare|might|instead|unless/i;
+const hedged = rows.filter((r) => HEDGED.test(r.says));
+const flat = rows.filter((r) => !HEDGED.test(r.says));
+
+if (process.argv.includes('--auto')) {
+  for (const r of flat) {
+    decided.decisions[r.key] = {
+      granted: true, item: r.name, quest: r.quest, says: r.says, via: '--auto (flat wiki statement)',
+    };
+  }
+  fs.writeFileSync(DECISIONS, JSON.stringify(decided, null, 1) + '\n');
+  console.log(`  ${flat.length} flat statement(s) settled automatically`
+    + ` — run --apply to write them into the annotations.`);
+  console.log(`  ${hedged.length} hedged row(s) left for review.`);
+  rows.length = 0;
+  rows.push(...hedged);
+}
+
 // ---- page ----------------------------------------------------------------
 const html = `<!doctype html>
 <meta charset="utf-8">

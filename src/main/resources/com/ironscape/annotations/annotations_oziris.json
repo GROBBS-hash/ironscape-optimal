@@ -571,7 +571,8 @@
     },
     {
      "name": "hammer",
-     "quantity": 1
+     "quantity": 1,
+     "granted": true
     }
    ],
    "note": "Recommended: Stamina Potions."
@@ -971,11 +972,13 @@
     },
     {
      "name": "chisel",
-     "quantity": 1
+     "quantity": 1,
+     "granted": true
     },
     {
      "name": "pickaxe",
-     "quantity": 1
+     "quantity": 1,
+     "granted": true
     }
    ],
    "link": {
@@ -1367,19 +1370,23 @@
    "items": [
     {
      "name": "knife",
-     "quantity": 1
+     "quantity": 1,
+     "granted": true
     },
     {
      "name": "big fishing net",
-     "quantity": 1
+     "quantity": 1,
+     "granted": true
     },
     {
      "name": "rope",
-     "quantity": 1
+     "quantity": 1,
+     "granted": true
     },
     {
      "name": "pestle and mortar",
-     "quantity": 1
+     "quantity": 1,
+     "granted": true
     }
    ]
   },
@@ -1455,11 +1462,13 @@
     },
     {
      "name": "guam leaf",
-     "quantity": 1
+     "quantity": 1,
+     "granted": true
     },
     {
      "name": "marrentill",
-     "quantity": 1
+     "quantity": 1,
+     "granted": true
     },
     {
      "name": "pestle and mortar",
@@ -1475,7 +1484,8 @@
     },
     {
      "name": "axe",
-     "quantity": 1
+     "quantity": 1,
+     "granted": true
     },
     {
      "name": "pickaxe",
@@ -2565,7 +2575,8 @@
     },
     {
      "name": "jerboa tail",
-     "quantity": 2
+     "quantity": 2,
+     "granted": true
     }
    ],
    "note": "Recommended: Stamina potions."
@@ -2582,11 +2593,13 @@
     },
     {
      "name": "tinderbox",
-     "quantity": 1
+     "quantity": 1,
+     "granted": true
     },
     {
      "name": "spade",
-     "quantity": 1
+     "quantity": 1,
+     "granted": true
     },
     {
      "name": "cooked meat",
@@ -2627,7 +2640,8 @@
    "items": [
     {
      "name": "egg",
-     "quantity": 1
+     "quantity": 1,
+     "granted": true
     },
     {
      "name": "bucket of milk",
@@ -2680,7 +2694,8 @@
    "items": [
     {
      "name": "charcoal",
-     "quantity": 1
+     "quantity": 1,
+     "granted": true
     },
     {
      "name": "coins",
@@ -2700,15 +2715,18 @@
     },
     {
      "name": "nails",
-     "quantity": 1
+     "quantity": 1,
+     "granted": true
     },
     {
      "name": "hammer",
-     "quantity": 1
+     "quantity": 1,
+     "granted": true
     },
     {
      "name": "saw",
-     "quantity": 1
+     "quantity": 1,
+     "granted": true
     }
    ]
   },
@@ -2763,15 +2781,18 @@
     },
     {
      "name": "tinderbox",
-     "quantity": 1
+     "quantity": 1,
+     "granted": true
     },
     {
      "name": "pestle and mortar",
-     "quantity": 1
+     "quantity": 1,
+     "granted": true
     },
     {
      "name": "pickaxe",
-     "quantity": 1
+     "quantity": 1,
+     "granted": true
     },
     {
      "name": "facemask",
@@ -2835,11 +2856,13 @@
     },
     {
      "name": "spiked boots",
-     "quantity": 1
+     "quantity": 1,
+     "granted": true
     },
     {
      "name": "climbing boots",
-     "quantity": 1
+     "quantity": 1,
+     "granted": true
     },
     {
      "name": "facemask",
@@ -3063,7 +3086,8 @@
     },
     {
      "name": "needle",
-     "quantity": 1
+     "quantity": 1,
+     "granted": true
     },
     {
      "name": "thread",
@@ -3071,7 +3095,8 @@
     },
     {
      "name": "leather",
-     "quantity": 1
+     "quantity": 1,
+     "granted": true
     },
     {
      "name": "hammer",
@@ -3108,11 +3133,13 @@
    "items": [
     {
      "name": "spade",
-     "quantity": 1
+     "quantity": 1,
+     "granted": true
     },
     {
      "name": "fish food",
-     "quantity": 1
+     "quantity": 1,
+     "granted": true
     }
    ]
   },
@@ -3175,7 +3202,8 @@
     },
     {
      "name": "rake",
-     "quantity": 1
+     "quantity": 1,
+     "granted": true
     },
     {
      "name": "ale yeast",
@@ -3191,7 +3219,8 @@
     },
     {
      "name": "beer glass",
-     "quantity": 1
+     "quantity": 1,
+     "granted": true
     },
     {
      "name": "dwarven stout",
@@ -3252,7 +3281,8 @@
    "items": [
     {
      "name": "goblin mail",
-     "quantity": 3
+     "quantity": 3,
+     "granted": true
     },
     {
      "name": "blue dye",
@@ -3268,7 +3298,8 @@
    "items": [
     {
      "name": "beer",
-     "quantity": 1
+     "quantity": 1,
+     "granted": true
     },
     {
      "name": "coins",
@@ -3280,7 +3311,8 @@
     },
     {
      "name": "redberries",
-     "quantity": 1
+     "quantity": 1,
+     "granted": true
     },
     {
      "name": "white berries",
@@ -3308,11 +3340,13 @@
     },
     {
      "name": "fishing rod",
-     "quantity": 1
+     "quantity": 1,
+     "granted": true
     },
     {
      "name": "fishing bait",
-     "quantity": 1
+     "quantity": 1,
+     "granted": true
     },
     {
      "name": "dusty key",
@@ -3439,19 +3473,23 @@
     },
     {
      "name": "bucket of water",
-     "quantity": 1
+     "quantity": 1,
+     "granted": true
     },
     {
      "name": "rope",
-     "quantity": 1
+     "quantity": 1,
+     "granted": true
     },
     {
      "name": "pickaxe",
-     "quantity": 1
+     "quantity": 1,
+     "granted": true
     },
     {
      "name": "hammer",
-     "quantity": 1
+     "quantity": 1,
+     "granted": true
     },
     {
      "name": "climbing boots",
@@ -3494,7 +3532,8 @@
     },
     {
      "name": "banana",
-     "quantity": 1
+     "quantity": 1,
+     "granted": true
     }
    ],
    "note": "Recommended: Combat gear, food and potions, Antipoison, Food, Prayer potions."
@@ -3503,7 +3542,8 @@
    "items": [
     {
      "name": "bucket",
-     "quantity": 1
+     "quantity": 1,
+     "granted": true
     },
     {
      "name": "ugthanki dung",
@@ -3574,11 +3614,13 @@
     },
     {
      "name": "pot",
-     "quantity": 1
+     "quantity": 1,
+     "granted": true
     },
     {
      "name": "soft clay",
-     "quantity": 1
+     "quantity": 1,
+     "granted": true
     },
     {
      "name": "chisel",
@@ -3610,11 +3652,13 @@
    "items": [
     {
      "name": "hammer",
-     "quantity": 1
+     "quantity": 1,
+     "granted": true
     },
     {
      "name": "saw",
-     "quantity": 1
+     "quantity": 1,
+     "granted": true
     }
    ]
   },
@@ -3797,7 +3841,8 @@
     },
     {
      "name": "pot",
-     "quantity": 1
+     "quantity": 1,
+     "granted": true
     },
     {
      "name": "cooked rabbit",
@@ -3824,15 +3869,18 @@
    "items": [
     {
      "name": "coal",
-     "quantity": 5
+     "quantity": 5,
+     "granted": true
     },
     {
      "name": "rope",
-     "quantity": 2
+     "quantity": 2,
+     "granted": true
     },
     {
      "name": "plank",
-     "quantity": 1
+     "quantity": 1,
+     "granted": true
     }
    ],
    "note": "Bring: Combat gear. Recommended: Food, Prayer potions."
@@ -3841,7 +3889,8 @@
    "items": [
     {
      "name": "rake",
-     "quantity": 1
+     "quantity": 1,
+     "granted": true
     },
     {
      "name": "seed dibber",
@@ -3849,7 +3898,8 @@
     },
     {
      "name": "bucket",
-     "quantity": 1
+     "quantity": 1,
+     "granted": true
     },
     {
      "name": "slayer gloves",
@@ -3876,7 +3926,8 @@
     },
     {
      "name": "tinderbox",
-     "quantity": 1
+     "quantity": 1,
+     "granted": true
     }
    ],
    "note": "Bring: Combat Gear, Food. Recommended: Antipoisons."
@@ -3951,7 +4002,8 @@
     },
     {
      "name": "phoenix crossbow",
-     "quantity": 1
+     "quantity": 1,
+     "granted": true
     }
    ]
   },
@@ -3979,7 +4031,8 @@
     },
     {
      "name": "bones",
-     "quantity": 3
+     "quantity": 3,
+     "granted": true
     },
     {
      "name": "tinderbox"
@@ -4067,7 +4120,8 @@
     },
     {
      "name": "adamant chainbody",
-     "quantity": 1
+     "quantity": 1,
+     "granted": true
     },
     {
      "name": "wine of zamorak",
@@ -4075,7 +4129,8 @@
     },
     {
      "name": "cabbage",
-     "quantity": 1
+     "quantity": 1,
+     "granted": true
     },
     {
      "name": "black knife",
@@ -4140,7 +4195,8 @@
     },
     {
      "name": "pickaxe",
-     "quantity": 1
+     "quantity": 1,
+     "granted": true
     },
     {
      "name": "shortbow",
@@ -4195,7 +4251,8 @@
     },
     {
      "name": "knife",
-     "quantity": 1
+     "quantity": 1,
+     "granted": true
     },
     {
      "name": "candle"
@@ -4426,7 +4483,8 @@
    "items": [
     {
      "name": "axe",
-     "quantity": 1
+     "quantity": 1,
+     "granted": true
     },
     {
      "name": "hammer",
@@ -4455,11 +4513,13 @@
     },
     {
      "name": "bucket",
-     "quantity": 1
+     "quantity": 1,
+     "granted": true
     },
     {
      "name": "tinderbox",
-     "quantity": 1
+     "quantity": 1,
+     "granted": true
     },
     {
      "name": "plank"
@@ -4532,7 +4592,8 @@
     },
     {
      "name": "death rune",
-     "quantity": 1
+     "quantity": 1,
+     "granted": true
     },
     {
      "name": "pickaxe",
@@ -4544,7 +4605,8 @@
     },
     {
      "name": "rope",
-     "quantity": 2
+     "quantity": 2,
+     "granted": true
     },
     {
      "name": "guam potion (unf)",
@@ -4552,7 +4614,8 @@
     },
     {
      "name": "pestle and mortar",
-     "quantity": 1
+     "quantity": 1,
+     "granted": true
     },
     {
      "name": "bat bones",
@@ -4560,7 +4623,8 @@
     },
     {
      "name": "jangerberries",
-     "quantity": 1
+     "quantity": 1,
+     "granted": true
     },
     {
      "name": "candle"
@@ -4762,7 +4826,8 @@
     },
     {
      "name": "anti-dragon shield",
-     "quantity": 1
+     "quantity": 1,
+     "granted": true
     },
     {
      "name": "steel nails",
@@ -4810,7 +4875,8 @@
     },
     {
      "name": "garlic",
-     "quantity": 1
+     "quantity": 1,
+     "granted": true
     },
     {
      "name": "fishing rod",
@@ -4818,7 +4884,8 @@
     },
     {
      "name": "red vine worm",
-     "quantity": 1
+     "quantity": 1,
+     "granted": true
     }
    ]
   },
@@ -4936,7 +5003,8 @@
     },
     {
      "name": "bat bones",
-     "quantity": 1
+     "quantity": 1,
+     "granted": true
     }
    ],
    "note": "Bring: Combat gear + food for Sir Mordred (level 39)."
@@ -4945,11 +5013,13 @@
    "items": [
     {
      "name": "karamjan rum",
-     "quantity": 1
+     "quantity": 1,
+     "granted": true
     },
     {
      "name": "white apron",
-     "quantity": 1
+     "quantity": 1,
+     "granted": true
     },
     {
      "name": "coins",
@@ -4957,11 +5027,13 @@
     },
     {
      "name": "banana",
-     "quantity": 10
+     "quantity": 10,
+     "granted": true
     },
     {
      "name": "spade",
-     "quantity": 1
+     "quantity": 1,
+     "granted": true
     }
    ]
   },
@@ -4973,7 +5045,8 @@
     },
     {
      "name": "bucket",
-     "quantity": 1
+     "quantity": 1,
+     "granted": true
     }
    ]
   },
@@ -5021,11 +5094,13 @@
     },
     {
      "name": "rope",
-     "quantity": 1
+     "quantity": 1,
+     "granted": true
     },
     {
      "name": "coins",
-     "quantity": 30
+     "quantity": 30,
+     "granted": true
     }
    ]
   },
@@ -5077,7 +5152,8 @@
     },
     {
      "name": "banana",
-     "quantity": 1
+     "quantity": 1,
+     "granted": true
     },
     {
      "name": "spice",
@@ -5161,7 +5237,8 @@
     },
     {
      "name": "ogre bellows",
-     "quantity": 1
+     "quantity": 1,
+     "granted": true
     },
     {
      "name": "ogre bow",
@@ -5241,7 +5318,8 @@
    "items": [
     {
      "name": "air talisman",
-     "quantity": 1
+     "quantity": 1,
+     "granted": true
     }
    ]
   },
@@ -5265,7 +5343,8 @@
     },
     {
      "name": "beer",
-     "quantity": 3
+     "quantity": 3,
+     "granted": true
     },
     {
      "name": "bucket",
@@ -5300,7 +5379,8 @@
     },
     {
      "name": "coal",
-     "quantity": 1
+     "quantity": 1,
+     "granted": true
     },
     {
      "name": "iron bar",
@@ -5316,7 +5396,8 @@
     },
     {
      "name": "bar",
-     "quantity": 1
+     "quantity": 1,
+     "granted": true
     },
     {
      "name": "law runes"
@@ -5366,7 +5447,8 @@
     },
     {
      "name": "blurite ore",
-     "quantity": 1
+     "quantity": 1,
+     "granted": true
     },
     {
      "name": "pickaxe",
@@ -5440,7 +5522,8 @@
     },
     {
      "name": "bowl",
-     "quantity": 1
+     "quantity": 1,
+     "granted": true
     },
     {
      "name": "logs",
