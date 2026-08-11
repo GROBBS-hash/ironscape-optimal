@@ -3159,7 +3159,8 @@ public class IronscapePlugin extends Plugin
 							? "none — no first leg beats walking to " + routeTarget
 								+ metricNote(routeTarget)
 							: "route-aware first leg toward " + routeTarget
-								+ metricNote(routeTarget);
+								+ metricNote(routeTarget)
+								+ " [leg " + leg.legDistance + " had to beat " + leg.mustBeat + "]";
 					if (leg != null && leg.minigame != null)
 					{
 						String towardsKey = leg.minigame.toLowerCase(Locale.ROOT).replace('’', '\'');
@@ -7490,6 +7491,18 @@ public class IronscapePlugin extends Plugin
 		final String minigame;
 		final TeleportSpell spell;
 		final boolean home;
+		/**
+		 * The numbers that WON, purely so the log can show its working.
+		 *
+		 * A hint fired for a Varrock teleport toward West Ardougne while
+		 * the player was ~350 tiles away and the landing is ~750 from the
+		 * target — which the rule should have rejected. The reason line
+		 * quoted the player distance only, so the two numbers that decide
+		 * it were both invisible and there was nothing to check the claim
+		 * against (owner, in play, 2026-08-11).
+		 */
+		int legDistance;
+		int mustBeat;
 
 		FirstLeg(String minigame, TeleportSpell spell, boolean home)
 		{
@@ -7733,8 +7746,14 @@ public class IronscapePlugin extends Plugin
 				bestHome = false;
 			}
 		}
-		return bestMinigame == null && bestSpell == null && !bestHome
-			? null : new FirstLeg(bestMinigame, bestSpell, bestHome);
+		if (bestMinigame == null && bestSpell == null && !bestHome)
+		{
+			return null;
+		}
+		FirstLeg won = new FirstLeg(bestMinigame, bestSpell, bestHome);
+		won.legDistance = bestDistance;
+		won.mustBeat = Math.min((int) (playerDistance * 0.6), playerDistance - MIN_TILES_SAVED);
+		return won;
 	}
 
 	/**
