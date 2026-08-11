@@ -12,7 +12,39 @@ Screenshots `SS-01` … `SS-20` in `docs/screenshots/`.
 
 ---
 
-## START HERE — next session (written 2026-08-11, end of wave 25)
+## START HERE — next session (written 2026-08-12, end of wave 26)
+
+Desk session. **DX-6 and DX-5 both shipped and are CONFIRMED loading in a
+running client; one branch of DX-5 is UNPROVEN in play** — see below. Main
+at `a3ba9f5`, 4 commits, **NOT PUSHED**. Hub pin unchanged.
+
+**WAVE 25'S VARROCK ANOMALY IS NOT A DEFECT — CLOSED.** The suspicion was
+that our walked-distance table was cheating through the Plague City wall.
+It was not: Shortest Path, asked directly, picked *the same Varrock
+teleport*, because the real route is Varrock -> GE spirit tree ->
+Battlefield of Khazard -> Ardougne wall door, and Khazard lands **40 tiles**
+from that door. Our overlay and SP's line were agreeing all along. This is
+the first thing DX-6 paid for: the question was settled by ASKING rather
+than by re-deriving our own arithmetic.
+
+**WHAT TO WATCH NEXT SESSION:** the SP-picks-a-teleport-item branch has
+never fired. Every route observed chose a spell, because the owner's
+`costNonConsumableTeleportationItems=50` against `costTeleportationSpells=15`
+makes an item teleport lose all but the clearest wins — and on the one route
+tested the cloak was genuinely worse (its only landings, Kandarin Monastery
+and Ardougne Farm, are ~92 tiles from the wall door). He declined to change
+the cost to force the case. So: when a route DOES pick an item, confirm the
+equipment-tab outline and the destination label appear. If SP flips and our
+overlay does not follow, that is a real bug and the log line to grep is
+`shortest path picked a teleport item`.
+
+Otherwise the wave 25 list below still stands: **step 282**, **step 316
+Varrock easy diary**, and `::ironwrong` (still never used — no reports
+folder exists).
+
+---
+
+## Previous START HERE (written 2026-08-11, end of wave 25)
 
 Route position **270**, mid Ardougne. Main at `51a5a00`, everything pushed,
 tree clean. Run `node tools/check-all.mjs --tests` before handing over any
@@ -88,7 +120,42 @@ schedule it rather than squeeze it in.
 Prior work: `audit-quest-granted.mjs`, `quest-granted-reviewed.json`, and the
 KIT-SEEDING POLICY already exist. This is the review UI plus a bulk wiki pass.
 
-**DX-5 — Index EVERY teleport item and use it once it is unlocked.**
+**DX-5 — Index EVERY teleport item and use it once it is unlocked. SHIPPED
+2026-08-12 (`22bd457`, `a3ba9f5`). Index CONFIRMED loading; the
+SP-picks-an-item branch UNPROVEN in play.**
+
+`tools/seed-teleport-items.mjs` -> `travel/teleport_items.json`: **319
+destinations, 225 item ids**, all from Shortest Path's own maintained table
+(diary cloaks, jewellery, tablets, memoirs, max/quest capes) with landing
+tile, the menu option to pick, and unlock/charge varbits. `TeleportItems`
+loads it, `TeleportItemHintOverlay` outlines the item in inventory OR
+equipment and labels it with the destination.
+
+**THE LESSON, and it cost a build:** our own ranking could NEVER have
+picked one. `TravelDistances` holds a precomputed field per NAMED landing —
+25 of them — and looks up **by name**, so all 319 item landings answered
+UNKNOWN and lost silently in walked-distance mode, which is most routes.
+Adding 319 fields was the obvious fix and the wrong one; SP already ranks
+this choice better than we can and now tells us. **Its pick outranks ours
+whenever it names an item**; ours is the fallback when SP is silent.
+
+**Two traps in their data, both handled and both TESTED**
+(`TeleportItemsTest`): the SKILLS column also carries the max cape's TOTAL
+level and the quest cape's QUEST points, which are not skills; and a `&`
+condition is a BITMASK needing that exact bit, not a threshold — the
+barcrawl trap. Everything unevaluable fails CLOSED.
+
+**The possession check is load-bearing**: `useTeleportationItems` can be
+`INVENTORY_AND_BANK` (the owner's is), so SP will route through a glory in
+the BANK — a fine route and a useless highlight.
+
+**THE DIAL THAT DECIDES HOW OFTEN THIS FIRES IS THE PLAYER'S, NOT OURS:**
+`shortestpath.costNonConsumableTeleportationItems` (owner: 50) against
+`costTeleportationSpells` (15). At 50 an item teleport must win clearly.
+Lowering it moves SP's line and our highlight TOGETHER, which is the point
+of not holding a second opinion. Do not add our own thumb on the scale.
+
+**Original entry:**
 Owner, 2026-08-11, having just earned the Ardougne cloak: the first-leg
 hint knows minigame teleports, standard spellbook teleports, the free home
 teleport and the Chronicle, and nothing else. It does not know about diary
