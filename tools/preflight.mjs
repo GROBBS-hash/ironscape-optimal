@@ -282,7 +282,9 @@ const count = +arg('--steps', 15);
 const from = showAll ? 0 : position + 1;
 const window = showAll ? steps : steps.slice(from, from + count);
 
-if (!showAll) {
+// --manual-list is machine-readable; a human header in it would end up
+// parsed as a row by whatever consumes it.
+if (!showAll && !process.argv.includes('--manual-list')) {
   console.log(`IRONSCAPE PRE-FLIGHT — ${window.length} steps from step ${from} (position ${position})`
     + (where && !process.argv.includes('--position') ? `  (profile "${where.profile}")` : ''));
   console.log('Everything below is something you would otherwise find by standing in front of it.\n');
@@ -308,6 +310,22 @@ const plainFor = (flag) => {
   }
   return flag;
 };
+
+// --manual-list emits the hand-tick steps for other tools to consume, so
+// the judgement of "can anything tick this?" lives in ONE place. The first
+// cut of audit-manual-steps re-derived it from the detector dump alone and
+// counted 130 against this file's 86, because it did not know that a step
+// with no detector still ticks by walking there — the same over-count wave
+// 17 already had to correct once.
+if (process.argv.includes('--manual-list')) {
+  for (let i = 0; i < steps.length; i++) {
+    const { flags } = inspect(steps[i]);
+    if (flags.some((f) => f.startsWith('MANUAL'))) {
+      console.log(`MANUAL\t${i}\t${steps[i].id}\t${steps[i].text.replace(/\s+/g, ' ')}`);
+    }
+  }
+  process.exit(0);
+}
 
 const totals = { manual: 0, noRoute: 0, carryKit: 0, quest: 0 };
 const rows = [];
