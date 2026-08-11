@@ -405,16 +405,29 @@ class StepRow extends JPanel
 		{
 			return;
 		}
-		final int wrapWidth = Math.max(80, 168 - indentPx);
 		for (String key : stages.keySet())
 		{
 			// key is "index|label" — the index only keeps duplicates apart.
 			int bar = key.indexOf("|");
 			final String label = bar < 0 ? key : key.substring(bar + 1);
-			JLabel line = new JLabel();
-			line.setFont(new Font(Font.DIALOG, Font.PLAIN, 11));
+			// A JEditorPane, NOT a JLabel. A label cannot be constrained by
+			// an html body width: it reports its UNWRAPPED width and never
+			// caps its own maximum size, so every task line was CLIPPED
+			// mid-word ("Steal a cake from the Ea") instead of wrapping.
+			// htmlPane pins the size properly and the note block has always
+			// used it — this is wave 22's lesson, arrived at again by
+			// inventing a third mechanism instead of reusing that one.
+			//
+			// It cost more than tidiness: the clipped half of the lever task
+			// is the sentence telling you to pull the lever BACK, so the
+			// player walked out of the Wilderness overland (owner, in play).
+			JEditorPane line = htmlPane("", indentPx,
+				new Font(Font.DIALOG, Font.PLAIN, 11), NOTE_FG);
 			line.setAlignmentX(LEFT_ALIGNMENT);
-			line.setBorder(BorderFactory.createEmptyBorder(0, indentPx, 1, 0));
+			// The width htmlPane settled on, kept so every re-measure below
+			// uses the SAME one — re-reading it after the size is cleared
+			// would get the unwrapped text width and defeat the wrapping.
+			final int paneWidth = line.getPreferredSize().width;
 			Runnable refresh = () -> {
 				java.util.LinkedHashMap<String, String> now =
 					ctx.getErrandChecklist().apply(sub.getId());
@@ -432,10 +445,19 @@ class StepRow extends JPanel
 				{
 					body = "<font color='#b8b1a5'>" + body + "</font>";
 				}
-				// Width-locked body, the same trick the note block uses: a JLabel
-				// reports its UNWRAPPED width otherwise and widens the whole card.
-				line.setText("<html><body style='width:" + wrapWidth + "px'>"
-					+ body + "</body></html>");
+				// htmlPane pins preferred AND maximum size at construction,
+				// which is what makes it wrap — but a pinned preferred size
+				// is also what getPreferredSize returns, so it must be
+				// cleared before the pane can re-measure the new text.
+				// Height changes here whenever a task wraps to two lines.
+				line.setPreferredSize(null);
+				line.setMaximumSize(null);
+				line.setText(body);
+				line.setSize(paneWidth, Short.MAX_VALUE);
+				java.awt.Dimension fitted =
+					new java.awt.Dimension(paneWidth, line.getPreferredSize().height);
+				line.setPreferredSize(fitted);
+				line.setMaximumSize(fitted);
 			};
 			refresh.run();
 			badgeRefreshers.add(refresh);
