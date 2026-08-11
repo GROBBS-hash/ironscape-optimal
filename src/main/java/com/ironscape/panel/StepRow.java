@@ -526,7 +526,12 @@ class StepRow extends JPanel
 				// guide's running carry advice — so it is carried by the
 				// COUNT's colour instead, which is already per-row and
 				// already where the eye goes. See itemCountHtml.
-				String tag = Boolean.TRUE.equals(need.optional) ? "(optional)"
+				// bringAhead is checked BEFORE optional because it is always
+				// written with optional too (see StepAnnotation.ItemNeed):
+				// "(optional)" would be a lie about an item the next step
+				// genuinely needs.
+				String tag = Boolean.TRUE.equals(need.bringAhead) ? "(for next step)"
+					: Boolean.TRUE.equals(need.optional) ? "(optional)"
 					: Boolean.TRUE.equals(need.ingredient) ? "(ingredient)"
 					: Boolean.TRUE.equals(need.granted) ? "(from the quest)"
 					: Boolean.TRUE.equals(need.consumed) ? "(used here)" : null;

@@ -89,9 +89,14 @@ steps.forEach((step, index) => {
     const wanted = cost.name ? [cost.name(match)] : cost.items;
     const missing = wanted.filter((want) =>
       !have.some((h) => h === want || h.includes(want) || want.includes(h)));
-    if (!missing.length) continue;
+    // Record the step even when its own kit is already correct. What this
+    // step NEEDS and what is MISSING from it are different questions, and
+    // conflating them made --apply non-idempotent: the first run added the
+    // item, which stopped the step being a finding, which meant the second
+    // half of the job — the warning on the step BEFORE — could never be
+    // written on any subsequent run.
     findings.push({
-      index, id: step.id, text: step.text, needs: missing,
+      index, id: step.id, text: step.text, needs: wanted, missing,
       free: FREE.test(step.text),
       // The step BEFORE is where a warning would actually be readable.
       previous: index > 0
@@ -128,16 +133,31 @@ if (process.argv.includes('--apply')) {
     if (!includeRunes && /rune$/.test(want)) continue;
     const entry = doc.annotations[f.id] || (doc.annotations[f.id] = {});
     entry.items = entry.items || [];
-    if (!entry.items.some((i) => (i.name || '').toLowerCase() === want)) {
+    if (f.missing.includes(want) && !entry.items.some((i) => (i.name || '').toLowerCase() === want)) {
       entry.items.push({ name: want, quantity: 1 });
       items++;
     }
     if (!f.previous) continue;
     const before = doc.annotations[f.previous.id] || (doc.annotations[f.previous.id] = {});
-    const line = `Bring a ${want} — the next step teleports with it.`;
-    if (!(before.note || '').includes(line)) {
-      before.note = before.note ? `${before.note}\n\n${line}` : line;
+    // An ITEM ROW, not a sentence. The first version wrote "Bring a
+    // chronicle — the next step teleports with it." into the note and the
+    // owner asked for the icon and the 0/1 straight away: a line of prose
+    // under a list of item rows does not read as one of them.
+    //
+    // optional AND bringAhead together — see StepAnnotation.ItemNeed. It
+    // must not gate the step it is sitting on.
+    before.items = before.items || [];
+    if (!before.items.some((i) => (i.name || '').toLowerCase() === want)) {
+      before.items.push({ name: want, quantity: 1, optional: true, bringAhead: true });
       notes++;
+    }
+    // Retire the prose version this tool wrote in its first outing.
+    if (before.note) {
+      const cleaned = before.note.split('\n')
+        .filter((l) => !/^Bring a .+ — the next step teleports with it\.$/.test(l.trim()))
+        .join('\n').replace(/\n{3,}/g, '\n\n').trim();
+      if (cleaned) before.note = cleaned;
+      else delete before.note;
     }
   }
   fs.writeFileSync(FILE, JSON.stringify(doc, null, 1) + '\n');
@@ -146,8 +166,12 @@ if (process.argv.includes('--apply')) {
   process.exit(0);
 }
 
-console.log(`${findings.length} step(s) prescribe travel whose item is not in their kit\n`);
-for (const f of findings) {
+// "needs an item" and "does not list it" are different counts, and only the
+// second is work. Printing both keeps a re-run from reading as a regression.
+const open = findings.filter((f) => f.missing.length);
+console.log(`${findings.length} step(s) prescribe travel that costs an item;`
+  + ` ${open.length} do not list it\n`);
+for (const f of open) {
   console.log(`${String(f.index).padStart(4)}  ${f.text.slice(0, 66)}`);
   console.log(`        needs: ${f.needs.join(', ')}${f.free ? '   (also names a free route)' : ''}`);
   if (f.previous) console.log(`        after: ${f.previous.text.slice(0, 62)}`);

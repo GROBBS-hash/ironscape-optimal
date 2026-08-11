@@ -225,10 +225,10 @@ public final class ErrandProgress
 	{
 		StepAnnotation.Errand stage = chain.get(index);
 		String what;
-		if (stage.value != null && (stage.varbit != null || stage.varp != null))
+		if (varGated(stage))
 		{
 			what = "var:" + (stage.varbit != null ? stage.varbit : "p" + stage.varp)
-				+ ">=" + stage.value;
+				+ (stage.bit != null ? "#" + stage.bit : ">=" + stage.value);
 		}
 		else
 		{
@@ -246,19 +246,35 @@ public final class ErrandProgress
 	 */
 	public static boolean isPositional(StepAnnotation.Errand stage)
 	{
-		if (stage.value != null && (stage.varbit != null || stage.varp != null))
+		if (varGated(stage))
 		{
 			return false;
 		}
 		return stage.zone != null || stage.region != null || stage.item == null;
 	}
 
+
+	/**
+	 * Does this stage turn on a VAR reading rather than where you are or
+	 * what you hold? Either a threshold (value) or a single bit — diaries
+	 * pack a whole tier into one varp, so a bit test is the only honest
+	 * question there. One helper because three places asked it separately
+	 * and a new gate kind has to reach all three.
+	 */
+	private static boolean varGated(StepAnnotation.Errand stage)
+	{
+		return (stage.value != null || stage.bit != null)
+			&& (stage.varbit != null || stage.varp != null);
+	}
+
 	private static boolean monotonicSatisfied(StepAnnotation.Errand stage, int index,
 		int chainSize, World world)
 	{
-		if (stage.value != null && (stage.varbit != null || stage.varp != null))
+		if (varGated(stage))
 		{
-			return world.varValue(stage.varbit, stage.varp) >= stage.value;
+			int v = world.varValue(stage.varbit, stage.varp);
+			// A bit test, never a threshold: see StepAnnotation.Errand.bit.
+			return stage.bit != null ? (v & (1 << stage.bit)) != 0 : v >= stage.value;
 		}
 		if (stage.item == null)
 		{

@@ -1775,9 +1775,14 @@
     {
      "name": "coins",
      "quantity": 8400
+    },
+    {
+     "name": "digsite pendant",
+     "quantity": 1,
+     "optional": true,
+     "bringAhead": true
     }
-   ],
-   "note": "Bring a digsite pendant — the next step teleports with it."
+   ]
   },
   "b59810d9bc": {
    "target": {
@@ -1876,7 +1881,14 @@
     "y": 3452,
     "plane": 0
    },
-   "note": "Bring a chronicle — the next step teleports with it."
+   "items": [
+    {
+     "name": "chronicle",
+     "quantity": 1,
+     "optional": true,
+     "bringAhead": true
+    }
+   ]
   },
   "45372e48a5": {
    "target": {
@@ -2287,14 +2299,19 @@
     {
      "name": "pickaxe",
      "quantity": 1
+    },
+    {
+     "name": "chronicle",
+     "quantity": 1,
+     "optional": true,
+     "bringAhead": true
     }
    ],
    "target": {
     "x": 3284,
     "y": 3366,
     "plane": 0
-   },
-   "note": "Bring a chronicle — the next step teleports with it."
+   }
   },
   "5b2af09171": {
    "items": [
@@ -2314,14 +2331,19 @@
     {
      "name": "pickaxe",
      "quantity": 1
+    },
+    {
+     "name": "falador teleport",
+     "quantity": 1,
+     "optional": true,
+     "bringAhead": true
     }
    ],
    "target": {
     "x": 3036,
     "y": 9582,
     "plane": 0
-   },
-   "note": "Bring a falador teleport — the next step teleports with it."
+   }
   },
   "48db8d23b1": {
    "items": [
@@ -2698,9 +2720,15 @@
     {
      "name": "hammer",
      "quantity": 1
+    },
+    {
+     "name": "chronicle",
+     "quantity": 1,
+     "optional": true,
+     "bringAhead": true
     }
    ],
-   "note": "Recommended: Stamina potions.\n\nBring a chronicle — the next step teleports with it."
+   "note": "Recommended: Stamina potions."
   },
   "c03fd1c5e2": {
    "items": [
@@ -4328,9 +4356,15 @@
      "name": "trowel",
      "quantity": 1,
      "granted": true
+    },
+    {
+     "name": "chronicle",
+     "quantity": 1,
+     "optional": true,
+     "bringAhead": true
     }
    ],
-   "note": "Opal, charcoal and the trowel all come from the quest itself.\nOpal: pan at the river until you get an uncut opal - a student asks for one in the level 3 test.\nCharcoal: search the specimen tray north of the tent with a specimen jar if you did not bring any.\nTrowel: handed over with the Level 1 certificate.\n\nBring a chronicle — the next step teleports with it."
+   "note": "Opal, charcoal and the trowel all come from the quest itself.\nOpal: pan at the river until you get an uncut opal - a student asks for one in the level 3 test.\nCharcoal: search the specimen tray north of the tent with a specimen jar if you did not bring any.\nTrowel: handed over with the Level 1 certificate."
   },
   "a58a921f81": {
    "items": [
@@ -6059,12 +6093,18 @@
     "y": 3163,
     "plane": 1
    },
-   "note": "Wizard Traiborn on the 1st floor of the Wizards' Tower trades 25 bones for his key part. Kill the chickens outside or wizards inside if short.\n\nBring a chronicle — the next step teleports with it.",
+   "note": "Wizard Traiborn on the 1st floor of the Wizards' Tower trades 25 bones for his key part. Kill the chickens outside or wizards inside if short.",
    "items": [
     {
      "name": "bones",
      "quantity": 25,
      "ingredient": true
+    },
+    {
+     "name": "chronicle",
+     "quantity": 1,
+     "optional": true,
+     "bringAhead": true
     }
    ]
   },
@@ -6894,9 +6934,14 @@
     {
      "name": "falador teleport",
      "quantity": 1
+    },
+    {
+     "name": "teleport to house",
+     "quantity": 1,
+     "optional": true,
+     "bringAhead": true
     }
-   ],
-   "note": "Bring a teleport to house — the next step teleports with it."
+   ]
   },
   "839fa6997d": {
    "target": {
@@ -6937,7 +6982,14 @@
   },
   "dcc79a54a9": {
    "quest": "Pirate's Treasure",
-   "note": "Bring a chronicle — the next step teleports with it."
+   "items": [
+    {
+     "name": "chronicle",
+     "quantity": 1,
+     "optional": true,
+     "bringAhead": true
+    }
+   ]
   },
   "7ca10e694f": {
    "quest": "The Lost Tribe"
@@ -7003,7 +7055,14 @@
    ]
   },
   "495faaa6f4": {
-   "note": "Bring a teleport to house — the next step teleports with it."
+   "items": [
+    {
+     "name": "teleport to house",
+     "quantity": 1,
+     "optional": true,
+     "bringAhead": true
+    }
+   ]
   },
   "c4f24ec6dd": {
    "items": [
@@ -7014,7 +7073,116 @@
    ]
   },
   "b402bf2c37": {
-   "note": "Bring a amulet of glory — the next step teleports with it."
+   "items": [
+    {
+     "name": "amulet of glory",
+     "quantity": 1,
+     "optional": true,
+     "bringAhead": true
+    }
+   ]
+  },
+  "07fb6e0a5d": {
+   "errands": [
+    {
+     "x": 2683,
+     "y": 3326,
+     "plane": 0,
+     "varp": 1196,
+     "bit": 0,
+     "note": "Ask Wizard Cromperty to teleport you to the Rune essence mine.",
+     "npc": "Wizard Cromperty"
+    },
+    {
+     "x": 2668,
+     "y": 3311,
+     "plane": 0,
+     "varp": 1196,
+     "bit": 1,
+     "note": "Steal a cake from the East Ardougne market stalls.",
+     "object": "Cake stall"
+    },
+    {
+     "x": 2655,
+     "y": 3300,
+     "plane": 0,
+     "varp": 1196,
+     "bit": 2,
+     "note": "Sell silk to the Silk trader for 60 coins each. He offers 20 first - decline twice.",
+     "npc": "Silk merchant"
+    },
+    {
+     "x": 2621,
+     "y": 3294,
+     "plane": 0,
+     "varp": 1196,
+     "bit": 12,
+     "note": "Right-click Probita and Check what pets you have insured.",
+     "npc": "Probita"
+    },
+    {
+     "x": 2618,
+     "y": 3309,
+     "plane": 0,
+     "varp": 1196,
+     "bit": 4,
+     "note": "Use the altar in East Ardougne church. You need less than full Prayer points.",
+     "object": "Altar"
+    },
+    {
+     "x": 2561,
+     "y": 3311,
+     "plane": 0,
+     "varp": 1196,
+     "bit": 9,
+     "note": "Pull the Ardougne lever to the Wilderness, then pull the one there to come back. DEEP Wilderness - bank anything you would not lose.",
+     "object": "Lever"
+    },
+    {
+     "x": 2518,
+     "y": 3356,
+     "plane": 0,
+     "varp": 1196,
+     "bit": 6,
+     "note": "Enter the Combat Training Camp north of West Ardougne.",
+     "object": "Gate"
+    },
+    {
+     "x": 2676,
+     "y": 3152,
+     "plane": 0,
+     "varp": 1196,
+     "bit": 7,
+     "note": "Have Tindel Marchant identify a rusty sword. Bring the sword and coins.",
+     "npc": "Tindel Marchant"
+    },
+    {
+     "x": 2675,
+     "y": 3170,
+     "plane": 0,
+     "varp": 1196,
+     "bit": 5,
+     "note": "Go out fishing on the Fishing Trawler.",
+     "object": "Gangplank"
+    },
+    {
+     "x": 2566,
+     "y": 3083,
+     "plane": 0,
+     "varp": 1196,
+     "bit": 11,
+     "note": "View Aleck's Hunter Emporium in Yanille.",
+     "npc": "Hunting shop owner"
+    },
+    {
+     "x": 2574,
+     "y": 3323,
+     "plane": 0,
+     "npc": "Two-pints",
+     "item": "ardougne cloak 1",
+     "note": "Talk to Two-pints in the Flying Horse Inn to claim the Ardougne cloak."
+    }
+   ]
   }
  }
 }

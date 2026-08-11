@@ -273,6 +273,15 @@ public class StepAnnotation
 		public Integer varp;
 		public Integer value;
 		/**
+		 * Test ONE BIT of the var rather than its whole value. Achievement
+		 * diaries pack a whole tier into a single varp — Ardougne Easy is
+		 * ten tasks in varp 1196 — so a "greater than or equal" test would
+		 * let any OTHER task's bit satisfy this stage, which is exactly the
+		 * trap the barcrawl stamps hit (wave 6). When a bit is set, `value`
+		 * is ignored.
+		 */
+		public Integer bit;
+		/**
 		 * Where the ROUTE points when it differs from the satisfaction
 		 * point: Shortest Path can't draw into interiors, so a basement
 		 * stage routes to the surface trapdoor (routeX/Y/Plane) while
@@ -415,6 +424,22 @@ public class StepAnnotation
 		 * count stays grey, never alarm red.
 		 */
 		public Boolean optional;
+		/**
+		 * Not for THIS step — for the NEXT one. "Chronicle tele and start
+		 * Dragon slayer" needs a Chronicle you had to pack before leaving
+		 * the bank, and by the time you read that line you have left it
+		 * (owner, 2026-08-11). Listing it on the step before shows the
+		 * icon and the have/need count while you can still act on it; a
+		 * sentence in the note said the same thing and was easy to skim
+		 * past, because it did not look like the item rows above it.
+		 *
+		 * ALWAYS written alongside optional:true, deliberately. It must
+		 * never gate this step — it is not this step's requirement, and a
+		 * required item here would block the step's own arrival tick — and
+		 * an older build that has never heard of this field still sees the
+		 * optional flag and renders it muted instead of alarm red.
+		 */
+		public Boolean bringAhead;
 		/**
 		 * A material for the step's PRODUCTS (redberries for the dyes),
 		 * not the deliverable itself — the badge indents under the
