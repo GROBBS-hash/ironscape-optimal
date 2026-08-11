@@ -757,6 +757,78 @@ refresh when "Failed to login" appears.
   capture; hub pin at b8c994d, now ~70 commits behind — bump after a
   calm session.
 
+- SESSION WAVE 24 (2026-08-11, live play-test 265 -> 269 plus a long desk
+  stretch; ~12 commits, PUSHED; hub pin `bb3e11e`, now **25** behind — counted):
+  **DX-1 PAID FOR ITSELF WITHIN THE HOUR.** Every data fix this session landed
+  via `::ironreload` with the client running ("reloaded from data folder",
+  confirmed). USE IT: edit the repo file, tell him to reload. Only code needs a
+  restart now, and the session's restarts were all for code.
+  **DX-2 SHIPPED:** preflight speaks plainly by DEFAULT (`--detail` restores the
+  old output). It always computed the right answers and printed them in a
+  register its only reader cannot use, so it helped only when Claude remembered
+  to run it and translate.
+  **DX-3 SHIPPED AND CLOSED OUT:** `review-quest-kits.mjs` cross-checks every
+  quest kit against the wiki's items list. 101 quests, 117 rows. `--auto`
+  settles FLAT wiki statements ("Tinderbox (obtainable during quest)") and hands
+  over only HEDGED ones; the owner kept all 34 of those as requirements — red
+  and unnecessary is a question he can ask, grey and necessary is an item he
+  turns up without. **39 settled, 0 outstanding, 86 items greyed.**
+  **THREE WRONG GRANTS, ALL FOUND BY AUDITING WHAT I HAD JUST APPLIED**, all in
+  the harmful direction: Prince Ali `coins` (the line was a PRICE — "bought from
+  Ned for 18 coins"), Watchtower `rope` ("2nd rope obtainable"), Sheep Shearer
+  `shears` (the phrase attached to the WOOL). Money is now never auto-settled,
+  and any purchase or ordinal wording goes to the owner. **A FALSE alarm too:**
+  Daddy's Home's `saw` flagged only because the audit matched "Sawmill" on
+  another line — the grant is correct.
+  **THE WIKI ANNOTATES ITS ITEMS LIST UNEVENLY** and the missing half is in the
+  FOOTNOTES: Cook's Assistant marks the egg and leaves milk and flour bare while
+  its own footnotes say "if obtaining the milk during the quest". Two footnote
+  shapes, handled oppositely — "X (if obtaining the PARENT…)" grants the PARENT
+  (X is a bring item), "X (obtainable during…)" grants X. Owner confirmed all
+  three Cook's items.
+  **TELEPORT ITEMS (owner report, standing on 264):** "Chronicle tele and start
+  Dragon slayer" never tells you to bring a Chronicle, and by the time you read
+  it you have left the bank. `audit-teleport-items.mjs`: 18 steps guide-wide.
+  New **`ItemNeed.bringAhead`** puts the item on the step BEFORE with its icon
+  and 0/1, tagged "(for next step)" — a sentence in the note was the first cut
+  and he asked for the icon immediately, because prose under a list of item rows
+  does not read as one of them. ALWAYS written with `optional` so it cannot gate
+  the step it sits on. **Law runes ARE required** (owner: no staff supplies them
+  — which is exactly the asymmetry `castable()` already models). 0 outstanding.
+  The tool was NOT idempotent at first: adding the item stopped the step being a
+  finding, so the warning on the step before could never be written on a later
+  run. `needs` and `missing` are separate now.
+  **DIARIES ARE SEEDABLE AND THE ATLAS WAS ALREADY THERE** (owner: "we can read
+  diary progress and QH has the steps, why is this a hand tick?"). Wave 8's
+  `diary-tasks.json` had all 420 tasks and their bits; what was missing was
+  (a) chains could only test a var THRESHOLD and (b) no coordinates. New
+  **`Errand.bit`** (a tier is packed into one varp — `>=` would let any other
+  task satisfy the stage, the barcrawl trap); coordinates from QH's own diary
+  helpers. Seeded **Ardougne easy (10 tasks)** and **Varrock easy (14)**, each
+  ordered to cluster the walking and ending at the reward NPC.
+  **THE CASCADE WAS THE BUG, NOT THE BIT TEST.** In play the Ardougne chain
+  skipped all ten and routed to the cloak; his DIARY TAB settled it — three were
+  open (Trawler, combat camp, Tindel) and all three read done. A satisfied stage
+  marks every stage BEFORE it done, which is right for an item chain and for a
+  threshold (ordinal) but **one bit implies nothing about another**: Aleck's in
+  Yanille (bit 11, done) cascaded over three unrelated errands. Stated as a rule
+  so the next diary cannot inherit it; hand-ins already had the same exemption.
+  `ErrandProgressTest.bitGatedStagesAreIndependent` VERIFIED TO FAIL with the fix
+  backed out — the seven finished tasks look satisfied either way, so only the
+  unfinished ones can prove anything.
+  **16 OF 18 DIARY STEPS ALREADY TICK THEMSELVES** — the gap was never detection,
+  it was guidance. Remaining unguided multi-task step: **522 Fremmy hard**. 493
+  "Do all easy and medium diaries" is deliberately NOT chained (it spans ~20
+  tiers; a chain of hundreds of stages is unusable).
+  **TWO CHECKS WERE STRICTER THAN THE PLUGIN**, same day: `audit-errand-chains`
+  mirrored `varGated` from before `bit` existed and called every diary stage a
+  proximity waypoint (the Varrock sawmill stages sit 7 tiles apart because the
+  tree and the plank really are next to each other); and an ad-hoc name check
+  flagged `digsite pendant` when `canonical()` already strips charge suffixes.
+  **OPEN:** 282 still unplayed; the Ardougne chain fix and the Varrock chain both
+  UNTESTED in play; 522 unchained; hub pin 25 behind; ⌖ harvest not run this
+  session.
+
 - SESSION WAVE 23 (2026-08-10 evening, live play-test 262 -> 265; main at
   `9f79d9d`, 6 commits, PUSHED; hub pin `bb3e11e`, now **13** behind — counted,
   not carried): **the owner corrected a premise this file had wrong from the
