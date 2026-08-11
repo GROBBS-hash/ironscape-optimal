@@ -1049,7 +1049,22 @@ public class IronscapePlugin extends Plugin
 	{
 		if (stage.note != null && !stage.note.trim().isEmpty())
 		{
-			String first = stage.note.trim().split("(?<=.)s")[0].trim();
+			// First SENTENCE of the note: a full stop followed by a space.
+			//
+			// Written with indexOf rather than a regex on purpose. This was
+			// `split("(?<=\.)\s")` and reached the file as `split("(?<=.)s")`
+			// — the escapes were eaten generating this method through a
+			// script — which means "any character followed by an s", so
+			// every label was chopped at its first lowercase s: "Ask
+			// Wizard Cromperty…" rendered as "A". It cost three rebuilds
+			// spent adjusting a layout that had been correct since the
+			// first fix. Nothing to escape here, nothing to eat.
+			String first = stage.note.trim();
+			int sentence = first.indexOf(". ");
+			if (sentence > 0)
+			{
+				first = first.substring(0, sentence + 1);
+			}
 			return first.length() > 90 ? first.substring(0, 88) + "..." : first;
 		}
 		if (stage.item != null)
