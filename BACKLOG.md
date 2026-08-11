@@ -104,7 +104,55 @@ Prior work: `TELEPORT_SPELLS` and `ELEMENT_STAVES` are the shape to copy;
 "ring of dueling" is really `Ring of dueling(8)`, so the count is part of
 the name (checked while seeding teleport items, wave 25).
 
-**DX-6 — Stop second-guessing Shortest Path's route.**
+**MOST OF THIS DATA ALREADY EXISTS AND IS MAINTAINED BY SOMEONE ELSE**
+(found 2026-08-12 while answering DX-6): `tools/.sp-cache/teleportation_items.tsv`
+(31KB, already in our cache) is Shortest Path's teleport-item table — one row
+per destination with the item ids that provide it (`13121=1||13122=1||…`, i.e.
+any cloak tier), the destination coords, the display option
+("Ardougne cloak: Kandarin Monastery"), consumable flag, wilderness limit, and
+the **unlock varbits** (`4458=1` = the diary tier). Diary cloaks, jewellery and
+tablets are all in there. Do NOT hand-seed this from the wiki.
+Note DX-6 makes much of DX-5 moot for the HINT specifically — SP already picks
+teleport items when routing. DX-5's remaining value is the panel telling you
+what you are CARRYING that would help, and coverage when SP is not installed.
+
+**DX-6 — Stop second-guessing Shortest Path's route. ANSWERED 2026-08-12: YES.
+Listener shipped (`dbbd9f7`), NOT play-tested, nothing consumes it yet.**
+
+SP's `postPluginMessages()` fires on pathfinding completion and posts
+`PluginMessage("shortestpath", "transports", …)` carrying four parallel lists —
+`origin` / `destination` (`List<WorldPoint>`) and `objectInfo` / `displayInfo`
+(`List<String>`) — one entry per transport on the route it chose, in travel
+order. `displayInfo` is documented as *"the destination option to pick"*
+(`Ardougne cloak: Kandarin Monastery`, `Barbarian Assault Minigame Teleport`,
+`Travel Spirit tree`), `objectInfo` is the object to click. That is exactly
+what the hint needs, decided by the side that knows the player's real unlocks.
+
+**Verified, because each of these could have killed it:**
+- `postTransports` **defaults to false** (Debug section) — but `override()`
+  reads their static `configOverride` FIRST, and our own `"path"` message can
+  set it via the `"config"` key. No user setting to find.
+- **The hub-released build has it** — checked the plugin-hub pin
+  (`9953d527…`), not just master, and `postPluginMessages` is byte-identical
+  there. Coding against master would have been the trap.
+- **The callback runs on SP's pathfinding worker thread**
+  (`Pathfinder implements Runnable`, `completionCallback.run()` at the end of
+  `run()`). Store-and-log only; hop to the client thread before touching
+  anything.
+- Their `configOverride` is a static that is **cleared by any `clear`**, so the
+  config must ride on EVERY path post — hence one `postPath` / `postClear`.
+
+**Limits:** transports only, so a walking route comes back EMPTY (meaningful —
+"offer no teleport" — hence empty ≠ null), and there are no distances, so the
+walked-distance model stays as the fallback when SP is silent or absent.
+
+**Next:** get real payloads on screen (`grep "shortest path chose:"`) before
+wiring the hint to them. Guessing at the strings is the wave 15 mistake.
+This is also the first thing to try against wave 25's Varrock/West Ardougne
+anomaly — if SP names the transport it picked, our rival arithmetic stops
+mattering there.
+
+**Original entry:**
 Owner's question: how do Quest Helper and friends send data to Shortest
 Path, and why do we not just do that? **We already do** — the same
 documented PluginMessage API ("shortestpath" / "path" / target), and we
