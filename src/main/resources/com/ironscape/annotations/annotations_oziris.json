@@ -4605,8 +4605,7 @@
     },
     {
      "name": "rope",
-     "quantity": 2,
-     "granted": true
+     "quantity": 2
     },
     {
      "name": "guam potion (unf)",
@@ -5099,8 +5098,7 @@
     },
     {
      "name": "coins",
-     "quantity": 30,
-     "granted": true
+     "quantity": 30
     }
    ]
   },

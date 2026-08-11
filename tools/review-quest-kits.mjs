@@ -184,10 +184,32 @@ for (const [quest, step] of [...kitStepByQuest.entries()].sort()) {
   const lines = await itemLines(quest);
   if (!lines) continue;
   process.stdout.write(`\r  ${quests} quests checked…`);
-  for (const line of lines) {
+  // The wiki annotates its items list unevenly, and the missing half is in
+  // the footnotes. Cook's Assistant marks the EGG and leaves the milk and
+  // flour bare, while its own footnotes read "A bucket (if obtaining the
+  // milk during the quest)" — so all three come from the quest and the
+  // panel showed one grey beside two red (owner confirmed, 2026-08-10).
+  //
+  // Two footnote shapes, handled oppositely:
+  //   "X (if obtaining the PARENT during the quest)" -> the PARENT is
+  //       granted; X itself is a bring item and must NOT be flagged.
+  //   "X (obtainable during the quest)"              -> X itself is granted.
+  // The first is recognised by "if obtaining", which is what separates a
+  // phrase describing the line's own item from one describing its parent.
+  let parent = null;
+  for (const rawLine of lines) {
+    const footnote = rawLine.startsWith('**');
+    if (!footnote) parent = rawLine;
+    const aboutParent = footnote && /if obtaining/i.test(rawLine);
+    if (aboutParent && !parent) continue;
+    const line = rawLine;
     const phrase = inQuestPhrase(line);
     if (!phrase) continue;
-    for (const name of names(line)) {
+    // Hedging is judged on the line describing the ITEM being granted, not
+    // on the footnote's own "if" — that "if" is the idiom itself, and
+    // testing it would send every one of these to the review page.
+    const subject = aboutParent ? parent : line;
+    for (const name of names(subject)) {
       const need = entry.items.find((i) => (i.name || '').toLowerCase() === name);
       if (!need || need.granted === true || need.optional === true) continue;
       const key = `${step.id} ${name}`;
@@ -199,7 +221,11 @@ for (const [quest, step] of [...kitStepByQuest.entries()].sort()) {
       rows.push({
         key, quest, name, step: step.text,
         id: idByName.get(name) ?? null,
-        says: readable(line), phrase,
+        // Show BOTH lines when the evidence came from a footnote — the
+        // parent alone does not explain why the row exists.
+        says: aboutParent ? `${readable(parent)} — ${readable(line)}` : readable(line),
+        // ...but hedge on the subject alone. See above.
+        hedgeText: readable(subject), phrase,
       });
     }
   }
@@ -224,9 +250,21 @@ console.log(`\r${quests} quests with a kit checked; ${rows.length} item(s) to re
 // shears. One clause of distance between the phrase and the item is enough
 // to make the sentence unreadable by rule, and a wrong grant hides an item
 // the player then arrives without.
-const HEDGED = /small chance|may take|some time|\bchance\b|\bif\b|\bor\b|possibl|rare|might|instead|unless/i;
-const hedged = rows.filter((r) => HEDGED.test(r.says));
-const flat = rows.filter((r) => !HEDGED.test(r.says));
+const HEDGED = /small chance|may take|some time|\bchance\b|\bif\b|\bor\b|possibl|rare|might|instead|unless/i
+  // A PURCHASE is not a gift. "Rope (can be bought during the quest from Ned
+  // for 18 coins)" reads as in-quest but costs money, and Watchtower's
+  // "2 ropes (2ND ROPE obtainable during the quest)" grants only one of two —
+  // both would have hidden something the player still has to turn up with.
+  .source + '|\\bbought\\b|\\bbuy\\b|\\bcosts?\\b|\\bpurchase|\\b\\d(?:st|nd|rd|th)\\b|\\bsecond\\b|\\bextra\\b';
+const HEDGE_RE = new RegExp(HEDGED, 'i');
+
+// Money is never settled automatically, whatever the sentence says. The
+// coins link in "...from Ned for 18 coins" is a PRICE, and reading it as a
+// grant told the panel to stop asking for gp — the one thing an ironman
+// cannot improvise on arrival.
+const NEVER_AUTO = new Set(['coins', 'gp', 'money']);
+const hedged = rows.filter((r) => HEDGE_RE.test(r.hedgeText ?? r.says) || NEVER_AUTO.has(r.name));
+const flat = rows.filter((r) => !HEDGE_RE.test(r.hedgeText ?? r.says) && !NEVER_AUTO.has(r.name));
 
 if (process.argv.includes('--auto')) {
   for (const r of flat) {
