@@ -431,22 +431,44 @@ class StepRow extends JPanel
 			JEditorPane line = htmlPane("", 0,
 				new Font(Font.DIALOG, Font.PLAIN, 11), NOTE_FG);
 			line.setAlignmentX(LEFT_ALIGNMENT);
-			// The width htmlPane settled on, kept so every re-measure below
-			// uses the SAME one — re-reading it after the size is cleared
-			// would get the unwrapped text width and defeat the wrapping.
-			final int paneWidth = line.getPreferredSize().width;
+			// TEXT_WIDTH, not what htmlPane chose.
+			//
+			// Three attempts failed by picking a width and hoping. The
+			// symptom was never horizontal clipping: "A", "Sell", "U" are
+			// whole FIRST LINES, so the pane was wrapping into more lines
+			// than its pinned height allowed and losing the rest. That is
+			// what a pane measured at one width and then laid out at a
+			// narrower one does.
+			//
+			// So: the narrowest sensible width rather than the widest that
+			// might fit. Too narrow only costs an extra line, and every
+			// line stays readable; too wide silently eats the text. The
+			// height is then measured at the SAME width the layout will
+			// use, which is the part that was actually broken.
+			final int paneWidth = TEXT_WIDTH;
+			// No left indent: the border eats into the same width, and these
+			// lines are full sentences that need every pixel. A little
+			// vertical breathing room instead — a dozen struck-through
+			// sentences with no gaps reads as a solid block (owner).
+			line.setBorder(BorderFactory.createEmptyBorder(2, 0, 2, 0));
 			Runnable refresh = () -> {
 				java.util.LinkedHashMap<String, String> now =
 					ctx.getErrandChecklist().apply(sub.getId());
 				String state = now == null ? "TODO" : now.getOrDefault(key, "TODO");
 				String body = RichText.escape(label);
+				// A dozen struck-through sentences all in one weight is a
+				// wall (owner: "the formatting makes it kinda hard to
+				// read"). Done work is dimmed hard and gets out of the way;
+				// the one you are on is bold and green; what is ahead sits
+				// in between. The strikethrough then reads as texture
+				// rather than as the only signal.
 				if ("DONE".equals(state))
 				{
-					body = "<s><font color='#877e6f'>" + body + "</font></s>";
+					body = "<s><font color='#5f5a52'>" + body + "</font></s>";
 				}
 				else if ("CURRENT".equals(state))
 				{
-					body = "<font color='#4caf50'>" + body + "</font>";
+					body = "<b><font color='#4caf50'>" + body + "</font></b>";
 				}
 				else
 				{
