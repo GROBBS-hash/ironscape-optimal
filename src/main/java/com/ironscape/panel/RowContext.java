@@ -46,6 +46,8 @@ class RowContext
 	 * icon should do. Null function or null result = no stage badges.
 	 */
 	java.util.function.Function<String, java.util.LinkedHashMap<String, String>> errandStages;
+	/** Chain stages as an ordered checklist: "index|label" -> DONE | CURRENT | TODO. */
+	java.util.function.Function<String, java.util.LinkedHashMap<String, String>> errandChecklist;
 
 	/**
 	 * sub-id -> true when NOTHING can ever tick this step automatically: no

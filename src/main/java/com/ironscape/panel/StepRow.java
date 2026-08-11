@@ -163,6 +163,7 @@ class StepRow extends JPanel
 			add(row.panel);
 			addItemBadge(multi ? sub.getId() : step.getId(), sub,
 				22 + sub.getIndentLevel() * INDENT_PER_LEVEL);
+			addErrandChecklist(sub, 22 + sub.getIndentLevel() * INDENT_PER_LEVEL);
 		}
 
 		addGearBadge();
@@ -381,6 +382,66 @@ class StepRow extends JPanel
 	 * @param sub the sub-step this badge belongs to; null = the step
 	 *            header badge of a multi-action step
 	 */
+	/**
+	 * The chain as a CHECKLIST, the way the game shows an achievement diary:
+	 * every leg listed, finished ones struck through and greyed, the one you
+	 * are on in green (owner's suggestion — copying a screen he already
+	 * reads beats inventing a third convention).
+	 *
+	 * Rows are created HERE, at build time, and only ever RESTYLED by the
+	 * refresher. A row cannot appear from the per-tick path: that would need
+	 * a full rebuild, which blanked the panel once already (wave 15). The
+	 * label set is fixed for a chain, so nothing needs to appear later —
+	 * only the three states change.
+	 */
+	private void addErrandChecklist(SubStep sub, int indentPx)
+	{
+		if (ctx.getErrandChecklist() == null)
+		{
+			return;
+		}
+		java.util.LinkedHashMap<String, String> stages = ctx.getErrandChecklist().apply(sub.getId());
+		if (stages == null || stages.isEmpty())
+		{
+			return;
+		}
+		final int wrapWidth = Math.max(80, 168 - indentPx);
+		for (String key : stages.keySet())
+		{
+			// key is "index|label" — the index only keeps duplicates apart.
+			int bar = key.indexOf("|");
+			final String label = bar < 0 ? key : key.substring(bar + 1);
+			JLabel line = new JLabel();
+			line.setFont(new Font(Font.DIALOG, Font.PLAIN, 11));
+			line.setAlignmentX(LEFT_ALIGNMENT);
+			line.setBorder(BorderFactory.createEmptyBorder(0, indentPx, 1, 0));
+			Runnable refresh = () -> {
+				java.util.LinkedHashMap<String, String> now =
+					ctx.getErrandChecklist().apply(sub.getId());
+				String state = now == null ? "TODO" : now.getOrDefault(key, "TODO");
+				String body = RichText.escape(label);
+				if ("DONE".equals(state))
+				{
+					body = "<s><font color='#877e6f'>" + body + "</font></s>";
+				}
+				else if ("CURRENT".equals(state))
+				{
+					body = "<font color='#4caf50'>" + body + "</font>";
+				}
+				else
+				{
+					body = "<font color='#b8b1a5'>" + body + "</font>";
+				}
+				// Width-locked body, the same trick the note block uses: a JLabel
+				// reports its UNWRAPPED width otherwise and widens the whole card.
+				line.setText("<html><body style='width:" + wrapWidth + "px'>"
+					+ body + "</body></html>");
+			};
+			refresh.run();
+			badgeRefreshers.add(refresh);
+			add(line);
+		}
+	}
 	private void addItemBadge(String annotationId, SubStep sub, int indentPx)
 	{
 		String goalSubId = sub == null ? null : sub.getId();

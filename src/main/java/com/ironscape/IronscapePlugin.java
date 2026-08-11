@@ -771,6 +771,10 @@ public class IronscapePlugin extends Plugin
 	 * Sub id -> the chain's stage items in order, each NEEDED / HELD / SPENT.
 	 * Written on the client thread by cacheErrandBadges, read from Swing.
 	 */
+	/** Stage checklist per sub: "index|label" -> DONE | CURRENT | TODO. */
+	private final Map<String, java.util.LinkedHashMap<String, String>> errandChecklistBySub =
+		new java.util.concurrent.ConcurrentHashMap<>();
+
 	private final Map<String, java.util.LinkedHashMap<String, String>> errandStagesBySub =
 		new java.util.concurrent.ConcurrentHashMap<>();
 
@@ -1005,8 +1009,58 @@ public class IronscapePlugin extends Plugin
 	 * Swing, the same split checkpointMetBySub uses (badges cannot read game
 	 * state off the client thread).
 	 */
+	/**
+	 * Publish the chain as a CHECKLIST for the panel: every stage in order,
+	 * each labelled DONE, CURRENT or TODO.
+	 *
+	 * The badges above answer "what am I carrying"; a diary chain has ten
+	 * or fifteen legs and most carry no item at all, so they were invisible
+	 * -- the card said "Finish off Ardy easy tasks" and nothing else, while
+	 * the game's own diary interface has always shown the list with the
+	 * finished ones struck through (owner's suggestion, and it is the right
+	 * model to copy: he already reads that screen).
+	 *
+	 * Same client-thread/Swing split as the badges: computed here where
+	 * errandDone is already known, read from Swing through a supplier.
+	 */
+	private void cacheErrandChecklist(GuideStep step, SubStep sub,
+		List<StepAnnotation.Errand> chain)
+	{
+		int active = ErrandProgress.advance(step.getId(), chain, errandDone, errandWorld);
+		java.util.LinkedHashMap<String, String> list = new java.util.LinkedHashMap<>();
+		for (int i = 0; i < chain.size(); i++)
+		{
+			StepAnnotation.Errand stage = chain.get(i);
+			boolean done = errandDone.contains(ErrandProgress.stageKey(step.getId(), chain, i));
+			// The INDEX prefix keeps two legs with the same wording apart --
+			// a map key collision would silently drop one row from the list.
+			list.put(i + "|" + checklistLabel(stage),
+				done ? "DONE" : i == active ? "CURRENT" : "TODO");
+		}
+		if (!list.equals(errandChecklistBySub.put(sub.getId(), list)) && panel != null)
+		{
+			// refreshItemBadges, never panel::refresh -- see cacheErrandBadges.
+			SwingUtilities.invokeLater(panel::refreshItemCounts);
+		}
+	}
+
+	/** One short line describing a stage: its note, else its item, else where it is. */
+	private static String checklistLabel(StepAnnotation.Errand stage)
+	{
+		if (stage.note != null && !stage.note.trim().isEmpty())
+		{
+			String first = stage.note.trim().split("(?<=.)s")[0].trim();
+			return first.length() > 90 ? first.substring(0, 88) + "..." : first;
+		}
+		if (stage.item != null)
+		{
+			return com.ironscape.items.ItemTracker.capitalize(stage.item);
+		}
+		return "Go to " + stage.x + ", " + stage.y;
+	}
 	private void cacheErrandBadges(GuideStep step, SubStep sub, List<StepAnnotation.Errand> chain)
 	{
+		cacheErrandChecklist(step, sub, chain);
 		java.util.LinkedHashMap<String, String> states = new java.util.LinkedHashMap<>();
 		for (int i = 0; i < chain.size(); i++)
 		{
@@ -2026,6 +2080,7 @@ public class IronscapePlugin extends Plugin
 			return null;
 		});
 		panel.setErrandStagesSupplier(errandStagesBySub::get);
+		panel.setErrandChecklistSupplier(errandChecklistBySub::get);
 		// Say so when a step cannot complete itself. Deliberately the SAME
 		// three tests the completion loop makes, so the label can never
 		// disagree with the behaviour it describes.

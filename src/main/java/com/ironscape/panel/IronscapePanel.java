@@ -143,6 +143,7 @@ public class IronscapePanel extends PluginPanel
 
 	/** sub-id -> errand stage items and their NEEDED/HELD/SPENT state. */
 	private java.util.function.Function<String, java.util.LinkedHashMap<String, String>> errandStagesSupplier;
+	private java.util.function.Function<String, java.util.LinkedHashMap<String, String>> errandChecklistSupplier;
 
 	/** sub-id -> "nothing can auto-tick this"; see RowContext.manualOnly. */
 	private java.util.function.Predicate<String> manualOnlySupplier;
@@ -348,6 +349,12 @@ public class IronscapePanel extends PluginPanel
 		java.util.function.Function<String, java.awt.image.BufferedImage> skillIconSupplier)
 	{
 		this.skillIconSupplier = skillIconSupplier;
+	}
+
+	public void setErrandChecklistSupplier(
+		java.util.function.Function<String, java.util.LinkedHashMap<String, String>> supplier)
+	{
+		this.errandChecklistSupplier = supplier;
 	}
 
 	public void setErrandStagesSupplier(
@@ -758,6 +765,7 @@ public class IronscapePanel extends PluginPanel
 			guide.getVariant(), progressManager, annotationManager, itemTracker, placeManager,
 			itemGoals, actionBadgeSupplier, badgeIconSupplier, skillIconSupplier,
 			errandStagesSupplier,
+			errandChecklistSupplier,
 			manualOnlySupplier,
 			this::onManualProgressChange,
 			config.showCaptureButtons() ? captureHandler : null,
