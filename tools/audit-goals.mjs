@@ -209,7 +209,11 @@ if (!fs.existsSync(constantsTsv)) {
   // debuted with The Dig Site, hence the constant name.)
   // ('skin paste' -> 2424 SKINPASTE displays as "Paste"; 'key imprint'
   // -> 2423 KEYPRINT as "Key print" — PAR's colloquials, owner-hit.)
-  const VERIFIED = new Set(['big frog leg', 'rusty sword', 'buttons',
+  // ('pet kitten' -> 1555 KITTENOBJECT: the name is owner-confirmed in
+  // game, and 1554-1560 are the colours. Counting is by NAME so every
+  // colour counts; the id only chooses the sprite, which is why picking
+  // the default one is safe here.)
+  const VERIFIED = new Set(['pet kitten', 'big frog leg', 'rusty sword', 'buttons',
     'skin paste', 'key imprint', 'teleport card',
     'silverlight key', 'demon slayer key',
     'message', 'cadava potion', 'pirate message', "pirate's message",

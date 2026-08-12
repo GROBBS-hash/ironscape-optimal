@@ -7583,6 +7583,10 @@
     {
      "name": "chronicle",
      "quantity": 1
+    },
+    {
+     "name": "pet kitten",
+     "quantity": 1
     }
    ],
    "target": {
