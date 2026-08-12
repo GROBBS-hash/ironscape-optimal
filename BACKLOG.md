@@ -14,9 +14,43 @@ Screenshots `SS-01` … `SS-20` in `docs/screenshots/`.
 
 ## START HERE — next session (written 2026-08-12, end of wave 26)
 
-Desk session. **DX-6 and DX-5 both shipped and are CONFIRMED loading in a
-running client; one branch of DX-5 is UNPROVEN in play** — see below. Main
-at `a3ba9f5`, 4 commits, **NOT PUSHED**. Hub pin unchanged.
+Main at `7cd8eed`, 11 commits, **PUSHED**, tree clean. Hub pin `bb3e11e`,
+**57 behind**. Run `node tools/check-all.mjs --tests` before handing over a
+build, and `node tools/check-client.mjs` before ANY gradle command.
+
+**PLAY-TEST FIRST — a lot shipped today and most of it has never run in a
+game.** In the order he will meet it:
+
+1. **The panel scroll** — it should sit on the frontier step and STAY there,
+   including after switching sidebar tabs away and back. Fixed from computed
+   evidence, never watched. If it jumps: **`::ironwrong` before anything
+   else** (still never used, `~/.runelite/ironscape/reports/`).
+2. **The equipment-tab signpost** when a route picks a worn teleport item.
+   The cloak outline itself is CONFIRMED; the tab highlight that tells you
+   where to look is not.
+3. **The kitten step** — should stay unticked until a Pet kitten is in the
+   inventory, rather than ticking on walking up to Gertrude.
+4. **The five bare "Chronicle tele" steps** — should tick on landing at the
+   Champions' Guild and hand routing to the next step.
+5. **Quest-NPC gating** — on an unstarted quest step the outline should pick
+   someone in that quest's cast (Trufitus for Jungle Potion), not the nearest
+   body. His cat is excluded outright either way.
+6. **Note items** on 5 steps (Wintertodt warm clothing, the barb-fishing
+   knife, Crandor swordfish, the Swordchick pair, Lunar waterskins).
+
+Then **282** and **316**, both still unplayed from wave 25.
+
+**Do not pin the hub until a session goes quietly.** 57 commits is a large
+gap, but the cost of pinning a bad build is a review round.
+
+**Standing lesson re-learned twice today:** write scripts to a FILE and run
+them — hand-escaping JS through PowerShell failed both times it was tried.
+And `Select-Object -First N` in PowerShell CLOSES the pipeline, which kills
+a `gradlew run` mid-launch.
+
+---
+
+## Wave 26 detail (2026-08-12)
 
 **WAVE 25'S VARROCK ANOMALY IS NOT A DEFECT — CLOSED.** The suspicion was
 that our walked-distance table was cheating through the Plague City wall.

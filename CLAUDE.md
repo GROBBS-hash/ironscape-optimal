@@ -757,6 +757,96 @@ refresh when "Failed to login" appears.
   capture; hub pin at b8c994d, now ~70 commits behind — bump after a
   calm session.
 
+- SESSION WAVE 26 (2026-08-12, desk + live play-test 268 -> 272; main at
+  `7cd8eed`, 11 commits, PUSHED; hub pin `bb3e11e`, now **57** behind — counted):
+  **DX-6 AND DX-5 BOTH SHIPPED, AND THE FIRST THING DX-6 DID WAS PROVE US
+  RIGHT.** Shortest Path's `postPluginMessages()` posts back every transport on
+  the route it chose — `origin`/`destination` as WorldPoints, `objectInfo` and
+  `displayInfo` as strings, `displayInfo` documented as *"the destination option
+  to pick"* (`Ardougne cloak: Kandarin Monastery`). Four things checked before
+  trusting it, each of which could have killed it: `postTransports` defaults
+  FALSE (Debug section) but `override()` reads their static configOverride
+  first, so **our own "path" message switches it on** via the `config` key; the
+  HUB-RELEASED build has it (checked the plugin-hub pin `9953d527`, not master —
+  coding against master while everyone runs the release is the obvious trap);
+  the callback runs on **SP's pathfinding worker thread**, so store-and-log
+  only; and their override map is **wiped by any `clear`**, so the config must
+  ride on EVERY path post — hence one `postPath` / `postClear`.
+  **WAVE 25'S VARROCK ANOMALY IS NOT A DEFECT.** Asked directly, SP picked the
+  SAME Varrock teleport: the real route is Varrock -> GE spirit tree ->
+  Battlefield of Khazard -> Ardougne wall door, and Khazard lands **40 tiles**
+  from that door while the cloak's only landings sit ~92 away. Our overlay and
+  SP's line had been agreeing all along. Settled by ASKING rather than
+  re-deriving our own arithmetic.
+  **DX-5: `teleportation_items.tsv` WAS ALREADY IN OUR CACHE** — SP maintains
+  it. 319 destinations, 225 item ids, with landing tile, menu option and the
+  unlock/charge varbits (diary cloaks, jewellery, tablets, memoirs). Do NOT
+  wiki-scrape this. Two traps in their data, both handled and TESTED: the
+  SKILLS column also carries the max cape's TOTAL level and the quest cape's
+  QUEST points, which are not skills; and a `&` clause is a BITMASK needing that
+  exact bit, not a threshold (the barcrawl trap). Everything unevaluable fails
+  CLOSED.
+  **OUR OWN RANKING COULD NEVER HAVE PICKED A TELEPORT ITEM, and that is the
+  lesson.** `TravelDistances` holds one precomputed field per NAMED landing —
+  25 of them — and looks up BY NAME, so all 319 item landings answered UNKNOWN
+  and lost every contest SILENTLY. Adding 319 fields was the obvious fix and the
+  wrong one: **SP's pick now outranks ours whenever it names an item**, ours is
+  the fallback. CONFIRMED IN PLAY once the owner lowered his own
+  `costNonConsumableTeleportationItems` (50 vs 15 for spells is why the spell
+  kept winning — **that dial is the player's, not ours; do not add a thumb to
+  the scale**).
+  **A CORRECT ANSWER DRAWN WHERE NOBODY LOOKS IS STILL A BUG.** The cloak hint
+  fired perfectly first try and was invisible: the outline draws on the WORN
+  EQUIPMENT panel and he was on the inventory tab. The Chronicle has had the
+  answer since wave 9 — highlight the worn slot, else the equipment TAB,
+  labelled — now reused for any worn teleport item.
+  **THE PANEL "JUMPING" WAS THE SCROLL, NOT THE TARGET**, and it was settled
+  OFFLINE from the manifest + saved progress rather than guessed: position 270,
+  everything from 271 incomplete, so it correctly chose 271 and displayed 275.
+  The scroll fires once the target row has a height — but rows keep growing
+  after that (item icons load async, html panes size late), and a row above
+  growing slides the target out of the view just set. Step 274 lists twelve
+  items. Re-asserts until the position stops moving now.
+  **PETS ARE NEVER THE ANSWER**, and the owner's question behind it was the
+  better one: *"how do we still have no NPC names for all quests?"* We only ever
+  seeded the GIVER. The nearest-to-the-pin fallback has crowned rats, a Zamorak
+  crafter, a Market Guard, a Master Farmer and his CAT — each patched
+  separately, because it had nothing to check itself against. The 4-tile cap
+  protects nothing when you are STANDING on the target. **`seed-quest-npcs.mjs`:
+  112 of 114 quests, 1329 NPC ids, from Quest Helper, BY ID** (`NpcID.TRUFITUS`
+  + every scene NPC carries an id), which sidesteps the whole family of name
+  faults — articles, plurals, species suffixes, a name inside a place name.
+  Quests with no index keep the old behaviour exactly. Two tool lessons: listing
+  a directory per quest through the UNAUTHENTICATED GitHub API blew the 60/hour
+  cap and took the run from 96 quests to 20 — **which reads identically to
+  "Quest Helper has no file for this quest"** (goes through `gh` now, raw fetches
+  stay the fast path); and the last four misses are hand-aliased, because
+  anything loose enough to catch `Vampire Slayer -> vampyreslayer` also pairs
+  Dragon Slayer I with dragonslayerii.
+  **NEW `ItemNeed.icon`** — a row standing for a CATEGORY ("Food", shark
+  sprite). Deliberately NOT `id`: an id changes what is COUNTED and would trip
+  the audit that catches genuinely wrong ids, which is a rule worth keeping.
+  **SEEDED:** Gertrude pin on the kitten step + gated on holding a **Pet
+  kitten** (owner-confirmed name; 1554-1560 are colours, counting is by NAME so
+  every colour counts, `KITTENOBJECT` is only the constant); the five bare
+  "Chronicle tele" steps pinned at the LANDING (owner's call: ticking there is
+  what hands routing to the next step — `audit-teleport-landings.mjs`, 9 hits of
+  which 4 are correctly left alone); and 9 carry items that lived only in NOTE
+  prose across 5 steps (`audit-note-items.mjs`), each read first, since caviar is
+  what you PRODUCE and "25k buckets worth of sand" is a measure — both recorded
+  as declined WITH THE REASON.
+  **MEASURED AND RULED OUT:** 107 of 118 location tags already resolve, so the
+  39 no-route steps are NOT a missing-places problem
+  (`audit-location-tags.mjs`).
+  **PROCESS:** every build ran in a throwaway worktree while the client was
+  live. I killed one client launch myself with `Select-Object -First 30`, which
+  closes the pipeline and terminates the process it reads from. And I hand-
+  escaped JS through PowerShell twice and it failed both times — **write the
+  script to a FILE and run it**, exactly as wave 25 recorded.
+  **OPEN:** everything from the scroll fix onward is UNPLAYED (equipment-tab
+  signpost, kitten gate, Chronicle pins, note items, quest-NPC gating); 282 and
+  316 still unplayed; `::ironwrong` still never used; hub pin 57 behind.
+
 - SESSION WAVE 25 (2026-08-11 evening, long live play-test 268 -> 270; main at
   `2ecd06a`, ~14 commits, PUSHED; hub pin `bb3e11e`, **44** behind — counted):
   **THE THEME IS READING THE EVIDENCE THAT IS ALREADY IN FRONT OF ME.** Three
