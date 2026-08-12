@@ -3202,24 +3202,11 @@ public class IronscapePlugin extends Plugin
 						&& leg != null && leg.home;
 					activeTeleportItem = activeMinigameTarget == null
 						&& leg != null ? leg.item : null;
-					// Shortest Path's own pick OUTRANKS ours whenever it
-					// named a teleport item, because it ranked the same
-					// choice better than we can: real walked routes, every
-					// transport type, the player's actual unlocks, and the
-					// player's own cost settings. Our table cannot even
-					// measure an item landing (it holds a distance field per
-					// NAMED landing, and the 319 item landings are not among
-					// them), so without this the item hint could never fire
-					// on a route ranked by walked distance.
-					com.ironscape.travel.TeleportItems.Entry chosen = teleportItemChosenBySp();
-					if (chosen != null)
-					{
-						activeTeleportItem = chosen;
-						activeSpellTeleport = -1;
-						routeHomeTeleportHint = false;
-						activeMinigameTarget = null;
-						hintReason = "shortest path picked a teleport item";
-					}
+					// The router's own pick OUTRANKS ours, because it ranked
+					// the same choice better than we can: real walked
+					// routes, every transport type, the player's actual
+					// unlocks, and the player's own cost settings.
+					applyRouterChoice();
 					if (activeTeleportItem != null)
 					{
 						// Name the OPTION, not just the item: an Ardougne
@@ -3233,6 +3220,22 @@ public class IronscapePlugin extends Plugin
 					activeSpellTeleport = -1;
 					routeHomeTeleportHint = false;
 					activeTeleportItem = null;
+					// Even with no first leg of our OWN — including while we
+					// have stood down for Quest Helper — highlight whatever
+					// the router picked. This is not a rival opinion: it IS
+					// the leg on screen, made clickable, which is the one
+					// thing the router cannot do for itself. Standing fully
+					// silent was right only while our hint proposed its own
+					// destination (owner, wave 23); since we can read the
+					// router's choice, silence just hides the button.
+					if (applyRouterChoice())
+					{
+						hintReason = "following the route's own choice";
+						if (activeTeleportItem != null)
+						{
+							hintReason += " via " + activeTeleportItem.getDisplay();
+						}
+					}
 				}
 				if (key != null && GROUPING_MINIGAMES.contains(key))
 				{
@@ -7492,11 +7495,29 @@ public class IronscapePlugin extends Plugin
 	 * Tell Shortest Path to stop drawing. Caller is already on the client
 	 * thread (unlike {@link #clearPath}, which hops onto it first).
 	 */
+	/**
+	 * Stop drawing OUR route — and only ours.
+	 *
+	 * <p>"Clear" wipes whatever the pathing plugin is showing, no matter
+	 * who asked for it. Standing down for Quest Helper ran this on every
+	 * evaluation, so a route QH had set was deleted the moment anything
+	 * made us re-evaluate; the owner saw it as QH's navigation dying when
+	 * he took the teleport QH had told him to take, and coming back when
+	 * he hit "reload quest" (in play, 2026-08-12).
+	 *
+	 * <p>So a clear only happens when we have something posted to clear.
+	 * Standing down still removes a stale route of ours exactly once, and
+	 * then stays quiet instead of talking over whoever owns the screen.
+	 */
 	private void postClear()
 	{
 		spRoute = null;
-		// Forget what we last drew, so the next decision genuinely re-posts
-		// rather than being mistaken for one already on screen.
+		if (lastPostedTarget == null)
+		{
+			// Nothing of ours on screen — anything showing belongs to
+			// another plugin, and is not ours to erase.
+			return;
+		}
 		lastPostedTarget = null;
 		eventBus.post(new PluginMessage("shortestpath", "clear"));
 	}
@@ -7682,6 +7703,82 @@ public class IronscapePlugin extends Plugin
 		return composition != null && composition.isFollower();
 	}
 
+	/**
+	 * Highlight whatever the routing plugin picked as the FIRST leg of the
+	 * route it is drawing — a teleport item, a spellbook teleport, the home
+	 * teleport, or a Grouping minigame teleport.
+	 *
+	 * Highlighting the button is the one thing the router cannot do for
+	 * itself, and following its choice is never a rival opinion: it IS the
+	 * line on screen. Originally this covered teleport ITEMS only, so a
+	 * route that chose a spell or the home teleport lit nothing at all
+	 * (owner, in play with GPS: "GPS wants to take me to Lumbridge, but
+	 * there are no overlays in our TP book").
+	 *
+	 * @return true when something was highlighted.
+	 * Client thread.
+	 */
+	private boolean applyRouterChoice()
+	{
+		List<SpLeg> route = spRoute;
+		if (route == null || route.isEmpty())
+		{
+			return false;
+		}
+		// Only the FIRST transport: that is the one to act on now, and
+		// highlighting a later leg points at a button for a journey you
+		// have not started.
+		String display = route.get(0).displayInfo;
+		if (display == null)
+		{
+			return false;
+		}
+		com.ironscape.travel.TeleportItems.Entry item = teleportItemChosenBySp();
+		if (item != null)
+		{
+			activeTeleportItem = item;
+			activeSpellTeleport = -1;
+			routeHomeTeleportHint = false;
+			activeMinigameTarget = null;
+			return true;
+		}
+		// "Lumbridge Home Teleport", and the other spellbooks' equivalents.
+		if (display.toLowerCase(Locale.ROOT).contains("home teleport"))
+		{
+			routeHomeTeleportHint = true;
+			activeSpellTeleport = -1;
+			activeTeleportItem = null;
+			activeMinigameTarget = null;
+			return true;
+		}
+		// "Barbarian Assault Minigame Teleport" -> the Grouping click path.
+		String minigameSuffix = " Minigame Teleport";
+		if (display.endsWith(minigameSuffix))
+		{
+			activeMinigameTarget = display.substring(0, display.length() - minigameSuffix.length());
+			activeSpellTeleport = -1;
+			routeHomeTeleportHint = false;
+			activeTeleportItem = null;
+			return true;
+		}
+		// "Varrock Teleport", and variants that name a destination after a
+		// colon ("Varrock Teleport: GE") — the same spell either way.
+		String spellName = display.contains(":")
+			? display.substring(0, display.indexOf(':')).trim() : display;
+		for (TeleportSpell spell : TELEPORT_SPELLS)
+		{
+			if (spell.name.equalsIgnoreCase(spellName))
+			{
+				activeSpellTeleport = spell.component;
+				routeHomeTeleportHint = false;
+				activeTeleportItem = null;
+				activeMinigameTarget = null;
+				return true;
+			}
+		}
+		return false;
+	}
+
 	private com.ironscape.travel.TeleportItems.Entry teleportItemChosenBySp()
 	{
 		List<SpLeg> route = spRoute;
@@ -7758,15 +7855,15 @@ public class IronscapePlugin extends Plugin
 		});
 	}
 
+	/**
+	 * Off-thread caller's version of {@link #postClear} — same rule about
+	 * only erasing our own route, hopped onto the client thread. Kept as
+	 * one behaviour rather than two, because a second copy of "when may we
+	 * clear" is exactly the drift that produces these faults.
+	 */
 	private void clearPath()
 	{
-		// Forget their last answer too: with no route there is no chosen
-		// transport, and a stale one would have us highlighting a button
-		// for a journey nobody is making.
-		spRoute = null;
-		lastPostedTarget = null;
-		clientThread.invokeLater(() ->
-			eventBus.post(new PluginMessage("shortestpath", "clear")));
+		clientThread.invokeLater(this::postClear);
 	}
 
 	/**
