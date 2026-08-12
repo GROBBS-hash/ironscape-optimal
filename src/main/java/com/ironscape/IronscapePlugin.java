@@ -6425,7 +6425,7 @@ public class IronscapePlugin extends Plugin
 			if (deathPoint != null)
 			{
 				logNavDecision("routing to gravestone at " + deathPoint);
-				postPath(deathPoint);
+				postPath(deathPoint, true);
 				return;
 			}
 			// A manual ⌖ capture pinned the route to where the player is
@@ -6478,7 +6478,7 @@ public class IronscapePlugin extends Plugin
 				logNavDecision("routing to errand stage " + errandRoute
 					+ (errand.item == null ? "" : " for " + errand.item)
 					+ (errand.note == null ? "" : " — " + errand.note));
-				postPath(errandRoute);
+				postPath(errandRoute, true);
 				return;
 			}
 			// Chain COMPLETE but the sub's own goal isn't (standing at the
@@ -7268,7 +7268,7 @@ public class IronscapePlugin extends Plugin
 				WorldPoint nearest = nearestOf(network);
 				if (nearest != null)
 				{
-					postPath(nearest);
+					postPath(nearest, true);
 				}
 			});
 			return;
@@ -7329,7 +7329,7 @@ public class IronscapePlugin extends Plugin
 					clickedQuest = quest;
 					clickedQuestTicks = 200;
 					questStartMarker = point;
-					postPath(point);
+					postPath(point, true);
 				}
 				else if (questIsTheTask && state == QuestState.IN_PROGRESS)
 				{
@@ -7346,7 +7346,7 @@ public class IronscapePlugin extends Plugin
 				{
 					// Finished quest, or a landmark reference on some other
 					// step — the name means the PLACE now, so just route.
-					postPath(point);
+					postPath(point, true);
 				}
 			});
 			return;
@@ -7378,7 +7378,7 @@ public class IronscapePlugin extends Plugin
 					client.addChatMessage(ChatMessageType.CONSOLE, "",
 						"IRONSCAPE: next: " + stage.note, null);
 				}
-				postPath(new WorldPoint(stage.x, stage.y, stage.plane));
+				postPath(new WorldPoint(stage.x, stage.y, stage.plane), true);
 				return;
 			}
 			// Item sources carry a how-to ("ask Golrie... key from the
@@ -7389,7 +7389,7 @@ public class IronscapePlugin extends Plugin
 				client.addChatMessage(ChatMessageType.CONSOLE, "",
 					"IRONSCAPE: " + note, null);
 			}
-			postPath(point);
+			postPath(point, true);
 		});
 	}
 
@@ -7415,7 +7415,9 @@ public class IronscapePlugin extends Plugin
 	{
 		// Post on the client thread: Shortest Path reads game state
 		// (player position as the route start) in its handler.
-		clientThread.invokeLater(() -> postPath(point));
+		// The player just clicked something — always redraw, even if it is
+		// the route already on screen.
+		clientThread.invokeLater(() -> postPath(point, true));
 	}
 
 	/**
@@ -7434,6 +7436,40 @@ public class IronscapePlugin extends Plugin
 	 */
 	private void postPath(WorldPoint target)
 	{
+		postPath(target, false);
+	}
+
+	/**
+	 * The last target we asked Shortest Path to draw, so we do not ask
+	 * again for the one it is already drawing.
+	 */
+	private WorldPoint lastPostedTarget;
+
+	/**
+	 * Ask Shortest Path to route to a point.
+	 *
+	 * <p>UNCHANGED TARGETS ARE NOT RE-POSTED. This method is reached from a
+	 * re-check that runs every 10 ticks, and it used to post every time
+	 * even when the decision had not moved — logNavDecision only prints on
+	 * CHANGE, so the route was being overwritten every six seconds with
+	 * nothing in the log to show it. The owner saw it as Quest Helper's
+	 * route surviving for a few seconds after "reload quest" and then being
+	 * replaced by ours, which in his case could not even be drawn
+	 * ("Destination could not be reached"). Wave 20 fixed this shape for
+	 * the bank nudge alone; it was general all along.
+	 *
+	 * <p>{@code force} is for the routes that are MEANT to reassert over
+	 * whatever else is on screen — a gravestone, an active errand leg, and
+	 * anything the player just clicked. Those keep their designed
+	 * precedence over Quest Helper (waves 4, 7, 8, 20).
+	 */
+	private void postPath(WorldPoint target, boolean force)
+	{
+		if (!force && target != null && target.equals(lastPostedTarget))
+		{
+			return;
+		}
+		lastPostedTarget = target;
 		eventBus.post(new PluginMessage("shortestpath", "path",
 			Map.of("target", target, "config", Map.of("postTransports", true))));
 	}
@@ -7445,6 +7481,9 @@ public class IronscapePlugin extends Plugin
 	private void postClear()
 	{
 		spRoute = null;
+		// Forget what we last drew, so the next decision genuinely re-posts
+		// rather than being mistaken for one already on screen.
+		lastPostedTarget = null;
 		eventBus.post(new PluginMessage("shortestpath", "clear"));
 	}
 
@@ -7711,6 +7750,7 @@ public class IronscapePlugin extends Plugin
 		// transport, and a stale one would have us highlighting a button
 		// for a journey nobody is making.
 		spRoute = null;
+		lastPostedTarget = null;
 		clientThread.invokeLater(() ->
 			eventBus.post(new PluginMessage("shortestpath", "clear")));
 	}
