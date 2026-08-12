@@ -158,6 +158,18 @@ for (const [key, entry] of Object.entries(ann)) {
   for (const item of entry.items || []) {
     aTotal++;
     if (!item.name || COMPOUND_RUNES.test(item.name.toLowerCase().trim())) continue;
+    // A row carrying `icon` stands for a CATEGORY, not an item — "Food"
+    // with a shark sprite. Its name is a label by design and will never
+    // resolve, so flagging it is a false alarm, and a check that cries
+    // wolf is a check nobody reads. The icon itself still has to be real,
+    // which is the part worth testing.
+    if (item.icon) {
+      if (!resolves(item.icon, aliases(item.icon))) {
+        aFlagged++;
+        console.log(`  [${key}] icon "${item.icon}" for "${item.name}" is not a real item`);
+      }
+      continue;
+    }
     if (resolves(item.name, aliases(item.name))) continue;
     aFlagged++;
     console.log(`  [${key}] "${item.name}" x${item.quantity ?? 1}`);

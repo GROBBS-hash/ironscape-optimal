@@ -681,7 +681,11 @@ class StepRow extends JPanel
 				}
 				else
 				{
-					ctx.getItems().attachIcon(need.name, name);
+					// icon overrides the name for the SPRITE only — a row
+					// that stands for a category ("Food") still counts by
+					// its own name and just borrows a picture.
+					ctx.getItems().attachIcon(
+						need.icon != null ? need.icon : need.name, name);
 				}
 
 				JLabel count = new JLabel();

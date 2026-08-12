@@ -419,6 +419,19 @@ public class StepAnnotation
 		 */
 		public Integer id;
 		/**
+		 * Item name used ONLY for the badge sprite, when the row stands for
+		 * a CATEGORY rather than one item. "Recommended: Food" wants a
+		 * picture, and a picture means picking something — the owner's call
+		 * was a shark, generically (2026-08-12).
+		 *
+		 * Deliberately not {@link #id}: an id CHANGES WHAT IS COUNTED, so
+		 * labelling a category with one would both count only sharks and
+		 * trip the audit that checks an id against its label — a rule worth
+		 * keeping, since that is how a genuinely wrong id gets caught.
+		 * This only chooses the picture. Mirrors Requirement.icon.
+		 */
+		public String icon;
+		/**
 		 * Keep-if-you-get-it, not a requirement ("keep robes, opal and
 		 * buttons"): the badge shows a muted "(optional)" tag and an unmet
 		 * count stays grey, never alarm red.

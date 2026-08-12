@@ -719,7 +719,13 @@
      "name": "cadava berries",
      "quantity": null
     }
-   ]
+   ],
+   "target": {
+    "x": 3200,
+    "y": 3355,
+    "plane": 0
+   },
+   "note": "The Chronicle lands you at the Champions' Guild, south of Varrock."
   },
   "8e5edf7f76": {
    "items": [
@@ -1188,7 +1194,13 @@
      "name": "rune scim",
      "quantity": null
     }
-   ]
+   ],
+   "target": {
+    "x": 3200,
+    "y": 3355,
+    "plane": 0
+   },
+   "note": "The Chronicle lands you at the Champions' Guild, south of Varrock."
   },
   "eae42e5936": {
    "items": [
@@ -3516,6 +3528,22 @@
     {
      "name": "stamina potion",
      "quantity": 1
+    },
+    {
+     "name": "small fishing net",
+     "quantity": 1,
+     "optional": true
+    },
+    {
+     "name": "Food",
+     "icon": "shark",
+     "quantity": 1,
+     "optional": true
+    },
+    {
+     "name": "antipoison",
+     "quantity": 1,
+     "optional": true
     }
    ],
    "note": "Recommended: Food, Antipoison."
@@ -7078,7 +7106,13 @@
      "name": "chronicle",
      "quantity": 1
     }
-   ]
+   ],
+   "target": {
+    "x": 3200,
+    "y": 3355,
+    "plane": 0
+   },
+   "note": "The Chronicle lands you at the Champions' Guild, south of Varrock."
   },
   "30015bb6df": {
    "items": [
@@ -7086,7 +7120,13 @@
      "name": "chronicle",
      "quantity": 1
     }
-   ]
+   ],
+   "target": {
+    "x": 3200,
+    "y": 3355,
+    "plane": 0
+   },
+   "note": "The Chronicle lands you at the Champions' Guild, south of Varrock."
   },
   "b56d0eb901": {
    "items": [
@@ -7619,6 +7659,14 @@
     "plane": 0
    },
    "note": "Use your CAT on a civilian in the south-west of West Ardougne.\nIt must be a grown cat, not a kitten - a kitten becomes a cat after 3 hours of following you.\n200 death runes is the rate WITH the easy Ardougne diary (the step before this one). Without it you only get 100."
+  },
+  "30015bb6df-3": {
+   "target": {
+    "x": 3200,
+    "y": 3355,
+    "plane": 0
+   },
+   "note": "The Chronicle lands you at the Champions' Guild, south of Varrock."
   }
  }
 }
