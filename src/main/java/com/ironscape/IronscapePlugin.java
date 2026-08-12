@@ -1413,6 +1413,50 @@ public class IronscapePlugin extends Plugin
 			: new WorldPoint(stage.x, stage.y, stage.plane);
 	}
 
+	/**
+	 * Where to actually send someone for an errand stage: the NAMED NPC's
+	 * real position when he is in the scene, else the recorded tile.
+	 *
+	 * <p>A coordinate copied out of Quest Helper is where that NPC STOOD.
+	 * Plenty of them wander — the owner stood next to Merlin while the
+	 * route pointed at a tile twelve tiles away, on the right floor but in
+	 * another room, because Merlin had walked off (in play, from an
+	 * `::ironwrong` report). We already find and outline these NPCs by
+	 * name, so the live position is there for the asking, and a person you
+	 * can see beats a tile he used to occupy.
+	 *
+	 * <p>The recorded tile still governs everything else — it is what the
+	 * stage is SATISFIED by, and what to walk toward when he is out of
+	 * sight.
+	 * Client thread (scene read).
+	 */
+	private WorldPoint errandRouteTarget(StepAnnotation.Errand stage)
+	{
+		WorldPoint recorded = errandRoutePoint(stage);
+		if (stage.npc == null || stage.routeX != null)
+		{
+			// An explicit route point is a deliberate override (a surface
+			// entrance for an interior leg); never second-guess it.
+			return recorded;
+		}
+		String wanted = stage.npc.trim().toLowerCase(Locale.ROOT);
+		for (net.runelite.api.NPC npc : client.getTopLevelWorldView().npcs())
+		{
+			String name = npc.getName();
+			if (name == null || isPet(npc))
+			{
+				continue;
+			}
+			String clean = net.runelite.client.util.Text.removeTags(name)
+				.replace(' ', ' ').trim().toLowerCase(Locale.ROOT);
+			if (clean.equals(wanted))
+			{
+				return realPoint(npc);
+			}
+		}
+		return recorded;
+	}
+
 	/** The quest the current step is about (any state), else null. */
 	private Quest stepQuest(Current current)
 	{
@@ -6555,8 +6599,9 @@ public class IronscapePlugin extends Plugin
 				// nav was in fact working, on an errand stage nobody could
 				// see (2026-08-08, the Mordred bat bones/black candle
 				// chain). Name the stage as well as the tile.
-				WorldPoint errandRoute = errandRoutePoint(errand);
+				WorldPoint errandRoute = errandRouteTarget(errand);
 				logNavDecision("routing to errand stage " + errandRoute
+					+ (errand.npc == null ? "" : " (" + errand.npc + ")")
 					+ (errand.item == null ? "" : " for " + errand.item)
 					+ (errand.note == null ? "" : " — " + errand.note));
 				postPath(errandRoute, true);
@@ -6875,8 +6920,17 @@ public class IronscapePlugin extends Plugin
 			Quest quest = stepQuest(current);
 			out.append("quest      : ").append(quest == null ? "(none)"
 				: quest.getName() + " - " + cachedQuestState(quest)).append("\n");
+			// What we ACTUALLY asked the router to draw. This used to print
+			// targetFor(), which is only ONE of the sources a route can come
+			// from — on an errand step it showed a different point entirely
+			// (2764,3513 plane 0 against the errand's 2763,3513 plane 1),
+			// which cost a round of doubting the plane. A report that
+			// disagrees with the decision it is reporting is worse than none.
+			out.append("route posted: ").append(
+				lastPostedTarget == null ? "(nothing)" : lastPostedTarget).append("\n");
 			WorldPoint target = targetFor(current.step, current.sub);
-			out.append("routes to  : ").append(target == null ? "(nowhere)" : target).append("\n");
+			out.append("step target : ").append(target == null ? "(nowhere)" : target)
+				.append("  (the step's own place; nav may prefer an errand leg)\n");
 		}
 		else
 		{
@@ -6896,12 +6950,18 @@ public class IronscapePlugin extends Plugin
 		java.io.File dir = new java.io.File(
 			net.runelite.client.RuneLite.RUNELITE_DIR, CONFIG_GROUP + "/reports");
 		dir.mkdirs();
-		// Named by STEP rather than by a clock: one report per step is the
-		// useful granularity, and a second press on the same step overwrites
-		// a snapshot of the same problem rather than piling up files nobody
-		// will ever sort through.
-		java.io.File file = new java.io.File(dir, "report-step-"
-			+ (current == null ? "none" : current.step.getGlobalIndex()) + ".txt");
+		// Named by STEP, then by how many reports that step already has.
+		// One-file-per-step overwrote: the owner pressed this twice on the
+		// same step ON PURPOSE — once where the route led, once standing
+		// beside the NPC — and the second erased the first, losing exactly
+		// the comparison he had gone to the trouble of capturing.
+		String stem = "report-step-"
+			+ (current == null ? "none" : String.valueOf(current.step.getGlobalIndex()));
+		java.io.File file = new java.io.File(dir, stem + ".txt");
+		for (int n = 2; file.exists() && n < 100; n++)
+		{
+			file = new java.io.File(dir, stem + "-" + n + ".txt");
+		}
 		try
 		{
 			java.nio.file.Files.write(file.toPath(),
