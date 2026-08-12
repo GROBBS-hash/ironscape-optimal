@@ -843,9 +843,56 @@ refresh when "Failed to login" appears.
   closes the pipeline and terminates the process it reads from. And I hand-
   escaped JS through PowerShell twice and it failed both times — **write the
   script to a FILE and run it**, exactly as wave 25 recorded.
+  **LATE WAVE 26 — GPS, AND WE WERE THE ONES BREAKING QUEST HELPER.**
+  **POLICY (owner): SUPPORT BOTH PATHERS, GPS PREFERRED** — he switched himself
+  (`runelite.gpsplugin=true`, `shortestpathplugin=false`) and rates it better,
+  but Shortest Path stays supported for users who want it. That costs nothing
+  and needs no branching, which is exactly why the channel choice below is the
+  load-bearing decision. GPS is a FORK of Shortest Path that keeps
+  `"shortestpath"` as a documented compatibility namespace — inbound accepted on
+  either, broadcasts on BOTH — so every message we send and this morning's
+  transports listener work UNCHANGED, and it honours the same `postTransports`
+  override. **Keep posting on `"shortestpath"`**: one message then serves either
+  plugin, where GPS's own `"gps"` namespace would silently do nothing for SP
+  users. It republishes when the DISPLAYED route changes, so when the player
+  picks a different alternative in GPS's panel our highlight follows THEIR
+  choice. Never run both — one message draws two routes. Its cost dials are a
+  separate config group, so his SP tuning does not carry over. Its directions
+  panel ("Walk / Open Gate / Glider to Gandius", ETA 38s) is genuinely better
+  information than a line on the ground, and it names the requesting plugin —
+  we now send `source` so a route of ours reads IRONSCAPE Optimal rather than
+  "another plugin".
+  **TWO FAULTS, ONE ROOT: we treated the pathing plugin as OURS ALONE.**
+  (1) **A "clear" wipes whatever is displayed, whoever set it** — and standing
+  down for QH posted one on EVERY evaluation. So a route QH had set died the
+  moment anything made us re-evaluate, and came back on "reload quest". The
+  owner's report was exact: *"QH navigation got stopped when i used Lumbridge
+  teleport. Which was what it wanted to do."* A clear now only fires when we
+  have something posted; `clearPath` delegates to the same rule rather than
+  keeping a second copy of "when may we clear".
+  (2) Following the router's pick covered teleport ITEMS only, so a spell, the
+  home teleport or a minigame teleport lit nothing (*"GPS wants to take me to
+  Lumbridge, but there are no overlays in our TP book"*). `applyRouterChoice`
+  resolves all four, colon-suffixed spell variants included — and now runs even
+  while we have stood down for QH. That REVERSES wave 23 deliberately, on the
+  owner's call, and is safe for a reason wave 23 could not use: the hint no
+  longer proposes its own destination, it highlights the leg the router CHOSE,
+  so it cannot disagree with the line on screen.
+  Earlier the same evening: an unchanged target is no longer re-posted at all
+  (the 10-tick re-check was overwriting the route every six seconds with
+  nothing in the log, since logNavDecision prints only on CHANGE — wave 20's
+  bank-nudge shape, general all along). Forced posts keep their designed
+  precedence: gravestone, active errand leg, and anything the player clicks.
+  **CAUTION FOR THE NEXT SESSION:** three separate explanations were offered
+  for route interference in one evening (10-tick re-posting, both pathers
+  enabled at once, and the clear-wipes-everything bug). Only the last was
+  proven end to end from a report. If interference continues, that ordering is
+  wrong — get `::ironwrong` at the moment it happens rather than another
+  theory.
   **OPEN:** everything from the scroll fix onward is UNPLAYED (equipment-tab
-  signpost, kitten gate, Chronicle pins, note items, quest-NPC gating); 282 and
-  316 still unplayed; `::ironwrong` still never used; hub pin 57 behind.
+  signpost, kitten gate, Chronicle pins, note items, quest-NPC gating, both
+  route-interference fixes, the GPS switch itself); 282 and 316 still unplayed;
+  `::ironwrong` still never used; hub pin 57 behind.
 
 - SESSION WAVE 25 (2026-08-11 evening, long live play-test 268 -> 270; main at
   `2ecd06a`, ~14 commits, PUSHED; hub pin `bb3e11e`, **44** behind — counted):

@@ -18,8 +18,42 @@ Main at `7cd8eed`, 11 commits, **PUSHED**, tree clean. Hub pin `bb3e11e`,
 **57 behind**. Run `node tools/check-all.mjs --tests` before handing over a
 build, and `node tools/check-client.mjs` before ANY gradle command.
 
+**POLICY (owner, 2026-08-12): SUPPORT BOTH PATHERS, GPS PREFERRED.** He
+switched himself to **GPS** (`runelite.gpsplugin=true`,
+`shortestpathplugin=false`) and rates it better, but Shortest Path stays
+supported for users who want it — *"worth keeping Shortest path available
+(incase certain users want it) but GPS seems better"*. **This costs us
+nothing and requires no branching**, which is the whole reason the channel
+choice below matters. GPS is a FORK of Shortest Path that keeps
+`"shortestpath"` as a
+documented compatibility namespace — it accepts inbound messages on either
+and broadcasts on both — so everything we send and the transports listener
+we added this morning work UNCHANGED. Keep posting on `"shortestpath"`: that
+is what makes one message serve either plugin, where GPS's own `"gps"`
+namespace would serve GPS users and silently do nothing for everyone else.
+It honours the same `postTransports` override, and republishes when the
+DISPLAYED route changes — so if the player picks a different alternative in
+GPS's panel, our highlight follows their choice.
+**Never run both**: one message would draw two routes.
+His Shortest Path cost dials do NOT carry over (different config group).
+
+**TWO ROUTE-INTERFERENCE FAULTS FIXED TONIGHT, BOTH UNPLAYED:**
+- **We erased routes we did not draw.** Standing down for Quest Helper
+  posted a `clear` on EVERY evaluation, and a clear wipes whatever is on
+  screen whoever set it. QH's route died the moment anything made us
+  re-evaluate — taking a teleport, for instance — and came back on "reload
+  quest". Now a clear only fires when we have something posted.
+- **Following the router's pick covered teleport ITEMS only**, so a route
+  choosing a spell / home teleport / minigame teleport highlighted nothing.
+  `applyRouterChoice` resolves all four, and now runs even while we have
+  stood down for QH — a deliberate reversal of wave 23, on the owner's call,
+  safe because it highlights the leg the router CHOSE rather than proposing
+  our own.
+
 **PLAY-TEST FIRST — a lot shipped today and most of it has never run in a
-game.** In the order he will meet it:
+game.** The single most important check: **does Quest Helper's route survive
+a teleport without touching "reload quest"?** Then, in the order he will
+meet it:
 
 1. **The panel scroll** — it should sit on the frontier step and STAY there,
    including after switching sidebar tabs away and back. Fixed from computed
