@@ -883,12 +883,45 @@ refresh when "Failed to login" appears.
   nothing in the log, since logNavDecision prints only on CHANGE — wave 20's
   bank-nudge shape, general all along). Forced posts keep their designed
   precedence: gravestone, active errand leg, and anything the player clicks.
+  **CONFIRMED IN PLAY (late 2026-08-12, on GPS):** *"no reload required"* — the
+  clear fix holds, QH's route survives a teleport. GPS's header reads
+  **"Destination set by IRONSCAPE Optimal"**, so our routes are now
+  distinguishable from QH's. And the router-choice follow FIRED — GPS listed
+  "Use Lumbridge Home Teleport" and our overlay highlighted it — on its THIRD
+  attempt, each earlier round broken by the previous fix: (a) `applyRouterChoice`
+  handled teleport ITEMS only, (b) `postClear` nulled `spRoute` before its early
+  return, so every stand-down threw the answer away, and (c) reporting is
+  off by default and we only enabled it on OUR path posts, so on a quest step it
+  was never switched on at all. Fixed by `enableRouteReporting()` — **a path
+  message carrying ONLY a config is honoured and returns before it needs a
+  target**, in both plugins, so it sets the flag and draws nothing.
+  **THE DIAGNOSTIC SHOULD HAVE COME FIRST.** Three rounds were spent guessing
+  which of four indistinguishable cases applied (no route reported / empty route
+  / leg with no label / label we cannot match), all of which want opposite
+  fixes. `router-choice:` now names the case, and earned its place within
+  minutes by printing "first leg has no label to match" for a stepping-stone
+  crossing — a transport with no button to click, where declining is correct.
+  **BANK-FIRST SENT HIM TO ZANARIS FROM THE BOTTOM OF A CAVERN** (~4,900 tiles,
+  behind a dramen staff he did not have; GPS planned a home teleport, a boat and
+  three ladders, then said "Destination could not be reached" — which was GPS
+  being RIGHT, not a defect). The band rule stops surface/underground distance
+  fiction but treats ALL of underground as one place, so from the Shilo caverns
+  every surface bank was filtered out and Zanaris won by being the last
+  candidate standing. `nearestOf` now answers nothing beyond
+  `MAX_SENSIBLE_DETOUR` (1000 tiles) — its own comment already said "nothing to
+  compare against beats a confident wrong answer"; it just never acted on that
+  when a bad candidate survived the filter. Verified against real positions:
+  Shilo caverns rejected, Lumbridge (14), Zanaris-in-Zanaris (19) and the
+  essence mine (653) kept. **The essence-mine case is the old wave 10 one and is
+  STILL ALLOWED** — possibly also wrong, deliberately left because it was not
+  reported and could not be tested.
   **CAUTION FOR THE NEXT SESSION:** three separate explanations were offered
   for route interference in one evening (10-tick re-posting, both pathers
   enabled at once, and the clear-wipes-everything bug). Only the last was
   proven end to end from a report. If interference continues, that ordering is
   wrong — get `::ironwrong` at the moment it happens rather than another
-  theory.
+  theory. Same lesson as the highlight: **when the failure has several
+  indistinguishable causes, ship the diagnostic before the fix.**
   **OPEN:** everything from the scroll fix onward is UNPLAYED (equipment-tab
   signpost, kitten gate, Chronicle pins, note items, quest-NPC gating, both
   route-interference fixes, the GPS switch itself); 282 and 316 still unplayed;
