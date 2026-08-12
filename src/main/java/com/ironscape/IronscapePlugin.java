@@ -7174,8 +7174,31 @@ public class IronscapePlugin extends Plugin
 				best = point;
 			}
 		}
+		// ...and the winner still has to be PLAUSIBLE. The band rule keeps
+		// us from comparing across the surface/underground divide, but it
+		// treats all of "underground" as one place: from the Shilo Village
+		// caverns every surface bank was filtered out and the Zanaris chest
+		// won by being the last candidate standing, ~4,900 tiles away and
+		// behind a dramen staff the player did not have. The router dutifully
+		// planned a home teleport, a boat and three ladders and then said
+		// "Destination could not be reached" (owner, in play 2026-08-12).
+		//
+		// A bank this far off is not a detour on the way somewhere, it IS
+		// the journey — so answer nothing, which the callers already treat
+		// as "no bank stop". Underground that usually means surfacing first,
+		// which is correct: we cannot measure a route out of a cavern.
+		if (best != null && bestDistance > MAX_SENSIBLE_DETOUR)
+		{
+			return null;
+		}
 		return best;
 	}
+
+	/**
+	 * Beyond this (straight-line tiles) a "nearest" anything is not a
+	 * detour, and a confident wrong answer is worse than none.
+	 */
+	private static final int MAX_SENSIBLE_DETOUR = 1000;
 
 	/**
 	 * A sub-step's navigation target: its own ⌖ capture, else the step's
