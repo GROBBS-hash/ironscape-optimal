@@ -915,6 +915,49 @@ refresh when "Failed to login" appears.
   essence mine (653) kept. **The essence-mine case is the old wave 10 one and is
   STILL ALLOWED** — possibly also wrong, deliberately left because it was not
   reported and could not be tested.
+  **CLOSING STRETCH — FOUR MORE, AND `::ironwrong` PAID FOR ITSELF FIRST USE.**
+  **The panel scroll was the ALIGNMENT, not the timing** — the target was right
+  both times it was reported (computed offline from manifest + progress), but
+  "top-align on the first unticked SUB" is built for multi-action steps taller
+  than the viewport, and on this ATOMIC guide the sub row sits BELOW the item
+  list, so it scrolled past the step's own heading and the items it tells you
+  to bring. `StepRow.scrollOffset()` returns 0 for a single-sub step. Same shape
+  as the "Step N" header: panel machinery for multi-action steps, silently
+  wrong on a guide that has none. **My earlier re-assert fix was a real bug but
+  NOT his bug** — I should have checked WHERE it landed before assuming timing.
+  **ONE WRONG ITEM IN A KIT SILENTLY BLOCKS A STEP.** "Teleport to Camelot"
+  would not tick because arrival needs the step's items IN HAND and "Lit candle"
+  sat red at 0. The wiki settles it — the ritual wants Excalibur, black candle,
+  tinderbox, bat bones, and you LIGHT the black candle there — so no lit candle
+  is carried and a black candle can never satisfy one. Removed from 274 and 335.
+  **The owner diagnosed this himself**, including the mechanism.
+  **A PRESCRIBED TRANSPORT BEATS THE ROUTER.** The router-follow shipped hours
+  earlier overruled the step, highlighting VARROCK while the reason line read
+  "prescribed spell Camelot Teleport". The router answers "what is quickest from
+  here"; a step that NAMES its transport is answering "what does this step tell
+  me to do", and there the step wins (wave 12 settled that for suggestions; the
+  follow simply did not know).
+  **AN OLD WORKAROUND OUTLIVED ITS REASON.** The Camelot stages routed to the
+  STAIRCASE (p0) and satisfied at the NPC (p1) because SP could not draw between
+  floors. It can now — tonight's logs show it emitting `Bottom-floor Staircase`
+  and `Climb-down Ladder` itself, and the Camelot stairs ARE in transports.tsv
+  (`2751 3508 0 -> 2751 3513 1`). So the split had become the fault: climb up and
+  the route still pointed at the stairs you just used. Cave and one-way-interior
+  splits deliberately untouched — nothing shows those can be drawn.
+  **THEN THE REAL ONE: A QH COORDINATE IS WHERE AN NPC *STOOD*.** `::ironwrong`
+  settled in one read what three screenshots could not — standing NEXT to Merlin,
+  plane 1, route pointing 12 tiles away in another room. **Merlin wanders.** A
+  stage already NAMES its npc and we already outline him, so
+  `errandRouteTarget()` routes to the LIVE npc when he is in the scene and falls
+  back to the recorded tile otherwise (which still SATISFIES the stage); an
+  explicit routeX/routeY is never second-guessed. **Expect this class wherever a
+  stage names a wandering NPC** (wave 8 already hit it with Aggie).
+  **TWO FLAWS IN `::ironwrong`, BOTH FOUND BY USING IT:** it printed
+  `targetFor()` as "routes to" — only ONE of the sources a route can come from,
+  and on an errand step it showed a different point entirely, costing a round of
+  doubting the plane; it now prints what was ACTUALLY posted. And one-file-per-
+  step OVERWROTE: he pressed it twice on purpose (where the route led, then
+  beside the NPC) and the second erased the first, destroying the comparison.
   **CAUTION FOR THE NEXT SESSION:** three separate explanations were offered
   for route interference in one evening (10-tick re-posting, both pathers
   enabled at once, and the clear-wipes-everything bug). Only the last was

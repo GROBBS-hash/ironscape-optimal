@@ -50,10 +50,25 @@ His Shortest Path cost dials do NOT carry over (different config group).
   safe because it highlights the leg the router CHOSE rather than proposing
   our own.
 
+**CONFIRMED IN PLAY on 2026-08-12:** QH's route survives a teleport (no
+"reload quest" needed); GPS reads "Destination set by IRONSCAPE Optimal";
+the router-choice follow highlights the leg GPS picked; step 274 blocked by
+a bogus "Lit candle" is fixed; `::ironwrong` works and settled a bug in one
+read.
+
+**STILL UNPLAYED, all shipped late 2026-08-12 —** the panel scroll alignment
+(`StepRow.scrollOffset`), the prescribed-transport rule, the Camelot
+stairs routing, **routing to a live wandering NPC** (`errandRouteTarget`),
+and both `::ironwrong` fixes. Also everything from earlier that day: kitten
+gate, Chronicle pins, quest-NPC gating, note items.
+
+**KNOWN AND NOT YET DONE:** step 276 is "start Holy Grail (King Arthur,
+DOWNSTAIRS) then talk to Merlin UPSTAIRS" — two actions — and the chain may
+not reflect that ordering (owner, 2026-08-12). Left alone deliberately until
+the routing fix is confirmed, rather than changing two things at once.
+
 **PLAY-TEST FIRST — a lot shipped today and most of it has never run in a
-game.** The single most important check: **does Quest Helper's route survive
-a teleport without touching "reload quest"?** Then, in the order he will
-meet it:
+game.** In the order he will meet it:
 
 1. **The panel scroll** — it should sit on the frontier step and STAY there,
    including after switching sidebar tabs away and back. Fixed from computed
