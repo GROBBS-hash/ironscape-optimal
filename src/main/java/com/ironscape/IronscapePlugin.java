@@ -3272,7 +3272,19 @@ public class IronscapePlugin extends Plugin
 					// the same choice better than we can: real walked
 					// routes, every transport type, the player's actual
 					// unlocks, and the player's own cost settings.
-					applyRouterChoice();
+					//
+					// EXCEPT where the guide named the transport itself.
+					// "Teleport to Camelot" means the Camelot teleport, and
+					// letting the router overrule it highlighted VARROCK
+					// while the reason line still read "prescribed spell
+					// Camelot Teleport" (owner, in play). The router is
+					// answering "what is quickest from here", which is a
+					// different question from "what does this step say to
+					// do" — and on a prescribed step the step wins.
+					if (!prescribed)
+					{
+						applyRouterChoice();
+					}
 					if (activeTeleportItem != null)
 					{
 						// Name the OPTION, not just the item: an Ardougne
