@@ -6786,13 +6786,10 @@
      "x": 2760,
      "y": 3511,
      "plane": 1,
-     "routeX": 2751,
-     "routeY": 3511,
-     "routePlane": 0,
      "npc": "Sir Lancelot",
      "varp": 14,
      "value": 3,
-     "note": "Lancelot is UPSTAIRS - the route points at the staircase. Climb it, then ask about getting into Morgan Le Faye stronghold.",
+     "note": "Lancelot is UPSTAIRS - the route runs up the staircase to him. Ask about getting into Morgan Le Faye stronghold.",
      "dialog": [
       "Any ideas on how to get into Morgan Le Faye's stronghold?",
       "Thank you for the information."
@@ -6820,13 +6817,10 @@
      "x": 2763,
      "y": 3513,
      "plane": 1,
-     "routeX": 2751,
-     "routeY": 3511,
-     "routePlane": 0,
      "npc": "Merlin",
      "varp": 5,
      "value": 3,
-     "note": "Merlin is UPSTAIRS in Camelot - the route points at the staircase. Climb it and talk to him."
+     "note": "Merlin is UPSTAIRS in Camelot - the route runs up the staircase to him."
     }
    ]
   },
