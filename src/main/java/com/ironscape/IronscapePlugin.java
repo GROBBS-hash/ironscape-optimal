@@ -7816,8 +7816,17 @@ public class IronscapePlugin extends Plugin
 	private boolean applyRouterChoice()
 	{
 		List<SpLeg> route = spRoute;
-		if (route == null || route.isEmpty())
+		if (route == null)
 		{
+			// De-duplicated by logHintDecision, so this is one line per
+			// change, not per tick. Three rounds were spent on this feature
+			// guessing which of these cases applied.
+			logRouterChoice("the router has not told us its route");
+			return false;
+		}
+		if (route.isEmpty())
+		{
+			logRouterChoice("the router chose no transport (walking)");
 			return false;
 		}
 		// Only the FIRST transport: that is the one to act on now, and
@@ -7826,6 +7835,7 @@ public class IronscapePlugin extends Plugin
 		String display = route.get(0).displayInfo;
 		if (display == null)
 		{
+			logRouterChoice("first leg has no label to match");
 			return false;
 		}
 		com.ironscape.travel.TeleportItems.Entry item = teleportItemChosenBySp();
@@ -7871,7 +7881,23 @@ public class IronscapePlugin extends Plugin
 				return true;
 			}
 		}
+		// Nothing we can point at. Naming the label matters: it is either a
+		// transport with no button to click (a boat, a gate) or one whose
+		// name we failed to match, and those want opposite fixes.
+		logRouterChoice("nothing to highlight for \"" + display + "\"");
 		return false;
+	}
+
+	/** Last router-choice explanation, so it logs on change rather than per tick. */
+	private String lastRouterChoiceNote;
+
+	private void logRouterChoice(String note)
+	{
+		if (!note.equals(lastRouterChoiceNote))
+		{
+			lastRouterChoiceNote = note;
+			log.info("router-choice: {}", note);
+		}
 	}
 
 	private com.ironscape.travel.TeleportItems.Entry teleportItemChosenBySp()
