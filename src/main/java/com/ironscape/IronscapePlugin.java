@@ -705,6 +705,13 @@ public class IronscapePlugin extends Plugin
 	/** Worn-slot component to highlight for an equipped-item teleport; -1 none. */
 	private volatile int activeEquippedTeleport = -1;
 
+	/**
+	 * What to call that highlight — the teleport item's destination
+	 * ("Ardougne cloak: Kandarin Monastery"). Null falls back to the
+	 * overlay's generic "Teleport", which is what the Chronicle uses.
+	 */
+	private volatile String equippedTeleportLabel;
+
 	/** "Chronicle tele" / "chronicle tele and buy a kitten" — the worn Chronicle. */
 	private static final java.util.regex.Pattern CHRONICLE_TELE =
 		java.util.regex.Pattern.compile("\\bchronicle\\s+tele", java.util.regex.Pattern.CASE_INSENSITIVE);
@@ -1942,6 +1949,7 @@ public class IronscapePlugin extends Plugin
 			() -> homeTeleportHint || routeHomeTeleportHint);
 		minigameTeleportOverlay.setSpellTeleportSupplier(() -> activeSpellTeleport);
 		minigameTeleportOverlay.setEquippedTeleportSupplier(() -> activeEquippedTeleport);
+		minigameTeleportOverlay.setEquippedTeleportLabelSupplier(() -> equippedTeleportLabel);
 		minigameTeleportOverlay.setEquippedTeleportLabelSupplier(() -> "Chronicle");
 		overlayManager.add(minigameTeleportOverlay);
 		travelMenuOverlay.setWordsSupplier(() -> travelMenuWords);
@@ -3327,6 +3335,25 @@ public class IronscapePlugin extends Plugin
 		activeEquippedTeleport = chronicleSub
 			&& itemTracker.wornCountOf("chronicle") > 0
 			? net.runelite.api.gameval.InterfaceID.Wornitems.SLOT5 : -1;
+		// A chosen teleport item that is WORN needs the same signpost. Our
+		// outline draws on the equipment panel, which is a screen you are
+		// usually not looking at — so it was highlighting a cloak nobody
+		// could see (owner, in play: "its shown this overlay, just not the
+		// usual one on the equipment tab"). Pointing at the tab is what
+		// turns a correct answer into a visible one.
+		if (activeEquippedTeleport == -1 && activeTeleportItem != null)
+		{
+			int slot = wornSlotComponentFor(activeTeleportItem);
+			if (slot != -1)
+			{
+				activeEquippedTeleport = slot;
+				equippedTeleportLabel = activeTeleportItem.getDisplay();
+			}
+		}
+		if (activeEquippedTeleport == -1 || chronicleSub)
+		{
+			equippedTeleportLabel = null;
+		}
 
 		// Travel menus (spirit trees, gliders — interface 187): the word
 		// set the overlay matches list entries against. Sub text + the
@@ -7492,6 +7519,68 @@ public class IronscapePlugin extends Plugin
 	 * in a bank — which is a fine route and a useless highlight.
 	 * Client thread: reads the inventory.
 	 */
+	/**
+	 * Worn-equipment panel components, indexed by the game's equipment slot
+	 * id. The ids are NOT contiguous (there is no slot 6, 8 or 11), which is
+	 * why this is a lookup rather than arithmetic — and the Chronicle's
+	 * existing shield hint at SLOT5 is what confirms the mapping.
+	 */
+	private static final int[] WORN_SLOT_COMPONENTS = buildWornSlotComponents();
+
+	private static int[] buildWornSlotComponents()
+	{
+		int[] slots = new int[14];
+		java.util.Arrays.fill(slots, -1);
+		slots[0] = net.runelite.api.gameval.InterfaceID.Wornitems.SLOT0;
+		slots[1] = net.runelite.api.gameval.InterfaceID.Wornitems.SLOT1;
+		slots[2] = net.runelite.api.gameval.InterfaceID.Wornitems.SLOT2;
+		slots[3] = net.runelite.api.gameval.InterfaceID.Wornitems.SLOT3;
+		slots[4] = net.runelite.api.gameval.InterfaceID.Wornitems.SLOT4;
+		slots[5] = net.runelite.api.gameval.InterfaceID.Wornitems.SLOT5;
+		slots[7] = net.runelite.api.gameval.InterfaceID.Wornitems.SLOT7;
+		slots[9] = net.runelite.api.gameval.InterfaceID.Wornitems.SLOT9;
+		slots[10] = net.runelite.api.gameval.InterfaceID.Wornitems.SLOT10;
+		slots[12] = net.runelite.api.gameval.InterfaceID.Wornitems.SLOT12;
+		slots[13] = net.runelite.api.gameval.InterfaceID.Wornitems.SLOT13;
+		return slots;
+	}
+
+	/**
+	 * The worn-panel component holding this teleport item, or -1 when it is
+	 * not being worn (in which case the inventory outline already shows it
+	 * on a tab you are probably looking at).
+	 * Client thread.
+	 */
+	private int wornSlotComponentFor(com.ironscape.travel.TeleportItems.Entry entry)
+	{
+		net.runelite.api.ItemContainer worn =
+			client.getItemContainer(net.runelite.api.gameval.InventoryID.WORN);
+		if (worn == null)
+		{
+			return -1;
+		}
+		for (int slot = 0; slot < WORN_SLOT_COMPONENTS.length; slot++)
+		{
+			if (WORN_SLOT_COMPONENTS[slot] == -1)
+			{
+				continue;
+			}
+			net.runelite.api.Item item = worn.getItem(slot);
+			if (item == null)
+			{
+				continue;
+			}
+			for (int id : entry.getItemIds())
+			{
+				if (item.getId() == id)
+				{
+					return WORN_SLOT_COMPONENTS[slot];
+				}
+			}
+		}
+		return -1;
+	}
+
 	private com.ironscape.travel.TeleportItems.Entry teleportItemChosenBySp()
 	{
 		List<SpLeg> route = spRoute;
