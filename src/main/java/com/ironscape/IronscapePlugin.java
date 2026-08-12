@@ -1749,6 +1749,7 @@ public class IronscapePlugin extends Plugin
 		annotationManager.load();
 		placeManager.load();
 		loadMinigameLandings();
+		loadQuestNpcs();
 		teleportItemIndex = com.ironscape.travel.TeleportItems.load(gson);
 		loadGuideState();
 		// "minigame|region" from the previous session — restored on the
@@ -2285,6 +2286,7 @@ public class IronscapePlugin extends Plugin
 		annotationManager.load();
 		placeManager.load();
 		loadMinigameLandings();
+		loadQuestNpcs();
 		teleportItemIndex = com.ironscape.travel.TeleportItems.load(gson);
 		loadGuideState();
 		// Derived per-tick caches that outlive a reload would otherwise
@@ -3407,11 +3409,15 @@ public class IronscapePlugin extends Plugin
 			}
 		}
 		WorldPoint marker = null;
+		// Which quest that marker belongs to, so the nomination below can
+		// ask whether a candidate is even in that quest's cast.
+		String markerQuest = null;
 		if (config.showQuestStartMarker())
 		{
 			if (clickedQuestTicks > 0 && clickedQuest != null)
 			{
 				marker = placeManager.get(clickedQuest.getName());
+				markerQuest = clickedQuest.getName();
 			}
 			else if (current != null)
 			{
@@ -3423,9 +3429,14 @@ public class IronscapePlugin extends Plugin
 					&& cachedQuestState(questGoal.getQuest()) == QuestState.NOT_STARTED)
 				{
 					marker = placeManager.get(questGoal.getQuest().getName());
+					markerQuest = questGoal.getQuest().getName();
 				}
 			}
 		}
+		// The quest's cast, by ID (seed-quest-npcs.mjs, from Quest Helper).
+		// Empty when we have no index for it, which means "no opinion" —
+		// the old nearest-to-marker behaviour then stands unchanged.
+		java.util.Set<Integer> markerCast = questNpcIdsFor(markerQuest);
 		questStartMarker = marker;
 
 		// Exact-spot marker: if the current sub (or its single-action
@@ -3706,7 +3717,15 @@ public class IronscapePlugin extends Plugin
 				WorldPoint npcPoint = marker != null || shopAnchor != null
 					? realPoint(npc) : null;
 				if (marker != null
-					&& npcPoint.getPlane() == marker.getPlane())
+					&& npcPoint.getPlane() == marker.getPlane()
+					// If we know the quest's cast, the nominee has to be IN
+					// it. Nearest-to-the-pin alone has crowned rats, a
+					// Market Guard, a Master Farmer and the owner's cat —
+					// each patched separately, because the fallback had
+					// nothing to check itself against. By ID, so none of the
+					// name traps (articles, plurals, a name inside a place
+					// name) apply.
+					&& (markerCast.isEmpty() || markerCast.contains(npc.getId())))
 				{
 					int distance = npcPoint.distanceTo2D(marker);
 					if (distance <= 4 && distance < markerBest)
@@ -7797,6 +7816,61 @@ public class IronscapePlugin extends Plugin
 				return quest != null && cachedQuestState(quest) == QuestState.FINISHED;
 			}
 		};
+
+	/**
+	 * Every NPC each quest involves, by id, keyed by a NORMALISED quest
+	 * name. Normalised because the index is keyed by the guide's wording
+	 * while lookups come from RuneLite's Quest enum, and the two disagree
+	 * about articles, punctuation and case as a matter of course.
+	 */
+	private final Map<String, java.util.Set<Integer>> questNpcIds = new HashMap<>();
+
+	private static String questKey(String name)
+	{
+		return name == null ? null
+			: name.toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9]", "");
+	}
+
+	/** The quest's cast, or an empty set meaning "we have no index for it". */
+	private java.util.Set<Integer> questNpcIdsFor(String questName)
+	{
+		String key = questKey(questName);
+		if (key == null)
+		{
+			return java.util.Collections.emptySet();
+		}
+		return questNpcIds.getOrDefault(key, java.util.Collections.emptySet());
+	}
+
+	private void loadQuestNpcs()
+	{
+		questNpcIds.clear();
+		try (java.io.InputStream in = DataFiles.open(IronscapePlugin.class, "quest_npcs.json"))
+		{
+			if (in == null)
+			{
+				return;
+			}
+			com.google.gson.JsonObject root = gson.fromJson(
+				new java.io.InputStreamReader(in, java.nio.charset.StandardCharsets.UTF_8),
+				com.google.gson.JsonObject.class);
+			com.google.gson.JsonObject byQuest = root.getAsJsonObject("questNpcs");
+			for (String quest : byQuest.keySet())
+			{
+				java.util.Set<Integer> ids = new java.util.HashSet<>();
+				for (com.google.gson.JsonElement id : byQuest.getAsJsonArray(quest))
+				{
+					ids.add(id.getAsInt());
+				}
+				questNpcIds.put(questKey(quest), ids);
+			}
+			log.debug("Loaded NPC rosters for {} quests", questNpcIds.size());
+		}
+		catch (Exception e)
+		{
+			log.warn("Could not read the quest NPC index", e);
+		}
+	}
 
 	private void loadMinigameLandings()
 	{
