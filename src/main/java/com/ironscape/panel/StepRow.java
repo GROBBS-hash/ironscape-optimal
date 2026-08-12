@@ -373,6 +373,24 @@ class StepRow extends JPanel
 	}
 
 	/**
+	 * How far INTO this card to scroll when landing on it.
+	 *
+	 * Skipping to the first unticked sub exists for multi-action steps
+	 * taller than the panel, where the top of the card can be a screen away
+	 * from the line you are on. This guide is ATOMIC — every step is one
+	 * action — and its sub row sits BELOW the item list, so that rule
+	 * scrolled straight past the step's own heading and the items it tells
+	 * you to bring (owner, in play: "it flicks to this spot", showing the
+	 * tail of the current step and the three after it).
+	 *
+	 * With one sub there is nothing to skip to, so land on the card.
+	 */
+	int scrollOffset()
+	{
+		return subRows.size() > 1 ? firstIncompleteSubY() : 0;
+	}
+
+	/**
 	 * Adds a live "have/need" line. Sources, in priority order: reviewed
 	 * item annotations for the annotation id, else item goals detected in
 	 * the sub-step's own text ("buy 1250 nature runes"). Once the owning

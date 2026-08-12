@@ -667,10 +667,11 @@ public class IronscapePanel extends PluginPanel
 				scrollRowIntoView(target, attemptsLeft - 1, lastY);
 				return;
 			}
-			// Land on the first UNTICKED sub, top-aligned. (A step taller
-			// than the viewport would otherwise show its far end.)
+			// Top-aligned on the card — and on a MULTI-action step, on its
+			// first unticked sub instead, since such a step can be taller
+			// than the viewport. See StepRow.scrollOffset.
 			javax.swing.JViewport viewport = scrollPane.getViewport();
-			int y = Math.max(0, target.getY() + target.firstIncompleteSubY() - 8);
+			int y = Math.max(0, target.getY() + target.scrollOffset() - 8);
 			int maxY = Math.max(0, viewport.getViewSize().height - viewport.getExtentSize().height);
 			viewport.setViewPosition(new java.awt.Point(0, Math.min(y, maxY)));
 			if (y == lastY || attemptsLeft <= 0)
