@@ -7470,8 +7470,22 @@ public class IronscapePlugin extends Plugin
 			return;
 		}
 		lastPostedTarget = target;
+		// "source" names US in GPS's route header, which otherwise reads
+		// "another plugin" — so when a route appears you can tell whether
+		// it came from this guide or from Quest Helper. Shortest Path reads
+		// only the keys it knows and ignores this one, so the same message
+		// serves both.
+		//
+		// We keep posting on the "shortestpath" channel deliberately. GPS
+		// is a FORK of Shortest Path and accepts that namespace as a
+		// documented compatibility alias, so one message drives whichever
+		// the player has installed. Targeting GPS's own "gps" namespace
+		// would work for GPS users and silently do nothing for everyone
+		// else.
 		eventBus.post(new PluginMessage("shortestpath", "path",
-			Map.of("target", target, "config", Map.of("postTransports", true))));
+			Map.of("target", target,
+				"source", "IRONSCAPE Optimal",
+				"config", Map.of("postTransports", true))));
 	}
 
 	/**
