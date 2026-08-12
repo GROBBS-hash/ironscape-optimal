@@ -939,6 +939,64 @@ public class IronscapePlugin extends Plugin
 	}
 
 	/**
+	 * Is a hub plugin installed AND switched on?
+	 *
+	 * <p>Split on commas and compare WHOLE ids: a substring test says yes to
+	 * the wrong plugin, since "sea-charting-quest-helper" contains
+	 * "quest-helper". The enable toggle is ABSENT at its default, so only a
+	 * literal "false" counts as off.
+	 */
+	private boolean hubPluginActive(String installedId, String toggleKey)
+	{
+		String installed = configManager.getConfiguration("runelite", "externalPlugins");
+		if (installed == null)
+		{
+			return false;
+		}
+		for (String id : installed.split(","))
+		{
+			if (installedId.equals(id.trim().replaceAll("^\\[|\\]$", "")))
+			{
+				return !"false".equalsIgnoreCase(
+					configManager.getConfiguration("runelite", toggleKey));
+			}
+		}
+		return false;
+	}
+
+	/** Said once per session; two routes on screen only needs explaining once. */
+	private boolean warnedAboutTwoPathers;
+
+	/**
+	 * Both pathing plugins on at once draws every route TWICE.
+	 *
+	 * <p>We deliberately post on the "shortestpath" channel so one message
+	 * serves either plugin — GPS is a fork of Shortest Path and keeps that
+	 * namespace as a compatibility alias. The cost of that reach is that a
+	 * player running both gets two overlapping lines, which looks like a
+	 * fault in THIS plugin rather than a configuration choice. Cheaper to
+	 * say so than to receive the bug report.
+	 */
+	private void warnIfTwoPathersActive()
+	{
+		if (warnedAboutTwoPathers)
+		{
+			return;
+		}
+		if (!hubPluginActive("shortest-path", "shortestpathplugin")
+			|| !hubPluginActive("gps", "gpsplugin"))
+		{
+			return;
+		}
+		warnedAboutTwoPathers = true;
+		// ASCII only: the game font has no check marks or arrows and renders
+		// them as "?" (wave 11).
+		client.addChatMessage(ChatMessageType.CONSOLE, "",
+			"IRONSCAPE: Shortest Path and GPS are both enabled, so every route"
+				+ " will be drawn twice. Turn one of them off.", null);
+	}
+
+	/**
 	 * Does any detector claim this sub? The same seven collections the
 	 * ambient-tick sweep consults — if none of them holds the sub, nothing
 	 * can ever tick it but a hand tick or its errand chain.
@@ -2884,6 +2942,9 @@ public class IronscapePlugin extends Plugin
 			if (loginGraceTicks == 0 && navOnLoginPending)
 			{
 				navOnLoginPending = false;
+				// Before routing: if two pathers are on, whatever we draw is
+				// about to appear twice, and saying so first explains it.
+				warnIfTwoPathersActive();
 				logNavDecision("login: resuming route to the next target");
 				maybeNavigateToNext();
 				// AFTER the nav decision, deliberately: if that decision was
