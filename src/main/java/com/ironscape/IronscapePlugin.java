@@ -2945,6 +2945,11 @@ public class IronscapePlugin extends Plugin
 				// Before routing: if two pathers are on, whatever we draw is
 				// about to appear twice, and saying so first explains it.
 				warnIfTwoPathersActive();
+				// The router's config override does not survive a client
+				// restart, and on a Quest Helper step we never post a route
+				// that would set it — so switch reporting on here, once,
+				// whether or not we end up drawing anything ourselves.
+				enableRouteReporting();
 				logNavDecision("login: resuming route to the next target");
 				maybeNavigateToNext();
 				// AFTER the nav decision, deliberately: if that decision was
@@ -7572,15 +7577,44 @@ public class IronscapePlugin extends Plugin
 	 */
 	private void postClear()
 	{
-		spRoute = null;
 		if (lastPostedTarget == null)
 		{
 			// Nothing of ours on screen — anything showing belongs to
-			// another plugin, and is not ours to erase.
+			// another plugin, and is not ours to erase. Note we do NOT
+			// forget spRoute here: the route still being drawn is somebody
+			// else's, and its chosen first leg is exactly what we want to
+			// highlight. Nulling it unconditionally meant every stand-down
+			// (which runs each evaluation) threw the answer away, so the
+			// highlight could never fire on a Quest Helper route.
 			return;
 		}
+		spRoute = null;
 		lastPostedTarget = null;
 		eventBus.post(new PluginMessage("shortestpath", "clear"));
+		// A clear also wipes the config override that makes the router
+		// report its choices, so switch it straight back on.
+		enableRouteReporting();
+	}
+
+	/**
+	 * Ask the routing plugin to keep telling us which transports it picks,
+	 * WITHOUT asking it to draw anything.
+	 *
+	 * <p>Reporting is off by default and we enable it through the config
+	 * override that rides on a path request — but we only send those when
+	 * WE own the route. On a Quest Helper step we never post, so it was
+	 * never switched on, and the highlight had nothing to follow (owner, in
+	 * play: GPS listing "Use Ardougne cloak: Kandarin Monastery" while our
+	 * overlay stayed dark).
+	 *
+	 * <p>A path message carrying only a config is honoured and then
+	 * returns before it needs a target — documented behaviour in both
+	 * Shortest Path and GPS — so this sets the flag and draws nothing.
+	 */
+	private void enableRouteReporting()
+	{
+		eventBus.post(new PluginMessage("shortestpath", "path",
+			Map.of("config", Map.of("postTransports", true))));
 	}
 
 	/**
