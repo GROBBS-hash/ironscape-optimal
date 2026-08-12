@@ -1144,7 +1144,14 @@
    "requires": {
     "skill": "AGILITY",
     "level": 50
-   }
+   },
+   "items": [
+    {
+     "name": "knife",
+     "quantity": 1,
+     "optional": true
+    }
+   ]
   },
   "ca366a8e2f": {
    "requires": {
@@ -1540,6 +1547,16 @@
     {
      "name": "thread",
      "quantity": 1
+    },
+    {
+     "name": "waterskin",
+     "quantity": 8,
+     "optional": true
+    },
+    {
+     "name": "dwarven stout(m)",
+     "quantity": 1,
+     "optional": true
     }
    ],
    "note": "Recommended: Combat gear."
@@ -1901,6 +1918,18 @@
     },
     {
      "name": "hammer"
+    },
+    {
+     "name": "clue hunter boots",
+     "optional": true
+    },
+    {
+     "name": "clue hunter gloves",
+     "optional": true
+    },
+    {
+     "name": "rainbow scarf",
+     "optional": true
     }
    ]
   },
@@ -4459,6 +4488,16 @@
     {
      "name": "pestle and mortar",
      "quantity": 1
+    },
+    {
+     "name": "raw chicken",
+     "quantity": 1,
+     "optional": true
+    },
+    {
+     "name": "raw swordfish",
+     "quantity": 1,
+     "optional": true
     }
    ]
   },
@@ -7667,6 +7706,14 @@
     "plane": 0
    },
    "note": "The Chronicle lands you at the Champions' Guild, south of Varrock."
+  },
+  "e292c11dce": {
+   "items": [
+    {
+     "name": "swordfish",
+     "optional": true
+    }
+   ]
   }
  }
 }
