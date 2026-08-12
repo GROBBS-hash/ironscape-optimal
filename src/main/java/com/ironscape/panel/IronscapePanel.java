@@ -642,10 +642,29 @@ public class IronscapePanel extends PluginPanel
 	 */
 	private void scrollRowIntoView(StepRow target, int attemptsLeft)
 	{
+		scrollRowIntoView(target, attemptsLeft, Integer.MIN_VALUE);
+	}
+
+	/**
+	 * Having a height is NOT the same as having settled. Item icons arrive
+	 * asynchronously and the html panes size late, so rows keep growing for
+	 * a few cycles after the first paint — and a row above the target that
+	 * grows slides the target down, out of the view we just set. That is
+	 * the panel "jumping to a step you are not on": the target was right
+	 * (the frontier), the coordinates were stale (owner, in play, standing
+	 * on 271 while the panel showed 275 — the step above it lists twelve
+	 * items).
+	 *
+	 * So re-assert until the computed position stops moving, then stop.
+	 * Bounded, and it gives up rather than fighting the scroll wheel
+	 * forever.
+	 */
+	private void scrollRowIntoView(StepRow target, int attemptsLeft, int lastY)
+	{
 		SwingUtilities.invokeLater(() -> {
 			if (target.getBounds().height == 0 && attemptsLeft > 0)
 			{
-				scrollRowIntoView(target, attemptsLeft - 1);
+				scrollRowIntoView(target, attemptsLeft - 1, lastY);
 				return;
 			}
 			// Land on the first UNTICKED sub, top-aligned. (A step taller
@@ -654,6 +673,16 @@ public class IronscapePanel extends PluginPanel
 			int y = Math.max(0, target.getY() + target.firstIncompleteSubY() - 8);
 			int maxY = Math.max(0, viewport.getViewSize().height - viewport.getExtentSize().height);
 			viewport.setViewPosition(new java.awt.Point(0, Math.min(y, maxY)));
+			if (y == lastY || attemptsLeft <= 0)
+			{
+				// Two passes agreed, so the layout has settled — leave the
+				// scroll bar alone from here.
+				return;
+			}
+			javax.swing.Timer retry = new javax.swing.Timer(60,
+				e -> scrollRowIntoView(target, attemptsLeft - 1, y));
+			retry.setRepeats(false);
+			retry.start();
 		});
 	}
 

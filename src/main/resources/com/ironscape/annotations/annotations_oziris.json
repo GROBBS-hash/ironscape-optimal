@@ -7585,6 +7585,11 @@
      "quantity": 1
     }
    ],
+   "target": {
+    "x": 3151,
+    "y": 3409,
+    "plane": 0
+   },
    "note": "Gertrude sells a new kitten for 100 coins, once your last one has grown up.\nRaising it: a kitten needs feeding and attention or it runs away - use milk on it when it is hungry and stroke it when it wants attention. After 3 hours following you it becomes a cat, which needs neither.\nWear a ring of Charos (a) when buying if you want to pick the colour."
   },
   "0c6db1e350": {
