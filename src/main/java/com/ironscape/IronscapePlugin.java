@@ -3623,6 +3623,16 @@ public class IronscapePlugin extends Plugin
 				{
 					continue;
 				}
+				// A PET is never the answer. It stands right beside you, so
+				// on a step that names nobody the nearest-to-anchor fallback
+				// crowns it — the owner's cat wore the Jungle Potion quest
+				// icon. Both tests earn their place: getFollower is your own
+				// pet wherever it stands, isFollower covers other people's,
+				// which are equally never a target.
+				if (isPet(npc))
+				{
+					continue;
+				}
 				// NPC names use non-breaking spaces; the guide uses real ones.
 				String clean = net.runelite.client.util.Text.removeTags(name)
 					.replace(' ', ' ').trim().toLowerCase(Locale.ROOT);
@@ -7579,6 +7589,25 @@ public class IronscapePlugin extends Plugin
 			}
 		}
 		return -1;
+	}
+
+	/**
+	 * A pet or familiar — never a guide target, however close it is.
+	 * Client thread.
+	 */
+	private boolean isPet(net.runelite.api.NPC npc)
+	{
+		if (npc == null)
+		{
+			return false;
+		}
+		net.runelite.api.NPC follower = client.getFollower();
+		if (follower != null && follower.getIndex() == npc.getIndex())
+		{
+			return true;
+		}
+		net.runelite.api.NPCComposition composition = npc.getComposition();
+		return composition != null && composition.isFollower();
 	}
 
 	private com.ironscape.travel.TeleportItems.Entry teleportItemChosenBySp()

@@ -7578,6 +7578,14 @@
     "label": "autoweed"
    }
   },
+  "15cfdebcd5": {
+   "target": {
+    "x": 2607,
+    "y": 3221,
+    "plane": 0
+   },
+   "note": "The cloak's Kandarin Monastery teleport is the one that gets you back - it lands south-east of the city, then run north."
+  },
   "755363999f": {
    "items": [
     {
