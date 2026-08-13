@@ -1641,6 +1641,13 @@ public class IronscapePlugin extends Plugin
 	 */
 	private static final int MIN_TILES_SAVED = 75;
 
+	/**
+	 * How far from a router leg's ORIGIN we still treat it as the next thing
+	 * to do. Beyond this the leg is behind you (or not yet reachable), and
+	 * highlighting its button is noise.
+	 */
+	private static final int ROUTER_LEG_ORIGIN_RADIUS = 40;
+
 	/** How close (tiles) counts as "arrived" at a PRECISE ⌖ target. */
 	private static final int ARRIVE_RADIUS = 8;
 
@@ -8001,6 +8008,24 @@ public class IronscapePlugin extends Plugin
 		// likes. We simply decline to point at a button that saves less than
 		// the floor the owner set for our own suggestions. Same number, so a
 		// hint means the same thing whoever proposed it.
+		// A LEG YOU HAVE ALREADY TAKEN IS NOT A HINT. The router republishes
+		// when its DISPLAYED route changes, but arriving is not such a change
+		// — so its last word stands, and we went on highlighting a Lumbridge
+		// home teleport while the player was deep in the tunnels under
+		// Lumbridge, long past using it (owner, in play, wave 27).
+		//
+		// The leg's origin is where you board or cast it. Stray far from
+		// there and the leg is behind you (or not yet reachable), either way
+		// not the button to press now. A leg with no origin can be used
+		// anywhere, so nothing can be concluded and it still shows.
+		WorldPoint standing = playerPoint();
+		if (first.origin != null && standing != null
+			&& standing.distanceTo2D(first.origin) > ROUTER_LEG_ORIGIN_RADIUS)
+		{
+			logRouterChoice("first leg starts " + standing.distanceTo2D(first.origin)
+				+ " tiles away — already taken it, or not there yet");
+			return false;
+		}
 		if (first.origin != null && first.destination != null
 			&& first.origin.distanceTo2D(first.destination) < MIN_TILES_SAVED)
 		{
