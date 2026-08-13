@@ -177,6 +177,15 @@ public class StepAnnotation
 	 */
 	public List<String> dialog;
 
+	/**
+	 * An emote this step asks you to perform ("Goblin bow").
+	 *
+	 * <p>Matched to the emote's SPRITE at runtime, so the name here is just
+	 * the label — see EmoteHintOverlay for why position in the list is
+	 * useless. Names follow Quest Helper's own spelling.
+	 */
+	public String emote;
+
 	public static class Errand
 	{
 		public int x;

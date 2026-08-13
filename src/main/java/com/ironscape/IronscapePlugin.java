@@ -213,6 +213,14 @@ public class IronscapePlugin extends Plugin
 	private com.ironscape.overlay.ObjectTargetOverlay objectTargetOverlay;
 
 	@Inject
+	private com.ironscape.overlay.EmoteHintOverlay emoteHintOverlay;
+
+	/** Sprite of the emote the current step asks for, or -1. */
+	private volatile int activeEmoteSprite = -1;
+	/** Its name, for the tab label. */
+	private volatile String activeEmoteName;
+
+	@Inject
 	private com.ironscape.overlay.InventoryItemHintOverlay inventoryItemHintOverlay;
 
 	@Inject
@@ -2088,6 +2096,10 @@ public class IronscapePlugin extends Plugin
 		objectTargetOverlay.setLabelSupplier(() -> objectActionsLabel);
 		objectTargetOverlay.setItemIconSupplier(() -> currentSubItemIcon);
 		overlayManager.add(objectTargetOverlay);
+		emoteHintOverlay.setSpriteSupplier(() -> activeEmoteSprite);
+		emoteHintOverlay.setNameSupplier(() -> activeEmoteName);
+		emoteHintOverlay.setColorSupplier(config::hintColour);
+		overlayManager.add(emoteHintOverlay);
 		inventoryItemHintOverlay.setItemIdsSupplier(() -> inventoryHintItemIds);
 		overlayManager.add(inventoryItemHintOverlay);
 		teleportItemHintOverlay.setEntrySupplier(() -> activeTeleportItem);
@@ -4096,6 +4108,27 @@ public class IronscapePlugin extends Plugin
 		}
 		currentSubItemIcon = wantedIcon;
 		npcItemIcons = perNpcIcons;
+
+		// An emote the step asks for ("Perform the Goblin Bow emote next to
+		// Mistag"). Sub key first, then the step, same as every other
+		// annotation lookup.
+		String emote = null;
+		if (current != null)
+		{
+			emote = annotationManager.getEmote(current.sub.getId());
+			if (emote == null)
+			{
+				emote = annotationManager.getEmote(current.step.getId());
+			}
+		}
+		activeEmoteName = emote;
+		activeEmoteSprite = com.ironscape.overlay.EmoteHintOverlay.spriteFor(emote);
+		if (emote != null && activeEmoteSprite < 0)
+		{
+			// A name nothing can match would just draw nothing, silently.
+			log.warn("emote '{}' on step {} is not a name we know — no hint will show",
+				emote, current.step.getId());
+		}
 
 		// Ground items the current sub wants picked up ("Pick up 2 iron
 		// bars...", item spawns): highlight their tiles, QH-style.

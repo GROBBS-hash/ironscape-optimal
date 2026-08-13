@@ -144,6 +144,18 @@ public class AnnotationManager
 		return b == null || b.dialog == null ? Collections.emptyList() : b.dialog;
 	}
 
+	/** Emote this step asks for ("Goblin bow"), local winning over bundled. Null if none. */
+	public synchronized String getEmote(String annotationId)
+	{
+		StepAnnotation l = local.get(annotationId);
+		if (l != null && l.emote != null)
+		{
+			return l.emote;
+		}
+		StepAnnotation b = bundled.get(annotationId);
+		return b == null ? null : b.emote;
+	}
+
 	/** Items needed for a step/sub-step, local file winning over bundled. Empty if none. */
 	public synchronized List<StepAnnotation.ItemNeed> getItems(String annotationId)
 	{

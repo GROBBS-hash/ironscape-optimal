@@ -6906,7 +6906,8 @@
    "requires": {
     "varbit": 532,
     "value": 10
-   }
+   },
+   "emote": "Goblin bow"
   },
   "58ad4841dd:0": {
    "requires": {
