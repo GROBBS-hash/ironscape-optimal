@@ -164,6 +164,12 @@ public class IronscapePanel extends PluginPanel
 	 * rebuild; zero means "this section already scrolls far enough".
 	 */
 	private final JPanel scrollTail = new JPanel();
+
+	/**
+	 * The step the panel last landed on, so {@link #followCurrentStep} re-lands
+	 * only when the frontier actually moves rather than every game tick.
+	 */
+	private String lastFollowedStepId;
 	private final JScrollPane scrollPane;
 
 	private Guide guide;
@@ -1024,6 +1030,52 @@ public class IronscapePanel extends PluginPanel
 				((StepRow) component).refreshItemBadges();
 			}
 		}
+		followCurrentStep();
+	}
+
+	/**
+	 * Keep the panel on the step you are ON as the frontier moves.
+	 *
+	 * <p>Nothing did this. Completing a step fires no rebuild — this per-tick
+	 * path only RESTYLES rows — so the view stayed at its old pixel offset
+	 * while the step you were on moved below the fold, leaving finished steps
+	 * filling the screen. The owner saw it as the panel "auto-scrolling back
+	 * to steps I've completed" without touching anything, which is exactly
+	 * what it looks like when the content moves and nobody re-lands it.
+	 *
+	 * <p>Deliberately SCROLLS rather than rebuilds: every step of the open
+	 * section is already a live row, and rebuilding from the per-tick path is
+	 * what blanked the panel in wave 15. Only a step in a DIFFERENT section
+	 * needs the rebuild, and that happens once per section boundary.
+	 */
+	private void followCurrentStep()
+	{
+		if (guide == null || openChapter < 0)
+		{
+			return; // overview or search: the player is browsing, leave them be.
+		}
+		String query = searchBar.getText() == null ? "" : searchBar.getText().trim();
+		if (!query.isEmpty())
+		{
+			return;
+		}
+		GuideStep current = currentStep();
+		if (current == null || current.getId().equals(lastFollowedStepId))
+		{
+			return;
+		}
+		lastFollowedStepId = current.getId();
+		for (Component component : content.getComponents())
+		{
+			if (component instanceof StepRow
+				&& ((StepRow) component).getStep().getId().equals(current.getId()))
+			{
+				scrollRowIntoView((StepRow) component, 20);
+				return;
+			}
+		}
+		// Not in the open section — the frontier crossed a boundary.
+		jumpToCurrent(false);
 	}
 
 	/** Toolbar "+": name the spot you're standing on; the name becomes a link guide-wide. */
@@ -1069,28 +1121,37 @@ public class IronscapePanel extends PluginPanel
 		jumpToCurrent(true);
 	}
 
-	private void jumpToCurrent(boolean navigate)
+	/**
+	 * "Current" = the first incomplete step AFTER the player's POSITION — the
+	 * same frontier the overlays and auto-completion use. NOT "after the last
+	 * completed step": a quest finished ages ago auto-ticks its step far ahead
+	 * (Daddy's Home), and landing there would skip everything in between.
+	 *
+	 * @return the step, or null when everything is done
+	 */
+	private GuideStep currentStep()
 	{
 		if (guide == null)
 		{
-			return;
+			return null;
 		}
-		// "Current" = the first incomplete step AFTER the player's POSITION
-		// — the same frontier the overlays and auto-completion use. NOT
-		// "after the last completed step": a quest finished ages ago
-		// auto-ticks its step far ahead (Daddy's Home), and landing there
-		// would skip everything in between.
 		java.util.List<GuideStep> steps = guide.getAllSteps();
 		int start = Math.max(0, progressManager.playerPosition(guide) + 1);
 		while (start < steps.size() && nothingLeftIn(steps.get(start)))
 		{
 			start++;
 		}
-		if (start >= steps.size())
+		return start >= steps.size() ? null : steps.get(start);
+	}
+
+	private void jumpToCurrent(boolean navigate)
+	{
+		GuideStep step = currentStep();
+		if (step == null)
 		{
 			return; // everything done — nothing to resume. (Congratulations.)
 		}
-		GuideStep step = steps.get(start);
+		lastFollowedStepId = step.getId();
 		openSection(step.getChapterIndex(), step.getSectionIndex(), step.getId());
 		// Resume also points the map at what's next.
 		if (navigate && progressChangedListener != null)
