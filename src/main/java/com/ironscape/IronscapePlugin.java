@@ -220,6 +220,17 @@ public class IronscapePlugin extends Plugin
 	/** Its name, for the tab label. */
 	private volatile String activeEmoteName;
 
+	/**
+	 * Sub whose emote the player has already clicked. The hint is for finding
+	 * the emote in a list of eighty; once you have clicked it you have found
+	 * it, and leaving the outline up is just clutter (owner, in play: "worked
+	 * perfectly, however it didnt stop showing once we completed that").
+	 *
+	 * Keyed by SUB rather than a flag, so it cannot leak onto the next step
+	 * that happens to want the same emote.
+	 */
+	private volatile String emoteClickedForSub;
+
 	@Inject
 	private com.ironscape.overlay.InventoryItemHintOverlay inventoryItemHintOverlay;
 
@@ -1649,13 +1660,6 @@ public class IronscapePlugin extends Plugin
 	 */
 	private static final int MIN_TILES_SAVED = 75;
 
-	/**
-	 * How far from a router leg's ORIGIN we still treat it as the next thing
-	 * to do. Beyond this the leg is behind you (or not yet reachable), and
-	 * highlighting its button is noise.
-	 */
-	private static final int ROUTER_LEG_ORIGIN_RADIUS = 40;
-
 	/** How close (tiles) counts as "arrived" at a PRECISE ⌖ target. */
 	private static final int ARRIVE_RADIUS = 8;
 
@@ -2829,6 +2833,23 @@ public class IronscapePlugin extends Plugin
 	@Subscribe
 	public void onMenuOptionClicked(MenuOptionClicked event)
 	{
+		// Clicking the emote we are pointing at IS the end of that hint: the
+		// overlay exists to find it among eighty icons, and once found the
+		// outline is clutter. Compared by SPRITE, the same way the overlay
+		// picks it, so clicking a different emote leaves the hint up.
+		if (activeEmoteSprite >= 0)
+		{
+			net.runelite.api.widgets.Widget clicked = event.getWidget();
+			if (clicked != null && clicked.getSpriteId() == activeEmoteSprite)
+			{
+				Current here = findCurrent();
+				if (here != null)
+				{
+					emoteClickedForSub = here.sub.getId();
+				}
+			}
+		}
+
 		// Scene-transition tracking for minigame presence: a coordinate
 		// jump right after clicking a GAME OBJECT is a ladder/cave/portal
 		// (stay present), not a teleport item/spell (presence breaks).
@@ -3091,6 +3112,14 @@ public class IronscapePlugin extends Plugin
 				// Forgetting the last target re-opens the gate for this one
 				// post only; the timer-driven re-posting stays gone.
 				lastPostedTarget = null;
+				// The router's last word describes a journey from where you
+				// WERE. It republishes when its displayed route changes, but
+				// arriving is not such a change, so after a jump its report
+				// is stale — and we went on highlighting a home teleport
+				// already taken, from under Lumbridge. Forget it and wait to
+				// be told again; a route still wanted is re-reported within a
+				// second or two of the re-post below.
+				spRoute = null;
 				maybeNavigateToNext();
 			}
 			lastTickPosition = here;
@@ -4122,8 +4151,13 @@ public class IronscapePlugin extends Plugin
 			}
 		}
 		activeEmoteName = emote;
-		activeEmoteSprite = com.ironscape.overlay.EmoteHintOverlay.spriteFor(emote);
-		if (emote != null && activeEmoteSprite < 0)
+		activeEmoteSprite = emote == null || (current != null
+			&& current.sub.getId().equals(emoteClickedForSub))
+			? -1
+			: com.ironscape.overlay.EmoteHintOverlay.spriteFor(emote);
+		if (emote != null && activeEmoteSprite < 0
+			&& (current == null || !current.sub.getId().equals(emoteClickedForSub))
+			&& com.ironscape.overlay.EmoteHintOverlay.spriteFor(emote) < 0)
 		{
 			// A name nothing can match would just draw nothing, silently.
 			log.warn("emote '{}' on step {} is not a name we know — no hint will show",
@@ -8041,24 +8075,15 @@ public class IronscapePlugin extends Plugin
 		// likes. We simply decline to point at a button that saves less than
 		// the floor the owner set for our own suggestions. Same number, so a
 		// hint means the same thing whoever proposed it.
-		// A LEG YOU HAVE ALREADY TAKEN IS NOT A HINT. The router republishes
-		// when its DISPLAYED route changes, but arriving is not such a change
-		// — so its last word stands, and we went on highlighting a Lumbridge
-		// home teleport while the player was deep in the tunnels under
-		// Lumbridge, long past using it (owner, in play, wave 27).
-		//
-		// The leg's origin is where you board or cast it. Stray far from
-		// there and the leg is behind you (or not yet reachable), either way
-		// not the button to press now. A leg with no origin can be used
-		// anywhere, so nothing can be concluded and it still shows.
-		WorldPoint standing = playerPoint();
-		if (first.origin != null && standing != null
-			&& standing.distanceTo2D(first.origin) > ROUTER_LEG_ORIGIN_RADIUS)
-		{
-			logRouterChoice("first leg starts " + standing.distanceTo2D(first.origin)
-				+ " tiles away — already taken it, or not there yet");
-			return false;
-		}
+		// NOTE: distance from the leg's ORIGIN is NOT the test for "already
+		// taken it", though it looks like one. A teleport can be cast
+		// anywhere and the router still reports an origin — just where you
+		// happened to be — so that rule silently hid a Lumbridge home
+		// teleport the player genuinely needed, from the very same tunnels
+		// where the stale one had to be hidden (owner, in play, wave 27,
+		// twice within the hour). Position cannot separate those two cases;
+		// only freshness can, which is why a position jump now clears the
+		// route instead. See the teleport detector.
 		if (first.origin != null && first.destination != null
 			&& first.origin.distanceTo2D(first.destination) < MIN_TILES_SAVED)
 		{
