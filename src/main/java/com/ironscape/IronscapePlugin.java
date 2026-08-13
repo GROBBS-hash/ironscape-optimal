@@ -7826,18 +7826,37 @@ public class IronscapePlugin extends Plugin
 		List<String> objectInfos = stringList(data.get("objectInfo"));
 		List<String> displayInfos = stringList(data.get("displayInfo"));
 
-		// Four parallel lists from another plugin: trust the shortest one
-		// rather than assuming they agree, so a change on their side
-		// cannot throw from inside their thread.
-		int legs = Math.min(origins.size(), destinations.size());
+		// Four parallel lists from another plugin. Count the legs by the
+		// LONGEST, not the shortest, and index-guard every read.
+		//
+		// Keying on origin lost whole routes: a home teleport can be cast
+		// anywhere, so it has no origin, and min() collapsed a route that was
+		// nothing but a home teleport to ZERO legs — reported to us as
+		// "walking the whole way" while GPS's own panel read "1. Use
+		// Lumbridge Home Teleport" (owner, in play, wave 27). The LABEL is
+		// what we act on; coordinates are extra, and every consumer already
+		// null-checks them.
+		int legs = Math.max(Math.max(origins.size(), destinations.size()),
+			Math.max(objectInfos.size(), displayInfos.size()));
 		List<SpLeg> route = new ArrayList<>(legs);
 		for (int i = 0; i < legs; i++)
 		{
-			route.add(new SpLeg(origins.get(i), destinations.get(i),
+			route.add(new SpLeg(
+				i < origins.size() ? origins.get(i) : null,
+				i < destinations.size() ? destinations.get(i) : null,
 				i < objectInfos.size() ? objectInfos.get(i) : null,
 				i < displayInfos.size() ? displayInfos.get(i) : null));
 		}
 		spRoute = route;
+		// Say so when the lists disagree: that mismatch is exactly what hid
+		// the home teleport, and it is invisible from the route alone.
+		if (origins.size() != displayInfos.size()
+			|| destinations.size() != displayInfos.size())
+		{
+			log.info("router-choice: leg lists disagree — {} origins, {} destinations,"
+					+ " {} objectInfos, {} displayInfos",
+				origins.size(), destinations.size(), objectInfos.size(), displayInfos.size());
+		}
 		logHintDecision("shortest path chose: "
 			+ (route.isEmpty() ? "no transport (walking the whole way)" : route.toString()));
 	}
