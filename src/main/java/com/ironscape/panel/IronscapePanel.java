@@ -156,6 +156,14 @@ public class IronscapePanel extends PluginPanel
 
 	// Scrollable content
 	private final JPanel content = new JPanel(new GridBagLayout());
+
+	/**
+	 * Empty filler under the last step, so a step near the end of a section
+	 * can still be scrolled to the TOP of the panel. Height is set by
+	 * {@link #scrollRowIntoView} to exactly the shortfall and reset on every
+	 * rebuild; zero means "this section already scrolls far enough".
+	 */
+	private final JPanel scrollTail = new JPanel();
 	private final JScrollPane scrollPane;
 
 	private Guide guide;
@@ -547,6 +555,10 @@ public class IronscapePanel extends PluginPanel
 
 	private void buildSectionView(String scrollToStepId)
 	{
+		// Fresh section, fresh tail: the shortfall belongs to one layout.
+		scrollTail.setBackground(ColorScheme.DARK_GRAY_COLOR);
+		scrollTail.setPreferredSize(new Dimension(1, 0));
+
 		GuideChapter chapter = guide.getChapters().get(openChapter);
 		GuideSection section = chapter.getSections().get(openSection);
 		GridBagConstraints c = rowConstraints();
@@ -624,6 +636,21 @@ public class IronscapePanel extends PluginPanel
 		}
 		content.add(footer, c);
 
+		// Room to scroll PAST the end of the list.
+		//
+		// Without it the last steps of a section can never reach the top of
+		// the panel: there is nothing below them to scroll, so the viewport
+		// clamps and the step you are on sits at the BOTTOM with finished
+		// ones filling the screen above it. The owner met this on step 278,
+		// the 279th of 286 in its section, and it gets steadily worse the
+		// further into a section you are — which is why it read as the scroll
+		// "getting worse", and why two rounds of chasing async layout timing
+		// found nothing (wave 27).
+		//
+		// Grown only as far as the step in hand actually needs, in
+		// scrollRowIntoView, so sections that fit keep their exact old feel.
+		content.add(scrollTail, c);
+
 		if (scrollTarget != null)
 		{
 			scrollRowIntoView(scrollTarget, 20);
@@ -680,6 +707,19 @@ public class IronscapePanel extends PluginPanel
 			// than the viewport. See StepRow.scrollOffset.
 			int y = Math.max(0, target.getY() + target.scrollOffset() - 8);
 			int maxY = Math.max(0, viewport.getViewSize().height - viewport.getExtentSize().height);
+			// Not enough list below this step to lift it to the top: extend the
+			// tail by exactly the shortfall and let the retry land on it. Only
+			// ever grows within one build, so it settles instead of oscillating.
+			if (y > maxY && attemptsLeft > 0)
+			{
+				int shortfall = y - maxY;
+				java.awt.Dimension tail = scrollTail.getPreferredSize();
+				scrollTail.setPreferredSize(
+					new java.awt.Dimension(1, tail.height + shortfall));
+				content.revalidate();
+				scrollRowIntoView(target, attemptsLeft - 1, lastAt, weSet);
+				return;
+			}
 			// SETTLE ON THE POSITION WE ACTUALLY APPLIED, not on the raw y.
 			// The two differ whenever the view is still short — rows below
 			// the target had not been sized yet — and then y can be stable
