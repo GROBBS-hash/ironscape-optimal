@@ -738,17 +738,19 @@ public class IronscapePanel extends PluginPanel
 			viewport.setViewPosition(new java.awt.Point(0, at));
 			if (at == lastAt || attemptsLeft <= 0)
 			{
-				if (at != lastAt)
-				{
-					// Ran out of patience rather than settling. Say so: the
-					// alternative is a silently wrong scroll, which is what
-					// took two sessions to pin down.
-					org.slf4j.LoggerFactory.getLogger(IronscapePanel.class).info(
-						"scroll: gave up before the layout settled on step {} —"
-							+ " wanted y={}, applied {}, view height {}, viewport {}",
-						target.getStep().getId(), y, at, viewport.getViewSize().height,
-						viewport.getExtentSize().height);
-				}
+				// ALWAYS report where it ended up, settled or not. Reporting
+				// only failures is why three rounds of this bug produced no
+				// evidence at all: on two of them the code never ran, and on
+				// the third it "succeeded" at the wrong place. A landing line
+				// per step change is cheap and makes the next report readable.
+				org.slf4j.LoggerFactory.getLogger(IronscapePanel.class).info(
+					"scroll: {} on step {} (index {}) — row y={}, offset={}, wanted={},"
+						+ " applied={}, view={}, viewport={}, tail={}",
+					at == lastAt ? "settled" : "GAVE UP",
+					target.getStep().getId(), target.getStep().getGlobalIndex(),
+					target.getY(), target.scrollOffset(), y, at,
+					viewport.getViewSize().height, viewport.getExtentSize().height,
+					scrollTail.getPreferredSize().height);
 				return;
 			}
 			// Item icons arrive asynchronously and html panes size late, so
@@ -1070,11 +1072,18 @@ public class IronscapePanel extends PluginPanel
 			if (component instanceof StepRow
 				&& ((StepRow) component).getStep().getId().equals(current.getId()))
 			{
+				org.slf4j.LoggerFactory.getLogger(IronscapePanel.class).info(
+					"scroll: frontier moved to step {} (index {}) — following",
+					current.getId(), current.getGlobalIndex());
 				scrollRowIntoView((StepRow) component, 20);
 				return;
 			}
 		}
 		// Not in the open section — the frontier crossed a boundary.
+		org.slf4j.LoggerFactory.getLogger(IronscapePanel.class).info(
+			"scroll: frontier moved to step {} (index {}), which is NOT a row in the"
+				+ " open section — rebuilding",
+			current.getId(), current.getGlobalIndex());
 		jumpToCurrent(false);
 	}
 
