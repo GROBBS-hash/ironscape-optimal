@@ -626,7 +626,7 @@ public class IronscapePanel extends PluginPanel
 
 		if (scrollTarget != null)
 		{
-			scrollRowIntoView(scrollTarget, 5);
+			scrollRowIntoView(scrollTarget, 20);
 		}
 		else
 		{
@@ -642,7 +642,7 @@ public class IronscapePanel extends PluginPanel
 	 */
 	private void scrollRowIntoView(StepRow target, int attemptsLeft)
 	{
-		scrollRowIntoView(target, attemptsLeft, Integer.MIN_VALUE);
+		scrollRowIntoView(target, attemptsLeft, Integer.MIN_VALUE, -1);
 	}
 
 	/**
@@ -659,29 +659,57 @@ public class IronscapePanel extends PluginPanel
 	 * Bounded, and it gives up rather than fighting the scroll wheel
 	 * forever.
 	 */
-	private void scrollRowIntoView(StepRow target, int attemptsLeft, int lastY)
+	private void scrollRowIntoView(StepRow target, int attemptsLeft, int lastAt, int weSet)
 	{
 		SwingUtilities.invokeLater(() -> {
+			javax.swing.JViewport viewport = scrollPane.getViewport();
+			// The player outranks us. If the scroll bar is no longer where we
+			// put it, they have taken hold of it — stop re-asserting rather
+			// than fight the wheel.
+			if (weSet >= 0 && viewport.getViewPosition().y != weSet)
+			{
+				return;
+			}
 			if (target.getBounds().height == 0 && attemptsLeft > 0)
 			{
-				scrollRowIntoView(target, attemptsLeft - 1, lastY);
+				scrollRowIntoView(target, attemptsLeft - 1, lastAt, weSet);
 				return;
 			}
 			// Top-aligned on the card — and on a MULTI-action step, on its
 			// first unticked sub instead, since such a step can be taller
 			// than the viewport. See StepRow.scrollOffset.
-			javax.swing.JViewport viewport = scrollPane.getViewport();
 			int y = Math.max(0, target.getY() + target.scrollOffset() - 8);
 			int maxY = Math.max(0, viewport.getViewSize().height - viewport.getExtentSize().height);
-			viewport.setViewPosition(new java.awt.Point(0, Math.min(y, maxY)));
-			if (y == lastY || attemptsLeft <= 0)
+			// SETTLE ON THE POSITION WE ACTUALLY APPLIED, not on the raw y.
+			// The two differ whenever the view is still short — rows below
+			// the target had not been sized yet — and then y can be stable
+			// while the clamp is still moving. Comparing y alone declared
+			// victory on a clamped, too-high position and stopped, which is
+			// the panel "landing a couple of cards above the step you are on"
+			// (owner, in play, wave 27: current step at the very bottom edge
+			// with two finished ones above it).
+			int at = Math.min(y, maxY);
+			viewport.setViewPosition(new java.awt.Point(0, at));
+			if (at == lastAt || attemptsLeft <= 0)
 			{
-				// Two passes agreed, so the layout has settled — leave the
-				// scroll bar alone from here.
+				if (at != lastAt)
+				{
+					// Ran out of patience rather than settling. Say so: the
+					// alternative is a silently wrong scroll, which is what
+					// took two sessions to pin down.
+					org.slf4j.LoggerFactory.getLogger(IronscapePanel.class).info(
+						"scroll: gave up before the layout settled on step {} —"
+							+ " wanted y={}, applied {}, view height {}, viewport {}",
+						target.getStep().getId(), y, at, viewport.getViewSize().height,
+						viewport.getExtentSize().height);
+				}
 				return;
 			}
-			javax.swing.Timer retry = new javax.swing.Timer(60,
-				e -> scrollRowIntoView(target, attemptsLeft - 1, y));
+			// Item icons arrive asynchronously and html panes size late, so
+			// the budget has to outlast them: 20 x 80ms rather than the old
+			// 5 x 60ms, which expired while rows above were still growing.
+			javax.swing.Timer retry = new javax.swing.Timer(80,
+				e -> scrollRowIntoView(target, attemptsLeft - 1, at, at));
 			retry.setRepeats(false);
 			retry.start();
 		});
