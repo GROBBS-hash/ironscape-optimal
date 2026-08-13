@@ -53,14 +53,12 @@ was not running at all. **If it drifts again, read the log first** — there are
 
 **BUILD NEXT, when there is desk time:**
 
-- **A duplicate-kit-item audit.** Step 280 carried step 281's dyes as plain
-  requirements and could never complete — the second time in two sessions that
-  one wrong kit item silently blocked a step (wave 26's "Lit candle"). The
-  class is mechanical: any item on step N that also appears on step N+1, where
-  N+1 is what consumes it. Nothing checks this today.
-- **Bulk emote seeding.** One step is seeded (The Lost Tribe's Goblin bow).
-  Quest Helper's source lists every emote step, so the rest is a scraper pass
-  like the quest-NPC one.
+- **WK-1, the carried-ahead / already-spent kit audit** — now THREE instances
+  in two sessions (Lit candle, step 280’s dyes, step 284’s eight-item finale
+  kit of which none were needed). See the PLANNED section below for the two
+  shapes it must tell apart.
+- **WK-2, bulk emote seeding** — the overlay is confirmed working; the rest
+  is data. See PLANNED for the step-granularity problem.
 - **Step 276's chain** models only Merlin upstairs, not King Arthur
   downstairs. CONFIRMED as a real gap; left alone because he is past it, so it
   only bites a new player.
@@ -69,6 +67,78 @@ was not running at all. **If it drifts again, read the log first** — there are
 create and remove a worktree within the same task (four stale ones held real
 uncommitted work); and when a failure has several indistinguishable causes,
 ship the diagnostic BEFORE the fix rather than after three attempts.
+
+---
+
+## PLANNED — next build (agreed with owner 2026-08-13, end of wave 27)
+
+Two items, both agreed. Neither is urgent enough to interrupt a play session;
+both remove a whole class of report rather than one instance.
+
+**WK-1 — Audit kit items that belong to a LATER step.**
+
+The highest-value one, because the class has now cost a blocked step **three
+times in two sessions** and each was found by walking into it:
+
+- wave 26: a "Lit candle" on the Camelot step, which the ritual never carries;
+- wave 27: step 280 "Falador teleport" carrying Goblin Diplomacy's blue and
+  orange dyes as hard requirements;
+- wave 27: step 284 "Finish Lost tribe" carrying **eight** items of which
+  **none** were needed at the finale — four were for the smelting step four
+  steps later, four were spent in the tunnels legs long before.
+
+The failure is always silent and always looks like broken DETECTION: arrival
+needs the step's items in hand, so one item that can never be held stops the
+step completing, with nothing in the log to say why. The owner reads it as
+"this step won't tick".
+
+**Two distinct shapes, and the audit must tell them apart:**
+
+1. *Carried ahead* — the item also appears on a LATER step which is what
+   actually consumes it. Fix: `bringAhead` + `optional`, so it keeps its icon
+   and its place in the list but cannot gate.
+2. *Already spent* — a genuine quest item consumed on an EARLIER leg, sitting
+   on the step that FINISHES the quest (wave 9's rule: a finishing step lists
+   what the FINALE needs, not the quest-wide wiki list). Fix: drop it.
+
+Mechanical inputs, all of which already exist: the annotation corpus, the
+guide text, `questStatus` metadata, and `build/completion-paths.tsv` for
+whether a step can complete by ARRIVAL at all (only those can be blocked this
+way — a step ticking off quest state does not care).
+
+Suggested rule to start from, then measure before trusting it: flag any
+NUMBERED, non-optional, non-granted, non-consumed item on an arrival-completed
+step where the same canonical name appears on another step within a window
+either side. Report which side it appears on, since that decides which of the
+two fixes applies. **Measure the hit count before applying anything** — wave 13
+proposed a similar rule, measured it, and found 29 of 30 changes would have
+been wrong, so the rule was narrowed instead of shipped.
+
+**WK-2 — Seed emotes in bulk from Quest Helper.**
+
+One step is seeded today: The Lost Tribe's Goblin bow (`1ba377b2f6:0`). The
+overlay works — confirmed in play, matched by sprite — so the remaining work
+is entirely data.
+
+Source: QH constructs `EmoteStep(helper, QuestEmote.X, ...)` in its quest
+files, and `QuestEmote` carries the display name. A scraper pass like
+`seed-quest-npcs.mjs`: for each quest we tag, find its EmoteStep(s) and write
+`emote` onto our step for that quest.
+
+**The known ambiguity, which is why this needs thought rather than a loop:**
+our steps are coarse. "Continue Lost tribe" spans far more of the quest than
+the moment an emote is wanted, and a quest split across four steps gives no
+way to say WHICH step owns the emote. Options, cheapest first:
+
+- seed onto the step whose quest tag matches and let the click stand-down do
+  the rest (what the Lost Tribe entry does today — the hint may appear early,
+  but one click dismisses it for good);
+- gate the annotation on a quest var, the way the checkpoint annotations
+  already do, if appearing early proves annoying in play.
+
+Do NOT auto-scroll the emote list to the emote as QH does. That needs a
+`runScript` from inside a render, which hard-froze this client twice during
+the bank-filter work.
 
 ---
 

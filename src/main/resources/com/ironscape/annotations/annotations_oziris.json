@@ -1085,35 +1085,27 @@
    "items": [
     {
      "name": "gp",
-     "quantity": null
+     "quantity": null,
+     "bringAhead": true,
+     "optional": true
     },
     {
      "name": "silver ore",
-     "quantity": 5
+     "quantity": 5,
+     "bringAhead": true,
+     "optional": true
     },
     {
      "name": "sickle mould",
-     "quantity": null
+     "quantity": null,
+     "bringAhead": true,
+     "optional": true
     },
     {
      "name": "holy mould",
-     "quantity": null
-    },
-    {
-     "name": "key imprint",
      "quantity": null,
-     "granted": true
-    },
-    {
-     "name": "bronze bar",
-     "quantity": null
-    },
-    {
-     "name": "pickaxe",
-     "quantity": 1
-    },
-    {
-     "name": "candle"
+     "bringAhead": true,
+     "optional": true
     }
    ]
   },
