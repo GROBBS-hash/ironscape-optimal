@@ -7971,7 +7971,26 @@ public class IronscapePlugin extends Plugin
 		// Only the FIRST transport: that is the one to act on now, and
 		// highlighting a later leg points at a button for a journey you
 		// have not started.
-		String display = route.get(0).displayInfo;
+		SpLeg first = route.get(0);
+		// A TRIVIALLY SHORT HOP IS NOT WORTH A BUTTON. The router rates a
+		// teleport as very nearly free, so it will pick one to cross a town:
+		// standing in Falador it chose Falador Teleport, a 33-tile jump from
+		// 2995,3366 to 2964,3378, and we lit up the spell (owner, in play,
+		// wave 27 — "it wants me to tp to Falador, I'm in Falador").
+		//
+		// We do NOT argue with the route — the router still draws whatever it
+		// likes. We simply decline to point at a button that saves less than
+		// the floor the owner set for our own suggestions. Same number, so a
+		// hint means the same thing whoever proposed it.
+		if (first.origin != null && first.destination != null
+			&& first.origin.distanceTo2D(first.destination) < MIN_TILES_SAVED)
+		{
+			logRouterChoice("first leg only covers "
+				+ first.origin.distanceTo2D(first.destination)
+				+ " tiles — not worth a teleport (floor is " + MIN_TILES_SAVED + ")");
+			return false;
+		}
+		String display = first.displayInfo;
 		if (display == null)
 		{
 			logRouterChoice("first leg has no label to match");
