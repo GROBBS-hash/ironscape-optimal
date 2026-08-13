@@ -758,12 +758,25 @@ refresh when "Failed to login" appears.
   calm session.
 
 - SESSION WAVE 26 (2026-08-12, desk + long live play-test 268 -> 276; main
-  ended at `1160d24`, PUSHED; **hub pin BUMPED to that same `1160d24`** — the
-  gap was **68** commits from `bb3e11e`, not the 57 an earlier draft of this
-  entry claimed, so count it rather than carrying it forward. Verified the way
-  the hub builder does: `gradlew clean build` from a FRESH CLONE at that exact
-  sha — jar produced, 120 tests, 0 failures — then the hub's own `build` check
-  on PR 14207):
+  ended at **`ae9f062`**, PUSHED; **hub pin BUMPED to `ae9f062`, hub `build`
+  check PASSING** — the gap from `bb3e11e` was **68** commits, not the 57 an
+  earlier draft of this entry claimed, so COUNT it rather than carrying it):
+  **THE PIN BUMP FAILED THE HUB FIRST TIME, AND A CLEAN LOCAL BUILD DID NOT
+  PREDICT IT.** `gradlew clean build` from a fresh clone at the pinned sha
+  passed (jar built, 120 tests, 0 failures) and the hub still rejected it:
+  *"plugin uses terminally deprecated APIs: Do not create fresh Gson instances,
+  always @Inject the client's Gson."* Same day's own work — the teleport-item
+  index initialised its field with `new Gson()`, which was redundant as well as
+  forbidden (startUp and `::ironreload` both load it with the injected Gson);
+  it starts `TeleportItems.empty()` now. **The rule exists ONLY in the hub's
+  checker**, so it surfaces hours later on a public PR — hence
+  `HubComplianceTest`, which scans MAIN sources for fresh Gson instances and
+  for reflection (the rule that cost the QH handoff in review round 1),
+  verified BOTH ways. Add a rule to it whenever the hub teaches us one.
+  **Bumping the pin is therefore a two-step job: push, re-pin, then WAIT for
+  the hub's `build` check** — `gh pr checks 14207 --repo runelite/plugin-hub`.
+  Its red X is normally "Requires maintainer review", which fails by design; a
+  failing check named `build` is real.):
   **DX-6 AND DX-5 BOTH SHIPPED, AND THE FIRST THING DX-6 DID WAS PROVE US
   RIGHT.** Shortest Path's `postPluginMessages()` posts back every transport on
   the route it chose — `origin`/`destination` as WorldPoints, `objectInfo` and

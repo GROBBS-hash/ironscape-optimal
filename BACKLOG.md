@@ -14,7 +14,18 @@ Screenshots `SS-01` … `SS-20` in `docs/screenshots/`.
 
 ## START HERE — next session (written 2026-08-12, end of wave 26)
 
-Main at `7cd8eed`, 11 commits, **PUSHED**, tree clean. Hub pin BUMPED to `1160d24` (2026-08-12). The gap was **68**, not the 57 these notes said — count it, do not carry it. Run `node tools/check-all.mjs --tests` before handing over a
+Main at **`ae9f062`**, PUSHED, tree clean. **Hub pin BUMPED to `ae9f062`
+(2026-08-12) and the hub's own `build` check is PASSING.** The gap had been
+**68** commits, not the 57 these notes claimed — count it, do not carry it.
+
+**The first bump FAILED the hub** on a rule our build does not enforce ("Do
+not create fresh Gson instances, always @Inject the client's Gson").
+`HubComplianceTest` now catches that class locally. **When bumping the pin,
+always wait for the check**: `gh pr checks 14207 --repo runelite/plugin-hub`.
+A red X named "Requires maintainer review" is normal and fails by design; a
+red `build` is real.
+
+Run `node tools/check-all.mjs --tests` before handing over a
 build, and `node tools/check-client.mjs` before ANY gradle command.
 
 **POLICY (owner, 2026-08-12): SUPPORT BOTH PATHERS, GPS PREFERRED.** He
