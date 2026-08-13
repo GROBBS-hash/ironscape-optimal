@@ -185,6 +185,21 @@ public class StepAnnotation
 		/** Item this stage yields; the stage stands down once you own one. */
 		public String item;
 		/**
+		 * Item NAME to float over this stage's target purely as a picture,
+		 * for a stage that yields no item at all — an achievement diary task,
+		 * say, which wants a diary sprite rather than whatever the rest of the
+		 * chain is ultimately after.
+		 *
+		 * A NAME and not an id, deliberately, matching ItemNeed.icon: an id
+		 * changes what gets COUNTED and would trip the audit that catches
+		 * genuinely wrong ids. This one is decoration and counts nothing.
+		 *
+		 * Without it a stage with no item inherited the step's goal icon, so
+		 * the Seers' church organ wore a pair of Boots of lightness (owner,
+		 * in play, wave 27).
+		 */
+		public String icon;
+		/**
 		 * Stage done once the player is standing in this REGION
 		 * (WorldPoint.getRegionID()).
 		 *

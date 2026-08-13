@@ -6433,6 +6433,17 @@
   "ad2f853a95:0": {
    "errands": [
     {
+     "x": 2692,
+     "y": 3463,
+     "plane": 0,
+     "varp": 1178,
+     "bit": 4,
+     "object": "Church organ",
+     "optional": true,
+     "note": "Diary task (OPTIONAL): play the organ in Seers' Village church, on the way south. Speaks up within 40 tiles; skipping it can never wedge the step.",
+     "icon": "achievement diary cape"
+    },
+    {
      "x": 2677,
      "y": 9805,
      "plane": 0,
@@ -6450,7 +6461,8 @@
      "y": 9805,
      "plane": 0,
      "item": "boots of lightness",
-     "note": "Take the west stairs down, cut the web with the knife, and grab the Boots of lightness."
+     "note": "Take the west stairs down, cut the web with the knife, and grab the Boots of lightness.",
+     "object": "Staircase"
     }
    ]
   },

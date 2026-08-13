@@ -225,7 +225,13 @@ if (!fs.existsSync(constantsTsv)) {
   // game, and 1554-1560 are the colours. Counting is by NAME so every
   // colour counts; the id only chooses the sprite, which is why picking
   // the default one is safe here.)
-  const VERIFIED = new Set(['pet kitten', 'big frog leg', 'rusty sword', 'buttons',
+  // ('achievement diary cape' -> 19476 SKILLCAPE_AD: DECORATION ONLY. It is
+  // referenced solely by Errand.icon, which floats a picture over a stage that
+  // yields no item — a diary sprite over the Seers' church organ. Nothing
+  // counts it and nothing gates on it, so the usual "sprite right, counting
+  // broken?" worry cannot apply here. Do NOT reuse this key as an item need.)
+  const VERIFIED = new Set(['achievement diary cape',
+    'pet kitten', 'big frog leg', 'rusty sword', 'buttons',
     'skin paste', 'key imprint', 'teleport card',
     'silverlight key', 'demon slayer key',
     'message', 'cadava potion', 'pirate message', "pirate's message",
