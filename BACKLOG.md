@@ -14,8 +14,8 @@ Screenshots `SS-01` … `SS-20` in `docs/screenshots/`.
 
 ## START HERE — next session (written 2026-08-13, end of wave 27)
 
-Main at **`3710ba7`**, PUSHED, tree clean. **14 commits this session.** Hub pin
-still `ae9f062`, gap **14** — counted, do not carry it.
+Main at **`075d610`**, PUSHED, tree clean. **15 commits this session.** Hub pin
+still `ae9f062`, gap **16** — counted at the end, do not carry it forward.
 
 **DO NOT BUMP THE PIN YET.** Five things shipped today have never run in a
 game, and the standing rule is to pin only after a session goes quietly. This
@@ -28,7 +28,25 @@ Before ANY gradle command: `node tools/check-client.mjs`.
 Before handing over a build: `node tools/check-all.mjs --tests` — and read the
 test COUNT from `build/test-results/*.xml`, because gradle will happily print
 "BUILD SUCCESSFUL in 2s" for tests it never ran.
-For data-only fixes: edit the repo file, have him type `::ironreload`.
+For data-only fixes: edit the repo file, have him type `::ironreload`. Two of
+wave 27's three step-blocking bugs were data and needed no restart at all —
+reach for this FIRST when a step's items look wrong.
+
+**When he reports a problem, ask him to type `::ironwrong` at that moment**
+and read `~/.runelite/ironscape/reports/`. It records position, step, sub,
+quest state, where the route actually pointed, and the last 25 nav/hint
+decisions. It no longer overwrites (a second press on one step writes `-2`).
+Wave 27 wasted three rounds reasoning from screenshots before reading a log;
+the reports and the `scroll:` / `router-choice:` lines settle in one read what
+screenshots cannot settle at all.
+
+**PATHING POLICY (owner, 2026-08-12): SUPPORT BOTH, GPS PREFERRED.** He runs
+GPS (`runelite.gpsplugin=true`, `shortestpathplugin=false`); Shortest Path
+stays supported for users who want it. **Never run both — one message draws
+two routes.** Keep posting on the `"shortestpath"` channel: GPS is a fork that
+accepts it as a documented compatibility namespace, so one message serves
+either, where GPS's own `"gps"` namespace would silently do nothing for
+Shortest Path users.
 
 **PLAY-TEST FIRST, in the order he will meet it:**
 
@@ -42,7 +60,11 @@ For data-only fixes: edit the repo file, have him type `::ironreload`.
    should now be declined, with the distance named in the log.
 4. **The organ's diary icon and the dungeon stairs outline.** Both shipped
    with the organ stage; only the routing half was confirmed.
-5. Then **282** and **316**, still unplayed from earlier waves.
+5. **Step 284 "Finish Lost tribe"** — its kit was cut from eight items to
+   four (none of which can gate) right at the end of the session, applied by
+   `::ironreload` but never seen ticking. It should complete on the
+   conversation alone.
+6. Then **282** and **316**, still unplayed from earlier waves.
 
 **THE PANEL SCROLL IS FIXED — and the story matters more than the fix.** Four
 diagnoses failed because "it lands in the wrong place" and "nothing re-lands
