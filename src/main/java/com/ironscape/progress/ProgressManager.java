@@ -43,6 +43,9 @@ public class ProgressManager
 	private final Map<GuideVariant, Map<String, Integer>> baselineCache = new EnumMap<>(GuideVariant.class);
 	private final Map<GuideVariant, Map<String, Integer>> manualCache = new EnumMap<>(GuideVariant.class);
 
+	/** Emotes already performed, per variant. See isEmoteDone. */
+	private final Map<GuideVariant, Map<String, Integer>> emoteCache = new EnumMap<>(GuideVariant.class);
+
 	@Inject
 	public ProgressManager(ConfigManager configManager)
 	{
@@ -84,6 +87,8 @@ public class ProgressManager
 				// Same reasoning for purchases: a kept baseline would leave
 				// the step needing ANOTHER purchase to re-tick.
 				clearAcquisitionBaselines(variant, sub.getId());
+				// Doing the step again means finding the emote again.
+				clearEmoteDone(variant, sub.getId());
 				// Reopened means undecided again: it is no longer a record
 				// of detection having failed. Cleared on EVERY untick path,
 				// not just the panel's, so a gather-loss reopen counts too.
@@ -145,6 +150,8 @@ public class ProgressManager
 				saveCounted(variant, counts);
 			}
 			clearAcquisitionBaselines(variant, sub.getId());
+			// Doing the step again means finding the emote again.
+			clearEmoteDone(variant, sub.getId());
 			setManual(variant, sub.getId(), false);
 		}
 		save(variant, ids);
@@ -355,6 +362,7 @@ public class ProgressManager
 		countedCache.clear();
 		baselineCache.clear();
 		manualCache.clear();
+		emoteCache.clear();
 		positionCache.clear();
 	}
 
@@ -450,6 +458,59 @@ public class ProgressManager
 		{
 			saveManuals(variant, manuals);
 		}
+	}
+
+	/**
+	 * Has the player already performed the emote a step asks for?
+	 *
+	 * <p>Persisted rather than kept in memory: the hint exists to FIND an
+	 * emote among eighty icons, so it should die once you have clicked it —
+	 * and a session-only flag brought it straight back on the next restart,
+	 * pointing at an emote already performed (owner, in play, wave 27).
+	 * Same encoding as the manual ticks beside it.
+	 */
+	public synchronized boolean isEmoteDone(GuideVariant variant, String id)
+	{
+		return emoteFor(variant).containsKey(id);
+	}
+
+	public synchronized void setEmoteDone(GuideVariant variant, String id)
+	{
+		Map<String, Integer> done = emoteFor(variant);
+		if (done.put(id, 1) == null)
+		{
+			String encoded = encodeCounts(done);
+			configManager.setConfiguration(CONFIG_GROUP, emoteKey(variant), encoded);
+		}
+	}
+
+	/** Cleared with the step, so unticking a step asks for its emote again. */
+	public synchronized void clearEmoteDone(GuideVariant variant, String id)
+	{
+		Map<String, Integer> done = emoteFor(variant);
+		if (done.remove(id) != null)
+		{
+			String encoded = encodeCounts(done);
+			if (encoded.isEmpty())
+			{
+				configManager.unsetConfiguration(CONFIG_GROUP, emoteKey(variant));
+			}
+			else
+			{
+				configManager.setConfiguration(CONFIG_GROUP, emoteKey(variant), encoded);
+			}
+		}
+	}
+
+	private Map<String, Integer> emoteFor(GuideVariant variant)
+	{
+		return emoteCache.computeIfAbsent(variant,
+			v -> decodeCounts(configManager.getConfiguration(CONFIG_GROUP, emoteKey(v))));
+	}
+
+	private static String emoteKey(GuideVariant variant)
+	{
+		return "emotedone_" + variant.name();
 	}
 
 	/** Every id the player ticked by hand — the "detection failed here" list. */

@@ -220,16 +220,6 @@ public class IronscapePlugin extends Plugin
 	/** Its name, for the tab label. */
 	private volatile String activeEmoteName;
 
-	/**
-	 * Sub whose emote the player has already clicked. The hint is for finding
-	 * the emote in a list of eighty; once you have clicked it you have found
-	 * it, and leaving the outline up is just clutter (owner, in play: "worked
-	 * perfectly, however it didnt stop showing once we completed that").
-	 *
-	 * Keyed by SUB rather than a flag, so it cannot leak onto the next step
-	 * that happens to want the same emote.
-	 */
-	private volatile String emoteClickedForSub;
 
 	@Inject
 	private com.ironscape.overlay.InventoryItemHintOverlay inventoryItemHintOverlay;
@@ -2845,7 +2835,7 @@ public class IronscapePlugin extends Plugin
 				Current here = findCurrent();
 				if (here != null)
 				{
-					emoteClickedForSub = here.sub.getId();
+					progressManager.setEmoteDone(activeVariant, here.sub.getId());
 				}
 			}
 		}
@@ -4152,11 +4142,11 @@ public class IronscapePlugin extends Plugin
 		}
 		activeEmoteName = emote;
 		activeEmoteSprite = emote == null || (current != null
-			&& current.sub.getId().equals(emoteClickedForSub))
+			&& progressManager.isEmoteDone(activeVariant, current.sub.getId()))
 			? -1
 			: com.ironscape.overlay.EmoteHintOverlay.spriteFor(emote);
 		if (emote != null && activeEmoteSprite < 0
-			&& (current == null || !current.sub.getId().equals(emoteClickedForSub))
+			&& (current == null || !progressManager.isEmoteDone(activeVariant, current.sub.getId()))
 			&& com.ironscape.overlay.EmoteHintOverlay.spriteFor(emote) < 0)
 		{
 			// A name nothing can match would just draw nothing, silently.
