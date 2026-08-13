@@ -170,6 +170,14 @@ public class IronscapePanel extends PluginPanel
 	 * only when the frontier actually moves rather than every game tick.
 	 */
 	private String lastFollowedStepId;
+
+	/**
+	 * The row the panel is currently held on, and the exact viewport position
+	 * we put it at. Together they let {@link #holdAnchor} tell "the rows above
+	 * grew and pushed my step away" apart from "the player scrolled".
+	 */
+	private StepRow anchorRow;
+	private int anchorAppliedY = -1;
 	private final JScrollPane scrollPane;
 
 	private Guide guide;
@@ -443,7 +451,18 @@ public class IronscapePanel extends PluginPanel
 		}
 		else if (openChapter >= 0)
 		{
-			buildSectionView(null);
+			// Rebuild KEEPS YOUR PLACE. Passing null threw the scroll away and
+			// left the viewport wherever a changed layout happened to put it,
+			// which is finished steps filling the screen. Proven by the log:
+			// a rebuild produced no scroll line at all, because with no target
+			// scrollRowIntoView is never called (owner, after ::ironreload,
+			// wave 27).
+			GuideStep current = currentStep();
+			String keep = current != null
+				&& current.getChapterIndex() == openChapter
+				&& current.getSectionIndex() == openSection
+				? current.getId() : null;
+			buildSectionView(keep);
 		}
 		else
 		{
@@ -751,6 +770,9 @@ public class IronscapePanel extends PluginPanel
 					target.getY(), target.scrollOffset(), y, at,
 					viewport.getViewSize().height, viewport.getExtentSize().height,
 					scrollTail.getPreferredSize().height);
+				// Hold this row from here (see holdAnchor).
+				anchorRow = target;
+				anchorAppliedY = at;
 				return;
 			}
 			// Item icons arrive asynchronously and html panes size late, so
@@ -1033,6 +1055,47 @@ public class IronscapePanel extends PluginPanel
 			}
 		}
 		followCurrentStep();
+		holdAnchor();
+	}
+
+	/**
+	 * Keep the view on the ROW, not on a pixel offset.
+	 *
+	 * <p>The scroll position is a pixel count into a view that is ~66,000px
+	 * tall against an ~850px viewport. Item icons load asynchronously, so rows
+	 * ABOVE the one you are on keep growing after the landing — and a few
+	 * pixels each across a couple of hundred rows moves your step a long way
+	 * down, without anything having scrolled. Re-applying the row's position
+	 * costs nothing and holds it there.
+	 *
+	 * <p>Only ever re-asserts while the viewport is exactly where we last put
+	 * it, so the moment the player touches the scroll bar the anchor is
+	 * dropped and never fights them.
+	 */
+	private void holdAnchor()
+	{
+		if (anchorRow == null || anchorRow.getParent() == null)
+		{
+			return;
+		}
+		javax.swing.JViewport viewport = scrollPane.getViewport();
+		if (viewport.getViewPosition().y != anchorAppliedY)
+		{
+			anchorRow = null; // the player took the wheel
+			anchorAppliedY = -1;
+			return;
+		}
+		int want = Math.max(0, anchorRow.getY() + anchorRow.scrollOffset() - 8);
+		int maxY = Math.max(0, viewport.getViewSize().height - viewport.getExtentSize().height);
+		int at = Math.min(want, maxY);
+		if (at != anchorAppliedY)
+		{
+			org.slf4j.LoggerFactory.getLogger(IronscapePanel.class).info(
+				"scroll: rows above changed height — re-anchoring step {} from {} to {}",
+				anchorRow.getStep().getId(), anchorAppliedY, at);
+			viewport.setViewPosition(new java.awt.Point(0, at));
+			anchorAppliedY = at;
+		}
 	}
 
 	/**

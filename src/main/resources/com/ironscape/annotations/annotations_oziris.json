@@ -1065,11 +1065,15 @@
     },
     {
      "name": "blue dye",
-     "quantity": 1
+     "quantity": 1,
+     "bringAhead": true,
+     "optional": true
     },
     {
      "name": "orange dye",
-     "quantity": 1
+     "quantity": 1,
+     "bringAhead": true,
+     "optional": true
     },
     {
      "name": "law rune",
