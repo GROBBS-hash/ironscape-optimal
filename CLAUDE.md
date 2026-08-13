@@ -757,6 +757,119 @@ refresh when "Failed to login" appears.
   capture; hub pin at b8c994d, now ~70 commits behind — bump after a
   calm session.
 
+- SESSION WAVE 27 (2026-08-13, long live play-test 276 -> 282; main at
+  **`3710ba7`**, **14** commits, PUSHED; hub pin still `ae9f062`, gap **14** —
+  counted. **RECOMMENDED: DO NOT PIN YET** — see the end of this entry):
+  **THE THEME IS THAT FOUR CONSECUTIVE DIAGNOSES OF ONE BUG WERE WRONG, AND
+  THE THING THAT SETTLED IT WAS MAKING THE PANEL REPORT ITSELF.** Wave 26
+  wrote the rule — *when the failure has several indistinguishable causes,
+  ship the diagnostic before the fix* — and this session broke it twice
+  before following it.
+  **THE PANEL SCROLL, IN FOUR ACTS.** The owner's report never changed ("it
+  scrolled to steps I've completed"), and each attempt was a real defect that
+  was not his: (1) the settle test compared the raw target offset rather than
+  the position APPLIED, so a still-growing view could go quiet while the
+  clamp was still moving; (2) a step near the END of a section cannot be
+  lifted to the top at all — there is no list below it — and step 278 is the
+  **279th of 286**, so a tail was needed; (3) nothing re-landed the panel when
+  the frontier moved, because completing a step fires no rebuild and the
+  per-tick path only RESTYLES rows. Only then did the diagnostic go in, and it
+  was conclusive in one read: **exactly ONE scroll line existed for the whole
+  session** — the login landing — while the view drifted repeatedly. The code
+  was not scrolling to the wrong place; **it was not running at all**. Two real
+  causes followed: `rebuild()` passed **no scroll target**, so any rebuild
+  (`::ironreload`, a config change, a profile switch) threw the position away;
+  and the position is a PIXEL offset into a **66,523px** view shown through an
+  **847px** viewport, so item icons loading in the rows above carry your step
+  a long way down with nothing having scrolled. Anchor the ROW, not the pixel,
+  and drop the anchor the instant the viewport is not where we left it.
+  CONFIRMED IN PLAY. **The general lesson: "it lands in the wrong place" and
+  "nothing re-lands it" look identical on screen and want opposite fixes.**
+  **A FIX WAS DISPROVED BY ITS OWN OPPOSITE WITHIN THE HOUR.** Following the
+  router's chosen leg kept highlighting a Lumbridge home teleport while the
+  player was in the tunnels UNDER Lumbridge, long past using it — so legs
+  whose ORIGIN was far away were declined. An hour later that rule hid a
+  Lumbridge home teleport he genuinely needed, **from the very same tunnels**.
+  Same position, opposite correct answers, so position could never have
+  separated them. The discriminator is FRESHNESS: a position jump now clears
+  the router's last word, and anything still wanted is re-reported within a
+  second by the re-post that already follows a jump. **Ask what could tell the
+  two cases apart BEFORE writing the rule.**
+  **FOLLOWING THE ROUTER INHERITS ITS JUDGEMENT, INCLUDING THE SILLY BITS.**
+  Standing in Falador, GPS picked *Falador Teleport* — a **33-tile** hop,
+  2995,3366 -> 2964,3378 — because its cost model rates a teleport as nearly
+  free, and we lit up the spell. Our OWN hints have had a 75-tile floor since
+  wave 23; the follow bypassed it entirely. Same floor both ways now, so a
+  highlight means the same thing whoever proposed it. We still never argue
+  with the route — the router draws what it likes; we decline to point at the
+  button.
+  **ONE WRONG KIT ITEM SILENTLY BLOCKS A STEP — SECOND TIME IN TWO SESSIONS**
+  (wave 26's "Lit candle"). Step 280 "Falador teleport" carried Goblin
+  Diplomacy's blue and orange dyes as plain requirements, so arrival could
+  never fire. They belong to 281 and are `bringAhead` + `optional` now.
+  **A CLASS WORTH AN AUDIT AND NOT YET BUILT: any item on step N that also
+  appears on step N+1, where N+1 is what consumes it.** Note also that a data
+  fix CANNOT retroactively fire an arrival — he was already standing there, so
+  280 needed a hand tick.
+  **EMOTE OVERLAY SHIPPED, worked first try, and its real lesson is about
+  knowing when to STOP.** "Perform the Goblin Bow emote next to Mistag" left
+  him scrolling eighty icons. Matched by **SPRITE, never list position** (the
+  order shifts as emotes unlock — Quest Helper matches by sprite for the same
+  reason); names from QH's `QuestEmote`, resolved through RuneLite gameval so
+  a dead name is a compile error. Deliberately does **NOT** auto-scroll the
+  list as QH does: that needs a `runScript` from inside a render, which is
+  what hard-froze this client twice in the bank-filter work. Then two rounds
+  on stopping it: the annotation hangs the emote on a STEP, and "Continue Lost
+  tribe" spans far more of the quest than the moment the emote is wanted, so
+  the step can never say when to stop pointing. Clicking the emote is the only
+  unambiguous "found it" — and that flag **must persist**, since a session-only
+  one brought the hint straight back on the next restart. New annotation field
+  `emote`; new `emotedone_<VARIANT>` progress key. Seeded on The Lost Tribe
+  only; QH's source lists the rest for a bulk pass.
+  **ALSO SHIPPED:** the Seers' church organ as an OPTIONAL diary stage on the
+  boots-of-lightness chain (coords/object/bit from QH's KandarinEasy — memory
+  put the church 25 tiles out; CONFIRMED IN PLAY, he played the organ);
+  `Errand.icon` because a stage with no item inherited the STEP's goal and
+  hung Boots of lightness over the organ (a NAME not an id, matching
+  ItemNeed.icon, so the id audits stay meaningful); a stage naming a GENERIC
+  way up or down now accepts any traversal object at the point, since the game
+  says stairs/staircase/steps and an exact guess one letter out silently
+  outlines nothing.
+  **OPTIONAL ERRAND STAGES ALREADY ROUTE.** Reported here as nudge-only and
+  offered as work to build — the log shows them routing, and he played the
+  organ because of it. Read the behaviour before offering to build it.
+  **FOUR STALE WORKTREES HELD REAL UNCOMMITTED WORK.** Called them harmless
+  first, which was wrong: `isc-verify` alone had **458 added lines across 11
+  files** (confirmed real, not line-ending noise, by re-diffing with
+  `--ignore-cr-at-eol`). Sampling distinctive added lines against today's main
+  showed three fully redundant and the fourth a superseded `::ironwrong`
+  draft — nothing lost. Patches saved to the session scratchpad before
+  removing. **A registered worktree is invisible storage for uncommitted work;
+  create and remove them within the same task, as every build this session
+  did.**
+  **TOOLING BIT BACK THREE TIMES, ALL MINE:** gradle reported "BUILD
+  SUCCESSFUL in 2s" for a `test` task it had not run (verify from
+  `build/test-results/*.xml`, never the summary line — wave 25's lesson, again);
+  a watcher grepping `error:` matched a third-party resource pack's parse
+  errors and called a healthy launch a build failure; another grepping
+  `com.ironscape` matched the compiler printing a FILE PATH and declared the
+  plugin up before it was.
+  **CONFIRMED IN PLAY:** panel scroll (after four attempts), the emote outline,
+  the home-teleport highlight, route freshness after a jump, the organ stage,
+  step 280 unblocked. **NOT CONFIRMED:** the Emotes TAB highlight (STONE12 is a
+  reading of the tab order, never exercised — he had the panel open), emote
+  persistence across a restart, the 75-tile floor on a relayed leg, the organ's
+  diary icon, the stairs outline.
+  **HUB PIN — RECOMMEND WAITING.** 14 commits, five of them unplayed, and the
+  standing rule is not to pin until a session goes quietly; this one had four
+  wrong diagnoses of a single bug. Play a calm session on this build first,
+  then push -> re-pin -> **wait for the `build` check**
+  (`gh pr checks 14207 --repo runelite/plugin-hub`).
+  **OPEN:** step 276's chain models only Merlin upstairs, not King Arthur
+  downstairs — CONFIRMED as a real gap this session, left alone because he is
+  past it; the duplicate-kit-item audit is unbuilt; emote seeding is one step
+  deep; 282 and 316 still unplayed.
+
 - SESSION WAVE 26 (2026-08-12, desk + long live play-test 268 -> 276; main
   ended at **`ae9f062`**, PUSHED; **hub pin BUMPED to `ae9f062`, hub `build`
   check PASSING** — the gap from `bb3e11e` was **68** commits, not the 57 an

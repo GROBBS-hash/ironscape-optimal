@@ -12,7 +12,67 @@ Screenshots `SS-01` … `SS-20` in `docs/screenshots/`.
 
 ---
 
-## START HERE — next session (written 2026-08-12, end of wave 26)
+## START HERE — next session (written 2026-08-13, end of wave 27)
+
+Main at **`3710ba7`**, PUSHED, tree clean. **14 commits this session.** Hub pin
+still `ae9f062`, gap **14** — counted, do not carry it.
+
+**DO NOT BUMP THE PIN YET.** Five things shipped today have never run in a
+game, and the standing rule is to pin only after a session goes quietly. This
+one had four wrong diagnoses of a single bug. When you do bump: push, re-pin,
+then **wait for the `build` check** — `gh pr checks 14207 --repo
+runelite/plugin-hub`. A red X named "Requires maintainer review" is normal; a
+red `build` is real.
+
+Before ANY gradle command: `node tools/check-client.mjs`.
+Before handing over a build: `node tools/check-all.mjs --tests` — and read the
+test COUNT from `build/test-results/*.xml`, because gradle will happily print
+"BUILD SUCCESSFUL in 2s" for tests it never ran.
+For data-only fixes: edit the repo file, have him type `::ironreload`.
+
+**PLAY-TEST FIRST, in the order he will meet it:**
+
+1. **The Emotes TAB highlight.** The emote itself is confirmed working; the
+   TAB is not, because he had the panel open. `STONE12` is a reading of the
+   tab order — if it lights up Music or Settings, that is the bug and it is a
+   one-line fix.
+2. **Emote persistence.** Perform a seeded emote, restart, and check the hint
+   stays gone. That was the whole point of persisting it.
+3. **The 75-tile floor on a relayed leg** — a short teleport the router picks
+   should now be declined, with the distance named in the log.
+4. **The organ's diary icon and the dungeon stairs outline.** Both shipped
+   with the organ stage; only the routing half was confirmed.
+5. Then **282** and **316**, still unplayed from earlier waves.
+
+**THE PANEL SCROLL IS FIXED — and the story matters more than the fix.** Four
+diagnoses failed because "it lands in the wrong place" and "nothing re-lands
+it" look identical from a screenshot. What settled it was making the panel log
+every landing: exactly ONE line existed for a whole session, proving the code
+was not running at all. **If it drifts again, read the log first** — there are
+`scroll:` lines for landings, for the frontier moving, and for re-anchoring.
+
+**BUILD NEXT, when there is desk time:**
+
+- **A duplicate-kit-item audit.** Step 280 carried step 281's dyes as plain
+  requirements and could never complete — the second time in two sessions that
+  one wrong kit item silently blocked a step (wave 26's "Lit candle"). The
+  class is mechanical: any item on step N that also appears on step N+1, where
+  N+1 is what consumes it. Nothing checks this today.
+- **Bulk emote seeding.** One step is seeded (The Lost Tribe's Goblin bow).
+  Quest Helper's source lists every emote step, so the rest is a scraper pass
+  like the quest-NPC one.
+- **Step 276's chain** models only Merlin upstairs, not King Arthur
+  downstairs. CONFIRMED as a real gap; left alone because he is past it, so it
+  only bites a new player.
+
+**Standing lessons re-earned today:** write scripts to a FILE and run them;
+create and remove a worktree within the same task (four stale ones held real
+uncommitted work); and when a failure has several indistinguishable causes,
+ship the diagnostic BEFORE the fix rather than after three attempts.
+
+---
+
+## Previous START HERE (written 2026-08-12, end of wave 26)
 
 Main at **`ae9f062`**, PUSHED, tree clean. **Hub pin BUMPED to `ae9f062`
 (2026-08-12) and the hub's own `build` check is PASSING.** The gap had been
