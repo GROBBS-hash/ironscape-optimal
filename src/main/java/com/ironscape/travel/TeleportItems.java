@@ -321,6 +321,17 @@ public final class TeleportItems
 		return true;
 	}
 
+	/**
+	 * An index with nothing in it, for a field that must be non-null before
+	 * the plugin has started. Deliberately NOT "load it with a throwaway
+	 * Gson" — the Plugin Hub rejects fresh Gson instances outright, and the
+	 * real load happens in startUp with the client's injected one.
+	 */
+	public static TeleportItems empty()
+	{
+		return new TeleportItems(Collections.emptyList());
+	}
+
 	/** Load the bundled index; never throws, and an unreadable file yields an empty one. */
 	public static TeleportItems load(Gson gson)
 	{

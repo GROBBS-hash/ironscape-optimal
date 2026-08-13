@@ -8112,8 +8112,14 @@ public class IronscapePlugin extends Plugin
 	 * a Varrock teleport for a West Ardougne target while an Ardougne cloak
 	 * that lands next door sat in the bag (owner, 2026-08-11).
 	 */
+	// Starts EMPTY and is loaded in startUp with the client's injected Gson.
+	// It used to initialise with `new Gson()`, which the Plugin Hub rejects
+	// outright ("Do not create fresh Gson instances, always @Inject the
+	// client's Gson") — a rule our own build does not enforce, so it passed
+	// locally and failed the hub's check. The initialiser was redundant
+	// anyway: startUp and ::ironreload both reload this properly.
 	private com.ironscape.travel.TeleportItems teleportItemIndex =
-		com.ironscape.travel.TeleportItems.load(new com.google.gson.Gson());
+		com.ironscape.travel.TeleportItems.empty();
 
 	/**
 	 * The teleport item the hint is pointing at, or null. Rebuilt per tick

@@ -14,8 +14,7 @@ Screenshots `SS-01` … `SS-20` in `docs/screenshots/`.
 
 ## START HERE — next session (written 2026-08-12, end of wave 26)
 
-Main at `7cd8eed`, 11 commits, **PUSHED**, tree clean. Hub pin `bb3e11e`,
-**57 behind**. Run `node tools/check-all.mjs --tests` before handing over a
+Main at `7cd8eed`, 11 commits, **PUSHED**, tree clean. Hub pin BUMPED to `1160d24` (2026-08-12). The gap was **68**, not the 57 these notes said — count it, do not carry it. Run `node tools/check-all.mjs --tests` before handing over a
 build, and `node tools/check-client.mjs` before ANY gradle command.
 
 **POLICY (owner, 2026-08-12): SUPPORT BOTH PATHERS, GPS PREFERRED.** He
@@ -1425,3 +1424,4 @@ client and the panel died with `NoClassDefFoundError: com/ironscape/panel/StepRo
 - Still hardcoded in Java, so not fixable in-game the way ⌖ pins are: `BANKS`, `SPIRIT_TREES`,
   `CHARTER_DOCKS`. Two of today's bugs were wrong/missing entries in `BANKS`. Moving them into
   `places.json` would make them capturable.
+

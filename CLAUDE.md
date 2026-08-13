@@ -757,8 +757,13 @@ refresh when "Failed to login" appears.
   capture; hub pin at b8c994d, now ~70 commits behind — bump after a
   calm session.
 
-- SESSION WAVE 26 (2026-08-12, desk + live play-test 268 -> 272; main at
-  `7cd8eed`, 11 commits, PUSHED; hub pin `bb3e11e`, now **57** behind — counted):
+- SESSION WAVE 26 (2026-08-12, desk + long live play-test 268 -> 276; main
+  ended at `1160d24`, PUSHED; **hub pin BUMPED to that same `1160d24`** — the
+  gap was **68** commits from `bb3e11e`, not the 57 an earlier draft of this
+  entry claimed, so count it rather than carrying it forward. Verified the way
+  the hub builder does: `gradlew clean build` from a FRESH CLONE at that exact
+  sha — jar produced, 120 tests, 0 failures — then the hub's own `build` check
+  on PR 14207):
   **DX-6 AND DX-5 BOTH SHIPPED, AND THE FIRST THING DX-6 DID WAS PROVE US
   RIGHT.** Shortest Path's `postPluginMessages()` posts back every transport on
   the route it chose — `origin`/`destination` as WorldPoints, `objectInfo` and
