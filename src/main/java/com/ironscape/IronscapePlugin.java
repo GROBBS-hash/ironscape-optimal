@@ -2052,8 +2052,11 @@ public class IronscapePlugin extends Plugin
 			() -> homeTeleportHint || routeHomeTeleportHint);
 		minigameTeleportOverlay.setSpellTeleportSupplier(() -> activeSpellTeleport);
 		minigameTeleportOverlay.setEquippedTeleportSupplier(() -> activeEquippedTeleport);
+		// NOTE: this label must come from the item the router actually picked.
+		// A second setter hardcoding "Chronicle" used to sit here and silently
+		// clobbered this one, so every worn teleport item — an Ardougne cloak,
+		// say — was labelled Chronicle on screen (owner, in play, wave 27).
 		minigameTeleportOverlay.setEquippedTeleportLabelSupplier(() -> equippedTeleportLabel);
-		minigameTeleportOverlay.setEquippedTeleportLabelSupplier(() -> "Chronicle");
 		overlayManager.add(minigameTeleportOverlay);
 		travelMenuOverlay.setWordsSupplier(() -> travelMenuWords);
 		travelMenuOverlay.setGroupSupplier(() -> travelMenuGroup);
@@ -3057,6 +3060,18 @@ public class IronscapePlugin extends Plugin
 				// Shortest Path at the current destination FROM HERE ("home
 				// tele to lumby, run north to Varrock east bank" — the
 				// route to the bank should appear the moment you land).
+				//
+				// The router computes its route FROM THE PLAYER, so a jump
+				// invalidates it even when the destination is identical. Wave
+				// 26 stopped re-posting an unchanged target (it was stomping
+				// Quest Helper every six seconds) and that guard silently ate
+				// this re-post too: climbing out of the Temple of Ikov left
+				// GPS still showing the route it had worked out from INSIDE
+				// the dungeon — an Ardougne cloak teleport — with its own
+				// panel reading "Off route" (owner, in play, wave 27).
+				// Forgetting the last target re-opens the gate for this one
+				// post only; the timer-driven re-posting stays gone.
+				lastPostedTarget = null;
 				maybeNavigateToNext();
 			}
 			lastTickPosition = here;
@@ -4051,6 +4066,26 @@ public class IronscapePlugin extends Plugin
 			{
 				wantedIcon = errandIcon;
 			}
+		}
+		// A stage that yields no item can still say what to PICTURE.
+		else if (errand != null && errand.icon != null)
+		{
+			int named = itemTracker.iconIdFor(errand.icon);
+			if (named > 0)
+			{
+				wantedIcon = named;
+			}
+		}
+		// A diary/quest checkpoint stage yields nothing, so there is no item
+		// to float — and inheriting the step's goal actively lies about the
+		// job in front of you (Boots of lightness hovering over the Seers'
+		// church organ). Better to show nothing than the wrong thing.
+		// Waypoints keep the inherited icon: on those the step's goal really
+		// is still what you are walking towards.
+		else if (errand != null && errand.item == null
+			&& (errand.bit != null || errand.varp != null || errand.varbit != null))
+		{
+			wantedIcon = -1;
 		}
 		currentSubItemIcon = wantedIcon;
 		npcItemIcons = perNpcIcons;
@@ -6232,8 +6267,17 @@ public class IronscapePlugin extends Plugin
 					// the route names which one. Scene coords on both sides, so
 					// an instanced copy simply matches nothing rather than
 					// outlining the wrong stairs.
+					// A stage naming a GENERIC way up or down ("Staircase")
+					// accepts any traversal object at the point, because the
+					// game's own wording varies — stairs/staircase/steps — and
+					// an exact-match guess that is one letter out silently
+					// outlines nothing at all. A stage naming something
+					// SPECIFIC (Crate, Chest, Cave entrance) still has to match
+					// exactly; that precision is the whole point there.
 					if (traversal != null && (traversalName != null
-						? name.equals(traversalName)
+						? (name.equals(traversalName)
+							|| (TRAVERSAL_OBJECTS.contains(traversalName)
+								&& TRAVERSAL_OBJECTS.contains(name)))
 						: TRAVERSAL_OBJECTS.contains(name)))
 					{
 						int d = object.getWorldLocation().distanceTo2D(traversal);
