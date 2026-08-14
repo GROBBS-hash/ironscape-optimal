@@ -6465,14 +6465,6 @@
   "c7454771db": {
    "items": [
     {
-     "name": "silver sickle",
-     "quantity": 1
-    },
-    {
-     "name": "unstrung symbol",
-     "quantity": 1
-    },
-    {
      "name": "sickle mould",
      "quantity": 1
     },
@@ -6486,8 +6478,7 @@
     "x": 3273,
     "y": 3187,
     "plane": 0
-   },
-   "completeOnItems": true
+   }
   },
   "e1e3e1645a": {
    "target": {

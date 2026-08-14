@@ -157,6 +157,38 @@
    "plane": 0,
    "vendor": "Civilian",
    "note": "Death runes: use a grown CAT on a civilian in south-west West Ardougne. 100 runes normally, 200 with the easy Ardougne diary."
+  },
+  "sickle mould": {
+   "display": "Sickle mould",
+   "x": 3321,
+   "y": 3194,
+   "plane": 0,
+   "vendor": "Dommik",
+   "note": "Dommik's Crafting Store, north-east Al Kharid - Dommik stocks the sickle mould (10gp) and holy mould (5gp), plus ring/necklace/amulet moulds."
+  },
+  "sickle moulds": {
+   "display": "Sickle moulds",
+   "x": 3321,
+   "y": 3194,
+   "plane": 0,
+   "vendor": "Dommik",
+   "note": "Dommik's Crafting Store, north-east Al Kharid - Dommik stocks the sickle mould (10gp) and holy mould (5gp), plus ring/necklace/amulet moulds."
+  },
+  "holy mould": {
+   "display": "Holy mould",
+   "x": 3321,
+   "y": 3194,
+   "plane": 0,
+   "vendor": "Dommik",
+   "note": "Dommik's Crafting Store, north-east Al Kharid - Dommik stocks the sickle mould (10gp) and holy mould (5gp), plus ring/necklace/amulet moulds."
+  },
+  "holy moulds": {
+   "display": "Holy moulds",
+   "x": 3321,
+   "y": 3194,
+   "plane": 0,
+   "vendor": "Dommik",
+   "note": "Dommik's Crafting Store, north-east Al Kharid - Dommik stocks the sickle mould (10gp) and holy mould (5gp), plus ring/necklace/amulet moulds."
   }
  }
 }
