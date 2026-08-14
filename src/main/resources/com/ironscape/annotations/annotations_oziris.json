@@ -6487,7 +6487,7 @@
     "y": 3180,
     "plane": 0
    },
-   "note": "Osman patrols outside the Al Kharid palace — hand him the key imprint and a bronze bar; he has the duplicate key made.",
+   "note": "The step says \"give to Osman\", but YOU make the key: use the key print and a bronze bar on the FURNACE just west (the same one as the silver) to smelt the bronze key. Then talk to Osman, who is patrolling outside the Al Kharid palace.",
    "items": [
     {
      "name": "key print",
