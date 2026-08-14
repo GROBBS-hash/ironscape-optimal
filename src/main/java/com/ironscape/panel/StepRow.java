@@ -1627,12 +1627,46 @@ class StepRow extends JPanel
 	 * the HTML views, which come back laid out at the text's unwrapped
 	 * width — the "notes clip instead of wrapping" bug.
 	 */
+	/**
+	 * Stop a display-only text pane from scrolling the whole panel to itself.
+	 *
+	 * <p>THIS IS THE PANEL-SCROLL BUG, and it took six rounds to find because
+	 * nothing in the panel's own scrolling code was involved. Every JEditorPane
+	 * carries a caret. When its document changes — which happens to every row
+	 * whose item counts are rewritten — the caret moves, and a moving caret
+	 * calls {@code scrollRectToVisible} on itself. That walks up to the
+	 * JScrollPane and drags the view to that row.
+	 *
+	 * <p>So a row far down the list could haul the view thousands of pixels
+	 * with the panel having scrolled nothing at all, which is why the log was
+	 * empty and why every fix aimed at anchors and timing missed. Proven by a
+	 * change listener on the viewport that printed the caller:
+	 * {@code DefaultCaret.adjustVisibility}, moving the view 366 -> 6855 the
+	 * instant the owner opened a shop (2026-08-14).
+	 *
+	 * <p>NEVER_UPDATE is the cure: the caret stops following document edits, so
+	 * it never asks to be made visible. These panes are read-only prose with no
+	 * cursor to keep on screen, so nothing is lost. They are also taken out of
+	 * the focus order, which closes the other route to the same call.
+	 */
+	private static void muteCaret(JEditorPane pane)
+	{
+		javax.swing.text.Caret caret = pane.getCaret();
+		if (caret instanceof javax.swing.text.DefaultCaret)
+		{
+			((javax.swing.text.DefaultCaret) caret)
+				.setUpdatePolicy(javax.swing.text.DefaultCaret.NEVER_UPDATE);
+		}
+		pane.setFocusable(false);
+	}
+
 	private JEditorPane htmlPane(String html, int leftIndent, Font font, java.awt.Color foreground)
 	{
 		JEditorPane pane = new JEditorPane();
 		pane.setContentType("text/html");
 		pane.setEditable(false);
 		pane.setOpaque(false);
+		muteCaret(pane);
 		pane.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, Boolean.TRUE);
 		pane.setFont(font);
 		pane.setForeground(foreground);
@@ -1772,6 +1806,7 @@ class StepRow extends JPanel
 			text.setContentType("text/html");
 			text.setEditable(false);
 			text.setOpaque(false);
+			muteCaret(text);
 			// Normal system font, not the RuneScape pixel font — pixel fonts
 			// are fine for short labels but painful for paragraphs of prose.
 			text.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, Boolean.TRUE);
