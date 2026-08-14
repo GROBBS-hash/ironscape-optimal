@@ -12,7 +12,64 @@ Screenshots `SS-01` … `SS-20` in `docs/screenshots/`.
 
 ---
 
-## START HERE — next session (written 2026-08-13, end of wave 27)
+## START HERE — next session (written 2026-08-14, end of wave 28)
+
+Main at **`9ddfe8c`**, PUSHED, tree clean. **15 commits this session.** Hub pin
+still `ae9f062`, gap **32** — counted at the end, do not carry it forward.
+
+Before ANY gradle command: `node tools/check-client.mjs`.
+Before handing over a build: `node tools/check-all.mjs --tests`, and read the
+test COUNT from `build/test-results/*.xml` (124 at the end of this session).
+For data-only fixes: edit the repo file, have him type `::ironreload`. Six of
+this session's fixes needed no restart at all.
+
+**THE PANEL SCROLL IS FIXED AND CONFIRMED.** Six rounds, and it was never in
+the scroll code: each step's text pane carries a caret, and a moving caret
+scrolls the whole panel to itself. If anything like it recurs, the viewport
+probe is still installed — grep the log for `VIEW MOVED BY SOMETHING ELSE` and
+it prints the stack of whoever did it. **That probe is the reusable asset from
+this session; it answered in one read what five rounds of reasoning could not.**
+
+**PLAY-TEST FIRST — four things shipped in the last hour and NONE have run in
+a game:**
+
+1. **Dommik gets outlined** when the route sends you shopping (the vendor scan
+   now reads annotation items, not just goals detected from step text).
+2. **The chat line** — "routing to a shop first - you need X, sold by Y".
+3. **Buying it moves the route on.** It previously parked outside the shop.
+   Easiest test: untick a step whose items you lack, let it route, buy, wait a
+   few seconds.
+4. **The scroll anchor stand-down** — it no longer tugs against a new landing.
+
+Then the leftovers from earlier waves, still unplayed: the Emotes TAB
+highlight, emote persistence across a restart, the 75-tile floor on a
+router-picked teleport, the organ's diary icon and the dungeon stairs outline,
+then **282** and **316**.
+
+**BUILD NEXT:**
+
+- **WK-1 is half-dead.** Its root cause turned out to be that `optional` was
+  never honoured by the arrival gate, which is now fixed, so the three
+  historical instances are unblocked. What remains worth building is the
+  narrower audit: **an item on step N that also appears on step N+1, where
+  N+1 is what consumes it.** Measure before applying — that was always the
+  rule and it saved two bad changes this session.
+- **WK-2, bulk emote seeding** — unchanged, still data-only.
+- **An audit for ⌖ pins that mark a PLACE but lack `npc:false`.** One caused a
+  level-2 Man to be outlined wearing a sickle icon. Nobody has counted how
+  many others there are.
+
+**Standing lessons re-earned, again:** ship the diagnostic BEFORE the fix when
+causes are indistinguishable (cost two extra rounds tonight); measure a
+proposed rule guide-wide before writing it (killed two rules, one of which
+would have broken "Bank 7 logs"); a note describing a MECHANIC needs a wiki
+source, because an invented one reads perfectly (second occurrence); and if
+you notice a risk while making a fix, SAY IT rather than shipping and letting
+him meet it in game.
+
+---
+
+## Previous START HERE (written 2026-08-13, end of wave 27)
 
 Main at **`075d610`**, PUSHED, tree clean. **15 commits this session.** Hub pin
 still `ae9f062`, gap **16** — counted at the end, do not carry it forward.

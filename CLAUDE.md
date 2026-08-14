@@ -757,6 +757,106 @@ refresh when "Failed to login" appears.
   capture; hub pin at b8c994d, now ~70 commits behind — bump after a
   calm session.
 
+- SESSION WAVE 28 (2026-08-14, long live play-test 287 -> 290; main at
+  **`9ddfe8c`**, **15** commits, PUSHED; hub pin still `ae9f062`, gap **32** —
+  counted, not carried):
+  **THE PANEL SCROLL IS SOLVED, AFTER SIX ROUNDS, AND IT WAS NEVER IN THE
+  SCROLL CODE.** Every step's text is a `JEditorPane`, and every one carries a
+  caret. When its document changes — which happens to any row whose item
+  counts are rewritten, i.e. every row, whenever a BANK or SHOP opens — the
+  caret moves, and a moving caret calls `scrollRectToVisible` on itself. That
+  walks up to the JScrollPane and drags the view to that row. So a row twenty
+  steps down could haul the view **6,489px** with the panel having scrolled
+  nothing, which is why the log was empty every single time and why five
+  rounds of anchors, timing and re-assertion never touched it. `muteCaret()`
+  (NEVER_UPDATE + non-focusable) on both pane construction sites;
+  `CaretMutedTest` asserts the pairing, verified to fail with one call
+  removed. CONFIRMED IN PLAY: bank opened, no jumping.
+  **WHAT ACTUALLY FOUND IT WAS MAKING THE VIEWPORT NAME ITS OWN CALLER.** A
+  `ChangeListener` that logs every movement which is neither ours nor a real
+  gesture, with the stack. It named `DefaultCaret.adjustVisibility` in one
+  read. **I shipped it two rounds later than I should have** — wave 26 and 27
+  both wrote down "when the failure has several indistinguishable causes, ship
+  the diagnostic before the fix", and I still offered two more theories first.
+  The probe is LEFT IN, and it earned its keep immediately by mis-blaming
+  three ordinary wheel clicks: FlatLaf installs its own wheel listener ahead
+  of ours, so the viewport moves before our flag is set. Fixed by claiming the
+  gesture while a `MouseWheelEvent` is in flight.
+  **THE OTHER HALF OF THE SCROLL: STOP INFERRING WHETHER THE PLAYER
+  SCROLLED.** Every version compared the viewport against where we last put
+  it — but Swing moves it too (a rebuild empties the content and the position
+  is CLAMPED), so a rebuild was indistinguishable from a hand on the wheel,
+  and the landing stood down mid-retry **with no log line**. Now a real wheel
+  turn or thumb drag is the only thing that counts, and both stand-down paths
+  log. Also: the anchor is released when a new landing begins (they were
+  briefly tugging — `holding step 288` while landing on 289; benign, but two
+  parts pulling opposite ways is how the next mystery starts).
+  **SECTIONS ADVANCE THEMSELVES** — finishing the last step of a section left
+  a finished section and a "Next" button, because a rebuild only redraws the
+  section already open and the frontier-follow runs on a path a completed step
+  never triggers. Only advances out of the section it was ALREADY following.
+  CONFIRMED IN PLAY.
+  **"OPTIONAL" NEVER DID ANYTHING, AND IT IS THE DOCUMENTED FIX FOR A WHOLE
+  BUG CLASS.** The arrival gate (`annotationItemsCarried`) skipped only
+  `consumed` and money — never `optional` or `granted` — while the
+  possession and purchase gates skipped both. So marking an item optional,
+  applied three times across waves 19/26/27 (ghost's skull, Camelot lit
+  candle, step 280's dyes), **unwedged nothing**: all three were still blocked
+  when measured, along with 6 more. **9 steps guide-wide.** Now skipped;
+  `ItemGateConsistencyTest` asserts the three gates agree, verified both ways.
+  MEASURED AND LEFT ALONE: 51 steps list unnumbered carry-kit items that
+  SHOULD gate ("Lumby" + axe/rope/hammer/spade = arriving PREPARED, wave 18).
+  **STEP 288 TOOK FOUR PASSES AND EVERY ONE TAUGHT SOMETHING.** "Smelt the 5
+  silver, make a sickle and unstrung holy symbol, keep 3 bars": (1) the alias
+  map turned bare "silver" into *silver bar*, so it asked for 5 bars to make 5
+  bars — the word appears in ONE step guide-wide and means ore; (2) "keep 3
+  bars" was an acquisition goal sitting green at 3/3 off banked bars — the
+  numbered scan never looks at the word BEFORE the number, and the general
+  rule (veto any number after a not-an-item verb) was MEASURED AND REJECTED,
+  2 of its 3 hits being real goals ("Bank 7 logs", "Fill 3 buckets with
+  milk"); (3) it then ticked on WITHDRAWING the ore — what you smelt is
+  consumed, so it is the material, never the objective (the only other smelt
+  step was asking for **28 coins**); (4) removing that goal is what let the
+  "make ..." rule run at all, since the numbered pass RETURNS the moment it
+  finds anything. "make A and B" now takes both — and promptly invented a
+  "birdhouses" goal on "Get 58 slayer, make SURE you're consistent with all
+  your farming and birdhouses", caught in the goal dump, not in play.
+  **I SAW RISK (3) COMING WHILE MAKING FIX (1) AND SHIPPED WITHOUT SAYING SO.
+  The owner met it in game. Say the thing.** CONFIRMED IN PLAY: stayed
+  unticked through smelting, ticked when both items existed.
+  **NEW `StepAnnotation.completeOnItems`** — a step may DECLARE that holding
+  its items finishes it, since no phrasing rule can tell that a step ends with
+  a sickle and a symbol in the bag. Seeded then REMOVED from 288 within the
+  hour: once the two product goals existed they did the job, and left in place
+  with only the moulds listed it would have completed the step for owning the
+  moulds. **The field stays; the lesson is that a completion path and an item
+  list are different things.**
+  **SHOP-FIRST ROUTING** (owner: "we need to navigate to them to buy them").
+  Mirrors bank-first: own ZERO of a numbered requirement and we know a seeded
+  source -> route to the shop, once per step, chat line naming item and
+  seller. Bounded by data (~24 sourced items), not by cleverness. CONFIRMED IN
+  PLAY on its first login. **It then failed to come back** — buying is no more
+  an event than withdrawing, which the bank branch learned in wave 18 and I
+  did not carry across; same 10-tick re-check now. And the vendor was routed
+  to but NOT outlined: the vendor scan read only goals detected from step
+  TEXT, and the moulds are annotated. Both fixed, NEITHER CONFIRMED.
+  **DATA:** desert disguise is a FAKE BEARD + KHARIDIAN HEADPIECE combined (no
+  such item is sold, so the step asked for something unbuyable); both moulds
+  from **Dommik**, Al Kharid 3321,3194 (shop page and NPC page agree);
+  step 289 gained key print + bronze bar. **Its note was INVENTED** — said
+  Osman has the key made; three wiki pages and then the owner say YOU smelt it
+  at the furnace. **Second invented note after wave 15's Candle maker: a note
+  describing a MECHANIC needs a source.** A ⌖ on a furnace now carries
+  `npc:false` (a level-2 Man was outlined wearing a sickle icon).
+  **PROCESS:** every build in a throwaway worktree, all removed same-task; a
+  `git checkout` to revert a test edit silently reverted the FIX too (re-check
+  what survived); and a monitor grepping "Exception" caught two known
+  third-party throws — wave 27's exact trap, walked into again.
+  **OPEN:** vendor outline, shop chat line, buy-then-move-on, and the anchor
+  stand-down are all UNPLAYED; 282 and 316 still unplayed; WK-1 is
+  SUPERSEDED at the root (optional now works) but the audit for kit items
+  belonging to a LATER step is still unbuilt; hub gap 32.
+
 - SESSION WAVE 27 (2026-08-13, long live play-test 276 -> 282; main at
   **`3710ba7`**, **14** commits, PUSHED; hub pin still `ae9f062`, gap **14** —
   counted. **RECOMMENDED: DO NOT PIN YET** — see the end of this entry):
