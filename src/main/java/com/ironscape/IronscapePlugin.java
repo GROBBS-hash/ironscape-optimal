@@ -5273,6 +5273,36 @@ public class IronscapePlugin extends Plugin
 				// land, so gating on it would wedge the step forever.
 				continue;
 			}
+			if (Boolean.TRUE.equals(need.optional))
+			{
+				// Keep-if-you-get-it, and the half of bringAhead that stops
+				// a NEXT step's item gating THIS one (bringAhead is always
+				// written with optional — verified, 0 exceptions).
+				//
+				// This skip was missing for a long time, and its absence is
+				// why marking an item optional never unwedged anything: the
+				// documented remedy for "this step won't tick" was applied
+				// three times across waves 19/26/27 (the ghost's skull, the
+				// Camelot candle, step 280's dyes) and changed nothing,
+				// because THIS gate — the one doing the blocking — never
+				// read the flag. Nine steps were blocked when it was found.
+				// The possession-objective and purchase-list gates have
+				// always skipped it; this one had simply drifted from them.
+				continue;
+			}
+			if (Boolean.TRUE.equals(need.granted))
+			{
+				// The quest hands it over mid-quest, so it cannot be in your
+				// bag on the way there. Gating on it is unsatisfiable by
+				// definition, not merely strict.
+				continue;
+			}
+			// NOT skipped, deliberately: `ingredient` (material for something
+			// you MAKE at the destination, so carrying it is the point), and
+			// unnumbered carry-list items, which count as required:1. That
+			// second one is load-bearing — a bare "Lumby" ticks on arriving
+			// PREPARED and never on jogging past (wave 18). 51 steps rely on
+			// it; measured before touching this.
 			String lower = need.name.toLowerCase(Locale.ROOT);
 			if (lower.equals("coins") || lower.equals("gp"))
 			{
