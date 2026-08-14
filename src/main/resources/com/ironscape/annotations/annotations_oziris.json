@@ -6487,7 +6487,19 @@
     "y": 3180,
     "plane": 0
    },
-   "note": "Osman patrols outside the Al Kharid palace — hand him the key imprint and a bronze bar; he has the duplicate key made."
+   "note": "Osman patrols outside the Al Kharid palace — hand him the key imprint and a bronze bar; he has the duplicate key made.",
+   "items": [
+    {
+     "name": "key print",
+     "quantity": 1,
+     "consumed": true
+    },
+    {
+     "name": "bronze bar",
+     "quantity": 1,
+     "consumed": true
+    }
+   ]
   },
   "e3b3e2d4f2": {
    "items": [
