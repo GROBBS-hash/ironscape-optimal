@@ -6477,7 +6477,8 @@
    "target": {
     "x": 3273,
     "y": 3187,
-    "plane": 0
+    "plane": 0,
+    "npc": false
    }
   },
   "e1e3e1645a": {
