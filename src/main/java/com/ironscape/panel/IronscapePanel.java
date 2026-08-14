@@ -186,6 +186,10 @@ public class IronscapePanel extends PluginPanel
 	 * player moved the view SINCE we started trying to land".
 	 */
 	private boolean userMovedTheView;
+	/** True while the panel is deliberately setting the view position. */
+	private boolean weAreScrolling;
+	/** Last position the change listener saw, so it can report a delta. */
+	private int lastSeenViewY;
 	/**
 	 * Where the viewport top sits INSIDE the anchor row. Normally the row's
 	 * own {@code scrollOffset()}; after the player scrolls by hand it is
@@ -259,6 +263,37 @@ public class IronscapePanel extends PluginPanel
 			{
 				userMovedTheView = true; // dragging the thumb
 			}
+		});
+
+		// WHO MOVED THE VIEW?
+		//
+		// Five rounds of this bug have been diagnosed from screenshots and
+		// five have been wrong, because the panel's own log can only report
+		// the scrolls the panel PERFORMS — and every failure so far has been
+		// the view moving when the panel did nothing at all. The owner opened
+		// a shop on step 287 (374px from the top of its section) and the view
+		// landed on 315, thousands of pixels down, with no scroll line
+		// written. Rows changing height above cannot do that. Something else
+		// is calling setViewPosition, and no amount of reasoning from the
+		// picture can name it.
+		//
+		// So: log every movement we did not make, with the stack that caused
+		// it. One report then names the culprit outright.
+		scrollPane.getViewport().addChangeListener(e -> {
+			int y = scrollPane.getViewport().getViewPosition().y;
+			if (y == lastSeenViewY)
+			{
+				return;
+			}
+			int from = lastSeenViewY;
+			lastSeenViewY = y;
+			if (weAreScrolling || userMovedTheView)
+			{
+				return; // ours, or a real gesture: both already accounted for
+			}
+			org.slf4j.LoggerFactory.getLogger(IronscapePanel.class).info(
+				"scroll: VIEW MOVED BY SOMETHING ELSE, {} -> {} (delta {}), caller:\n    {}",
+				from, y, y - from, blameForViewMove());
 		});
 
 		// Opening the sidebar panel should land on "what do I do next", not
@@ -867,7 +902,7 @@ public class IronscapePanel extends PluginPanel
 			// (owner, in play, wave 27: current step at the very bottom edge
 			// with two finished ones above it).
 			int at = Math.min(y, maxY);
-			viewport.setViewPosition(new java.awt.Point(0, at));
+			setViewPosition(viewport, at);
 			if (at == lastAt || attemptsLeft <= 0)
 			{
 				// ALWAYS report where it ended up, settled or not. Reporting
@@ -1238,7 +1273,7 @@ public class IronscapePanel extends PluginPanel
 			org.slf4j.LoggerFactory.getLogger(IronscapePanel.class).info(
 				"scroll: holding step {} — row moved or view drifted, {} -> {} (view was at {})",
 				anchorRow.getStep().getId(), anchorAppliedY, at, viewport.getViewPosition().y);
-			viewport.setViewPosition(new java.awt.Point(0, at));
+			setViewPosition(viewport, at);
 			anchorAppliedY = at;
 		}
 	}
@@ -1250,6 +1285,53 @@ public class IronscapePanel extends PluginPanel
 	 * <p>Rows are added to {@code content} in guide order, so the first hit
 	 * scanning forwards is the topmost one on screen.
 	 */
+	/**
+	 * The interesting frames of whoever is moving the viewport right now.
+	 *
+	 * <p>Swing's own plumbing dominates the stack, so the frames worth
+	 * reading are the ones that are NOT this listener and NOT the raw
+	 * viewport/scrollbar machinery. Trimmed to a handful because the point is
+	 * to name a culprit, not to print a wall.
+	 */
+	private static String blameForViewMove()
+	{
+		StringBuilder blame = new StringBuilder();
+		int kept = 0;
+		for (StackTraceElement frame : new Throwable().getStackTrace())
+		{
+			String at = frame.getClassName();
+			if (at.startsWith("com.ironscape.panel.IronscapePanel")
+				|| at.startsWith("javax.swing.JViewport")
+				|| at.startsWith("javax.swing.plaf")
+				|| at.startsWith("java.awt.EventQueue")
+				|| at.startsWith("java.awt.event"))
+			{
+				continue;
+			}
+			blame.append(frame).append("\n    ");
+			if (++kept >= 8)
+			{
+				break;
+			}
+		}
+		return blame.length() == 0 ? "(nothing but Swing internals)" : blame.toString().trim();
+	}
+
+	/** Move the view, flagged so the change listener knows it was us. */
+	private void setViewPosition(javax.swing.JViewport viewport, int y)
+	{
+		weAreScrolling = true;
+		try
+		{
+			viewport.setViewPosition(new java.awt.Point(0, y));
+			lastSeenViewY = y;
+		}
+		finally
+		{
+			weAreScrolling = false;
+		}
+	}
+
 	private StepRow topmostVisibleRow()
 	{
 		int top = scrollPane.getViewport().getViewPosition().y;
