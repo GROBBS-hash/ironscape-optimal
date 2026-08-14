@@ -839,6 +839,19 @@ public class IronscapePanel extends PluginPanel
 		// is history — otherwise one wheel turn early in a session would stop
 		// the panel ever landing again.
 		userMovedTheView = false;
+		// Release the OLD anchor for the duration. It is still pinned to the
+		// previous step, and holdAnchor runs every tick, so it spends the
+		// retry window hauling the view back to where we are trying to leave:
+		//   frontier moved to step 289 - following
+		//   holding step 288 - row moved or view drifted, 480 -> 501
+		//   settled on step 289
+		// The landing wins, so this was invisible in play — but two parts
+		// pulling opposite ways for a second is how the next mystery starts,
+		// and this whole bug was six rounds of exactly that. Nothing needs
+		// holding while a landing is actively re-asserting; the settle (and
+		// the give-up) sets the new anchor.
+		anchorRow = null;
+		anchorAppliedY = -1;
 		scrollRowIntoView(target, attemptsLeft, Integer.MIN_VALUE);
 	}
 

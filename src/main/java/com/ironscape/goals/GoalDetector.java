@@ -47,6 +47,19 @@ public final class GoalDetector
 	private static final Pattern RETAIN_INSTRUCTION = Pattern.compile(
 		"\\bkeep\\s+(?:the\\s+)?$", Pattern.CASE_INSENSITIVE);
 
+	/**
+	 * "Smelt the 5 silver" — what you smelt is CONSUMED, so it is the
+	 * material, never the objective. Counting it finished the step the
+	 * moment the ore was withdrawn, before any smelting happened (owner,
+	 * 2026-08-14: "why would we auto tick when we withdraw 5 silver ore").
+	 *
+	 * <p>Both steps this matches guide-wide were wrong: the other is "Smelt
+	 * 1 inv of gold", which was asking for 28 COINS. Neither can be fixed by
+	 * counting the input better, so neither counts it.
+	 */
+	private static final Pattern CONSUMED_MATERIAL = Pattern.compile(
+		"\\bsmelt(?:ing|ed)?\\s+(?:the\\s+)?$", Pattern.CASE_INSENSITIVE);
+
 	/** Words that end an item name ("110 logs AND bank them" -> "logs",
 	 *  "5 swamp tar AROUND the cave entrance" -> "swamp tar",
 	 *  "130 planks NORTH of the Barb agility course" -> "planks"). */
@@ -940,7 +953,12 @@ public final class GoalDetector
 		Matcher pairs = QUANTITY_NAME.matcher(text);
 		while (pairs.find())
 		{
-			if (RETAIN_INSTRUCTION.matcher(text.substring(0, pairs.start())).find())
+			String preceding = text.substring(0, pairs.start());
+			if (CONSUMED_MATERIAL.matcher(preceding).find())
+			{
+				continue; // the material, not the objective — see the pattern
+			}
+			if (RETAIN_INSTRUCTION.matcher(preceding).find())
 			{
 				// "keep 3 bars" says what to hold BACK, not what to go and
 				// get. It read as a goal and sat green at 3/3 off bars
@@ -1052,9 +1070,30 @@ public final class GoalDetector
 		if (!lower.contains("train") && !lower.contains("until"))
 		{
 			Matcher made = MAKE_PRODUCT.matcher(text);
-			if (made.find())
+			// "MAKE SURE you're consistent with all your farming and
+			// birdhouses" is an idiom, not a crafting instruction. It was
+			// harmless while only the first product was taken (the phrase
+			// that followed was not an item and got rejected); splitting on
+			// "and" reached "birdhouses", which IS an item, and would have
+			// let a "Get 58 slayer" step finish on owning one. Found by
+			// reading the goal dump after the split went in.
+			if (made.find() && !made.group(1).toLowerCase(Locale.ROOT).startsWith("sure "))
 			{
-				addIfValid(out, step, sub, "1", made.group(1), seen, false);
+				// "make a sickle AND unstrung holy symbol" makes two things,
+				// and the step is only done when you hold both. Taking just
+				// the first would finish it one item early.
+				//
+				// The junk this lets through is caught downstream rather than
+				// prevented: of the 3 steps that match guide-wide, 2 are prose
+				// ("make molten glass and CUT GEMS UNTIL 45 crafting", "make
+				// sure you're consistent with all your farming AND
+				// BIRDHOUSES"), and addIfValid's name checks reject them —
+				// verified against the goal dump and the unresolvable-goal
+				// audit after this went in, not assumed.
+				for (String eachProduct : made.group(1).split("\\s+and\\s+"))
+				{
+					addIfValid(out, step, sub, "1", eachProduct, seen, false);
+				}
 				if (!out.isEmpty() && out.size() > before)
 				{
 					return false;

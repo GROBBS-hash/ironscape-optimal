@@ -6465,6 +6465,14 @@
   "c7454771db": {
    "items": [
     {
+     "name": "silver sickle",
+     "quantity": 1
+    },
+    {
+     "name": "unstrung symbol",
+     "quantity": 1
+    },
+    {
      "name": "sickle mould",
      "quantity": 1
     },
@@ -6473,12 +6481,13 @@
      "quantity": 1
     }
    ],
-   "note": "At a furnace: the silver sickle needs a SICKLE MOULD, the unstrung symbol a HOLY MOULD. Keep 3 silver bars unsmithed.",
+   "note": "At a furnace: a silver sickle is a silver bar + SICKLE MOULD, an unstrung symbol a silver bar + HOLY MOULD. Smelt 5 silver ore, use 2 bars on the moulds, keep the other 3 bars unsmithed.",
    "target": {
     "x": 3273,
     "y": 3187,
     "plane": 0
-   }
+   },
+   "completeOnItems": true
   },
   "e1e3e1645a": {
    "target": {

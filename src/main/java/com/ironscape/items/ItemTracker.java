@@ -363,6 +363,13 @@ public class ItemTracker
 		// guide and in no annotation — every other mention spells out
 		// "silver ore" or "silver bar" for itself.
 		Map.entry("silver", "silver ore"),
+		// "make a sickle and unstrung holy symbol" — the guide's shorthand.
+		// A bare "Sickle" is not an item (the unresolvable-goal audit says
+		// so); the only one this guide makes is the silver one. The symbol
+		// is called "Unstrung symbol" in game, with no "holy" in the name,
+		// though the MOULD does say holy.
+		Map.entry("sickle", "silver sickle"),
+		Map.entry("unstrung holy symbol", "unstrung symbol"),
 		// The farming shop's pack of normal compost is just "Compost pack".
 		Map.entry("normal compost pack", "compost pack"),
 		// Shops sell "Pot of flour"; the bare item "Flour" exists but is

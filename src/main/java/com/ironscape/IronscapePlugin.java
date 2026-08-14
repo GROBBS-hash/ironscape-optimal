@@ -5370,12 +5370,16 @@ public class IronscapePlugin extends Plugin
 	 */
 	private boolean possessionObjectiveMet(GuideStep step, SubStep sub)
 	{
+		String annotationId = step.getSubSteps().size() == 1 ? step.getId() : sub.getId();
 		String text = PARENTHETICAL.matcher(sub.getPlainText()).replaceAll(" ");
-		if (!POSSESSION_OBJECTIVE.matcher(text).find())
+		// An annotation may DECLARE this outright, for steps whose objective
+		// is what they PRODUCE — no wording rule can tell that "make a sickle
+		// and unstrung holy symbol" is finished by holding them.
+		if (!annotationManager.completesOnItems(annotationId)
+			&& !POSSESSION_OBJECTIVE.matcher(text).find())
 		{
 			return false;
 		}
-		String annotationId = step.getSubSteps().size() == 1 ? step.getId() : sub.getId();
 		// An authored checkpoint is the sub's completion path and outranks
 		// every heuristic, this one included (wave 6).
 		if (annotationManager.getRequirement(annotationId) != null

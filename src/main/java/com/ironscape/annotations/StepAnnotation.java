@@ -186,6 +186,25 @@ public class StepAnnotation
 	 */
 	public String emote;
 
+	/**
+	 * This step is finished when its numbered items are in hand — say so
+	 * explicitly, rather than hoping the sentence gives it away.
+	 *
+	 * <p>Possession completion is normally inferred from the wording ("until
+	 * you have", "make sure you have"), because the wide rule — any step
+	 * holding numbered items — was measured at 25 steps and right on about
+	 * 2. That inference cannot read a step whose objective is what it
+	 * PRODUCES: "Smelt the 5 silver, make a sickle and unstrung holy symbol"
+	 * is done when you hold the sickle and the symbol, and no phrasing rule
+	 * was ever going to work that out (owner, 2026-08-14: "why would we auto
+	 * tick when we withdraw 5 silver ore").
+	 *
+	 * <p>Opt-in per step, so it adds no inference anywhere else. Every
+	 * numbered, non-exempt item must be held — list the OUTPUTS, and the
+	 * tools only if you still have them afterwards.
+	 */
+	public Boolean completeOnItems;
+
 	public static class Errand
 	{
 		public int x;

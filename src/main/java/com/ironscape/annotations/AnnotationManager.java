@@ -145,6 +145,18 @@ public class AnnotationManager
 	}
 
 	/** Emote this step asks for ("Goblin bow"), local winning over bundled. Null if none. */
+	/** Is this step declared finished-when-you-hold-its-items? See {@link StepAnnotation#completeOnItems}. */
+	public synchronized boolean completesOnItems(String annotationId)
+	{
+		StepAnnotation l = local.get(annotationId);
+		if (l != null && l.completeOnItems != null)
+		{
+			return Boolean.TRUE.equals(l.completeOnItems);
+		}
+		StepAnnotation b = bundled.get(annotationId);
+		return b != null && Boolean.TRUE.equals(b.completeOnItems);
+	}
+
 	public synchronized String getEmote(String annotationId)
 	{
 		StepAnnotation l = local.get(annotationId);
