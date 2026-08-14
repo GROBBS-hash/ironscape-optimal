@@ -7709,6 +7709,19 @@
      "optional": true
     }
    ]
+  },
+  "e7f9483cfe": {
+   "items": [
+    {
+     "name": "fake beard",
+     "quantity": 1
+    },
+    {
+     "name": "kharidian headpiece",
+     "quantity": 1
+    }
+   ],
+   "note": "The disguise is not sold as one item. Buy a FAKE BEARD and a KHARIDIAN HEADPIECE from Ali, then combine them to make the desert disguise. Both are a few coins."
   }
  }
 }
