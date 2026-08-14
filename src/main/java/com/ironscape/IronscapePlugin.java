@@ -1692,6 +1692,9 @@ public class IronscapePlugin extends Plugin
 	 * reason for it has gone.
 	 */
 	private volatile boolean navRoutedToBank;
+	/** A SHOP is why we routed — keeps the 10-tick re-check alive so the
+	 *  route moves on once the thing has been bought. */
+	private volatile boolean navRoutedToShop;
 
 	/**
 	 * Step id of the last bank stop SUGGESTED while Quest Helper owned
@@ -3986,6 +3989,34 @@ public class IronscapePlugin extends Plugin
 						}
 					}
 				}
+				// ANNOTATION items too, not only the ones the sentence
+				// names. Step 288 says "Smelt the 5 silver, make a sickle
+				// and unstrung holy symbol" — the moulds it needs are
+				// annotated, never spoken, so the seller was routed to and
+				// then left un-outlined among a room of NPCs (owner,
+				// 2026-08-14: "it took me right to Dommik, but no overlay").
+				//
+				// Same filter as shopFirstTarget, so what the route goes to
+				// and what gets outlined cannot disagree.
+				for (String annotationId : new String[]{current.step.getId(), current.sub.getId()})
+				{
+					for (StepAnnotation.ItemNeed need : annotationManager.getItems(annotationId))
+					{
+						if (Boolean.TRUE.equals(need.optional)
+							|| Boolean.TRUE.equals(need.granted)
+							|| Boolean.TRUE.equals(need.consumed)
+							|| need.quantity == null
+							|| itemTracker.countOf(need.name) >= need.quantity)
+						{
+							continue;
+						}
+						String vendor = placeManager.sourceVendor(need.name);
+						if (vendor != null)
+						{
+							npcNames.add(vendor.toLowerCase(Locale.ROOT));
+						}
+					}
+				}
 			}
 			// A specific name shadows a generic one it contains: "milk the
 			// dairy cow" matches the NPCs "Dairy cow" AND "Cow", but the
@@ -4191,8 +4222,14 @@ public class IronscapePlugin extends Plugin
 		// router. Same 10-tick cadence the errand re-post uses, and only
 		// while a bank is actually why we routed, so it costs nothing on
 		// every other step.
-		if (navRoutedToBank && tickCounter % 10 == 0)
+		if ((navRoutedToBank || navRoutedToShop) && tickCounter % 10 == 0)
 		{
+			// Buying is no more an event than withdrawing is: the moulds
+			// went in the bag and the route sat outside the shop (owner,
+			// 2026-08-14, "bought the moulds, no navigation back to
+			// Furnace"). The bank branch had already learned this and the
+			// lesson simply was not carried across when the shop branch was
+			// written an hour earlier.
 			maybeNavigateToNext();
 		}
 		currentSubIsQuest = current != null && questGoalBySub.containsKey(current.sub.getId());
@@ -6689,6 +6726,10 @@ public class IronscapePlugin extends Plugin
 			// the next, and — worse — the branches that set it only on the
 			// way IN left it true after standing down.
 			navRoutedToBank = false;
+			// Same reasoning for the shop branch: re-decided every pass, so
+			// the 10-tick re-check stops as soon as a shop stops being the
+			// reason.
+			navRoutedToShop = false;
 			// A waiting gravestone outranks EVERYTHING — captures, errands,
 			// stand-downs: without the gear there is no route to follow.
 			if (deathPoint != null)
@@ -6920,8 +6961,18 @@ public class IronscapePlugin extends Plugin
 			if (shop != null && !shopCurrent.step.getId().equals(lastShopSuggestion))
 			{
 				lastShopSuggestion = shopCurrent.step.getId();
+				navRoutedToShop = true;
 				logNavDecision("routing to a shop first — the step needs "
 					+ lastShopSuggestionItem + ", sold at " + shop);
+				// Say it in game as well. A route that quietly goes somewhere
+				// other than the step's own destination looks like a fault
+				// unless it says why (owner asked for this within minutes of
+				// the routing working).
+				String seller = placeManager.sourceVendor(lastShopSuggestionItem);
+				client.addChatMessage(ChatMessageType.CONSOLE, "",
+					"IRONSCAPE: routing to a shop first - you need "
+						+ lastShopSuggestionItem
+						+ (seller == null ? "" : ", sold by " + seller) + ".", null);
 				postPath(shop);
 				return;
 			}
