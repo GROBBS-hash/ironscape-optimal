@@ -1702,6 +1702,8 @@ public class IronscapePlugin extends Plugin
 	 * branch.
 	 */
 	private String lastBankSuggestion;
+	/** Step whose shopping trip has already been suggested — once each. */
+	private String lastShopSuggestion;
 
 	/**
 	 * The sub tells you to hold a CONVERSATION — "speak to Lady of the
@@ -6901,6 +6903,28 @@ public class IronscapePlugin extends Plugin
 				}
 				return;
 			}
+			// Missing something the step needs, and we know a shop that sells
+			// it? Go and buy it first. Same shape as routing to a bank when
+			// the kit is banked — the difference is only whether you already
+			// own the thing (owner, 2026-08-14, standing at the furnace on
+			// "Smelt the 5 silver, make a sickle..." with neither mould:
+			// "no route to Dommik, still routing to the furnace").
+			//
+			// Bounded by the data: it can only ever fire for an item with a
+			// seeded source, and there are a couple of dozen of those. Once
+			// per step, exactly like the bank nudge, which had to learn that
+			// lesson the hard way — keyed on (step, bank) it re-suggested
+			// four banks in two minutes as the nearest one changed.
+			Current shopCurrent = findCurrent();
+			WorldPoint shop = shopCurrent == null ? null : shopFirstTarget(shopCurrent);
+			if (shop != null && !shopCurrent.step.getId().equals(lastShopSuggestion))
+			{
+				lastShopSuggestion = shopCurrent.step.getId();
+				logNavDecision("routing to a shop first — the step needs "
+					+ lastShopSuggestionItem + ", sold at " + shop);
+				postPath(shop);
+				return;
+			}
 			WorldPoint target = findNextTarget();
 			if (target != null)
 			{
@@ -7193,6 +7217,53 @@ public class IronscapePlugin extends Plugin
 	 * routed straight to the Wizards' Tower). Coins are wealth, not
 	 * cargo; optional items and bank-countable bulk never gate.
 	 */
+	/** Set alongside {@link #lastShopSuggestion} so the log can name the item. */
+	private volatile String lastShopSuggestionItem;
+
+	/**
+	 * A shop that sells something this step needs and the player has NONE
+	 * of, or null.
+	 *
+	 * <p>The bank branch answers "your kit is in the bank"; this answers
+	 * "you never had one". Deliberately requires owning ZERO — inventory,
+	 * worn and bank — because a shortfall you can make up from the bank is
+	 * the bank branch's job, and sending someone shopping for something they
+	 * already own is the pestering wave 20 spent a session removing.
+	 *
+	 * <p>Only items with a seeded source can qualify, so the reach of this
+	 * is exactly the size of item_sources.json.
+	 */
+	private WorldPoint shopFirstTarget(Current current)
+	{
+		for (String annotationId : new String[]{current.step.getId(), current.sub.getId()})
+		{
+			for (StepAnnotation.ItemNeed need : annotationManager.getItems(annotationId))
+			{
+				if (Boolean.TRUE.equals(need.optional)
+					|| Boolean.TRUE.equals(need.granted)
+					|| Boolean.TRUE.equals(need.consumed)
+					|| need.quantity == null)
+				{
+					// Carry-list reminders and things the quest hands over
+					// do not get to redirect anybody (bankFirstTarget learned
+					// the same about unnumbered items).
+					continue;
+				}
+				if (itemTracker.countOf(need.name) > 0)
+				{
+					continue; // has some: not a shopping trip
+				}
+				WorldPoint source = placeManager.get(need.name);
+				if (source != null)
+				{
+					lastShopSuggestionItem = need.name;
+					return source;
+				}
+			}
+		}
+		return null;
+	}
+
 	private WorldPoint bankFirstTarget(Current current)
 	{
 		// A step still behind its SKILL gate is a grind, and its kit belongs
