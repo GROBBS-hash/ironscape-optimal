@@ -179,6 +179,14 @@ public class IronscapePanel extends PluginPanel
 	private StepRow anchorRow;
 	private int anchorAppliedY = -1;
 	/**
+	 * Set by a real wheel turn or scrollbar drag, and by nothing else.
+	 *
+	 * <p>This is the discriminator the scroll code never had. Cleared
+	 * whenever we begin a landing of our own, so it always answers "has the
+	 * player moved the view SINCE we started trying to land".
+	 */
+	private boolean userMovedTheView;
+	/**
 	 * Where the viewport top sits INSIDE the anchor row. Normally the row's
 	 * own {@code scrollOffset()}; after the player scrolls by hand it is
 	 * whatever part-way position they chose, so re-asserting holds their view
@@ -231,6 +239,27 @@ public class IronscapePanel extends PluginPanel
 		scrollPane.setBorder(null);
 		scrollPane.getVerticalScrollBar().setUnitIncrement(16);
 		add(scrollPane, BorderLayout.CENTER);
+
+		// ASK THE PLAYER, DO NOT INFER.
+		//
+		// Everything that scrolls this panel needs to know one thing: did the
+		// player move the view, or did we? Five rounds of scroll bugs answered
+		// it by comparing the viewport against where we last put it — and that
+		// is not the same question. Swing moves the viewport too: rebuilding a
+		// section empties the content, the view size collapses, and the
+		// position is CLAMPED. The panel read its own clamp as the player
+		// grabbing the scrollbar and stood down, silently, at exactly the
+		// moment it was meant to be landing on the new step.
+		//
+		// A wheel turn and a scrollbar drag are real events. Recording them is
+		// the only honest answer, and it costs two listeners.
+		scrollPane.addMouseWheelListener(e -> userMovedTheView = true);
+		scrollPane.getVerticalScrollBar().addAdjustmentListener(e -> {
+			if (e.getValueIsAdjusting())
+			{
+				userMovedTheView = true; // dragging the thumb
+			}
+		});
 
 		// Opening the sidebar panel should land on "what do I do next", not
 		// wherever was last browsed. RuneLite only calls Activatable's
@@ -763,7 +792,11 @@ public class IronscapePanel extends PluginPanel
 	 */
 	private void scrollRowIntoView(StepRow target, int attemptsLeft)
 	{
-		scrollRowIntoView(target, attemptsLeft, Integer.MIN_VALUE, -1);
+		// A landing of ours starts here, so anything the player did before now
+		// is history — otherwise one wheel turn early in a session would stop
+		// the panel ever landing again.
+		userMovedTheView = false;
+		scrollRowIntoView(target, attemptsLeft, Integer.MIN_VALUE);
 	}
 
 	/**
@@ -777,23 +810,34 @@ public class IronscapePanel extends PluginPanel
 	 * items).
 	 *
 	 * So re-assert until the computed position stops moving, then stop.
-	 * Bounded, and it gives up rather than fighting the scroll wheel
-	 * forever.
+	 * Bounded, and it stands down for a real scroll gesture rather than
+	 * fighting the wheel.
 	 */
-	private void scrollRowIntoView(StepRow target, int attemptsLeft, int lastAt, int weSet)
+	private void scrollRowIntoView(StepRow target, int attemptsLeft, int lastAt)
 	{
 		SwingUtilities.invokeLater(() -> {
 			javax.swing.JViewport viewport = scrollPane.getViewport();
-			// The player outranks us. If the scroll bar is no longer where we
-			// put it, they have taken hold of it — stop re-asserting rather
-			// than fight the wheel.
-			if (weSet >= 0 && viewport.getViewPosition().y != weSet)
+			// The player outranks us — but ONLY the player.
+			//
+			// This used to compare the viewport against where we last put it
+			// and treat any difference as the player taking hold. Swing also
+			// moves the viewport: a rebuild empties the content, the view
+			// collapses, and the position is clamped. So a rebuild looked
+			// identical to a scroll gesture, and the landing stood down
+			// mid-retry — leaving the view at whatever the clamp chose, with
+			// NO log line, which is why five rounds of this bug produced an
+			// almost empty log (owner, 2026-08-14: the panel showing step 314
+			// while the frontier was 287, no scroll line written at all).
+			if (userMovedTheView)
 			{
+				org.slf4j.LoggerFactory.getLogger(IronscapePanel.class).info(
+					"scroll: standing down on step {} (index {}) — the player scrolled",
+					target.getStep().getId(), target.getStep().getGlobalIndex());
 				return;
 			}
 			if (target.getBounds().height == 0 && attemptsLeft > 0)
 			{
-				scrollRowIntoView(target, attemptsLeft - 1, lastAt, weSet);
+				scrollRowIntoView(target, attemptsLeft - 1, lastAt);
 				return;
 			}
 			// Top-aligned on the card — and on a MULTI-action step, on its
@@ -811,7 +855,7 @@ public class IronscapePanel extends PluginPanel
 				scrollTail.setPreferredSize(
 					new java.awt.Dimension(1, tail.height + shortfall));
 				content.revalidate();
-				scrollRowIntoView(target, attemptsLeft - 1, lastAt, weSet);
+				scrollRowIntoView(target, attemptsLeft - 1, lastAt);
 				return;
 			}
 			// SETTLE ON THE POSITION WE ACTUALLY APPLIED, not on the raw y.
@@ -851,7 +895,7 @@ public class IronscapePanel extends PluginPanel
 			// the budget has to outlast them: 20 x 80ms rather than the old
 			// 5 x 60ms, which expired while rows above were still growing.
 			javax.swing.Timer retry = new javax.swing.Timer(80,
-				e -> scrollRowIntoView(target, attemptsLeft - 1, at, at));
+				e -> scrollRowIntoView(target, attemptsLeft - 1, at));
 			retry.setRepeats(false);
 			retry.start();
 		});
@@ -1140,9 +1184,10 @@ public class IronscapePanel extends PluginPanel
 	 * down, without anything having scrolled. Re-applying the row's position
 	 * costs nothing and holds it there.
 	 *
-	 * <p>Never fights the wheel: when the viewport is not where we left it the
-	 * player has moved it, and the anchor RE-POINTS to the row they are now
-	 * reading rather than being abandoned.
+	 * <p>Never fights the wheel: after a real scroll gesture the anchor
+	 * RE-POINTS to the row the player is now reading rather than being
+	 * abandoned. A viewport that moved on its own is the thing this exists
+	 * to undo, and is put back.
 	 */
 	private void holdAnchor()
 	{
@@ -1151,26 +1196,25 @@ public class IronscapePanel extends PluginPanel
 			return;
 		}
 		javax.swing.JViewport viewport = scrollPane.getViewport();
-		if (viewport.getViewPosition().y != anchorAppliedY)
+		if (userMovedTheView)
 		{
-			// The player took the wheel. Re-point the anchor at whatever row
+			// A real wheel turn or thumb drag. Re-point the anchor at the row
 			// they have scrolled to rather than abandoning it.
 			//
-			// Dropping it was the bug. Once dropped it never came back until
-			// the next rebuild, which left the panel permanently exposed to
-			// the thing the anchor exists to prevent: opening the BANK
-			// resolves bank counts for every item row at once, hundreds of
-			// rows above grow a few pixels each, and the content slides down
-			// under a fixed pixel offset until finished steps fill the
-			// screen. Nothing scrolled, so there was no scroll line to read
-			// and it looked exactly like the panel jumping on its own
-			// (owner, 2026-08-14: "when I opened the bank window the plugin
-			// scrolled to this spot", and — the discriminator — "I did [scroll]
-			// but not to that spot").
+			// Dropping it was the old bug. Once dropped it never came back
+			// until the next rebuild, which left the panel exposed to the very
+			// thing the anchor exists to prevent: opening the BANK resolves
+			// bank counts for every item row at once, hundreds of rows above
+			// grow a few pixels each, and the content slides down under a
+			// fixed pixel offset until finished steps fill the screen. Nothing
+			// scrolled, so no scroll line was written and it looked exactly
+			// like the panel jumping on its own (owner, 2026-08-14: "when I
+			// opened the bank window the plugin scrolled to this spot", and —
+			// the discriminator — "I did [scroll] but not to that spot").
 			//
-			// Holding the row they are actually reading is the behaviour
-			// wanted in BOTH cases, so this needs no guess about which one
-			// happened.
+			// Testing the viewport POSITION here was itself wrong: Swing
+			// clamps it on every rebuild, so the panel kept concluding the
+			// player had scrolled when nobody had touched anything.
 			int y = viewport.getViewPosition().y;
 			anchorRow = topmostVisibleRow();
 			// Keep the row exactly where they parked it, part-scrolled or
@@ -1178,16 +1222,22 @@ public class IronscapePanel extends PluginPanel
 			// to the viewport's top, which is us tidying up their view.
 			anchorOffsetInRow = anchorRow == null ? 0 : y - anchorRow.getY();
 			anchorAppliedY = anchorRow == null ? -1 : y;
+			userMovedTheView = false;
 			return;
 		}
 		int want = Math.max(0, anchorRow.getY() + anchorOffsetInRow);
 		int maxY = Math.max(0, viewport.getViewSize().height - viewport.getExtentSize().height);
 		int at = Math.min(want, maxY);
-		if (at != anchorAppliedY)
+		// Re-apply when the row has moved under us OR when the viewport has
+		// drifted off the position we set. The second half matters on its
+		// own: a rebuild clamps the position, and if the row happens to want
+		// the same offset as before, comparing only `at` would decide there
+		// was nothing to do and leave the clamped view in place.
+		if (at != anchorAppliedY || viewport.getViewPosition().y != at)
 		{
 			org.slf4j.LoggerFactory.getLogger(IronscapePanel.class).info(
-				"scroll: rows above changed height — re-anchoring step {} from {} to {}",
-				anchorRow.getStep().getId(), anchorAppliedY, at);
+				"scroll: holding step {} — row moved or view drifted, {} -> {} (view was at {})",
+				anchorRow.getStep().getId(), anchorAppliedY, at, viewport.getViewPosition().y);
 			viewport.setViewPosition(new java.awt.Point(0, at));
 			anchorAppliedY = at;
 		}
