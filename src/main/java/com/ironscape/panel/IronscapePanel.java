@@ -287,6 +287,14 @@ public class IronscapePanel extends PluginPanel
 			}
 			int from = lastSeenViewY;
 			lastSeenViewY = y;
+			if (wheelEventInFlight())
+			{
+				// Claim it here rather than waiting for our own wheel listener
+				// further down the chain, so the answer does not depend on the
+				// order the look-and-feel happens to install its listeners in.
+				userMovedTheView = true;
+				return;
+			}
 			if (weAreScrolling || userMovedTheView)
 			{
 				return; // ours, or a real gesture: both already accounted for
@@ -1293,6 +1301,26 @@ public class IronscapePanel extends PluginPanel
 	 * viewport/scrollbar machinery. Trimmed to a handful because the point is
 	 * to name a culprit, not to print a wall.
 	 */
+	/**
+	 * Is the event being dispatched right now a scroll-wheel turn?
+	 *
+	 * <p>Our wheel listener is not the only one on the scroll pane: the
+	 * look-and-feel installs its own, and listeners are called in a chain.
+	 * The LAF's runs first, moves the scrollbar, and the viewport's change
+	 * listener fires SYNCHRONOUSLY inside it — before ours has set the flag.
+	 * So a genuine wheel turn was being reported as an unexplained move.
+	 *
+	 * <p>Harmless to the behaviour, since the flag is set a moment later and
+	 * everything that reads it runs afterwards. Not harmless to the LOG: a
+	 * diagnostic that cries wolf on ordinary scrolling buries the next real
+	 * finding, which is the whole reason this line exists.
+	 */
+	private static boolean wheelEventInFlight()
+	{
+		java.awt.AWTEvent current = java.awt.EventQueue.getCurrentEvent();
+		return current instanceof java.awt.event.MouseWheelEvent;
+	}
+
 	private static String blameForViewMove()
 	{
 		StringBuilder blame = new StringBuilder();
