@@ -354,7 +354,15 @@ public class ItemTracker
 		// wiki page title, not an item name. It only ever resolved because
 		// the alias chain drops a trailing parenthetical.
 		Map.entry("priest robes", "priest gown"),
-		Map.entry("silver", "silver bar"),
+		// "Smelt the 5 silver" — the bare word means the ORE, because
+		// smelting is what consumes it. Mapped to "silver bar" for a long
+		// time, so the one step that says it asked you to bring five bars in
+		// order to make five bars (owner, 2026-08-14).
+		//
+		// Safe to change: the bare word appears in exactly ONE step in the
+		// guide and in no annotation — every other mention spells out
+		// "silver ore" or "silver bar" for itself.
+		Map.entry("silver", "silver ore"),
 		// The farming shop's pack of normal compost is just "Compost pack".
 		Map.entry("normal compost pack", "compost pack"),
 		// Shops sell "Pot of flour"; the bare item "Flour" exists but is

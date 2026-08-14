@@ -39,6 +39,14 @@ public final class GoalDetector
 	private static final Pattern QUANTITY_NAME = Pattern.compile(
 		"(\\d[\\d,]*)([km])?\\s+([a-z][a-z'/ -]+)", Pattern.CASE_INSENSITIVE);
 
+	/**
+	 * "keep 3 bars" — an instruction about what to HOLD BACK from the step's
+	 * own output, not something to go and acquire. Anchored to the end so it
+	 * only vetoes a number that directly follows the word.
+	 */
+	private static final Pattern RETAIN_INSTRUCTION = Pattern.compile(
+		"\\bkeep\\s+(?:the\\s+)?$", Pattern.CASE_INSENSITIVE);
+
 	/** Words that end an item name ("110 logs AND bank them" -> "logs",
 	 *  "5 swamp tar AROUND the cave entrance" -> "swamp tar",
 	 *  "130 planks NORTH of the Barb agility course" -> "planks"). */
@@ -932,6 +940,23 @@ public final class GoalDetector
 		Matcher pairs = QUANTITY_NAME.matcher(text);
 		while (pairs.find())
 		{
+			if (RETAIN_INSTRUCTION.matcher(text.substring(0, pairs.start())).find())
+			{
+				// "keep 3 bars" says what to hold BACK, not what to go and
+				// get. It read as a goal and sat green at 3/3 off bars
+				// already in the bank, which both misinforms and lets the
+				// step finish without the smelting it is actually about
+				// (owner, 2026-08-14, step 288).
+				//
+				// Only "keep". The obvious generalisation — veto any number
+				// introduced by a word already on NOT_AN_ITEM_FIRST_WORD —
+				// was MEASURED and rejected: of its 3 hits guide-wide, 2 are
+				// real goals ("Bank 7 logs for later" needs 7 logs, "Fill 3
+				// buckets with milk" is one this detector deliberately
+				// builds). Leading a clause and following a number are
+				// different jobs.
+				continue;
+			}
 			// "200k cash" / "1m gp": expand the k/m suffix into the number.
 			String quantity = pairs.group(1);
 			if (pairs.group(2) != null)
