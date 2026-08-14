@@ -178,6 +178,13 @@ public class IronscapePanel extends PluginPanel
 	 */
 	private StepRow anchorRow;
 	private int anchorAppliedY = -1;
+	/**
+	 * Where the viewport top sits INSIDE the anchor row. Normally the row's
+	 * own {@code scrollOffset()}; after the player scrolls by hand it is
+	 * whatever part-way position they chose, so re-asserting holds their view
+	 * instead of tidying the row's top up to the viewport's top.
+	 */
+	private int anchorOffsetInRow;
 	private final JScrollPane scrollPane;
 
 	private Guide guide;
@@ -433,7 +440,69 @@ public class IronscapePanel extends PluginPanel
 		}
 		hideDoneBox.setSelected(!config.showCompletedSteps());
 		updateProgressBar();
+		if (advanceAcrossSectionBoundary())
+		{
+			return; // opening the next section rebuilt the view already
+		}
 		rebuild();
+	}
+
+	/**
+	 * Finishing the LAST step of a section used to leave you looking at a
+	 * finished section with a "Next" button to press.
+	 *
+	 * <p>A rebuild only ever redraws the section already open, and the code
+	 * that follows the frontier runs on the item-count path, which does not
+	 * fire when a step completes. So the one moment the panel most needs to
+	 * move — the section running out — was the moment nothing moved it
+	 * (owner, 2026-08-14, standing on the last step of a section: "next step
+	 * is the last until we click next, can we make this automatic?").
+	 *
+	 * <p>Only ever advances out of the section it was ALREADY FOLLOWING. If
+	 * you have deliberately opened an earlier section to read, the frontier
+	 * moving on is not a reason to drag you forward — same principle as the
+	 * scroll anchor never fighting the wheel.
+	 *
+	 * @return true when the view was rebuilt into another section
+	 */
+	private boolean advanceAcrossSectionBoundary()
+	{
+		if (openChapter < 0 || lastFollowedStepId == null)
+		{
+			return false; // overview, or never followed anything: leave it be
+		}
+		String query = searchBar.getText() == null ? "" : searchBar.getText().trim();
+		if (!query.isEmpty())
+		{
+			return false;
+		}
+		GuideStep current = currentStep();
+		if (current == null
+			|| (current.getChapterIndex() == openChapter && current.getSectionIndex() == openSection))
+		{
+			return false; // still in this section — an ordinary rebuild is right
+		}
+		// Was the open section the one we were tracking? If the followed step
+		// is not here, the player navigated away and this is their view.
+		boolean followingThisSection = false;
+		for (GuideStep step : guide.getAllSteps())
+		{
+			if (step.getId().equals(lastFollowedStepId))
+			{
+				followingThisSection = step.getChapterIndex() == openChapter
+					&& step.getSectionIndex() == openSection;
+				break;
+			}
+		}
+		if (!followingThisSection)
+		{
+			return false;
+		}
+		org.slf4j.LoggerFactory.getLogger(IronscapePanel.class).info(
+			"scroll: section finished — advancing to step {} (index {}) in the next section",
+			current.getId(), current.getGlobalIndex());
+		jumpToCurrent(false);
+		return true;
 	}
 
 	// ------------------------------------------------------------------
@@ -770,9 +839,12 @@ public class IronscapePanel extends PluginPanel
 					target.getY(), target.scrollOffset(), y, at,
 					viewport.getViewSize().height, viewport.getExtentSize().height,
 					scrollTail.getPreferredSize().height);
-				// Hold this row from here (see holdAnchor).
+				// Hold this row from here (see holdAnchor). The offset is
+				// carried rather than recomputed so that a hand scroll can
+				// replace it with the player's own part-way position.
 				anchorRow = target;
 				anchorAppliedY = at;
+				anchorOffsetInRow = at - target.getY();
 				return;
 			}
 			// Item icons arrive asynchronously and html panes size late, so
@@ -1068,9 +1140,9 @@ public class IronscapePanel extends PluginPanel
 	 * down, without anything having scrolled. Re-applying the row's position
 	 * costs nothing and holds it there.
 	 *
-	 * <p>Only ever re-asserts while the viewport is exactly where we last put
-	 * it, so the moment the player touches the scroll bar the anchor is
-	 * dropped and never fights them.
+	 * <p>Never fights the wheel: when the viewport is not where we left it the
+	 * player has moved it, and the anchor RE-POINTS to the row they are now
+	 * reading rather than being abandoned.
 	 */
 	private void holdAnchor()
 	{
@@ -1081,11 +1153,34 @@ public class IronscapePanel extends PluginPanel
 		javax.swing.JViewport viewport = scrollPane.getViewport();
 		if (viewport.getViewPosition().y != anchorAppliedY)
 		{
-			anchorRow = null; // the player took the wheel
-			anchorAppliedY = -1;
+			// The player took the wheel. Re-point the anchor at whatever row
+			// they have scrolled to rather than abandoning it.
+			//
+			// Dropping it was the bug. Once dropped it never came back until
+			// the next rebuild, which left the panel permanently exposed to
+			// the thing the anchor exists to prevent: opening the BANK
+			// resolves bank counts for every item row at once, hundreds of
+			// rows above grow a few pixels each, and the content slides down
+			// under a fixed pixel offset until finished steps fill the
+			// screen. Nothing scrolled, so there was no scroll line to read
+			// and it looked exactly like the panel jumping on its own
+			// (owner, 2026-08-14: "when I opened the bank window the plugin
+			// scrolled to this spot", and — the discriminator — "I did [scroll]
+			// but not to that spot").
+			//
+			// Holding the row they are actually reading is the behaviour
+			// wanted in BOTH cases, so this needs no guess about which one
+			// happened.
+			int y = viewport.getViewPosition().y;
+			anchorRow = topmostVisibleRow();
+			// Keep the row exactly where they parked it, part-scrolled or
+			// not — recomputing from scrollOffset() would snap the row's top
+			// to the viewport's top, which is us tidying up their view.
+			anchorOffsetInRow = anchorRow == null ? 0 : y - anchorRow.getY();
+			anchorAppliedY = anchorRow == null ? -1 : y;
 			return;
 		}
-		int want = Math.max(0, anchorRow.getY() + anchorRow.scrollOffset() - 8);
+		int want = Math.max(0, anchorRow.getY() + anchorOffsetInRow);
 		int maxY = Math.max(0, viewport.getViewSize().height - viewport.getExtentSize().height);
 		int at = Math.min(want, maxY);
 		if (at != anchorAppliedY)
@@ -1096,6 +1191,26 @@ public class IronscapePanel extends PluginPanel
 			viewport.setViewPosition(new java.awt.Point(0, at));
 			anchorAppliedY = at;
 		}
+	}
+
+	/**
+	 * The first step row whose bottom is below the top of the viewport —
+	 * what the player is looking at after scrolling by hand.
+	 *
+	 * <p>Rows are added to {@code content} in guide order, so the first hit
+	 * scanning forwards is the topmost one on screen.
+	 */
+	private StepRow topmostVisibleRow()
+	{
+		int top = scrollPane.getViewport().getViewPosition().y;
+		for (Component component : content.getComponents())
+		{
+			if (component instanceof StepRow && component.getY() + component.getHeight() > top)
+			{
+				return (StepRow) component;
+			}
+		}
+		return null;
 	}
 
 	/**
