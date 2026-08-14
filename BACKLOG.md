@@ -46,6 +46,25 @@ highlight, emote persistence across a restart, the 75-tile floor on a
 router-picked teleport, the organ's diary icon and the dungeon stairs outline,
 then **282** and **316**.
 
+**AGREED NEXT SESSION (owner, end of wave 28): the ⌖ PINS AUDIT.** Do this
+first, before the play-test list.
+
+A ⌖ target nominates the nearest NPC to it unless the pin carries
+`"npc": false`. That is how a level-2 Man came to be outlined wearing a sickle
+icon: the pin was the FURNACE. **Measured: 98 bundled targets, and 96 of them
+leave the flag unset**, so they all nominate by default. Nobody has ever
+checked how many of those mark a furnace, a door, a dig spot or a stairwell
+rather than a person.
+
+`item_sources.json` has the same shape and is already mostly handled — 15 name
+a vendor, 3 say `npc:false`, and **6 do neither** and fall back to nearest-NPC.
+
+Do NOT bulk-apply. The wrong direction here is silent: setting `npc:false` on a
+pin that really does mark a person removes an outline nobody will notice is
+gone. Generate a clickable review page (his preferred format — see
+[[review-ui-for-input]]) with the step text, the pin, and what is near it, and
+let him settle the ambiguous ones.
+
 **BUILD NEXT:**
 
 - **WK-1 is half-dead.** Its root cause turned out to be that `optional` was
