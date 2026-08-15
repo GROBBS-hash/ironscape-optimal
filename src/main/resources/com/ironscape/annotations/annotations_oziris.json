@@ -1031,11 +1031,15 @@
     },
     {
      "name": "bat bones",
-     "quantity": null
+     "quantity": null,
+     "bringAhead": true,
+     "optional": true
     },
     {
      "name": "black candle",
-     "quantity": null
+     "quantity": null,
+     "bringAhead": true,
+     "optional": true
     },
     {
      "name": "tinderbox",
