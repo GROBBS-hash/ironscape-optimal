@@ -4169,7 +4169,8 @@
     },
     {
      "name": "bronze wire",
-     "quantity": 1
+     "quantity": 1,
+     "granted": true
     },
     {
      "name": "chisel",
@@ -4190,7 +4191,7 @@
      "bringAhead": true
     }
    ],
-   "note": "Recommended: Combat gear, Food, Stamina potions, Antipoisons, Prayer potions."
+   "note": "You make the bronze wire yourself during the quest - the guide does not mention it (owner, in play).\nRecommended: Combat gear, Food, Stamina potions, Antipoisons, Prayer potions."
   },
   "4cb05055c3": {
    "items": [
@@ -4714,12 +4715,14 @@
     },
     {
      "name": "stake",
-     "quantity": 1
+     "quantity": 1,
+     "granted": true
     }
    ],
    "dialog": [
     "Yes."
-   ]
+   ],
+   "note": "Dr Harlow gives you the stake at the Blue Moon Inn later in the quest - you cannot buy one. Bring the hammer and the beer money."
   },
   "11514098de": {
    "items": [
