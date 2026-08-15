@@ -6864,11 +6864,24 @@
     {
      "x": 2763,
      "y": 3513,
+     "plane": 0,
+     "npc": "King Arthur",
+     "varp": 5,
+     "value": 1,
+     "dialog": [
+      "Tell me of this quest.",
+      "Yes."
+     ],
+     "note": "King Arthur is DOWNSTAIRS at the round table - he starts the quest. Merlin will not talk about the Grail until Arthur has sent you."
+    },
+    {
+     "x": 2763,
+     "y": 3513,
      "plane": 1,
      "npc": "Merlin",
      "varp": 5,
      "value": 3,
-     "note": "Merlin is UPSTAIRS in Camelot - the route runs up the staircase to him."
+     "note": "Merlin is UPSTAIRS through the workshop door - the route runs up the staircase to him."
     }
    ]
   },
