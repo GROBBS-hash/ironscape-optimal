@@ -1336,7 +1336,12 @@ public class IronscapePlugin extends Plugin
 				wanted.add("Talk about " + quest.getName());
 			}
 		}
-		if (wanted.isEmpty())
+		// Nothing seeded and no travel destination to look for: no reason to
+		// read the menu at all. The travel half has to be part of this test
+		// — gating only on `wanted` would have skipped every travel menu on
+		// a step with no quest and no seeded dialogue, which is most of
+		// them (a spirit tree, a boat, a carpet outside a quest).
+		if (wanted.isEmpty() && travelMenuWords.isEmpty())
 		{
 			return;
 		}
@@ -1353,6 +1358,7 @@ public class IronscapePlugin extends Plugin
 		}
 		int matched = 0;
 		java.util.List<String> offered = new java.util.ArrayList<>();
+		java.util.List<String> destinations = new java.util.ArrayList<>();
 		for (net.runelite.api.widgets.Widget child : children)
 		{
 			String text = child == null ? null : child.getText();
@@ -1363,14 +1369,36 @@ public class IronscapePlugin extends Plugin
 				continue;
 			}
 			offered.add(text);
+			boolean hit = false;
 			for (String want : wanted)
 			{
 				if (dialogOptionMatches(text, want))
 				{
-					child.setTextColor(0x1a1aff);
-					matched++;
+					hit = true;
 					break;
 				}
+			}
+			// SOME TRAVEL MENUS ARE JUST CHAT OPTIONS. A magic carpet offers
+			// "Carpet rides cost 200 coins. / Bedabin camp / Pollnivneach /
+			// Cancel" through the ordinary dialogue widget, not through the
+			// Adventure Log list TravelMenuOverlay watches — so on the way
+			// to The Feud the step named Pollnivneach, the menu offered it,
+			// and nothing pointed at it (session log, 2026-08-15).
+			//
+			// Same word-set rule as the travel list, called through it so
+			// there is only ever one copy: every word of the entry has to
+			// appear in the step's own text (plus its 📍 tag and travelVia).
+			// That set is empty unless teleport hints are on, so this
+			// inherits the existing switch rather than adding one.
+			if (!hit && !travelMenuWords.isEmpty() && looksLikeDestination(text))
+			{
+				hit = true;
+				destinations.add(text);
+			}
+			if (hit)
+			{
+				child.setTextColor(0x1a1aff);
+				matched++;
 			}
 		}
 		// Forensics, in the shape of logNavDecision / logHintDecision. This
@@ -1381,13 +1409,39 @@ public class IronscapePlugin extends Plugin
 		// Quest Helper says "Ok I will do all that."; the game says "Ok, I
 		// will go do all that.". Logged only when the menu's contents change,
 		// so a menu left open costs one line.
-		String menu = matched + "/" + offered.size() + " " + offered + " vs " + wanted;
+		String menu = matched + "/" + offered.size() + " " + offered + " vs " + wanted
+			+ destinations;
 		if (!menu.equals(lastDialogMenu))
 		{
 			lastDialogMenu = menu;
-			log.info("dialog-highlight: matched {} of {} options {} against {}",
-				matched, offered.size(), offered, wanted);
+			log.info("dialog-highlight: matched {} of {} options {} against {}{}",
+				matched, offered.size(), offered, wanted,
+				destinations.isEmpty() ? ""
+					: " (+destination named by the step: " + destinations + ")");
 		}
+	}
+
+	/**
+	 * Is this chat option the destination the current step is sending you
+	 * to? Delegates the word-set rule to TravelMenuOverlay so the list and
+	 * the chat menu can never disagree about what counts as a match.
+	 *
+	 * <p>The length floor is the whole guard against nonsense. Word-set
+	 * matching alone would light up "Yes." on any step whose text happens
+	 * to contain the word, and a wrongly highlighted dialogue option is
+	 * worse than none — you act on it before reading it. A destination
+	 * name always clears four letters; the conversational replies that
+	 * share a menu with one ("Yes", "No", "Ok") never do.
+	 */
+	private boolean looksLikeDestination(String optionText)
+	{
+		String clean = com.ironscape.overlay.TravelMenuOverlay.cleanEntry(optionText);
+		if (clean.length() < 4)
+		{
+			return false;
+		}
+		return com.ironscape.overlay.TravelMenuOverlay
+			.destinationMatches(clean, travelMenuWords);
 	}
 
 	/** Last dialog-menu forensic line, so an open menu logs once. */

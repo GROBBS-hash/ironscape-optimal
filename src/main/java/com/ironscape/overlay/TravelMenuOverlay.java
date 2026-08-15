@@ -121,8 +121,7 @@ public class TravelMenuOverlay extends Overlay
 				continue;
 			}
 			// "<col=ff9040>3: Battlefield of Khazard</col>" -> the name.
-			String clean = Text.removeTags(text.replace("<br>", " "))
-				.replaceFirst("^\\s*[0-9A-Za-z]\\s*:\\s*", "").trim();
+			String clean = cleanEntry(text);
 			if (clean.isEmpty() || !entryMatches(clean, words))
 			{
 				continue;
@@ -140,6 +139,36 @@ public class TravelMenuOverlay extends Overlay
 	}
 
 	/** Every meaningful word of the entry name appears in the sub's words. */
+	/**
+	 * Strips the list decoration off a menu entry, leaving the destination.
+	 *
+	 * <p>Two shapes, both seen in play: the Adventure Log style numbers its
+	 * rows ("3: Battlefield of Khazard"), and a chat menu prefixes the
+	 * keyboard hint of the option under the cursor ("[2] Pollnivneach").
+	 * Either prefix left in place stops the word match dead.
+	 */
+	public static String cleanEntry(String text)
+	{
+		return Text.removeTags(text.replace("<br>", " "))
+			.replaceFirst("^\\s*\\[\\d+]\\s*", "")
+			.replaceFirst("^\\s*[0-9A-Za-z]\\s*:\\s*", "")
+			.trim();
+	}
+
+	/**
+	 * Does this menu entry name where the current step is sending you?
+	 *
+	 * <p>Public because the CHAT menu asks the same question: a magic
+	 * carpet offers "Bedabin camp / Pollnivneach / Cancel" as ordinary
+	 * dialogue options rather than as a travel list, and the answer must
+	 * not be decided by a second copy of this rule that can drift from
+	 * this one.
+	 */
+	public static boolean destinationMatches(String entry, Set<String> words)
+	{
+		return entryMatches(entry, words);
+	}
+
 	private static boolean entryMatches(String entry, Set<String> words)
 	{
 		boolean any = false;
