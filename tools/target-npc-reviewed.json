@@ -1,0 +1,484 @@
+{
+  "reviewed": {
+    "fec8743718:0": {
+      "verdict": "place",
+      "reason": "Owner: this pin marks a place, not a person.",
+      "on": "2026-08-15"
+    },
+    "729fca4753:0": {
+      "verdict": "place",
+      "reason": "Owner: this pin marks a place, not a person.",
+      "on": "2026-08-15"
+    },
+    "ed91d62a6d:0": {
+      "verdict": "place",
+      "reason": "Owner: this pin marks a place, not a person.",
+      "on": "2026-08-15"
+    },
+    "1032e35280:0": {
+      "verdict": "place",
+      "reason": "Owner: this pin marks a place, not a person.",
+      "on": "2026-08-15"
+    },
+    "255bd9a43a:0": {
+      "verdict": "place",
+      "reason": "Owner: this pin marks a place, not a person.",
+      "on": "2026-08-15"
+    },
+    "fbc8aac4d7": {
+      "verdict": "place",
+      "reason": "Owner: this pin marks a place, not a person.",
+      "on": "2026-08-15"
+    },
+    "9442586803": {
+      "verdict": "place",
+      "reason": "Owner: this pin marks a place, not a person.",
+      "on": "2026-08-15"
+    },
+    "5161094f1d": {
+      "verdict": "place",
+      "reason": "Owner: this pin marks a place, not a person.",
+      "on": "2026-08-15"
+    },
+    "d08d1b5285": {
+      "verdict": "place",
+      "reason": "Owner: this pin marks a place, not a person.",
+      "on": "2026-08-15"
+    },
+    "fcd6568396": {
+      "verdict": "place",
+      "reason": "Owner: this pin marks a place, not a person.",
+      "on": "2026-08-15"
+    },
+    "30015bb6df": {
+      "verdict": "place",
+      "reason": "Owner: this pin marks a place, not a person.",
+      "on": "2026-08-15"
+    },
+    "5b2af09171": {
+      "verdict": "place",
+      "reason": "Owner: this pin marks a place, not a person.",
+      "on": "2026-08-15"
+    },
+    "6df1649967": {
+      "verdict": "place",
+      "reason": "Owner: this pin marks a place, not a person.",
+      "on": "2026-08-15"
+    },
+    "bbbd9a9020": {
+      "verdict": "place",
+      "reason": "Owner: this pin marks a place, not a person.",
+      "on": "2026-08-15"
+    },
+    "48db8d23b1": {
+      "verdict": "place",
+      "reason": "Owner: this pin marks a place, not a person.",
+      "on": "2026-08-15"
+    },
+    "b3a38e5fec": {
+      "verdict": "place",
+      "reason": "Owner: this pin marks a place, not a person.",
+      "on": "2026-08-15"
+    },
+    "30015bb6df-2": {
+      "verdict": "place",
+      "reason": "Owner: this pin marks a place, not a person.",
+      "on": "2026-08-15"
+    },
+    "30015bb6df-3": {
+      "verdict": "place",
+      "reason": "Owner: this pin marks a place, not a person.",
+      "on": "2026-08-15"
+    },
+    "c7888bb039": {
+      "verdict": "place",
+      "reason": "Owner: this pin marks a place, not a person.",
+      "on": "2026-08-15"
+    },
+    "1874f7b692": {
+      "verdict": "place",
+      "reason": "Owner: this pin marks a place, not a person.",
+      "on": "2026-08-15"
+    },
+    "15cfdebcd5": {
+      "verdict": "place",
+      "reason": "Owner: this pin marks a place, not a person.",
+      "on": "2026-08-15"
+    },
+    "27dfbb2ccf": {
+      "verdict": "place",
+      "reason": "Owner: this pin marks a place, not a person.",
+      "on": "2026-08-15"
+    },
+    "5161094f1d-2": {
+      "verdict": "place",
+      "reason": "Owner: this pin marks a place, not a person.",
+      "on": "2026-08-15"
+    },
+    "70e5cc9e67": {
+      "verdict": "place",
+      "reason": "Owner: this pin marks a place, not a person.",
+      "on": "2026-08-15"
+    },
+    "6c2213b929": {
+      "verdict": "place",
+      "reason": "Owner: this pin marks a place, not a person.",
+      "on": "2026-08-15"
+    },
+    "086a369518": {
+      "verdict": "person",
+      "reason": "Owner: this pin marks a person — keep the outline.",
+      "on": "2026-08-15"
+    },
+    "bba2aebccd": {
+      "verdict": "person",
+      "reason": "Owner: this pin marks a person — keep the outline.",
+      "on": "2026-08-15"
+    },
+    "39b666da5f": {
+      "verdict": "person",
+      "reason": "Owner: this pin marks a person — keep the outline.",
+      "on": "2026-08-15"
+    },
+    "0814e2bfa1": {
+      "verdict": "person",
+      "reason": "Owner: this pin marks a person — keep the outline.",
+      "on": "2026-08-15"
+    },
+    "609b673cbb": {
+      "verdict": "person",
+      "reason": "Owner: this pin marks a person — keep the outline.",
+      "on": "2026-08-15"
+    },
+    "839fa6997d": {
+      "verdict": "person",
+      "reason": "Owner: this pin marks a person — keep the outline.",
+      "on": "2026-08-15"
+    },
+    "5bf54fe229": {
+      "verdict": "person",
+      "reason": "Owner: this pin marks a person — keep the outline.",
+      "on": "2026-08-15"
+    },
+    "3fe3ab95d6": {
+      "verdict": "person",
+      "reason": "Owner: this pin marks a person — keep the outline.",
+      "on": "2026-08-15"
+    },
+    "56645c98cd": {
+      "verdict": "person",
+      "reason": "Owner: this pin marks a person — keep the outline.",
+      "on": "2026-08-15"
+    },
+    "7a218d4e32": {
+      "verdict": "person",
+      "reason": "Owner: this pin marks a person — keep the outline.",
+      "on": "2026-08-15"
+    },
+    "7f8d1aed5b": {
+      "verdict": "person",
+      "reason": "Owner: this pin marks a person — keep the outline.",
+      "on": "2026-08-15"
+    },
+    "62593ad63e:0": {
+      "verdict": "person",
+      "reason": "Owner: this pin marks a person — keep the outline.",
+      "on": "2026-08-15"
+    },
+    "d0595ee8b5": {
+      "verdict": "place",
+      "reason": "Owner: this pin marks a place, not a person.",
+      "on": "2026-08-15"
+    },
+    "76531ee30a": {
+      "verdict": "person",
+      "reason": "Owner: this pin marks a person — keep the outline.",
+      "on": "2026-08-15"
+    },
+    "1d8c7efbb6": {
+      "verdict": "person",
+      "reason": "Owner: this pin marks a person — keep the outline.",
+      "on": "2026-08-15"
+    },
+    "5005c25791": {
+      "verdict": "place",
+      "reason": "Owner: this pin marks a place, not a person.",
+      "on": "2026-08-15"
+    },
+    "d892b076aa": {
+      "verdict": "person",
+      "reason": "Owner: this pin marks a person — keep the outline.",
+      "on": "2026-08-15"
+    },
+    "139019034f": {
+      "verdict": "place",
+      "reason": "Owner: this pin marks a place, not a person.",
+      "on": "2026-08-15"
+    },
+    "ff44c4c271": {
+      "verdict": "person",
+      "reason": "Owner: this pin marks a person — keep the outline.",
+      "on": "2026-08-15"
+    },
+    "348519879e": {
+      "verdict": "person",
+      "reason": "Owner: this pin marks a person — keep the outline.",
+      "on": "2026-08-15"
+    },
+    "4381dc2ab1": {
+      "verdict": "place",
+      "reason": "Owner: this pin marks a place, not a person.",
+      "on": "2026-08-15"
+    },
+    "8b9242bc3c": {
+      "verdict": "person",
+      "reason": "Owner: this pin marks a person — keep the outline.",
+      "on": "2026-08-15"
+    },
+    "55fb71551c": {
+      "verdict": "person",
+      "reason": "Owner: NPCs for a kill step should still be outlined.",
+      "on": "2026-08-15"
+    },
+    "f8b24d4d6b": {
+      "verdict": "place",
+      "reason": "Owner: pin marks the stalls, not a person. The stall OBJECT outline is separate and still runs.",
+      "on": "2026-08-15"
+    },
+    "a2b95390ef": {
+      "verdict": "place",
+      "reason": "Owner: this pin marks a place, not a person.",
+      "on": "2026-08-15"
+    },
+    "fc59be4ce0": {
+      "verdict": "person",
+      "reason": "Owner: this pin marks a person — keep the outline.",
+      "on": "2026-08-15"
+    },
+    "7d6dffa38b": {
+      "verdict": "place",
+      "reason": "Owner: pin marks the chest, not a person. Wants the chest itself outlined - added as an item source.",
+      "on": "2026-08-15"
+    },
+    "d03a26dec5": {
+      "verdict": "person",
+      "reason": "Owner: this pin marks a person — keep the outline.",
+      "on": "2026-08-15"
+    },
+    "a36955fcc9": {
+      "verdict": "place",
+      "reason": "Owner: this pin marks a place, not a person.",
+      "on": "2026-08-15"
+    },
+    "c21fbf290a": {
+      "verdict": "place",
+      "reason": "Owner: this pin marks a place, not a person.",
+      "on": "2026-08-15"
+    },
+    "0c6db1e350": {
+      "verdict": "person",
+      "reason": "Owner: this pin marks a person — keep the outline.",
+      "on": "2026-08-15"
+    },
+    "755363999f": {
+      "verdict": "person",
+      "reason": "Owner: this pin marks a person — keep the outline.",
+      "on": "2026-08-15"
+    },
+    "0d525d6d34": {
+      "verdict": "place",
+      "reason": "Owner: this pin marks a place, not a person.",
+      "on": "2026-08-15"
+    },
+    "efc67d8d99": {
+      "verdict": "person",
+      "reason": "Owner: this pin marks a person — keep the outline.",
+      "on": "2026-08-15"
+    },
+    "b59810d9bc": {
+      "verdict": "person",
+      "reason": "Owner: this pin marks a person — keep the outline.",
+      "on": "2026-08-15"
+    },
+    "c7df380d64": {
+      "verdict": "person",
+      "reason": "Owner: this pin marks a person — keep the outline.",
+      "on": "2026-08-15"
+    },
+    "9453cd3524": {
+      "verdict": "person",
+      "reason": "Owner: this pin marks a person — keep the outline.",
+      "on": "2026-08-15"
+    },
+    "c695521f0c": {
+      "verdict": "person",
+      "reason": "Owner: this pin marks a person — keep the outline.",
+      "on": "2026-08-15"
+    },
+    "b6ed006cf7": {
+      "verdict": "person",
+      "reason": "Owner: this pin marks a person — keep the outline.",
+      "on": "2026-08-15"
+    },
+    "0f1c3c3c58": {
+      "verdict": "place",
+      "reason": "Owner: this pin marks a place, not a person.",
+      "on": "2026-08-15"
+    },
+    "5e820a7596": {
+      "verdict": "person",
+      "reason": "Owner: this pin marks a person — keep the outline.",
+      "on": "2026-08-15"
+    },
+    "e9b783141c": {
+      "verdict": "person",
+      "reason": "Owner: this pin marks a person — keep the outline.",
+      "on": "2026-08-15"
+    },
+    "a640572dbb": {
+      "verdict": "person",
+      "reason": "Owner: this pin marks a person — keep the outline.",
+      "on": "2026-08-15"
+    },
+    "bb3ef09ca4": {
+      "verdict": "person",
+      "reason": "Owner: this pin marks a person — keep the outline.",
+      "on": "2026-08-15"
+    },
+    "bb4aa764f4:0": {
+      "verdict": "place",
+      "reason": "Owner: this pin marks a place, not a person.",
+      "on": "2026-08-15"
+    },
+    "2bd7b72ec8": {
+      "verdict": "person",
+      "reason": "Owner: this pin marks a person — keep the outline.",
+      "on": "2026-08-15"
+    },
+    "9f04c897bc": {
+      "verdict": "person",
+      "reason": "Owner: this pin marks a person — keep the outline.",
+      "on": "2026-08-15"
+    },
+    "1846e0c4dc": {
+      "verdict": "person",
+      "reason": "Owner: this pin marks a person — keep the outline.",
+      "on": "2026-08-15"
+    },
+    "f5fa9a94a7": {
+      "verdict": "person",
+      "reason": "Owner: this pin marks a person — keep the outline.",
+      "on": "2026-08-15"
+    },
+    "ae8a853fb6": {
+      "verdict": "place",
+      "reason": "Owner: this pin marks a place, not a person.",
+      "on": "2026-08-15"
+    },
+    "484e59e194": {
+      "verdict": "person",
+      "reason": "Owner: the charter is a person. (Clicked place, but the reason says person; inert either way - Trader Crewmember is seeded as this step's keeper.)",
+      "on": "2026-08-15"
+    },
+    "2ec2fc3a83": {
+      "verdict": "person",
+      "reason": "Owner: this pin marks a person — keep the outline.",
+      "on": "2026-08-15"
+    },
+    "7676874ffb": {
+      "verdict": "person",
+      "reason": "Owner: this pin marks a person — keep the outline.",
+      "on": "2026-08-15"
+    },
+    "f4c42f72a8": {
+      "verdict": "person",
+      "reason": "Owner: this pin marks a person — keep the outline.",
+      "on": "2026-08-15"
+    },
+    "364c88b257": {
+      "verdict": "person",
+      "reason": "Owner: this pin marks a person — keep the outline.",
+      "on": "2026-08-15"
+    },
+    "7618eea2aa": {
+      "verdict": "person",
+      "reason": "Owner: this pin marks a person — keep the outline.",
+      "on": "2026-08-15"
+    },
+    "625acad723": {
+      "verdict": "person",
+      "reason": "Owner: this pin marks a person — keep the outline.",
+      "on": "2026-08-15"
+    },
+    "8e404dae98": {
+      "verdict": "person",
+      "reason": "Owner: this pin marks a person — keep the outline.",
+      "on": "2026-08-15"
+    },
+    "e5075fa29d": {
+      "verdict": "person",
+      "reason": "Owner: this pin marks a person — keep the outline.",
+      "on": "2026-08-15"
+    },
+    "5850a7f337": {
+      "verdict": "person",
+      "reason": "Owner: this pin marks a person — keep the outline.",
+      "on": "2026-08-15"
+    },
+    "45372e48a5": {
+      "verdict": "person",
+      "reason": "Owner: this pin marks a person — keep the outline.",
+      "on": "2026-08-15"
+    },
+    "fe6c7ce9d1": {
+      "verdict": "person",
+      "reason": "Owner: this pin marks a person — keep the outline.",
+      "on": "2026-08-15"
+    },
+    "3d7310c1e0": {
+      "verdict": "person",
+      "reason": "Owner: this pin marks a person — keep the outline.",
+      "on": "2026-08-15"
+    },
+    "3786d596af": {
+      "verdict": "person",
+      "reason": "Owner: this pin marks a person — keep the outline.",
+      "on": "2026-08-15"
+    },
+    "39381b9bca": {
+      "verdict": "person",
+      "reason": "Owner: this pin marks a person — keep the outline.",
+      "on": "2026-08-15"
+    },
+    "c53534815d": {
+      "verdict": "person",
+      "reason": "Owner: this pin marks a person — keep the outline.",
+      "on": "2026-08-15"
+    },
+    "e1e3e1645a": {
+      "verdict": "person",
+      "reason": "Owner: this pin marks a person — keep the outline.",
+      "on": "2026-08-15"
+    },
+    "efe63d31a5": {
+      "verdict": "place",
+      "reason": "Owner: this pin marks a place, not a person.",
+      "on": "2026-08-15"
+    },
+    "35144e9afb": {
+      "verdict": "place",
+      "reason": "Owner: this pin marks a place, not a person.",
+      "on": "2026-08-15"
+    },
+    "8c439f20dc": {
+      "verdict": "person",
+      "reason": "Owner: this pin marks a person — keep the outline.",
+      "on": "2026-08-15"
+    },
+    "84171b2638": {
+      "verdict": "place",
+      "reason": "Owner: this pin marks a place, not a person.",
+      "on": "2026-08-15"
+    }
+  }
+}
