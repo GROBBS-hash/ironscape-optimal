@@ -757,6 +757,136 @@ refresh when "Failed to login" appears.
   capture; hub pin at b8c994d, now ~70 commits behind — bump after a
   calm session.
 
+- SESSION WAVE 29 (2026-08-15..17, long desk session with a short play-test
+  either side; main at **`acdabaf`**, **8** commits, PUSHED; hub pin still
+  `057ab9b`, gap **9** — counted, not carried):
+  **THE ⌖ PINS AUDIT, AND THE POPULATION WAS A FIFTH OF WHAT IT LOOKED.** A ⌖
+  nominates the nearest NPC within 4 tiles — outline plus the step's item over
+  their head — unless it carries `npc:false`, and 96 of 98 bundled pins left
+  the flag unset. But that fallback only runs when the step names NOBODY: an
+  errand chain, a seeded shop keeper, a seeded quest giver, or any NPC name
+  matched in the step's own text all fill `npcNames`, which is the exact
+  condition it is guarded on. **33 are provably safe on that alone**, 5 more
+  name a person in their own text. The owner settled the rest through a
+  clickable page: **41 now `npc:false`, 55 keep the outline**, every verdict
+  INCLUDING the leaves recorded in `tools/target-npc-reviewed.json` so none is
+  re-asked (`audit-target-npc.mjs`, `review-target-npc.mjs`).
+  **TWO RULES IN THAT AUDIT WERE WRONG BEFORE THEY WERE RIGHT, and both would
+  have been invisible.** (1) The first suppression test matched every
+  `places.json` key and called **56** pins safe — **35** of them on the
+  strength of "lumby", "Draynor", "Yanille", which are PLACE names the live
+  matcher goes out of its way to exclude (that is what `placeSpans` and
+  `insideLongerSpan` are for, so "Walk to Barbarian Village" does not outline
+  every Barbarian). Only curated PERSON names count now. (2) It reported three
+  LIVE pins as stale keys before learning that `-2`/`-3` is how `GuideLoader`
+  tells duplicate step texts apart — "Chronicle tele" is five separate steps —
+  which would have argued for deleting three correct annotations.
+  **28 OF THE 98 ARE SHADOWED BY THE OWNER'S OWN CAPTURES**, and this is the
+  general lesson rather than a detail of this audit: `AnnotationManager
+  .getTarget` reads local FIRST, so a captured pin replaces the bundled one
+  outright, FLAG INCLUDED. A bundled-only fix is invisible on the one machine
+  that play-tests it. `--apply` patches both and backs the local file up
+  first. **Any future fix to bundled pin data has this problem.**
+  **ITEM SOURCES NEEDED NOTHING**, measured rather than assumed: 15 name a
+  vendor, 3 say `npc:false`, 2 are transport networks (excluded before
+  nomination is even considered), and the remaining 4 — bat bones, black
+  candle, Glarial's pebble, fruit blast — all genuinely mean a person or a
+  creature you kill, so nearest-NPC is right there.
+  **WK-1 BUILT, AND ITS THREE REJECTED RULES ARE THE VALUABLE PART**
+  (`audit-misplaced-kit.mjs`). Arrival needs every annotation item IN HAND, so
+  one unholdable item stops a step with nothing in the log to say why.
+  (a) "Flag any unflagged item also listed within N steps either side" returns
+  **312 items across 167 steps**, nearly all CORRECT — a spade really is
+  carried to all six dig steps, the barcrawl card to all ten bars. Repetition
+  is what a carry-list LOOKS like. (b) "An item on 3+ steps is a tool, skip
+  it" **hid step 281's blue dye — the exact case the audit exists for** —
+  because that dye is reused 120 steps later; found only by un-flagging the
+  dye and watching the audit stay silent. (c) Span separates nothing: the
+  barcrawl card spans 180 steps and silk 172, and only one is a tool. **What
+  works is asking whether the item can be HELD yet.** ONE live instance:
+  "Teleport to Camelot" still listed **bat bones** and a **black candle**
+  after wave 26 removed its Lit candle — the bones come off a giant bat
+  south-west of Camelot and the candle from the Catherby candle maker, both
+  AFTER you arrive. Excalibur on the same step is fine (the guide hands it
+  over 24 steps earlier). Both now `bringAhead` + `optional`.
+  **WK-2: FOUR QUESTS ASK FOR AN EMOTE, ONE NEEDED SEEDING**
+  (`seed-emotes.mjs`). Song of the Elves -> **Spin**, seeded. The Lost Tribe
+  was already hand-placed on "Continue Lost tribe" — a step carrying NO quest
+  tag, so it is not even in that quest's step list, and the tool's first-step
+  guess would have added a SECOND copy 26 steps early: **"already seeded" has
+  to mean anywhere in the quest.** Throne of Miscellania (Dance, Blow kiss,
+  Clap across a quest we cover in one step) LEFT ALONE — pointing at the wrong
+  icon is worse than pointing at nothing. Below Ice Mountain is not in the
+  guide. **THREE THINGS WOULD EACH HAVE MADE IT SILENTLY WRONG:** QH has TWO
+  classes, `EmoteStep` and `NpcEmoteStep`, and matching one reported nothing
+  for the quest that is already seeded; the overlay resolves a name through a
+  hand-built sprite map and **a name it does not know draws NOTHING, no
+  warning** (Flex is absent, so Below Ice Mountain would have been a no-op
+  twice over) — the tool now parses that map out of the overlay itself so it
+  cannot drift; and coverage is provable, **0 of the 114 tagged quests lack a
+  cached source**, so a quiet result means no emote rather than a missing file.
+  **HOLY GRAIL STARTS DOWNSTAIRS.** The chain had one stage — Merlin,
+  upstairs — but the quest starts with **King Arthur**, and Merlin will not
+  discuss the Grail until Arthur has sent you, so it walked you past the man
+  you needed. Hidden because both stand at **2763,3513**: only the plane
+  differs, so the pin looked right. Gated `varp 5 >= 1`, NOT the state number
+  QH implies — its step map jumps 0 -> 2 with no state 1, and if talking to
+  Arthur really sets 1 then a gate of 2 would never release and would wedge
+  the chain on a leg already done.
+  **TWO KIT ITEMS THE QUEST GIVES YOU** (owner, in play). Vampire Slayer's
+  start step asked for a **stake** — and OUR OWN later step's note already
+  said Dr Harlow hands it over: the guide corroborating the owner, with nobody
+  having joined the two up. Shilo Village asked for a **bronze wire**, which
+  you MAKE during the quest; the guide never says so and the owner worked it
+  out at the anvil. Bronze bar from **Obli's General Store** (wiki-confirmed
+  stock of 10). **NOT seeded as an item source** — those are global nav names,
+  and pinning "bronze bar" at Shilo would aim every other bronze-bar need in
+  the guide at Karamja, which is wave 12's compost-to-Hosidius drift. A step
+  NOTE is scoped to the step that needs it. Its wiki page is a REDIRECT WITH A
+  TRAILING FULL STOP and `action=raw` does not follow redirects, so the first
+  lookup said it sells nothing — wave 6 recorded that trap and it still bites.
+  **CARPET STOPS ARE CHAT OPTIONS, NOT A TRAVEL LIST.** Straight out of the
+  session log: the step named Pollnivneach, the menu offered "Carpet rides
+  cost 200 coins. / Bedabin camp / Pollnivneach / Cancel" through the ORDINARY
+  DIALOGUE widget rather than the Adventure Log list `TravelMenuOverlay`
+  watches, and nothing pointed at it. The chat path now also matches an option
+  against the step's destination words, **calling TravelMenuOverlay's own rule
+  so the two can never drift**. Two things would have made it useless or
+  harmful: it RETURNED EARLY whenever no dialogue was seeded, which is most
+  travel steps — it only ran at all in that log because The Feud was in
+  progress; and word-set matching alone would light up "Yes." on any step
+  whose text contains the word, so a **four-letter floor** separates a
+  destination from a reply (a wrongly highlighted option is worse than none —
+  you act on it before reading it). The `[2] ` prefix a chat menu puts on the
+  option under the cursor had to be stripped next to the Adventure Log's
+  `3: `. `TravelDestinationMatchTest`, **verified to FAIL** with the strip
+  removed. Deliberately NOT gated on the Quest Helper stand-down: gating would
+  switch it off in exactly the case that prompted it. Risk stated to the owner
+  rather than left for him to meet — mid-quest QH may want a different stop,
+  and every match is logged.
+  **PROCESS, all three re-earned:** a `git checkout` to revert a deliberate
+  test break took the REAL fix with it — **wave 28 wrote this down and it
+  happened again**; re-check what survived. Hand-escaping a Java string
+  through bash failed, then through node failed; a line-INDEX replacement
+  written to a file worked (wave 25's rule). And the test count is read from
+  the XML, never the summary line: **124 -> 129**.
+  **CONFIRMED IN PLAY:** the panel scroll, on a second session and now with
+  evidence — the log shows `applied == wanted` on both landings, the
+  measurement that was empty through five earlier attempts; The Feud
+  auto-completing; **the 75-tile teleport floor declining a 2-tile leg** (wave
+  27 shipped it unplayed); login resume, twice. **NOTHING OF OURS THREW** —
+  the 35 uncaught exceptions in a 46-minute session are Quest Helper, AFK
+  Guardians and DoinkOink, with **0 `at com.ironscape` frames anywhere** and
+  every one of our 566 lines at INFO. Checked rather than assumed, because the
+  last two sessions each got that attribution wrong in one direction or the
+  other.
+  **OPEN:** the carpet highlighting, the shop detour (vendor outline, chat
+  line, buy-then-move-on) and the 41 pins are ALL UNPLAYED — the pins fail
+  SILENTLY (a shopkeeper who stops being outlined), so that one has to be
+  looked for rather than waited for; 316 still unplayed; the owner is grinding
+  Blackjack to 50 Thieving on step 292, so the next quest steps are a way off;
+  hub pin gap 9.
+
 - SESSION WAVE 28 (2026-08-14, long live play-test 287 -> 290; main at
   **`9ddfe8c`**, **15** commits, PUSHED; hub pin still `ae9f062`, gap **32** —
   counted, not carried):

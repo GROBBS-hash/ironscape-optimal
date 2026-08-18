@@ -12,7 +12,67 @@ Screenshots `SS-01` … `SS-20` in `docs/screenshots/`.
 
 ---
 
-## START HERE — next session (written 2026-08-14, end of wave 28)
+## START HERE — next session (written 2026-08-17, end of wave 29)
+
+Main at **`acdabaf`**, PUSHED, tree clean. **8 commits this session.** Hub pin
+`057ab9b`, gap **9** — counted at the end, do not carry it forward.
+
+Before ANY gradle command: `node tools/check-client.mjs`.
+Before handing over a build: `node tools/check-all.mjs --tests`, and read the
+test COUNT from `build/test-results/*.xml` (**129** at the end of this
+session), because gradle prints "BUILD SUCCESSFUL" for tests it never ran.
+For data-only fixes: edit the repo file, have him type `::ironreload`. Six of
+this session's changes needed no restart at all.
+
+**HE IS ON A GRIND.** Position **292**, "Blackjack until 50 thieving" at
+Pollnivneach — a skill gate, so the step will not tick for a good while and
+the quest steps behind it are further off still. Plan desk work accordingly;
+a long grind is the best time for audits and seeding.
+
+**PLAY-TEST FIRST — and note the first one fails SILENTLY:**
+
+1. **The 41 pins that no longer nominate an NPC.** The failure mode is a
+   shopkeeper who STOPS being outlined, and nobody notices a highlight that
+   is missing — so this has to be looked FOR, not waited for. Every verdict
+   and its reason is in `tools/target-npc-reviewed.json`; flipping one back
+   is a one-line data change.
+2. **The carpet/boat destination highlight.** Needs a travel menu served as
+   ordinary chat options. Three launches this session and none came up.
+3. **The shop detour** — vendor outlined, chat line naming the seller, and
+   the route moving on after you buy. Unplayed since wave 28.
+4. **Step 316**, still unplayed from earlier waves.
+
+**IF A BUNDLED PIN OR ITEM NEEDS FIXING, REMEMBER THE SHADOW.** 28 of the 98
+bundled ⌖ targets are ALSO captured locally on his machine, and
+`AnnotationManager.getTarget` reads local first — a captured pin replaces the
+bundled one outright, flag included. A bundled-only fix is invisible on the
+one machine that play-tests it. `review-target-npc.mjs --apply` patches both
+and backs the local file up first.
+
+**BUILD NEXT, when there is desk time:**
+
+- **The 39 steps with nowhere to route.** `check-all` reports the number every
+  run and nobody has ever measured how many could actually carry a pin —
+  wave 18 did exactly this for a different class and found it was mostly a
+  labelling problem, not a data one.
+- **Quiet the travel-menu probe.** It has done its job (it is how we know
+  which interface groups these menus use) and now logs a line per interface
+  load while any travel step is current.
+- **Throne of Miscellania's three emotes.** The annotation holds ONE emote
+  name, and that quest wants Dance, Blow kiss and Clap at three different
+  moments inside a single step of ours. Needs a way to say which step owns
+  which before it can be seeded at all.
+
+**Standing lessons re-earned this session:** `git checkout` to revert a
+deliberate test break takes the REAL fix with it (wave 28 recorded it; it
+happened again); write generated code to a FILE rather than escaping it
+through a shell (failed twice, once through bash and once through node); and
+measure a proposed rule guide-wide before writing it — WK-1's obvious rule
+flagged 312 items and nearly every one was correct as it stood.
+
+---
+
+## Previous START HERE (written 2026-08-14, end of wave 28)
 
 Main at **`9ddfe8c`**, PUSHED, tree clean. **15 commits this session.** Hub pin
 still `ae9f062`, gap **32** — counted at the end, do not carry it forward.
@@ -173,7 +233,11 @@ ship the diagnostic BEFORE the fix rather than after three attempts.
 Two items, both agreed. Neither is urgent enough to interrupt a play session;
 both remove a whole class of report rather than one instance.
 
-**WK-1 — Audit kit items that belong to a LATER step.**
+**WK-1 — Audit kit items that belong to a LATER step. BUILT 2026-08-17**
+(`tools/audit-misplaced-kit.mjs`.) Found ONE live instance: "Teleport to
+Camelot" still listed bat bones and a black candle, both gathered AFTER you
+arrive. Three obvious rules were measured and REJECTED on the way — read that
+file's header before proposing any of them again.
 
 The highest-value one, because the class has now cost a blocked step **three
 times in two sessions** and each was found by walking into it:
@@ -212,7 +276,11 @@ two fixes applies. **Measure the hit count before applying anything** — wave 1
 proposed a similar rule, measured it, and found 29 of 30 changes would have
 been wrong, so the rule was narrowed instead of shipped.
 
-**WK-2 — Seed emotes in bulk from Quest Helper.**
+**WK-2 — Seed emotes in bulk from Quest Helper. DONE 2026-08-17**
+(`tools/seed-emotes.mjs`.) "Bulk" turned out to be four quests guide-wide, of
+which exactly one needed seeding (Song of the Elves -> Spin). Throne of
+Miscellania is the only one outstanding and it needs the step-granularity
+answer described below.
 
 One step is seeded today: The Lost Tribe's Goblin bow (`1ba377b2f6:0`). The
 overlay works — confirmed in play, matched by sprite — so the remaining work
