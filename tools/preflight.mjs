@@ -284,7 +284,8 @@ const window = showAll ? steps : steps.slice(from, from + count);
 
 // --manual-list is machine-readable; a human header in it would end up
 // parsed as a row by whatever consumes it.
-if (!showAll && !process.argv.includes('--manual-list')) {
+if (!showAll && !process.argv.includes('--manual-list')
+  && !process.argv.includes('--no-route-list')) {
   console.log(`IRONSCAPE PRE-FLIGHT — ${window.length} steps from step ${from} (position ${position})`
     + (where && !process.argv.includes('--position') ? `  (profile "${where.profile}")` : ''));
   console.log('Everything below is something you would otherwise find by standing in front of it.\n');
@@ -317,6 +318,20 @@ const plainFor = (flag) => {
 // counted 130 against this file's 86, because it did not know that a step
 // with no detector still ticks by walking there — the same over-count wave
 // 17 already had to correct once.
+// --no-route-list does the same for steps we cannot point anywhere. Same
+// reasoning as --manual-list: the judgement of "is there anywhere to send
+// them?" already lives here, mirroring targetFor's real chain, and a second
+// tool re-deriving it drifted by 88 steps the last time that was tried.
+if (process.argv.includes('--no-route-list')) {
+  for (let i = 0; i < steps.length; i++) {
+    const { flags } = inspect(steps[i]);
+    if (flags.some((f) => f.startsWith('NO ROUTE'))) {
+      console.log(`NOROUTE\t${i}\t${steps[i].id}\t${steps[i].text.replace(/\s+/g, ' ')}`);
+    }
+  }
+  process.exit(0);
+}
+
 if (process.argv.includes('--manual-list')) {
   for (let i = 0; i < steps.length; i++) {
     const { flags } = inspect(steps[i]);

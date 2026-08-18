@@ -126,8 +126,18 @@ const places = JSON.parse(fs.readFileSync(PLACES_FILE, 'utf8')).places;
 
 const key = (s) => s.toLowerCase().replace(/’/g, "'").replace(/[^a-z0-9' ]/g, ' ').replace(/\s+/g, ' ').trim();
 
-// The town a step means: a known place named in its text, else its 📍 tag.
-function townOf(text, location) {
+// The towns a step might mean, best guess first: a known place named in
+// its text, then its 📍 tag.
+//
+// BOTH, not one, because a place in the text is as often PROVENANCE as
+// destination — "Smelt 1 inv of gold, should have from wintertodt" is a
+// Lumbridge step that names Wintertodt, and there is no furnace within
+// range of Wintertodt, so the whole step missed. Same shape as the
+// wintertodt-as-provenance rows in wave 12's target-drift triage.
+// Trying the tag as well costs nothing: a candidate only wins if it has
+// a facility pin within MAX_TOWN_DISTANCE, so a wrong guess simply does
+// not produce one.
+function townsOf(text, location) {
   const lt = ' ' + key(text) + ' ';
   let best = null;
   for (const [name, p] of Object.entries(places)) {
@@ -136,12 +146,13 @@ function townOf(text, location) {
       if (!best || name.length > best.name.length) best = { name, ...p };
     }
   }
-  if (best) return best;
+  const out = [];
+  if (best) out.push(best);
   if (location) {
     const k = key(location.replace(/^(north|south|east|west)([ -](east|west))?\s+of\s+/i, ''));
-    if (places[k]) return { name: k, ...places[k] };
+    if (places[k] && (!best || best.name !== k)) out.push({ name: k, ...places[k] });
   }
-  return null;
+  return out;
 }
 
 // Collect facility steps that still lack a target.
@@ -154,9 +165,9 @@ for (const ch of guide.chapters) {
       if (!facility) continue;
       const id = stepId(text);
       if (annotations.annotations[id]?.target) continue;
-      const town = townOf(text, step.metadata?.location);
-      if (!town) continue;
-      wanted.push({ id, text: text.slice(0, 80), facility, town });
+      const towns = townsOf(text, step.metadata?.location);
+      if (!towns.length) continue;
+      wanted.push({ id, text: text.slice(0, 80), facility, towns });
     }
   }
 }
@@ -212,6 +223,11 @@ let applied = 0;
 for (const w of wanted) {
   const pins = pinsByFacility[w.facility] || [];
   let best = null;
+  let town = w.towns[0];
+  // First candidate that has a facility close enough wins; the ordering
+  // (text place, then 📍 tag) keeps today's behaviour for every step that
+  // already worked.
+  for (const candidate of w.towns) {
   for (const pin of pins) {
     // Compare within the town's own BAND, the same rule nearestOf uses in
     // the plugin. Filtering pins to y<8000 up front looked like "surface
@@ -219,8 +235,8 @@ for (const w of wanted) {
     // Keldagrim sits at y~10200, so every one of its anvils was discarded
     // before the proximity test ran. A town underground wants the
     // underground pins and nothing else, and vice versa.
-    if ((pin.y < SURFACE_MAX_Y) !== (w.town.y < SURFACE_MAX_Y)) continue;
-    const d = Math.max(Math.abs(pin.x - w.town.x), Math.abs(pin.y - w.town.y));
+    if ((pin.y < SURFACE_MAX_Y) !== (candidate.y < SURFACE_MAX_Y)) continue;
+    const d = Math.max(Math.abs(pin.x - candidate.x), Math.abs(pin.y - candidate.y));
     if (d > MAX_TOWN_DISTANCE) continue;
     // Surface-map pins win outright; another map's pin is only ever a
     // fallback, so nothing that works today can be displaced by one.
@@ -229,15 +245,24 @@ for (const w of wanted) {
       || (pin.surface === best.surface && d < best.d);
     if (better) best = { ...pin, d };
   }
+    if (best) { town = candidate; break; }
+  }
   if (!best) {
-    console.log(`miss ${w.id} ${w.facility} @ ${w.town.name} | ${w.text}`);
+    console.log(`miss ${w.id} ${w.facility} @ ${town.name} | ${w.text}`);
     continue;
   }
-  console.log(`HIT  ${w.id} ${w.facility} @ ${w.town.name} -> ${best.x},${best.y} (${best.d} tiles) | ${w.text}`);
+  console.log(`HIT  ${w.id} ${w.facility} @ ${town.name} -> ${best.x},${best.y} (${best.d} tiles) | ${w.text}`);
   if (!process.argv.includes('--dry-run')) {
     annotations.annotations[w.id] = {
       ...(annotations.annotations[w.id] || {}),
-      target: { x: best.x, y: best.y, plane: 0 },
+      // npc:false ALWAYS. A ⌖ nominates the nearest NPC within 4 tiles
+      // and hangs the step's item over their head, which is right at a
+      // shop counter and wrong at a furnace — this is literally how a
+      // level-2 Man came to be outlined wearing a sickle (wave 28). A
+      // facility is a thing by definition, so every pin this tool
+      // writes must opt out. The wave 29 review had to fix these by
+      // hand; nothing seeded from here should need that again.
+      target: { x: best.x, y: best.y, plane: 0, npc: false },
     };
     applied++;
   }
