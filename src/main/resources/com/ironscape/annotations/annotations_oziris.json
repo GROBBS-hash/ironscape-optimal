@@ -1135,7 +1135,14 @@
    "requires": {
     "skill": "CRAFTING",
     "level": 32
-   }
+   },
+   "note": "The guide never sends you for uncut gems, and never builds Mining past the low 30s (4 copper, 1 iron, 2 blurite, 15 clay) - so you probably have neither.\nGem rocks need 40 MINING. The Shilo mine is gem rocks and nothing else: 7 on the surface, 48 underground with a bank deposit chest, all 40 Mining. There is nothing here to train on.\nCHEAPER ROUTE: skip this and come back after The Golem (step 310), which drops the gems free. Crafting 31 to 32 is one level.\nBring a CHISEL either way. Cutting gems into bolt tips gives Crafting and Fletching xp at once.",
+   "items": [
+    {
+     "name": "chisel",
+     "quantity": 1
+    }
+   ]
   },
   "e7db2d827d": {
    "requires": {
