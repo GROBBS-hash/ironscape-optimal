@@ -1115,6 +1115,12 @@ public class IronscapePanel extends PluginPanel
 			String needs = annotationManager.getPrerequisiteQuest(step.getId());
 			if (needs == null)
 			{
+				// Either relationship earns a return trip: required or merely
+				// the easier route, you came here from that step.
+				needs = annotationManager.getAlternativeQuest(step.getId());
+			}
+			if (needs == null)
+			{
 				continue;
 			}
 			GuideStep target = questStep(needs);

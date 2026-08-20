@@ -1143,7 +1143,7 @@
      "quantity": 1
     }
    ],
-   "prerequisiteQuest": "The Golem"
+   "alternativeQuest": "The Golem"
   },
   "e7db2d827d": {
    "requires": {

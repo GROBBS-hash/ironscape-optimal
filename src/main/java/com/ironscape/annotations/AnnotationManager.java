@@ -286,6 +286,18 @@ public class AnnotationManager
 		return b == null ? null : b.prerequisiteQuest;
 	}
 
+	/** A quest that offers an easier route to this step; null = none. */
+	public synchronized String getAlternativeQuest(String annotationId)
+	{
+		StepAnnotation l = local.get(annotationId);
+		if (l != null && l.alternativeQuest != null)
+		{
+			return l.alternativeQuest;
+		}
+		StepAnnotation b = bundled.get(annotationId);
+		return b == null ? null : b.alternativeQuest;
+	}
+
 	/** "N of any item from a set" check (warm clothing); null = none. */
 	public synchronized StepAnnotation.GearCheck getGearCheck(String annotationId)
 	{

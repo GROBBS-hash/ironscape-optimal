@@ -1414,6 +1414,10 @@ class StepRow extends JPanel
 		// read before the early return, not after it.
 		String obsolete = ctx.getAnnotations().getObsolete(step.getId());
 		String prerequisite = ctx.getAnnotations().getPrerequisiteQuest(step.getId());
+		// A quest that merely makes this step EASIER. Same buttons, no
+		// warning chip: "Needs The Golem first" was false on the gem
+		// step, which three separate routes can finish.
+		String alternative = ctx.getAnnotations().getAlternativeQuest(step.getId());
 		// The step held up by THIS one, if any — the return trip. Read up here
 		// with the others: a prerequisite step need not carry any metadata of
 		// its own, and returning early would drop its button silently.
@@ -1434,7 +1438,8 @@ class StepRow extends JPanel
 			earlierLeg = null;
 		}
 		if (location == null && quest == null && obsolete == null
-			&& prerequisite == null && waiting == null && earlierLeg == null)
+			&& prerequisite == null && alternative == null
+			&& waiting == null && earlierLeg == null)
 		{
 			return;
 		}
@@ -1455,6 +1460,8 @@ class StepRow extends JPanel
 		}
 		GuideStep prerequisiteStep = prerequisite == null || ctx.getQuestStep() == null
 			? null : ctx.getQuestStep().apply(prerequisite);
+		GuideStep alternativeStep = alternative == null || ctx.getQuestStep() == null
+			? null : ctx.getQuestStep().apply(alternative);
 		if (prerequisite != null)
 		{
 			chips.add(noticeChip("⚠ Needs " + prerequisite + " first",
@@ -1530,6 +1537,13 @@ class StepRow extends JPanel
 		if (prerequisiteStep != null)
 		{
 			add(jumpButton("GO TO STEP", prerequisiteStep));
+		}
+
+		// The offer, worded as one. No chip above it: nothing is blocked,
+		// so it has to read as a shortcut you may take, not a gate.
+		if (alternativeStep != null)
+		{
+			add(jumpButton("EASIER VIA STEP", alternativeStep));
 		}
 
 		// The return trip, on the prerequisite step itself (resolved above).

@@ -155,6 +155,21 @@ public class StepAnnotation
 	public String prerequisiteQuest;
 
 	/**
+	 * A quest that makes this step EASIER, not one it depends on.
+	 *
+	 * The gem step is the case: "cut uncut gems until 32 crafting" can be
+	 * done by mining them at 40 Mining, by cracking the Rogues' Den safes
+	 * at 50 Thieving, or for free after The Golem hands you some. Filing
+	 * that under prerequisiteQuest produced a red "Needs The Golem first"
+	 * warning, which is simply untrue and is what the owner saw first
+	 * (2026-08-19).
+	 *
+	 * Same jump buttons as a prerequisite, no warning chip: it is an offer,
+	 * not a gate, and it never touches completion.
+	 */
+	public String alternativeQuest;
+
+	/**
 	 * Mid-quest side pickups ("Do Tree gnome village, get Glarial's
 	 * pebble on the way"). Quest Helper owns the quest flow but knows
 	 * nothing about the errand — while the sub's quest is IN_PROGRESS,
