@@ -2094,7 +2094,7 @@ public class IronscapePlugin extends Plugin
 		minigameBySub.clear();
 		for (GoalDetector.MinigameTeleportGoal goal : goals.getMinigameTeleportGoals())
 		{
-			minigameBySub.put(goal.getSub().getId(), goal.getMinigame());
+			minigameBySub.put(goal.getSub().getId(), canonicalMinigame(goal.getMinigame()));
 		}
 		depletionBySub.clear();
 		for (GoalDetector.DepletionGoal goal : goals.getDepletionGoals())
@@ -9138,6 +9138,42 @@ public class IronscapePlugin extends Plugin
 		return null;
 	}
 
+	/**
+	 * The guide's spelling of a minigame -> the game's.
+	 *
+	 * HAND-AUTHORED, never fuzzy, for the same reason the quest-name
+	 * aliases are: the guide writes "Burthrope", the game "Burthorpe",
+	 * and the two differ by a TRANSPOSITION, so neither is a prefix of
+	 * the other and the slang-tolerant word matching cannot bridge them.
+	 * The owner met it as a Minigames list where every other entry
+	 * highlighted and Burthorpe Games Room did not (2026-08-19).
+	 *
+	 * Normalising HERE, where the goal is stored, fixes every consumer at
+	 * once — the picker highlight, GROUPING_MINIGAMES membership, and the
+	 * landing lookup all key off this one string, and all three were
+	 * failing on the same typo.
+	 *
+	 * A bare "Burthorpe" means the games room too: it is the only
+	 * Grouping teleport that lands there, which is what the guide's
+	 * "minigame tele to Burthrope" is asking for.
+	 */
+	private static final java.util.Map<String, String> MINIGAME_ALIASES = java.util.Map.of(
+		"burthrope games' room", "Burthorpe Games Room",
+		"burthrope games room", "Burthorpe Games Room",
+		"burthrope", "Burthorpe Games Room",
+		"burthorpe", "Burthorpe Games Room");
+
+	/** The game's name for a minigame the guide may have spelled its own way. */
+	private static String canonicalMinigame(String name)
+	{
+		if (name == null)
+		{
+			return null;
+		}
+		String key = name.toLowerCase(Locale.ROOT).replace('’', '\'').trim();
+		return MINIGAME_ALIASES.getOrDefault(key, name);
+	}
+
 	/** The minigame-teleport name matching this place name, or null. */
 	private String minigameByName(String placeName)
 	{
@@ -9148,8 +9184,12 @@ public class IronscapePlugin extends Plugin
 				return minigame;
 			}
 		}
-		String key = placeName.toLowerCase(Locale.ROOT).replace('’', '\'');
-		return GROUPING_MINIGAMES.contains(key) ? placeName : null;
+		// Through the alias map as well: a clicked "Burthrope" place link
+		// asks for the same teleport as the step text does, and only the
+		// game's spelling is in GROUPING_MINIGAMES.
+		String canonical = canonicalMinigame(placeName);
+		String key = canonical.toLowerCase(Locale.ROOT).replace('’', '\'');
+		return GROUPING_MINIGAMES.contains(key) ? canonical : null;
 	}
 
 	/**
