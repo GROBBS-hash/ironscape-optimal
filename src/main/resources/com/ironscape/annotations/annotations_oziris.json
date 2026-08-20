@@ -1136,7 +1136,7 @@
     "skill": "CRAFTING",
     "level": 32
    },
-   "note": "The guide never sends you for uncut gems, and never builds Mining past the low 30s - so you probably have neither.\nGem rocks need 40 MINING. The Shilo mine is gem rocks and nothing else: 7 on the surface, 48 underground with a bank deposit chest, all 40 Mining. There is nothing here to train on.\nCHEAPER ROUTE: skip this and come back after The Golem, which drops the gems free. Crafting 31 to 32 is one level.\nBring a CHISEL either way. Cutting gems into bolt tips gives Crafting and Fletching xp at once.",
+   "note": "The guide never sends you for uncut gems, and never builds Mining past the low 30s - so you probably have neither.\nIF YOU HAVE 40 MINING you need none of this: mine the gem rocks here and ignore the button above. The Shilo mine is gem rocks and nothing else - 7 on the surface, 48 underground with a bank deposit chest.\nIF YOU DO NOT, there is nothing here to train on either, and the cheaper route is to skip this and come back after The Golem, which drops the gems free. Crafting 31 to 32 is one level.\nTHIRD OPTION: the Rogues' Den lobby wall safes need 50 THIEVING - which you are already training - and pay out uncut gems. The guide visits the Den anyway for the rogue outfit.\nBring a CHISEL either way. Cutting gems into bolt tips gives Crafting and Fletching xp at once.",
    "items": [
     {
      "name": "chisel",
@@ -7815,6 +7815,15 @@
     "plane": 0,
     "npc": false
    }
+  },
+  "06f8e56c21": {
+   "target": {
+    "x": 2905,
+    "y": 3537,
+    "plane": 0,
+    "npc": false
+   },
+   "note": "Cook at the ROGUES' DEN: the lobby has a fire right next to a bank, which is the fastest cooking setup in Burthorpe. Entrance is the trapdoor in the Toad and Chicken.\nThe step used to route to the Burthorpe town pin, which sits on the Warriors' Guild door - and you cannot get in there without 130 Attack and Strength."
   }
  }
 }
