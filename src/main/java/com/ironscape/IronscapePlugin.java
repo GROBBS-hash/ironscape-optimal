@@ -4617,6 +4617,9 @@ public class IronscapePlugin extends Plugin
 		Guide guide = guideFor(activeVariant);
 		boolean progressed = false;
 
+		// Steps left behind: satisfied since you skipped past them.
+		sweepSkippedSteps(guide);
+
 		for (int guard = 0; guard < 100; guard++)
 		{
 			boolean completedSomething = false;
@@ -6064,6 +6067,71 @@ public class IronscapePlugin extends Plugin
 			return false;
 		}
 		return stepQuest(current) != null;
+	}
+
+	/**
+	 * Tick off any step BEHIND the position whose annotated requirements
+	 * are monotonically met. Every 10 ticks: nothing here is urgent, and
+	 * it walks the whole guide rather than a window.
+	 *
+	 * Deliberately silent about position — completeStep only advances it
+	 * for the FRONTIER step, so catching up on skipped work cannot drag
+	 * you forwards or backwards.
+	 */
+	private void sweepSkippedSteps(Guide guide)
+	{
+		if (guide == null || tickCounter % 10 != 0)
+		{
+			return;
+		}
+		int position = progressManager.position(activeVariant);
+		for (GuideStep step : guide.getAllSteps())
+		{
+			if (step.getGlobalIndex() > position
+				|| progressManager.isCompleted(activeVariant, step.getId()))
+			{
+				continue;
+			}
+			List<StepRequirement> requirements = stepSkillRequirements.get(step.getId());
+			if (requirements != null && monotonicallyMet(requirements))
+			{
+				completeStep(step, "skipped step, requirements met since");
+			}
+		}
+	}
+
+	/**
+	 * Steps you SKIPPED and have since satisfied.
+	 *
+	 * The auto-completion window only ever looks FORWARD from your
+	 * position, which is right for a guide followed in order. But we now
+	 * actively tell people to skip a step and come back to it — the gem
+	 * step says so in its own note — and the owner did exactly that, hit
+	 * Crafting 32 from another source, and found the step still unticked
+	 * with its own badge reading 32/32 (2026-08-20). Nothing could ever
+	 * have ticked it: it sat behind the window.
+	 *
+	 * ONLY MONOTONIC REQUIREMENTS. A skill level and a finished quest
+	 * cannot come undone, so meeting one is proof for a step wherever it
+	 * sits. Region and equipped checkpoints are reversible — you walk out
+	 * of a region, you take gear off — and a var checkpoint marks where a
+	 * step STOPS rather than that it is finished; sweeping those
+	 * backwards would tick steps merely because you passed through. Same
+	 * rule the errand chains settled on in wave 16.
+	 */
+	private boolean monotonicallyMet(List<StepRequirement> requirements)
+	{
+		boolean any = false;
+		for (StepRequirement requirement : requirements)
+		{
+			if (requirement.region != null || requirement.equipped != null
+				|| requirement.varbit != null || requirement.varp != null)
+			{
+				return false;
+			}
+			any = true;
+		}
+		return any && requirementsMet(requirements);
 	}
 
 	/** ALL requirements met? (Reviewed annotations; runs on the client thread.) */
