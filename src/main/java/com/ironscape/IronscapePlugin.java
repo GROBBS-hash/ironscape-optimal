@@ -5473,11 +5473,30 @@ public class IronscapePlugin extends Plugin
 
 	private int ownedCount(StepAnnotation.ItemNeed need)
 	{
+		if (need.ids != null && !need.ids.isEmpty())
+		{
+			// Same thing in several forms: sum them.
+			int total = 0;
+			for (Integer id : need.ids)
+			{
+				total += itemTracker.countOfId(id);
+			}
+			return total;
+		}
 		return need.id != null ? itemTracker.countOfId(need.id) : itemTracker.countOf(need.name);
 	}
 
 	private int carriedCount(StepAnnotation.ItemNeed need)
 	{
+		if (need.ids != null && !need.ids.isEmpty())
+		{
+			int total = 0;
+			for (Integer id : need.ids)
+			{
+				total += itemTracker.carriedCountOfId(id);
+			}
+			return total;
+		}
 		return need.id != null
 			? itemTracker.carriedCountOfId(need.id) : itemTracker.carriedCountOf(need.name);
 	}

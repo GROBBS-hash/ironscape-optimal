@@ -7830,12 +7830,19 @@
     {
      "name": "fish barrel",
      "quantity": 1,
-     "optional": true
+     "optional": true,
+     "ids": [
+      25582,
+      25584
+     ]
     },
     {
      "name": "tackle box",
      "quantity": 1,
-     "optional": true
+     "optional": true,
+     "ids": [
+      25580
+     ]
     }
    ],
    "completeOnItems": true,

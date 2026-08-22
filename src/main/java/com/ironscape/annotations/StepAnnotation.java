@@ -477,6 +477,17 @@ public class StepAnnotation
 		 */
 		public Integer id;
 		/**
+		 * Several ids that are the SAME thing to the player.
+		 *
+		 * A fish barrel is item 25582 closed and 25584 open, and which one
+		 * you are holding is not a distinction the guide cares about. Counts
+		 * are summed across the list, so any mix satisfies the need.
+		 *
+		 * Wins over {@link #id} when both are set. The badge sprite still
+		 * comes from the NAME, so it draws the form people recognise.
+		 */
+		public java.util.List<Integer> ids;
+		/**
 		 * Item name used ONLY for the badge sprite, when the row stands for
 		 * a CATEGORY rather than one item. "Recommended: Food" wants a
 		 * picture, and a picture means picking something — the owner's call
