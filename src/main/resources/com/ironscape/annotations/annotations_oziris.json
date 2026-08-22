@@ -1168,7 +1168,8 @@
    "requires": {
     "skill": "THIEVING",
     "level": 83
-   }
+   },
+   "note": "ALTERNATIVE: thieve in Varlamore instead. Pickpocket Wealthy citizens in Civitas illa Fortis at 50 Thieving (96 xp a go) - they drop house keys, which you use for the Stealing Valuables activity in the houses. Better xp than blackjacking and it still pays."
   },
   "83cfaad8c5": {
    "items": [
