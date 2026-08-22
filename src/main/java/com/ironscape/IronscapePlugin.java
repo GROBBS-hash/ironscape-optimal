@@ -1558,6 +1558,9 @@ public class IronscapePlugin extends Plugin
 	 * just the very first — one un-tickable prose fragment must not freeze
 	 * the whole system — but never further ahead than this.
 	 */
+	/** Close enough to a target that drawing a route to it is noise. */
+	private static final int ARRIVED_RADIUS = 20;
+
 	private static final int AUTO_COMPLETE_WINDOW = 8;
 
 	/**
@@ -7101,6 +7104,26 @@ public class IronscapePlugin extends Plugin
 			WorldPoint target = findNextTarget();
 			if (target != null)
 			{
+				// ALREADY THERE: a grind step keeps its target for hours, and
+				// every login re-posts it. The owner logged in to carry on
+				// fishing at Barbarian Fishing and got a route drawn to the
+				// spot he was standing on, looping around the river because
+				// the pin is across the water from the fishing spots
+				// (2026-08-22). A route to where you already are is noise,
+				// and it reads as the plugin trying to send you away.
+				//
+				// Generous radius: the point is "you have arrived", not "you
+				// are on the exact tile", and a working area is tens of tiles
+				// wide. Anything further still routes, so this cannot hide a
+				// real journey.
+				Player here = client.getLocalPlayer();
+				WorldPoint at = here == null ? null : realPoint(here);
+				if (at != null && at.getPlane() == target.getPlane()
+					&& at.distanceTo2D(target) <= ARRIVED_RADIUS)
+				{
+					logNavDecision("already at " + target + " — nothing to route");
+					return;
+				}
 				logNavDecision("routing to " + target);
 				postPath(target);
 			}
