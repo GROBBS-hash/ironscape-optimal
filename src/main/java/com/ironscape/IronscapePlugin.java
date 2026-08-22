@@ -4641,6 +4641,14 @@ public class IronscapePlugin extends Plugin
 					break; // window shifted; rebuild it
 				}
 
+				// ...or the step says its items ARE the finish line.
+				if (completeOnItemsMet(current.step))
+				{
+					completeStep(current.step, "declared items all held");
+					completedSomething = true;
+					break;
+				}
+
 				// Sub-keyed requirements tick one sub: "do the quest up to
 				// the orb" completes off the quest's progress varbit while
 				// the step's other errands stay open. Monotonic game state
@@ -5427,6 +5435,42 @@ public class IronscapePlugin extends Plugin
 	 * See StepAnnotation.ItemNeed.id — some items share a name and can only
 	 * be told apart by id.
 	 */
+	/**
+	 * A step that DECLARES holding its items is what finishes it.
+	 *
+	 * The field was added in wave 28 and never wired to anything. It
+	 * exists because no phrasing rule can tell that a step ends with a
+	 * particular thing in your bag: "do a few Tempoross kills for the
+	 * Fish Barrel and Spirit Flakes" is done when you have the rewards,
+	 * and no number of kills is the real answer.
+	 *
+	 * EVERY listed item counts, optional ones included. On these steps
+	 * optional means "this must not GATE anything" -- the arrival and
+	 * purchase gates skip it -- while the completion line is exactly
+	 * the full list. Skipping optional here would complete the step the
+	 * moment it appeared.
+	 */
+	private boolean completeOnItemsMet(GuideStep step)
+	{
+		if (!annotationManager.completesOnItems(step.getId()))
+		{
+			return false;
+		}
+		List<StepAnnotation.ItemNeed> needs = annotationManager.getItems(step.getId());
+		if (needs.isEmpty())
+		{
+			return false;
+		}
+		for (StepAnnotation.ItemNeed need : needs)
+		{
+			if (ownedCount(need) < (need.quantity == null ? 1 : need.quantity))
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+
 	private int ownedCount(StepAnnotation.ItemNeed need)
 	{
 		return need.id != null ? itemTracker.countOfId(need.id) : itemTracker.countOf(need.name);

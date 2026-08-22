@@ -7824,6 +7824,22 @@
     "npc": false
    },
    "note": "Cook at the ROGUES' DEN: the lobby has a fire right next to a bank. Entrance is the trapdoor in the Toad and Chicken."
+  },
+  "9ac2330698": {
+   "items": [
+    {
+     "name": "fish barrel",
+     "quantity": 1,
+     "optional": true
+    },
+    {
+     "name": "tackle box",
+     "quantity": 1,
+     "optional": true
+    }
+   ],
+   "completeOnItems": true,
+   "note": "Ticks itself once you have BOTH the Fish barrel and the Tackle box. They are random rewards, so there is no set number of kills - tick it by hand whenever you have had enough. You can come back for the rest any time."
   }
  }
 }
