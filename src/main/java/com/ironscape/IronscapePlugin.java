@@ -5144,6 +5144,13 @@ public class IronscapePlugin extends Plugin
 		{
 			for (GoalDetector.SkillLevelGoal goal : levelGoals)
 			{
+				// A level the step only MENTIONS ("should be at 74 fishing")
+				// is an observation, not a finish line. Sub id first, then
+				// the step, same precedence as every other annotation.
+				if (informationalLevel(sub, goal.getSkill()))
+				{
+					continue;
+				}
 				if (client.getRealSkillLevel(goal.getSkill()) < goal.getLevel())
 				{
 					return false;
@@ -5355,6 +5362,23 @@ public class IronscapePlugin extends Plugin
 		// Standing at the destination is not enough for a BOAT sub — the
 		// deck is inside the radius, and nav bricks from there.
 		return arrivalArmed.contains(sub.getId()) && ashoreOfBoat(step, sub);
+	}
+
+	/** Is this skill one the step merely mentions? See StepAnnotation.informationalLevels. */
+	private boolean informationalLevel(SubStep sub, Skill skill)
+	{
+		String name = skill.name();
+		for (String id : new String[]{sub.getId(), sub.getId().split(":")[0]})
+		{
+			for (String listed : annotationManager.getInformationalLevels(id))
+			{
+				if (listed != null && listed.equalsIgnoreCase(name))
+				{
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	/**

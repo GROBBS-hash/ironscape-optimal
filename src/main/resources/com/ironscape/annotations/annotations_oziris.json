@@ -1162,6 +1162,9 @@
      "quantity": 1,
      "optional": true
     }
+   ],
+   "informationalLevels": [
+    "FISHING"
    ]
   },
   "ca366a8e2f": {

@@ -155,6 +155,23 @@ public class StepAnnotation
 	public String prerequisiteQuest;
 
 	/**
+	 * Skills whose level the step MENTIONS without asking for.
+	 *
+	 * "Get 50 agility from barb fishing, should be at 74 fishing" has one
+	 * objective and one observation, and the detector cannot tell them
+	 * apart — it reads both as level goals, and a sub completes only when
+	 * EVERY level goal is met, so the step waited on a number the guide
+	 * was merely predicting (owner, 2026-08-23).
+	 *
+	 * Deliberately DATA and not a detector rule for "should be at N": that
+	 * phrasing appears on exactly ONE step guide-wide, and a rule built
+	 * for a single instance is the wave 21 mistake. The badge still shows
+	 * the level, because knowing roughly where you will land is useful —
+	 * it just cannot hold the step shut.
+	 */
+	public java.util.List<String> informationalLevels;
+
+	/**
 	 * A quest that makes this step EASIER, not one it depends on.
 	 *
 	 * The gem step is the case: "cut uncut gems until 32 crafting" can be

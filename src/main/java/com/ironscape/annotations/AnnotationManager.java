@@ -274,6 +274,19 @@ public class AnnotationManager
 		return b == null ? null : b.obsolete;
 	}
 
+	/** Skills this step only MENTIONS; their detected level goals must not gate. */
+	public synchronized java.util.List<String> getInformationalLevels(String annotationId)
+	{
+		StepAnnotation l = local.get(annotationId);
+		if (l != null && l.informationalLevels != null)
+		{
+			return l.informationalLevels;
+		}
+		StepAnnotation b = bundled.get(annotationId);
+		return b == null || b.informationalLevels == null
+			? java.util.Collections.emptyList() : b.informationalLevels;
+	}
+
 	/** A quest that must be finished before this step can start; null = none. */
 	public synchronized String getPrerequisiteQuest(String annotationId)
 	{
