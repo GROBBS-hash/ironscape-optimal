@@ -757,6 +757,113 @@ refresh when "Failed to login" appears.
   capture; hub pin at b8c994d, now ~70 commits behind — bump after a
   calm session.
 
+- SESSION WAVE 30 (2026-08-19..26, desk work threaded through a long live
+  play-test 292 -> 301; main at **`f2f5424`**, **13** commits, PUSHED; **hub
+  pin BUMPED to `bc23c9b`, hub `build` check PASSING** — gap now **1**):
+  **THE THEME IS THAT FIVE SEPARATE REPORTS WERE ALL THE SAME SHAPE: a step
+  that could not finish, for a reason the panel showed but nobody read as a
+  cause.** Each was found by him standing in front of it, and each is now a
+  mechanism rather than a patch.
+  **THE GEM STEP ASSUMED ITEMS THE GUIDE NEVER COLLECTS.** "Cut uncut gems
+  until level 32 crafting" — checked every earlier step: gems are not
+  mentioned ONCE, and Mining is built by four small steps (4 copper, 1 iron,
+  2 blurite, 15 clay) which leaves you in the low 30s. Gem rocks need **40
+  Mining** and the Shilo mine is gem rocks and NOTHING else (7 surface, 48
+  underground with a bank deposit chest), so standing on it at 34 there was
+  nothing to train on either. Three routes exist and the note now names all
+  three: 40 Mining here, **50 Thieving at the Rogues' Den lobby wall safes**
+  (which is what he actually used), or free gems after The Golem.
+  **THE OWNER PUSHED BACK ON THE SAFES AND WAS HALF RIGHT, which is the
+  useful half.** He asked how we reach the gem wall without 50 Agility. The
+  wiki splits into TWO pages that share a name: `Wall safe` is the one at the
+  END of the maze (50 Agility), `Wall safe (lobby)` is four safes in the
+  lobby at 50 Thieving with no Agility at all. The Den itself states "there
+  are no entry requirements". Checked rather than waved off, because a shared
+  item name is exactly the trap this project keeps hitting.
+  **"NEEDS THE GOLEM FIRST" WAS FALSE, AND I SHIPPED IT AFTER NAMING THE
+  RISK.** He asked for the skip/return buttons, so `prerequisiteQuest` got
+  used — and that field means the step CANNOT proceed, rendering a red
+  warning chip. Three routes finish this step; nothing is blocked. New
+  **`alternativeQuest`**: same jump buttons, no chip, button reads **EASIER
+  VIA STEP**. The lesson is not the field, it is that I said the wording was
+  too strong and left it in anyway. **Say it and fix it, or do not say it.**
+  **THE STEP THEN TICKED NOTHING WHEN HE SATISFIED IT.** Auto-completion only
+  ever looks FORWARD from the position: he was at 297 with the gem step at
+  296, so it sat behind the window with its own badge reading 32/32 and
+  nothing able to act on it. **We created that gap** — the note tells you to
+  skip and come back, and the EASIER VIA button made skipping one click. New
+  backward sweep, every 10 ticks, over steps behind the position. **ONLY
+  MONOTONIC requirements count**: a skill level and a finished quest cannot
+  come undone, while region and equipped checkpoints are reversible and a var
+  checkpoint marks where a step STOPS rather than that it is done — sweeping
+  those backwards would tick steps for merely passing through (wave 16's
+  rule). CONFIRMED IN PLAY.
+  **FISHING 74 WAS A PREDICTION HOLDING A STEP SHUT.** "Get 50 agility from
+  barb fishing, should be at 74 fishing" reads as TWO level goals, and a sub
+  completes only when EVERY one is met — so the step waited on a number the
+  guide was merely forecasting. Nothing in the guide requires Fishing above
+  58; Tempoross needs 35 in game. New **`informationalLevels`**, and the
+  badge still shows 67/74 because knowing where you will land is useful.
+  **DATA, NOT A DETECTOR RULE, and the measurement is why:** "should be at N
+  skill" appears on exactly **ONE** step guide-wide (wave 21's rule about
+  building an engine for N=1), and the tempting general rule — annotation
+  wins over detected levels — was measured across the **40** steps that pair
+  both and would have **wrongly loosened at least two**: "until 37 Range and
+  18 slayer" and "until 65 attack and 65 str" genuinely mean both numbers.
+  CONFIRMED IN PLAY (301 ticked on Agility alone).
+  **THE TROUT STEP WALKED HIM INTO THE WARRIORS' GUILD**, which needs 130
+  Attack and Strength. It had no pin, so it fell back to its Burthorpe
+  location tag — and **that town pin sits FOUR TILES from the Warriors' Guild
+  pin**, so in practice the town pin IS the guild door. Pinned at the Rogues'
+  Den, which the wiki describes in his exact words: "a fire next to a bank".
+  The town pin was LEFT ALONE: five other steps use it, and moving a town pin
+  to suit one of them is how a fix becomes the next report.
+  **BURTHROPE vs BURTHORPE.** The Minigames list highlighted every entry
+  except the one he wanted. The guide writes "Burth**ro**pe", the game
+  "Burth**or**pe" — a TRANSPOSITION, so neither is a prefix of the other and
+  the slang-tolerant matching that pairs "fish trawler" with "Fishing
+  Trawler" could not bridge it. Hand-authored alias, never fuzzy (the
+  quest-name rule). Normalised where the goal is STORED, which fixed three
+  consumers at once — the picker highlight, GROUPING_MINIGAMES membership and
+  the landing lookup all key off that one string. CONFIRMED IN PLAY.
+  **A ROUTE DRAWN TO WHERE HE WAS STANDING.** He logged in to carry on
+  fishing and got a line looping around the river to Barbarian Fishing — the
+  spot he was on. The target was CORRECT (2506,3494 is the fishing spot); a
+  grind step just holds one target for hours and every login re-posts it,
+  and the pin sits across the water from the fishing tiles. Suppressed within
+  20 tiles, generous on purpose — the question is "have you arrived", not
+  "are you on the tile". CONFIRMED IN PLAY.
+  **TEMPOROSS FINISHES WHEN YOU HOLD THE REWARDS**, which needed
+  `completeOnItems` — a field wave 28 added and never wired to anything.
+  Fish barrel and Tackle box at 0/1, both `optional` so neither can gate the
+  step or trigger a shop trip, and the step ticks once BOTH are held. **Every
+  listed item counts toward that line, optional included**: on a
+  completeOnItems step, optional means "must not GATE", while the finish line
+  is exactly the full list — skipping optional there would complete the step
+  the moment it appeared. Then **`ItemNeed.ids`**, because a fish barrel is
+  25582 closed and 25584 open and counting is by name, so an open one would
+  have read 0/1 with the thing in the bank.
+  **THE 39 NO-ROUTE STEPS, MEASURED AND MOSTLY NOT FIXABLE:** ~24 are advice,
+  grinds or structural markers where a pin would be arbitrary, ~8 are endgame
+  bosses far past where routing matters, the rest facility work. Two real
+  fixes fell out: **every facility pin now carries `npc:false`** (a furnace
+  is a thing, and wave 29 had to fix those by hand), and the seeder now falls
+  back to the step's 📍 tag, because a place in the TEXT is as often
+  provenance as destination — "should have from wintertodt" is a Lumbridge
+  step naming Wintertodt. `preflight --no-route-list` added, mirroring
+  `--manual-list` so one tool owns the judgement.
+  **NOTES ARE GUIDANCE, NOT CHANGELOG** (owner: "this is useless info.
+  remove"). A note explaining why the routing USED to be wrong is noise at
+  the moment it is read. Recorded as [[notes-are-guidance-not-changelog]].
+  **PROCESS:** every build ran in a throwaway worktree while the client was
+  live, created and removed in the same task. Hand-escaping a regex through a
+  heredoc ate the backslashes AGAIN — `\d` became `d` and a measurement
+  silently returned 0 findings; escape-free patterns (`[0-9]`) are the fix
+  when a script must be generated at all. And `git add -A` swept an untested
+  code change into a data commit; caught before pushing, split back out.
+  **OPEN:** the EASIER VIA button and the Tempoross completion are the last
+  two unplayed; he is at position **301** with Tempoross next; hub pin gap 1.
+
 - SESSION WAVE 29 (2026-08-15..17, long desk session with a short play-test
   either side; main at **`acdabaf`**, **8** commits, PUSHED; hub pin still
   `057ab9b`, gap **9** — counted, not carried):

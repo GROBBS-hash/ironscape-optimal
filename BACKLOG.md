@@ -12,7 +12,61 @@ Screenshots `SS-01` … `SS-20` in `docs/screenshots/`.
 
 ---
 
-## START HERE — next session (written 2026-08-17, end of wave 29)
+## START HERE — next session (written 2026-08-26, end of wave 30)
+
+Main at **`f2f5424`**, PUSHED, tree clean. **13 commits this session.** Hub
+pin **BUMPED to `bc23c9b`** and its `build` check PASSES — gap is **1**, and
+that one commit is the Fishing fix below.
+
+Before ANY gradle command: `node tools/check-client.mjs`.
+Before handing over a build: `node tools/check-all.mjs --tests`, reading the
+COUNT from `build/test-results/*.xml` (**132** at the end of this session).
+For data-only fixes: edit the repo file, have him type `::ironreload`. Half
+this session's changes needed no restart.
+**Build in a throwaway `git worktree` when the client is live** — that is how
+every code change this session was compiled and tested without interrupting
+him. Create and remove it in the same task.
+
+**HE IS AT POSITION 301, and Tempoross (302) is next.** That step is one of
+the two things never played:
+
+1. **Tempoross ticking itself** once he holds BOTH the Fish barrel and the
+   Tackle box. Watch that the barrel counts whether open (25584) or closed
+   (25582).
+2. **The EASIER VIA STEP button** on the gem step — green, no red warning
+   chip. If a red "Needs X first" appears anywhere, the wrong annotation
+   field is in use (`prerequisiteQuest`, not `alternativeQuest`).
+
+**FIVE OF THIS SESSION'S SIX REPORTS WERE THE SAME SHAPE:** a step that
+could not finish, for a reason the panel was already displaying. When he says
+"this should have ticked", read the badges as CAUSES, not decoration — a
+level shown in the list is a level being waited on.
+
+**THE TRAP THAT KEEPS BITING:** generating code or regexes through a shell
+heredoc eats backslashes. `\d` became `d` this session and a measurement
+returned a silent 0. Write the script to a FILE, or use escape-free patterns
+(`[0-9]`, `[ ]*`). Also: `git add -A` swept an untested code change into a
+data commit — stage explicitly when a build is pending.
+
+**BUILD NEXT, when there is desk time:**
+
+- **The 19 steps whose item list has no quantities**, so no bank stop can act
+  on them. Never measured for whether numbers exist to seed.
+- **Quiet the travel-menu probe.** It has done its job — it is how we know
+  which interface groups the menus use — and now logs a line per interface
+  load while any travel step is current.
+- **Throne of Miscellania's three emotes** still need a way to say WHICH step
+  owns which; the annotation holds one name.
+
+**Standing rules re-earned:** if you notice a risk while shipping, fix it or
+do not mention it (the "Needs The Golem first" chip was flagged and shipped
+anyway); measure a proposed rule guide-wide before writing it (the
+annotation-beats-detector rule would have wrongly loosened two steps); and a
+step NOTE says what to DO — the why-it-was-broken belongs in the commit.
+
+---
+
+## Previous START HERE (written 2026-08-17, end of wave 29)
 
 Main at **`acdabaf`**, PUSHED, tree clean. **8 commits this session.** Hub pin
 `057ab9b`, gap **9** — counted at the end, do not carry it forward.
