@@ -6942,6 +6942,30 @@ public class IronscapePlugin extends Plugin
 			// the 10-tick re-check stops as soon as a shop stops being the
 			// reason.
 			navRoutedToShop = false;
+
+			// INSIDE A MINIGAME OR OTHER INSTANCE: do not route at all.
+			//
+			// An instance reports the TEMPLATE coordinates of the copy it was
+			// built from, so the player reads as standing wherever that copy
+			// lives on the world map. For Tempoross that is an island in the
+			// Ardent Ocean with no walkable route to it, so the router did the
+			// only thing it could: it planned a way OUT and back round -- a
+			// minigame teleport to Giants' Foundry, then the boat to the Ruins
+			// of Unkah -- while he was in the middle of the fight (owner, in
+			// play 2026-08-26).
+			//
+			// The 20-tile arrival test cannot catch this: the step is pinned on
+			// the rope ladder you board from, which is a hundred tiles from the
+			// island the fight happens on. Being in the instance IS the arrival.
+			// Clearing rather than merely holding, because a route posted on the
+			// way in stays drawn otherwise; it re-posts on the next pass once
+			// you are out.
+			if (client.isInInstancedRegion())
+			{
+				logNavDecision("in an instance — holding until you are back outside");
+				postClear();
+				return;
+			}
 			// A waiting gravestone outranks EVERYTHING — captures, errands,
 			// stand-downs: without the gear there is no route to follow.
 			if (deathPoint != null)
