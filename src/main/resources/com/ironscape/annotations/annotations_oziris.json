@@ -7830,6 +7830,12 @@
    "note": "Cook at the ROGUES' DEN: the lobby has a fire right next to a bank. Entrance is the trapdoor in the Toad and Chicken."
   },
   "9ac2330698": {
+   "target": {
+    "x": 3135,
+    "y": 2840,
+    "plane": 0,
+    "npc": false
+   },
    "items": [
     {
      "name": "fish barrel",
