@@ -12,7 +12,72 @@ Screenshots `SS-01` … `SS-20` in `docs/screenshots/`.
 
 ---
 
-## START HERE — next session (written 2026-08-26, end of wave 30)
+## START HERE — next session (written 2026-08-26, end of wave 31)
+
+Main at **`3afe7fe`**, PUSHED, tree clean. **3 commits this session.** Hub pin
+still `bc23c9b` — gap **4**.
+
+Before ANY gradle command: `node tools/check-client.mjs`.
+Before handing over a build: `node tools/check-all.mjs --tests`, reading the
+COUNT from `build/test-results/*.xml` (**132** at the end of this session).
+Note that `check-all --tests` REFUSES while a client is running, even from a
+worktree; run `gradlew test` inside the worktree instead — its build folder is
+its own, so the live client's classes are untouched.
+For data-only fixes: edit the repo file, have him type `::ironreload`.
+**Build in a throwaway `git worktree` when the client is live**, created and
+removed in the same task.
+
+**HE IS AT POSITION 301 AND HAS NOW PLAYED TEMPOROSS** — 8 kills, 4 permits.
+Two things still unplayed:
+
+1. **The step ticking itself** once he holds BOTH the Fish barrel and the
+   Tackle box. Neither has dropped yet, so `completeOnItems` has had nothing
+   to fire on. Watch that the barrel counts whether open (25584) or closed
+   (25582).
+2. **The EASIER VIA STEP button** on the gem step — green, no red warning
+   chip. A red "Needs X first" means the wrong annotation field is in use
+   (`prerequisiteQuest`, not `alternativeQuest`).
+
+Both routing fixes from this session ARE confirmed in play: the ladder pin,
+and the router going quiet inside an instance.
+
+**AN AUDIT HAD BEEN REPORTING THIS SESSION'S HEADLINE BUG FOR WEEKS.**
+`audit-pin-reachability` listed the Tempoross pin under WRONG SPOT the whole
+time. **Run the audits against the steps he is ABOUT to play, not only when
+something breaks.** `preflight` and the audit list are cheap.
+
+**NEW TOOL:** `node tools/check-pin.mjs x,y[,plane]` says whether Shortest
+Path can stand on a tile, before you commit it. Three of this session's first
+guesses were wrong. Use it for every coordinate.
+
+**BUILD NEXT, when there is desk time:**
+
+- **The 19 steps whose item list has no quantities**, so no bank stop can act
+  on them. Never measured for whether numbers exist to seed.
+- **Quiet the travel-menu probe.** It has done its job — it is how we know
+  which interface groups the menus use — and still logs a line per interface
+  load while any travel step is current. It fired again all through this
+  session's Tempoross trips.
+- **Throne of Miscellania's three emotes** still need a way to say WHICH step
+  owns which; the annotation holds one name.
+- **The 10 unroutable pins are a category, not a task.** Nine are Sailing
+  ocean content and one is a quest realm. Do not "fix" them with a nearby
+  land tile — there is no approach to anchor at. Only `troubled tortugans` is
+  named by the guide.
+
+**Standing rules re-earned:** anchor an interior at the way IN, not the thing
+inside (wave 5's ZMI rule, applied six more times); read the NAMED field on a
+wiki page, never the first regex match (my Hallowvale coordinate was wrong and
+`audit-quest-start-pins` caught it); and detect a file's own line endings
+before a bulk edit — `places.json` is CRLF, the same family of trap as the
+heredoc eating backslashes.
+
+**Check the folder you opened in.** This session started in a completely
+different project on the Desktop.
+
+---
+
+## Previous START HERE (written 2026-08-26, end of wave 30)
 
 Main at **`f2f5424`**, PUSHED, tree clean. **13 commits this session.** Hub
 pin **BUMPED to `bc23c9b`** and its `build` check PASSES — gap is **1**, and

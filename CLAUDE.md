@@ -757,6 +757,87 @@ refresh when "Failed to login" appears.
   capture; hub pin at b8c994d, now ~70 commits behind — bump after a
   calm session.
 
+- SESSION WAVE 31 (2026-08-26, short live session at position 301 -> he played
+  Tempoross; main at **`3afe7fe`**, **3** commits, PUSHED; hub pin still
+  `bc23c9b`, gap **4**): **THE THEME IS THAT AN AUDIT HAD BEEN REPORTING THE
+  BUG FOR WEEKS AND NOBODY READ IT AGAINST THE STEP ABOUT TO BE PLAYED.**
+  **TEMPOROSS COVE IS AN ISLAND AND THE PIN WAS ON IT.** He reported the route
+  simply not working, and teleporting away did not fix it — because the end of
+  the route was the problem, not the start. GPS walked him to the Ruins of
+  Unkah, climbed the rope ladder onto the docked ship, and then had a hundred
+  tiles of open water left: "Destination could not be reached". The cove is in
+  the Ardent Ocean and the only way there is the Spirit Anglers' ship, which
+  sails when the GAME starts, not when you ask it to. Both `places.json` keys
+  (`tempoross` and `tempoross cove`, 3035,2850) re-anchored on the rope ladder
+  itself, **3135,2840, object 41305**, plus a ⌖ on the step with `npc:false`.
+  **`audit-pin-reachability` HAD BEEN LISTING BOTH KEYS UNDER WRONG SPOT, with
+  a suggested re-anchor 64 tiles away.** The audit was right and unread. That
+  is the wave's lesson, not the pin.
+  **THE FIX THEN BROKE SOMETHING THE BUG HAD BEEN HIDING, and he found it
+  within the hour: mid-fight, the panel drew him a way OUT** — Giants' Foundry
+  minigame teleport, walk, boat to Unkah, climb the ladder. Not wrong: an
+  instance reports the TEMPLATE coordinates of the copy it was built from
+  (wave 10), so inside the cove he read as standing on that unreachable
+  island, and that WAS the old pin. The wave 30 arrival test had been
+  suppressing the route by luck, and moving the pin to the ladder took the
+  luck away. New guard: `client.isInInstancedRegion()` clears the route and
+  holds. **Being in the instance IS the arrival** — the 20-tile test cannot
+  bridge a hundred tiles between the door and the room. CONFIRMED IN PLAY,
+  three games (10:24, 10:32, 10:43), quiet during each and back on the way
+  out.
+  **THE 38 WRONG-SPOT PINS, WORKED THROUGH: 28 fixed, 1 deleted, 10 that
+  cannot be and were not guessed at.** Three shapes of fix. (1) Same place,
+  just off a wall — river lum, keldagrim, lead navigator, braindeath island,
+  burntmeat, both gwenith glides, motherlode mine/mlm, fortis colosseum, isle
+  of souls, weiss, moons of peril. (2) **Anchored at the way IN, which is the
+  wave 5 ZMI rule**: evil dave is the Edgeville trapdoor, not his basement;
+  the warrens general store is the Port Piscarilius manhole; puro puro and
+  both elnocks are the Zanaris crop circle; darkness of hallowvale is the inn
+  Veliaf sits under; both RFD subquests are the Culinaromancer's chest. (3)
+  **Where the minigame teleport actually puts you** — pest control, castle
+  wars and soul wars now use their `minigame_landings` coordinate instead of
+  the arena floor, which also means one owner-confirmed number serves both
+  consumers. TWO WERE WRONG OUTRIGHT: Councillor Andrews was pinned
+  underground when he stands on the surface, and the Emblem Trader was pinned
+  at a Wilderness spot with no route when he is also at Ferox Enclave.
+  **`learning the ropes` DELETED — it is Tutorial Island**, exactly the pin
+  wave 9 removed for the same reason.
+  **THE TEN THAT CANNOT BE FIXED ARE A CATEGORY, NOT A BACKLOG:** nine are
+  Sailing ocean content (pandemonium ii, jubbly jive, tempor tantrum, troubled
+  tortugans, shimmering atoll, port roberts, dognose island, isle of bones,
+  chinchompa island) where the only way there is a ship Shortest Path does not
+  model, and fisher realm is a quest realm you are teleported into. Only
+  troubled tortugans is named by the guide, and its start is a remote island
+  in the Unquiet Ocean, so there is no approach tile to anchor at either.
+  **SEEDING LESSON, EXTENDING WAVE 10's:** that wave learned a wiki `{{Map}}`
+  pin is the building's ground entrance rather than the thing inside. This one
+  is broader — **a map pin is a CAPTION**, and a caption lands on a roof, a
+  wall, water, or the middle of an instance. It is where the label reads well,
+  not where a player can stand.
+  **TOOLING: the question was only ever askable AFTER committing.** The
+  collision map, the transport list and the flood fill moved into
+  `tools/lib/sp-map.mjs` (audit output byte-identical after the move), and new
+  **`tools/check-pin.mjs`** answers it for a coordinate you are ABOUT to write
+  down. Every coordinate above went through it first and **three first guesses
+  were wrong**. Six deliberate differences from the wiki recorded in
+  `place-pins-reviewed.json` so the next session does not undo them.
+  **THE AUDITS CAUGHT ME, WHICH IS THE POINT OF THEM.** My first Hallowvale
+  coordinate came from a crude regex over the wiki page that grabbed the wrong
+  x/y pair; `audit-quest-start-pins` flagged it against Quest Helper's own
+  first step. Read the NAMED field (`startmap`), never the first match on the
+  page. That audit now has **0 to review**, down from 1.
+  **PROCESS:** the session opened in the wrong project folder entirely — a
+  Next.js repo on the Desktop — and the first thing done was moving it. Worth
+  a glance at whatever shortcut launches these. And a bulk edit script failed
+  on the first run because `places.json` is CRLF on disk while the templates
+  were LF; detect the file's own newline and write it back, same family as the
+  heredoc-eats-backslashes trap.
+  **OPEN:** the Tempoross self-tick is STILL unplayed — 8 kills, 4 permits,
+  neither the Fish barrel nor the Tackle box has dropped, so `completeOnItems`
+  has had nothing to fire on; the EASIER VIA STEP button on the gem step is
+  still unplayed; the travel-menu probe is still logging a line per interface
+  load; hub pin gap 4.
+
 - SESSION WAVE 30 (2026-08-19..26, desk work threaded through a long live
   play-test 292 -> 301; main at **`f2f5424`**, **13** commits, PUSHED; **hub
   pin BUMPED to `bc23c9b`, hub `build` check PASSING** — gap now **1**):
