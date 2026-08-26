@@ -8130,6 +8130,23 @@ public class IronscapePlugin extends Plugin
 	private WorldPoint lastPostedTarget;
 
 	/**
+	 * Whether the route currently on screen is one WE asked for.
+	 *
+	 * <p>Separate from {@link #lastPostedTarget} because that field gets
+	 * nulled deliberately on a teleport, to re-open the gate for a re-post
+	 * from the new position (wave 27). Entering an instance IS such a jump,
+	 * so by the time the instance guard called {@code postClear} the target
+	 * had already been forgotten, {@code postClear} decided nothing of ours
+	 * was on screen, and GPS went on drawing the route it had — its header
+	 * still reading "Destination set by IRONSCAPE" and its own panel saying
+	 * "Off route" (owner, in play at Tempoross 2026-08-26).
+	 *
+	 * <p>Ownership does not change when we forget a target. It changes when
+	 * we draw and when we clear, which is what this tracks.
+	 */
+	private boolean routeIsOurs;
+
+	/**
 	 * Ask Shortest Path to route to a point.
 	 *
 	 * <p>UNCHANGED TARGETS ARE NOT RE-POSTED. This method is reached from a
@@ -8154,6 +8171,7 @@ public class IronscapePlugin extends Plugin
 			return;
 		}
 		lastPostedTarget = target;
+		routeIsOurs = true;
 		// "source" names US in GPS's route header, which otherwise reads
 		// "another plugin" — so when a route appears you can tell whether
 		// it came from this guide or from Quest Helper. Shortest Path reads
@@ -8192,7 +8210,7 @@ public class IronscapePlugin extends Plugin
 	 */
 	private void postClear()
 	{
-		if (lastPostedTarget == null)
+		if (lastPostedTarget == null && !routeIsOurs)
 		{
 			// Nothing of ours on screen — anything showing belongs to
 			// another plugin, and is not ours to erase. Note we do NOT
@@ -8205,6 +8223,7 @@ public class IronscapePlugin extends Plugin
 		}
 		spRoute = null;
 		lastPostedTarget = null;
+		routeIsOurs = false;
 		eventBus.post(new PluginMessage("shortestpath", "clear"));
 		// A clear also wipes the config override that makes the router
 		// report its choices, so switch it straight back on.
