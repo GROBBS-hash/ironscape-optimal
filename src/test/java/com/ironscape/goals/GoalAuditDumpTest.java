@@ -266,6 +266,17 @@ public class GoalAuditDumpTest
 		{
 			mark.accept(g.getSub().getId(), "level");
 		}
+
+		// WHICH skills, not just that there were some. A level the step only
+		// MENTIONS ("After 50 agility, minigame tele to Burthrope") is not a
+		// completion path, and reporting it as one made preflight promise an
+		// auto-tick that IronscapePlugin will not perform.
+		java.util.Map<String, java.util.List<String>> levelSkills = new java.util.HashMap<>();
+		for (GoalDetector.SkillLevelGoal g : goals.getSkillLevelGoals())
+		{
+			levelSkills.computeIfAbsent(g.getSub().getId(), k -> new java.util.ArrayList<>())
+				.add(g.getSkill().name());
+		}
 		for (GoalDetector.DepletionGoal g : goals.getDepletionGoals())
 		{
 			mark.accept(g.getSub().getId(), "depletion");
@@ -335,12 +346,59 @@ public class GoalAuditDumpTest
 						}
 					}
 					java.util.Set<String> kinds = paths.get(sub.getId());
+					// Mirrors IronscapePlugin.informationalLevel: sub id first, then
+					// the step. If EVERY level the sub names is one it merely
+					// mentions, there is no level path here at all.
+					java.util.Set<String> mentioned = new java.util.HashSet<>();
+					for (com.google.gson.JsonObject source : new com.google.gson.JsonObject[]{subEntry, entry})
+					{
+						if (source == null || !source.has("informationalLevels"))
+						{
+							continue;
+						}
+						for (com.google.gson.JsonElement named : source.getAsJsonArray("informationalLevels"))
+						{
+							mentioned.add(named.getAsString().toUpperCase(java.util.Locale.ROOT));
+						}
+					}
+					if (kinds != null && kinds.contains("level") && !mentioned.isEmpty())
+					{
+						boolean anyRealLevel = false;
+						for (String skill : levelSkills.getOrDefault(sub.getId(),
+							java.util.Collections.emptyList()))
+						{
+							anyRealLevel |= !mentioned.contains(skill);
+						}
+						if (!anyRealLevel)
+						{
+							kinds = new java.util.TreeSet<>(kinds);
+							kinds.remove("level");
+							if (kinds.isEmpty())
+							{
+								kinds = null;
+							}
+						}
+					}
+					// A step that declares its items ARE the finish line is finished by
+					// those and nothing else, so the detector paths do not apply to it.
+					if (declaresItemFinish(entry) || declaresItemFinish(subEntry))
+					{
+						kinds = java.util.Collections.singleton("possession");
+					}
 					writer.println("PATH\t" + sub.getId()
 						+ "\t" + (kinds == null ? "none" : String.join(",", kinds))
 						+ "\t" + sub.getPlainText().trim().replaceAll("[\\t\\r\\n]+", " "));
 				}
 			}
 		}
+	}
+
+	/** Does this annotation say holding its items is what finishes the step? */
+	private static boolean declaresItemFinish(com.google.gson.JsonObject entry)
+	{
+		return entry != null && entry.has("completeOnItems")
+			&& !entry.get("completeOnItems").isJsonNull()
+			&& entry.get("completeOnItems").getAsBoolean();
 	}
 
 	@Test
