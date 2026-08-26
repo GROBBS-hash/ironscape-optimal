@@ -4704,7 +4704,20 @@ public class IronscapePlugin extends Plugin
 					break;
 				}
 
-				if (currentSubSatisfied(current.step, current.sub, i == 0,
+				// A DECLARED FINISH LINE IS THE ONLY FINISH LINE. The step says
+				// holding its items is what finishes it, so the heuristics must
+				// not tick it from anything else. Tempoross reads "Now that
+				// you're 74 Fishing, do a few Tempoross kills for the Fish
+				// Barrel" — the detector found the 74 in that preamble, and the
+				// step ticked itself the moment he hit 74 Fishing, with the Fish
+				// barrel still at 0/1 (owner, in play 2026-08-26). The number was
+				// never the goal; it is what you already had when you arrived.
+				//
+				// completeOnItems was doing its own job correctly — it requires
+				// every listed item — but it only ADDED a way to finish instead of
+				// replacing the criteria, so the weaker signal still won the race.
+				if (!annotationManager.completesOnItems(current.step.getId())
+					&& currentSubSatisfied(current.step, current.sub, i == 0,
 					current.step == frontierStep))
 				{
 					completeSubGoal(current.step, current.sub, "goal satisfied (items/quest/level/arrival)");
@@ -5142,6 +5155,7 @@ public class IronscapePlugin extends Plugin
 		List<GoalDetector.SkillLevelGoal> levelGoals = levelGoalsBySub.get(sub.getId());
 		if (levelGoals != null)
 		{
+			int checked = 0;
 			for (GoalDetector.SkillLevelGoal goal : levelGoals)
 			{
 				// A level the step only MENTIONS ("should be at 74 fishing")
@@ -5151,12 +5165,20 @@ public class IronscapePlugin extends Plugin
 				{
 					continue;
 				}
+				checked++;
 				if (client.getRealSkillLevel(goal.getSkill()) < goal.getLevel())
 				{
 					return false;
 				}
 			}
-			return true;
+			// Every level on the sub was one it merely MENTIONS, so nothing
+			// here was ever a finish line. Returning true would have completed
+			// the sub on no evidence at all; fall through to whatever else the
+			// sub has, and if it has nothing it stays a hand tick.
+			if (checked > 0)
+			{
+				return true;
+			}
 		}
 
 		// "make bookcases until out of planks" — done when the last one is
