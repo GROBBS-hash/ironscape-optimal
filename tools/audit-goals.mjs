@@ -230,6 +230,11 @@ if (!fs.existsSync(constantsTsv)) {
   // yields no item — a diary sprite over the Seers' church organ. Nothing
   // counts it and nothing gates on it, so the usual "sprite right, counting
   // broken?" worry cannot apply here. Do NOT reuse this key as an item need.)
+  // (the five rogue outfit pieces -> 5553-5557 ROGUESDEN_BODY/HELM/LEGS/
+  // GLOVES/BOOTS: internal codenames, not display names. The DISPLAY names
+  // were read off RuneLite's own id -> name cache (5554 = "Rogue mask"),
+  // and the name-level section below reports 0 unmatchable keys, which is
+  // the independent check that counting works.)
   const VERIFIED = new Set(['achievement diary cape',
     'pet kitten', 'big frog leg', 'rusty sword', 'buttons',
     'skin paste', 'key imprint', 'teleport card',
@@ -243,7 +248,8 @@ if (!fs.existsSync(constantsTsv)) {
     'pack of normal compost', 'rainbow scarf', 'range void', 'regular plank',
     'rune mysteries notes', 'rune mysteries package', 'small fishing net',
     'steel nails', 'teleport cards', 'translation notes', 'armor seeds',
-    'bolts of cloth']);
+    'bolts of cloth',
+    'rogue mask', 'rogue top', 'rogue trousers']);
   const itemIds = JSON.parse(fs.readFileSync(
     path.join(RES, 'items/item_ids.json'), 'utf8'));
   let idFlagged = 0;

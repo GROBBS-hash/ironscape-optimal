@@ -7829,6 +7829,36 @@
    },
    "note": "Cook at the ROGUES' DEN: the lobby has a fire right next to a bank. Entrance is the trapdoor in the Toad and Chicken."
   },
+  "467adfb5ce": {
+   "items": [
+    {
+     "name": "rogue mask",
+     "quantity": 1,
+     "optional": true
+    },
+    {
+     "name": "rogue top",
+     "quantity": 1,
+     "optional": true
+    },
+    {
+     "name": "rogue trousers",
+     "quantity": 1,
+     "optional": true
+    },
+    {
+     "name": "rogue gloves",
+     "quantity": 1,
+     "optional": true
+    },
+    {
+     "name": "rogue boots",
+     "quantity": 1,
+     "optional": true
+    }
+   ],
+   "completeOnItems": true
+  },
   "9ac2330698": {
    "informationalLevels": [
     "FISHING"
