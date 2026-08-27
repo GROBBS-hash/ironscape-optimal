@@ -47,7 +47,7 @@ public class GuideLoader
 	{
 		// The JSON files live in src/main/resources under this class's
 		// package, so this resolves relative to GuideLoader.class.
-		try (InputStream in = GuideLoader.class.getResourceAsStream(variant.getResourceName()))
+		try (InputStream in = com.ironscape.DataFiles.open(GuideLoader.class, variant.getResourceName()))
 		{
 			if (in == null)
 			{

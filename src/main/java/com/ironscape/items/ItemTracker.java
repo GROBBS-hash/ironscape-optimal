@@ -595,7 +595,7 @@ public class ItemTracker
 		if (bundledItemIds == null)
 		{
 			bundledItemIds = new HashMap<>();
-			try (java.io.InputStream in = ItemTracker.class.getResourceAsStream("item_ids.json"))
+			try (java.io.InputStream in = com.ironscape.DataFiles.open(ItemTracker.class, "item_ids.json"))
 			{
 				if (in != null)
 				{
@@ -645,6 +645,19 @@ public class ItemTracker
 		}
 	}
 
+	/**
+	 * Drop everything read from the data files, so ::ironreload picks up an
+	 * edited item_ids.json or gear_sets.json. The icon memo goes with them:
+	 * it caches the ANSWER, so a name that once resolved to nothing would
+	 * stay resolved to nothing however many ids were added underneath it.
+	 */
+	public synchronized void reloadBundledData()
+	{
+		bundledItemIds = null;
+		gearSets = null;
+		iconIdByName.clear();
+	}
+
 	/** The item id whose sprite represents this guide item name; -1 = none found. */
 	public synchronized int iconIdFor(String name)
 	{
@@ -663,7 +676,7 @@ public class ItemTracker
 		if (gearSets == null)
 		{
 			gearSets = new HashMap<>();
-			try (java.io.InputStream in = ItemTracker.class.getResourceAsStream("gear_sets.json"))
+			try (java.io.InputStream in = com.ironscape.DataFiles.open(ItemTracker.class, "gear_sets.json"))
 			{
 				if (in != null)
 				{

@@ -2479,6 +2479,7 @@ public class IronscapePlugin extends Plugin
 		loadMinigameLandings();
 		loadQuestNpcs();
 		teleportItemIndex = com.ironscape.travel.TeleportItems.load(gson);
+		itemTracker.reloadBundledData();
 		loadGuideState();
 		// Derived per-tick caches that outlive a reload would otherwise
 		// describe the OLD data until the next natural rebuild.
@@ -8866,8 +8867,8 @@ public class IronscapePlugin extends Plugin
 
 	private void loadMinigameLandings()
 	{
-		try (java.io.InputStream in = IronscapePlugin.class
-			.getResourceAsStream("/com/ironscape/places/minigame_landings.json"))
+		try (java.io.InputStream in = com.ironscape.DataFiles.open(
+			IronscapePlugin.class, "/com/ironscape/places/minigame_landings.json"))
 		{
 			if (in == null)
 			{

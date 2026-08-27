@@ -108,11 +108,18 @@ public final class DataFiles
 		{
 			return RESOLVED.get(name);
 		}
+		// Match on the FILE NAME alone. Callers pass whatever getResourceAsStream
+		// wants, which is sometimes package-relative ("item_ids.json") and
+		// sometimes absolute ("/com/ironscape/places/minigame_landings.json").
+		// Comparing the absolute form against a file name never matches, and the
+		// miss is SILENT — it just falls back to the jar, so the override looks
+		// configured and does nothing.
+		String leaf = name.substring(name.lastIndexOf('/') + 1);
 		File found = null;
 		try (Stream<Path> tree = Files.walk(root.toPath(), 6))
 		{
 			found = tree.filter(Files::isRegularFile)
-				.filter(p -> p.getFileName().toString().equals(name))
+				.filter(p -> p.getFileName().toString().equals(leaf))
 				.findFirst().map(Path::toFile).orElse(null);
 		}
 		catch (IOException e)
