@@ -2263,15 +2263,26 @@ public class IronscapePlugin extends Plugin
 		panel.setErrandStagesSupplier(errandStagesBySub::get);
 		panel.setErrandChecklistSupplier(errandChecklistBySub::get);
 		// Say so when a step cannot complete itself. Deliberately the SAME
-		// three tests the completion loop makes, so the label can never
-		// disagree with the behaviour it describes.
+		// tests the completion loop makes, so the label can never disagree
+		// with the behaviour it describes -- which it silently did for a
+		// while, because completion paths were added here and not there.
 		panel.setManualOnlySupplier(subId -> {
 			if (hasAnyGoal(subId))
 			{
 				return false;
 			}
-			List<StepRequirement> requirements = subRequirements.get(subId);
+			// requirementsFor, not subRequirements: 47 of the 48 reviewed skill
+			// requirements are keyed by STEP id, and the completion loop reads
+			// them from there. Reading only the sub key called those steps
+			// hand-tick while the loop was ticking them.
+			List<StepRequirement> requirements = requirementsFor(subId);
 			if (requirements != null && !requirements.isEmpty())
+			{
+				return false;
+			}
+			// "holding these items IS the finish line" is a fourth completion
+			// path, added after this label was written and never wired to it.
+			if (annotationManager.completesOnItems(subId.split(":")[0]))
 			{
 				return false;
 			}
