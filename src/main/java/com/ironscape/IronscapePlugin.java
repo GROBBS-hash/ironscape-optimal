@@ -5554,14 +5554,25 @@ public class IronscapePlugin extends Plugin
 		{
 			return false;
 		}
+		boolean anyCounted = false;
 		for (StepAnnotation.ItemNeed need : needs)
 		{
+			// "buy 50 lockpicks while you are here" is an errand at the same
+			// place, not part of what finishes the step.
+			if (Boolean.TRUE.equals(need.excludeFromCompletion))
+			{
+				continue;
+			}
+			anyCounted = true;
 			if (ownedCount(need) < (need.quantity == null ? 1 : need.quantity))
 			{
 				return false;
 			}
 		}
-		return true;
+		// Every item excluded is no finish line at all. Same shape as the
+		// informationalLevels hole found in wave 31: a loop that skips every
+		// candidate and then reports success on no evidence.
+		return anyCounted;
 	}
 
 	private int ownedCount(StepAnnotation.ItemNeed need)

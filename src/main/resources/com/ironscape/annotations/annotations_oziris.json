@@ -7855,6 +7855,12 @@
      "name": "rogue boots",
      "quantity": 1,
      "optional": true
+    },
+    {
+     "name": "lockpick",
+     "quantity": 50,
+     "optional": true,
+     "excludeFromCompletion": true
     }
    ],
    "completeOnItems": true

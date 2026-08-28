@@ -573,6 +573,20 @@ public class StepAnnotation
 		 * declarable per item.
 		 */
 		public Boolean consumed;
+		/**
+		 * Shown and counted, but NOT part of a completeOnItems finish line.
+		 *
+		 * <p>On a completeOnItems step the item list IS the completion
+		 * condition, optional included — that is what stops the step ticking
+		 * the moment one reward appears. But a step can also tell you to pick
+		 * something up while you are there: the Rogues' Den step wants the
+		 * full outfit AND 50 lockpicks, and listing the lockpicks plainly
+		 * would hold the step shut until you had bought them.
+		 *
+		 * <p>Always write it with {@link #optional} as well, so the other
+		 * gates skip it too and an older build still renders it muted.
+		 */
+		public Boolean excludeFromCompletion;
 	}
 
 	public static class Target
