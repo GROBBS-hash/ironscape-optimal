@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 import net.runelite.api.Quest;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -638,5 +639,62 @@ public class GoalDetectorTest
 		assertFalse("starting the quest should be enough", goals.getQuestGoals().get(0).isRequiresFinished());
 		assertEquals(Quest.COOKS_ASSISTANT, goals.getQuestGoals().get(1).getQuest());
 		assertTrue(goals.getQuestGoals().get(1).isRequiresFinished());
+	}
+
+	/**
+	 * "2.4m GP" read as "4m GP". The digit group could not cross a decimal
+	 * point, so the match restarted after it and the FRACTION became the
+	 * whole number - which is worse than dropping it, because the answer
+	 * still looks like a plausible round figure. The owner saw the step ask
+	 * for 4,000,000 where the guide says 2.4m (2026-08-28).
+	 *
+	 * <p>All 8 decimal quantities in the guide were wrong the same way, and
+	 * "6.2k maples" -> 2,000 shows it is not only money.
+	 */
+	@Test
+	public void decimalQuantitiesKeepTheirFraction()
+	{
+		Guide guide = guideWithSubTexts(
+			"blackjack until you have 2.4m gp",
+			"mine sandstone for 1.2k buckets of sand",
+			"buy 200k gp worth of feathers");
+
+		GoalDetector.Goals goals = GoalDetector.detect(guide);
+
+		assertEquals(2_400_000, quantityOf(goals, "gp"));
+		assertEquals(1_200, quantityOf(goals, "buckets of sand"));
+		// the plain suffix form still works
+		assertEquals(200_000, quantityOf(goals, "gp worth of feathers"));
+	}
+
+	/**
+	 * A fraction with no k/m after it is not a count of anything, so it must
+	 * not become one. Before the fix "step 1.1 of the guide" could hand the
+	 * detector a "1" it had no business having.
+	 */
+	@Test
+	public void aBareFractionIsNotAQuantity()
+	{
+		Guide guide = guideWithSubTexts("grab 2.5 logs from the pile");
+
+		GoalDetector.Goals goals = GoalDetector.detect(guide);
+
+		for (GoalDetector.ItemGoal goal : goals.getItemGoals())
+		{
+			assertNotEquals("2.5 must not become a count of logs",
+				"logs", goal.getItemName());
+		}
+	}
+
+	private static long quantityOf(GoalDetector.Goals goals, String name)
+	{
+		for (GoalDetector.ItemGoal goal : goals.getItemGoals())
+		{
+			if (name.equals(goal.getItemName()))
+			{
+				return goal.getQuantity();
+			}
+		}
+		throw new AssertionError("no goal named \"" + name + "\" in " + goals.getItemGoals());
 	}
 }

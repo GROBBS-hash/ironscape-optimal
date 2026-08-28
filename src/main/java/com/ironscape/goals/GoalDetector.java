@@ -31,13 +31,43 @@ import net.runelite.api.Skill;
 public final class GoalDetector
 {
 	/**
+	 * The number a "200k"/"2.4m" quantity stands for, or null when this is
+	 * not a count at all.
+	 *
+	 * <p>The FRACTION is the point. Without it the digit group stopped dead
+	 * at the decimal point and the match simply restarted after it, so
+	 * "2.4m GP" was read as "4m GP" and the step asked for four million
+	 * where the guide said two point four (owner, in play 2026-08-28). All
+	 * 8 decimal quantities in the guide were wrong the same way, and they
+	 * are not all money: "1.2k buckets of sand" asked for 2,000 and "6.2k
+	 * maples" for 2,000.
+	 *
+	 * <p>A fraction with NO suffix is not a quantity of anything - you
+	 * cannot gather 2.4 logs - so it is rejected rather than rounded, which
+	 * also keeps version-like prose out of the goal list.
+	 */
+	private static String expandQuantity(String digits, String suffix)
+	{
+		String plain = digits.replace(",", "");
+		boolean fractional = plain.indexOf(46) >= 0;
+		if (suffix == null)
+		{
+			return fractional ? null : plain;
+		}
+		return new java.math.BigDecimal(plain)
+			.multiply(java.math.BigDecimal.valueOf(
+				"k".equalsIgnoreCase(suffix) ? 1_000L : 1_000_000L))
+			.setScale(0, java.math.RoundingMode.HALF_UP).toPlainString();
+	}
+
+	/**
 	 * "number + item" pairs — clause splitting turns
 	 * "Buy 1250 nature runes, 700 law runes, 50 earth and 20 fire runes"
 	 * into fragments where only the first has the verb; the rest start with
 	 * their quantity and may chain more with "and".
 	 */
 	private static final Pattern QUANTITY_NAME = Pattern.compile(
-		"(\\d[\\d,]*)([km])?\\s+([a-z][a-z'/ -]+)", Pattern.CASE_INSENSITIVE);
+		"(\\d[\\d,]*(?:\\.\\d+)?)([km])?\\s+([a-z][a-z'/ -]+)", Pattern.CASE_INSENSITIVE);
 
 	/**
 	 * "keep 3 bars" — an instruction about what to HOLD BACK from the step's
@@ -79,7 +109,7 @@ public final class GoalDetector
 	 * commas, so "5 cloth and 100 nails" list items keep their own counts.
 	 */
 	private static final Pattern INHERITED_AND_TAIL = Pattern.compile(
-		"(\\d[\\d,]*)([km])?\\s+[a-z][a-z'/ -]*?\\s+and\\s+([a-z][a-z' -]+)",
+		"(\\d[\\d,]*(?:\\.\\d+)?)([km])?\\s+[a-z][a-z'/ -]*?\\s+and\\s+([a-z][a-z' -]+)",
 		Pattern.CASE_INSENSITIVE);
 
 	/** Tails that are prose, not a second item ("110 logs and bank them"). */
@@ -976,12 +1006,10 @@ public final class GoalDetector
 				continue;
 			}
 			// "200k cash" / "1m gp": expand the k/m suffix into the number.
-			String quantity = pairs.group(1);
-			if (pairs.group(2) != null)
+			String quantity = expandQuantity(pairs.group(1), pairs.group(2));
+			if (quantity == null)
 			{
-				long value = Long.parseLong(quantity.replace(",", ""))
-					* ("k".equalsIgnoreCase(pairs.group(2)) ? 1_000L : 1_000_000L);
-				quantity = Long.toString(value);
+				continue;
 			}
 			addIfValid(out, step, sub, quantity, pairs.group(3), seen, ownPurchase);
 		}
@@ -1007,12 +1035,10 @@ public final class GoalDetector
 			{
 				continue;
 			}
-			String quantity = inherited.group(1);
-			if (inherited.group(2) != null)
+			String quantity = expandQuantity(inherited.group(1), inherited.group(2));
+			if (quantity == null)
 			{
-				long value = Long.parseLong(quantity.replace(",", ""))
-					* ("k".equalsIgnoreCase(inherited.group(2)) ? 1_000L : 1_000_000L);
-				quantity = Long.toString(value);
+				continue;
 			}
 			addIfValid(out, step, sub, quantity, tail, seen, ownPurchase);
 		}
