@@ -331,7 +331,15 @@ class StepRow extends JPanel
 
 		// Same width-locked pane trick as sub text, so long notes wrap
 		// instead of widening every row; indent 0 — the box provides it.
-		JEditorPane text = htmlPane(RichText.runsHtml(runs, false, null), 0,
+		// Place names in a NOTE are links too. A note is very often where the
+		// ALTERNATIVE lives — "thieve in Varlamore instead", "you could go do
+		// LMS" — and until now the only routable thing on the card was the one
+		// route the step prescribes, so taking the alternative meant looking the
+		// place up yourself (owner, 2026-08-28). Nothing routes on its own: a
+		// link is an offer, which is what makes it safe on prose that names a
+		// place as provenance rather than as a destination.
+		JEditorPane text = htmlPane(RichText.runsHtml(runs, false,
+			ctx.getPlaces() == null ? null : ctx.getPlaces()::linkify), 0,
 			new Font(Font.DIALOG, Font.PLAIN, 11), NOTE_FG);
 
 		JPanel box = new JPanel();
