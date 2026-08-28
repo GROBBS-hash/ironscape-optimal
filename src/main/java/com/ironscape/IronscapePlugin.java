@@ -1561,6 +1561,28 @@ public class IronscapePlugin extends Plugin
 	/** Close enough to a target that drawing a route to it is noise. */
 	private static final int ARRIVED_RADIUS = 20;
 
+	/**
+	 * Far enough from a target to mean you have genuinely LEFT it, rather
+	 * than stepped inside the thing it points at. Clears the latch below.
+	 */
+	private static final int LEFT_RADIUS = 200;
+
+	/**
+	 * The target we have watched the player reach. A pin is very often the
+	 * way IN to somewhere you then spend an hour inside — the Rogues' Den
+	 * pin is the surface trapdoor, and once he was down in the maze the
+	 * route drew him back out to it, every ten ticks (owner, in play
+	 * 2026-08-28). Reaching a target is the answer to it; we do not ask
+	 * again until the step moves on, or until he is far enough away ON THE
+	 * SAME BAND to have really left (dying to Lumbridge should re-route;
+	 * standing in a dungeon under the pin should not, and raw 2D distance
+	 * cannot tell those apart because underground sits at y + 6400).
+	 */
+	private WorldPoint reachedTarget;
+
+	/** Last travel-menu group actually logged, so the probe repeats itself. */
+	private int lastLoggedTravelMenuGroup = -1;
+
 	private static final int AUTO_COMPLETE_WINDOW = 8;
 
 	/**
@@ -1700,6 +1722,12 @@ public class IronscapePlugin extends Plugin
 	 * a surface point means nothing.
 	 */
 	private static final int SURFACE_MAX_Y = 4000;
+
+	/** Both on the surface, or both underground. See SURFACE_MAX_Y. */
+	private static boolean sameBand(WorldPoint a, WorldPoint b)
+	{
+		return (a.getY() >= SURFACE_MAX_Y) == (b.getY() >= SURFACE_MAX_Y);
+	}
 
 	/**
 	 * Fewest tiles a suggested teleport must SAVE to be worth making, on
@@ -2879,9 +2907,16 @@ public class IronscapePlugin extends Plugin
 		// still doesn't highlight.
 		if (!travelMenuWords.isEmpty())
 		{
-			travelMenuGroup = event.getGroupId();
-			log.info("travel-menu probe: widget group {} loaded while travel sub current",
-				event.getGroupId());
+			// The probe has done its job — it is how we know which groups the
+			// travel menus use — so it logs only when the group CHANGES now,
+			// the same rule logNavDecision follows. It was writing a line per
+			// interface load while any travel step was current.
+			if (travelMenuGroup != lastLoggedTravelMenuGroup)
+			{
+				lastLoggedTravelMenuGroup = travelMenuGroup;
+				log.info("travel-menu probe: widget group {} loaded while travel sub current",
+					event.getGroupId());
+			}
 		}
 		// Chat options opening: recolor the stage's dialog choices right
 		// away (one tick late looks laggy); deferred a frame so the
@@ -7266,8 +7301,24 @@ public class IronscapePlugin extends Plugin
 				if (at != null && at.getPlane() == target.getPlane()
 					&& at.distanceTo2D(target) <= ARRIVED_RADIUS)
 				{
+					reachedTarget = target;
 					logNavDecision("already at " + target + " — nothing to route");
 					return;
+				}
+				if (target.equals(reachedTarget))
+				{
+					if (at != null && sameBand(at, target)
+						&& at.distanceTo2D(target) > LEFT_RADIUS)
+					{
+						// Really gone, not merely inside. Ask again.
+						reachedTarget = null;
+					}
+					else
+					{
+						logNavDecision("been to " + target
+							+ " already — not routing back to it");
+						return;
+					}
 				}
 				logNavDecision("routing to " + target);
 				postPath(target);
