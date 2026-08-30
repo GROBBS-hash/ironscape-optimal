@@ -18,7 +18,8 @@
   "7171e743ce": {
    "items": [
     {
-     "name": "hammer"
+     "name": "hammer",
+     "quantity": 1
     },
     {
      "name": "swamp paste"
@@ -226,11 +227,11 @@
     },
     {
      "name": "dwellberries",
-     "quantity": null
+     "quantity": 1
     },
     {
      "name": "hangover cure",
-     "quantity": null
+     "quantity": 1
     }
    ]
   },
@@ -288,7 +289,7 @@
     },
     {
      "name": "chronicle",
-     "quantity": null
+     "quantity": 1
     },
     {
      "name": "all of your mind and air runes",
@@ -304,11 +305,11 @@
     },
     {
      "name": "barcrawl card",
-     "quantity": null
+     "quantity": 1
     },
     {
      "name": "rune mysteries package",
-     "quantity": null
+     "quantity": 1
     },
     {
      "name": "gp",
@@ -334,19 +335,19 @@
     },
     {
      "name": "barcrawl card",
-     "quantity": null
+     "quantity": 1
     },
     {
      "name": "bucket of milk",
-     "quantity": null
+     "quantity": 1
     },
     {
      "name": "seasoned sardine",
-     "quantity": null
+     "quantity": 1
     },
     {
      "name": "axe",
-     "quantity": null
+     "quantity": 1
     }
    ],
    "target": {
@@ -359,11 +360,11 @@
    "items": [
     {
      "name": "pickaxe",
-     "quantity": null
+     "quantity": 1
     },
     {
      "name": "chronicle",
-     "quantity": null
+     "quantity": 1
     }
    ]
   },
@@ -379,7 +380,7 @@
     },
     {
      "name": "barcrawl card",
-     "quantity": null
+     "quantity": 1
     },
     {
      "name": "cakes",
@@ -387,7 +388,7 @@
     },
     {
      "name": "fire staff (equip)",
-     "quantity": null
+     "quantity": 1
     }
    ]
   },
@@ -515,7 +516,7 @@
     },
     {
      "name": "barcrawl card",
-     "quantity": null
+     "quantity": 1
     },
     {
      "name": "cakes",
@@ -523,7 +524,7 @@
     },
     {
      "name": "axe",
-     "quantity": null
+     "quantity": 1
     }
    ]
   },
@@ -591,7 +592,7 @@
     },
     {
      "name": "hammer",
-     "quantity": null
+     "quantity": 1
     }
    ]
   },
@@ -720,7 +721,7 @@
     },
     {
      "name": "cadava berries",
-     "quantity": null
+     "quantity": 1
     }
    ],
    "target": {
@@ -739,7 +740,7 @@
     },
     {
      "name": "chronicle",
-     "quantity": null
+     "quantity": 1
     },
     {
      "name": "bark sample",
@@ -753,11 +754,11 @@
     },
     {
      "name": "barcrawl card",
-     "quantity": null
+     "quantity": 1
     },
     {
      "name": "small fishing net",
-     "quantity": null
+     "quantity": 1
     },
     {
      "name": "fire runes",
@@ -967,7 +968,7 @@
     },
     {
      "name": "scrying orb",
-     "quantity": null
+     "quantity": 1
     },
     {
      "name": "gp",
@@ -1186,15 +1187,15 @@
     },
     {
      "name": "axe",
-     "quantity": null
+     "quantity": 1
     },
     {
      "name": "pickaxe",
-     "quantity": null
+     "quantity": 1
     },
     {
      "name": "bird snare",
-     "quantity": null
+     "quantity": 1
     }
    ]
   },
@@ -1214,7 +1215,7 @@
     },
     {
      "name": "rune scim",
-     "quantity": null
+     "quantity": 1
     }
    ],
    "target": {
@@ -1229,7 +1230,7 @@
    "items": [
     {
      "name": "axe",
-     "quantity": null
+     "quantity": 1
     },
     {
      "name": "rope",
@@ -1237,15 +1238,15 @@
     },
     {
      "name": "hammer",
-     "quantity": null
+     "quantity": 1
     },
     {
      "name": "stake (vampire slayer)",
-     "quantity": null
+     "quantity": 1
     },
     {
      "name": "spade",
-     "quantity": null
+     "quantity": 1
     }
    ]
   },
@@ -1310,11 +1311,11 @@
     },
     {
      "name": "wizard mind bomb",
-     "quantity": null
+     "quantity": 1
     },
     {
      "name": "lobster pot",
-     "quantity": null
+     "quantity": 1
     },
     {
      "name": "silk",
@@ -1922,16 +1923,20 @@
    },
    "items": [
     {
-     "name": "steel axe"
+     "name": "steel axe",
+     "quantity": 1
     },
     {
-     "name": "tinderbox"
+     "name": "tinderbox",
+     "quantity": 1
     },
     {
-     "name": "knife"
+     "name": "knife",
+     "quantity": 1
     },
     {
-     "name": "hammer"
+     "name": "hammer",
+     "quantity": 1
     },
     {
      "name": "clue hunter boots",
