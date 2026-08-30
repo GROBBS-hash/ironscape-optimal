@@ -1729,6 +1729,44 @@ public class IronscapePlugin extends Plugin
 		return (a.getY() >= SURFACE_MAX_Y) == (b.getY() >= SURFACE_MAX_Y);
 	}
 
+	/** Latch this target as reached, and remember it across a restart. */
+	private void rememberReached(WorldPoint target)
+	{
+		reachedTarget = target;
+		configManager.setConfiguration(CONFIG_GROUP, "reachedTarget",
+			target.getX() + "," + target.getY() + "," + target.getPlane());
+	}
+
+	/** Drop the latch: he has genuinely left, so the route is wanted again. */
+	private void forgetReached()
+	{
+		reachedTarget = null;
+		configManager.unsetConfiguration(CONFIG_GROUP, "reachedTarget");
+	}
+
+	/** "x,y,plane" back to a point; null on anything unreadable. */
+	static WorldPoint parsePoint(String stored)
+	{
+		if (stored == null)
+		{
+			return null;
+		}
+		String[] parts = stored.split(",");
+		if (parts.length != 3)
+		{
+			return null;
+		}
+		try
+		{
+			return new WorldPoint(Integer.parseInt(parts[0].trim()),
+				Integer.parseInt(parts[1].trim()), Integer.parseInt(parts[2].trim()));
+		}
+		catch (NumberFormatException e)
+		{
+			return null;
+		}
+	}
+
 	/**
 	 * Fewest tiles a suggested teleport must SAVE to be worth making, on
 	 * top of the 60% test. A percentage alone approves any short hop.
@@ -1956,6 +1994,13 @@ public class IronscapePlugin extends Plugin
 		// "minigame|region" from the previous session — restored on the
 		// first evaluation if the player is still standing in that region.
 		pendingPresenceRestore = configManager.getConfiguration(CONFIG_GROUP, "minigamePresence");
+		// "x,y,plane" of the target we last watched him reach. Session-only,
+		// this forgot everything on restart — and the one moment it matters
+		// most is a login INSIDE the place, where there is no arrival left to
+		// witness. He logged in inside the Rogues' Den maze and the resume
+		// drew him straight back out (owner, 2026-08-30).
+		reachedTarget = parsePoint(
+			configManager.getConfiguration(CONFIG_GROUP, "reachedTarget"));
 		registerUi();
 	}
 
@@ -7312,7 +7357,7 @@ public class IronscapePlugin extends Plugin
 				if (at != null && at.getPlane() == target.getPlane()
 					&& at.distanceTo2D(target) <= ARRIVED_RADIUS)
 				{
-					reachedTarget = target;
+					rememberReached(target);
 					logNavDecision("already at " + target + " — nothing to route");
 					return;
 				}
@@ -7322,7 +7367,7 @@ public class IronscapePlugin extends Plugin
 						&& at.distanceTo2D(target) > LEFT_RADIUS)
 					{
 						// Really gone, not merely inside. Ask again.
-						reachedTarget = null;
+						forgetReached();
 					}
 					else
 					{
