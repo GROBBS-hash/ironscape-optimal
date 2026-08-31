@@ -113,6 +113,9 @@ public class IronscapePanel extends PluginPanel
 	private CaptureHandler captureHandler;
 	private CaptureHandler safespotCaptureHandler;
 
+	/** Turn the nearest-person outline on or off for a captured ⌖. */
+	private java.util.function.BiConsumer<String, Boolean> outlineNpcHandler;
+
 	/** Set by the plugin; routes to a target (by annotation id) via Shortest Path. */
 	private Consumer<String> navigateHandler;
 
@@ -492,6 +495,11 @@ public class IronscapePanel extends PluginPanel
 	public void setSafespotCaptureHandler(CaptureHandler safespotCaptureHandler)
 	{
 		this.safespotCaptureHandler = safespotCaptureHandler;
+	}
+
+	public void setOutlineNpcHandler(java.util.function.BiConsumer<String, Boolean> handler)
+	{
+		this.outlineNpcHandler = handler;
 	}
 
 	public void setProgressChangedListener(Runnable progressChangedListener)
@@ -1099,7 +1107,8 @@ public class IronscapePanel extends PluginPanel
 			dependentSteps()::get,
 			earlierQuestLegs()::get,
 			chosenAlternativeSupplier,
-			alternativeHandler);
+			alternativeHandler,
+			outlineNpcHandler);
 	}
 
 	/**

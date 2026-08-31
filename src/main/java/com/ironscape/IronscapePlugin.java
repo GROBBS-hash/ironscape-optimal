@@ -2439,6 +2439,10 @@ public class IronscapePlugin extends Plugin
 		});
 		panel.setProgressChangedListener(this::maybeNavigateToNext);
 		panel.setCaptureHandler(this::captureLocation);
+		panel.setOutlineNpcHandler((annotationId, outline) -> {
+			annotationManager.setTargetOutlinesNpc(annotationId, outline);
+			panel.refresh();
+		});
 		panel.setSafespotCaptureHandler(this::captureSafespot);
 		panel.setClearTargetHandler(this::clearCapturedTarget);
 		panel.setNavigateHandler(this::navigateToStep);

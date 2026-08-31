@@ -1368,6 +1368,24 @@ class StepRow extends JPanel
 							});
 							menu.add(clear);
 						}
+						// A capture is a SPOT by default, because the nearest-person
+						// outline is a fallback for seeded pins that name nobody and
+						// aimed at your own tile it just crowns a passer-by. Someone
+						// pinning a shopkeeper wants it, so it is one click either way.
+						if (ctx.getOutlineNpcHandler() != null
+							&& ctx.getAnnotations().getTarget(annotationId) != null)
+						{
+							boolean on = ctx.getAnnotations().targetOutlinesNpc(annotationId);
+							javax.swing.JMenuItem outline = new javax.swing.JMenuItem(
+								on ? "Stop outlining the nearest person"
+									: "Outline the nearest person here");
+							outline.setToolTipText(on
+								? "This pin marks a place, not a person"
+								: "Use when the pin marks a shopkeeper or quest giver");
+							outline.addActionListener(a ->
+								ctx.getOutlineNpcHandler().accept(annotationId, !on));
+							menu.add(outline);
+						}
 						if (menu.getComponentCount() > 0)
 						{
 							menu.show(e.getComponent(), e.getX(), e.getY());

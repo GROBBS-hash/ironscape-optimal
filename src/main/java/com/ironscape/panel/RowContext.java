@@ -147,4 +147,10 @@ class RowContext
 	 * grind must not be forgotten by a restart.
 	 */
 	java.util.function.BiConsumer<String, net.runelite.api.coords.WorldPoint> alternativeHandler;
+
+	/**
+	 * Turn the nearest-person outline on or off for a step's captured ⌖.
+	 * Null if unwired.
+	 */
+	java.util.function.BiConsumer<String, Boolean> outlineNpcHandler;
 }

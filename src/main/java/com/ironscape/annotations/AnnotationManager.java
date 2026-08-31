@@ -426,8 +426,38 @@ public class AnnotationManager
 		target.y = point.getY();
 		target.plane = point.getPlane();
 		target.safespot = safespot ? Boolean.TRUE : null;
+		// A CAPTURE IS A SPOT, NOT A PERSON. An unflagged ⌖ nominates the
+		// nearest NPC within 4 tiles and hangs the step's item over them,
+		// which is a fallback built for SEEDED pins that name nobody -- aimed
+		// at a tile the player is standing on it just crowns whoever wandered
+		// past (owner, in play 2026-08-31: a citizen outlined in the middle of
+		// a Varlamore street). Someone capturing a shopkeeper can turn it back
+		// on from the ⌖ menu.
+		target.npc = Boolean.FALSE;
 		annotation.target = target;
 		saveLocal();
+	}
+
+	/**
+	 * Turn the nearest-person outline on or off for a captured ⌖.
+	 * No-op on a bundled pin: those are reviewed data, not the player's.
+	 */
+	public synchronized void setTargetOutlinesNpc(String stepId, boolean outline)
+	{
+		StepAnnotation l = local.get(stepId);
+		if (l == null || l.target == null)
+		{
+			return;
+		}
+		l.target.npc = outline ? Boolean.TRUE : Boolean.FALSE;
+		saveLocal();
+	}
+
+	/** Does this step's ⌖ currently outline the nearest person? */
+	public synchronized boolean targetOutlinesNpc(String stepId)
+	{
+		StepAnnotation.Target target = getTarget(stepId);
+		return target != null && !Boolean.FALSE.equals(target.npc);
 	}
 
 	/** Is the EFFECTIVE target (local over bundled) flagged as a safespot? */
