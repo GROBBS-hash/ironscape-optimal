@@ -7954,14 +7954,20 @@ public class IronscapePlugin extends Plugin
 	 */
 	private WorldPoint targetFor(GuideStep step, SubStep sub)
 	{
-		// AN ADOPTED ALTERNATIVE OUTRANKS EVERYTHING, including a captured ⌖:
+		// AN ADOPTED ALTERNATIVE OUTRANKS THE GUIDE'S OWN PIN:
 		// it is the player saying which of the routes this step offers he is
 		// actually taking, and the panel keeps showing which note is live. He
 		// was standing in Civitas illa Fortis with the route pulling him back
 		// to Pollnivneach (owner, in play 2026-08-31).
+		//
+		// A tile he CAPTURED still beats it: the note names a town and the
+		// capture names the spot. The Civitas illa Fortis pin is the town
+		// centre and the wealthy citizens are 50 tiles off it (owner, in play).
+
 		WorldPoint adopted = parsePoint(
 			progressManager.alternative(activeVariant, step.getId()));
-		if (adopted != null)
+		if (adopted != null && !annotationManager.hasOwnTarget(sub.getId())
+			&& !annotationManager.hasOwnTarget(step.getId()))
 		{
 			return adopted;
 		}

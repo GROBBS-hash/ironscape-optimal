@@ -342,13 +342,34 @@ public class PlaceManager
 	 */
 	public synchronized WorldPoint lastPlaceIn(String text)
 	{
+		Place place = lastPlaceMatchIn(text);
+		return place == null ? null : new WorldPoint(place.x, place.y, place.plane);
+	}
+
+	/**
+	 * The DISPLAY name of the place {@link #lastPlaceIn} answers with, so a
+	 * control can SAY where it is about to send you instead of making the
+	 * reader infer it from the sentence.
+	 *
+	 * <p>Shares its body with lastPlaceIn rather than repeating the matching
+	 * rules, which are subtle enough (transport networks excluded, quest
+	 * places only after a doing-verb) that two copies would drift.
+	 */
+	public synchronized String lastPlaceNameIn(String text)
+	{
+		Place place = lastPlaceMatchIn(text);
+		return place == null ? null : place.display;
+	}
+
+	private Place lastPlaceMatchIn(String text)
+	{
 		if (namePattern == null)
 		{
 			return null;
 		}
-		String lower = text.toLowerCase(Locale.ROOT).replace('’', '\'');
+		String lower = text.toLowerCase(Locale.ROOT).replace('\u2019', '\'');
 		Matcher matcher = namePattern.matcher(text);
-		WorldPoint last = null;
+		Place last = null;
 		while (matcher.find())
 		{
 			String key = key(matcher.group());
@@ -371,7 +392,7 @@ public class PlaceManager
 			{
 				continue;
 			}
-			last = new WorldPoint(place.x, place.y, place.plane);
+			last = place;
 		}
 		return last;
 	}

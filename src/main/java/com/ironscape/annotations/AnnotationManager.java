@@ -70,6 +70,19 @@ public class AnnotationManager
 	}
 
 	/** The step's target location, local file winning over bundled. Null if none. */
+	/**
+	 * Is this step's ⌖ one the PLAYER captured, rather than one we shipped?
+	 *
+	 * A capture is the most deliberate thing anyone can say about where a
+	 * step happens - he stood on the tile and pressed the button - so it
+	 * outranks even an adopted alternative, which only names a town.
+	 */
+	public synchronized boolean hasOwnTarget(String stepId)
+	{
+		StepAnnotation l = local.get(stepId);
+		return l != null && l.target != null && !Boolean.TRUE.equals(l.target.cleared);
+	}
+
 	public synchronized StepAnnotation.Target getTarget(String stepId)
 	{
 		StepAnnotation l = local.get(stepId);

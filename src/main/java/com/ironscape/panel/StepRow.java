@@ -129,6 +129,8 @@ class StepRow extends JPanel
 	/** An adoptable note: a quiet green edge, brighter once it is the route. */
 	private static final Color ALT_OFF = new Color(0x3d, 0x5c, 0x3d);
 	private static final Color ALT_ON = new Color(0x5f, 0xa8, 0x5f);
+	/** The caption on an unclaimed offer: readable, but not shouting. */
+	private static final Color ALT_OFF_TEXT = new Color(0x7f, 0xa8, 0x7f);
 	private static final Color ITEM_NAME_FG = new Color(0xc9, 0xc4, 0xbc);
 
 	private final GuideStep step;
@@ -389,8 +391,16 @@ class StepRow extends JPanel
 					+ " route the guide prescribes.</html>"
 				: "<html>Use this instead — routes here for this step until it is"
 					+ " done.<br>Click again to undo.</html>");
-			caption.setText(active ? "NOTE — ROUTING HERE" : "NOTE");
-			caption.setForeground(active ? ALT_ON : NOTE_LABEL_FG);
+			// SAY SO. The green edge alone was too quiet to read as a control
+			// (owner: "make it more apparent that our user can click"), and an
+			// offer nobody notices is the same as no offer. The caption states
+			// the action and names the destination, so it is obvious BOTH that
+			// the box does something and what it will do.
+			String where = ctx.getPlaces().lastPlaceNameIn(plainTextOf(runs));
+			caption.setText(active
+				? "▸ ROUTING HERE — CLICK TO UNDO"
+				: "▸ CLICK TO ROUTE HERE" + (where == null ? "" : " — " + where.toUpperCase(java.util.Locale.ROOT)));
+			caption.setForeground(active ? ALT_ON : ALT_OFF_TEXT);
 			final WorldPoint pick = offered;
 			final boolean wasActive = active;
 			java.awt.event.MouseAdapter adopt = new java.awt.event.MouseAdapter()
