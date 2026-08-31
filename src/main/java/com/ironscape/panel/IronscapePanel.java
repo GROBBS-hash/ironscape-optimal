@@ -148,6 +148,14 @@ public class IronscapePanel extends PluginPanel
 	/** sub-id -> "nothing can auto-tick this"; see RowContext.manualOnly. */
 	private java.util.function.Predicate<String> manualOnlySupplier;
 
+	/** step id -> the destination adopted from one of its notes; see RowContext. */
+	private java.util.function.Function<String, net.runelite.api.coords.WorldPoint>
+		chosenAlternativeSupplier;
+
+	/** Adopt or drop a note's destination for a step. */
+	private java.util.function.BiConsumer<String, net.runelite.api.coords.WorldPoint>
+		alternativeHandler;
+
 	// Toolbar (stays fixed while the content below scrolls)
 	private final JProgressBar progressBar = new JProgressBar();
 	private final IconTextField searchBar = new IconTextField();
@@ -467,6 +475,18 @@ public class IronscapePanel extends PluginPanel
 	public void setManualOnlySupplier(java.util.function.Predicate<String> supplier)
 	{
 		this.manualOnlySupplier = supplier;
+	}
+
+	public void setChosenAlternativeSupplier(
+		java.util.function.Function<String, net.runelite.api.coords.WorldPoint> supplier)
+	{
+		this.chosenAlternativeSupplier = supplier;
+	}
+
+	public void setAlternativeHandler(
+		java.util.function.BiConsumer<String, net.runelite.api.coords.WorldPoint> handler)
+	{
+		this.alternativeHandler = handler;
 	}
 
 	public void setSafespotCaptureHandler(CaptureHandler safespotCaptureHandler)
@@ -1077,7 +1097,9 @@ public class IronscapePanel extends PluginPanel
 			this::questStep,
 			() -> jumpToCurrent(true),
 			dependentSteps()::get,
-			earlierQuestLegs()::get);
+			earlierQuestLegs()::get,
+			chosenAlternativeSupplier,
+			alternativeHandler);
 	}
 
 	/**

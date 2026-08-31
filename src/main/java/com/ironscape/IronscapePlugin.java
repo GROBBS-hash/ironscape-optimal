@@ -2339,6 +2339,17 @@ public class IronscapePlugin extends Plugin
 		// tests the completion loop makes, so the label can never disagree
 		// with the behaviour it describes -- which it silently did for a
 		// while, because completion paths were added here and not there.
+		panel.setChosenAlternativeSupplier(stepId ->
+			parsePoint(progressManager.alternative(activeVariant, stepId)));
+		panel.setAlternativeHandler((stepId, point) -> {
+			progressManager.setAlternative(activeVariant, stepId, point == null ? null
+				: point.getX() + "," + point.getY() + "," + point.getPlane());
+			// The route is the whole point of the click, so re-post at once
+			// rather than waiting for the next thing to change.
+			forgetReached();
+			clientThread.invoke(this::maybeNavigateToNext);
+			panel.refresh();
+		});
 		panel.setManualOnlySupplier(subId -> {
 			if (hasAnyGoal(subId))
 			{
@@ -5866,6 +5877,9 @@ public class IronscapePlugin extends Plugin
 	/** A whole step completed by its skill requirement annotation. */
 	private void completeStep(GuideStep step, String reason)
 	{
+		// The choice belonged to this step; keeping it would quietly re-apply
+		// on a re-run of the guide.
+		progressManager.setAlternative(activeVariant, step.getId(), null);
 		// ALWAYS logged (even silent login-grace catch-ups): when a stray
 		// tick drags the frontier ahead, this line is the forensic trail.
 		log.info("auto-completed step {} ({}){}: {}", step.getId(), reason,
@@ -7940,6 +7954,17 @@ public class IronscapePlugin extends Plugin
 	 */
 	private WorldPoint targetFor(GuideStep step, SubStep sub)
 	{
+		// AN ADOPTED ALTERNATIVE OUTRANKS EVERYTHING, including a captured ⌖:
+		// it is the player saying which of the routes this step offers he is
+		// actually taking, and the panel keeps showing which note is live. He
+		// was standing in Civitas illa Fortis with the route pulling him back
+		// to Pollnivneach (owner, in play 2026-08-31).
+		WorldPoint adopted = parsePoint(
+			progressManager.alternative(activeVariant, step.getId()));
+		if (adopted != null)
+		{
+			return adopted;
+		}
 		StepAnnotation.Target target = annotationManager.getTarget(sub.getId());
 		if (target == null)
 		{

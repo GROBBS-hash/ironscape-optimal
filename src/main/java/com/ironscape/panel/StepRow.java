@@ -6,6 +6,7 @@ import com.ironscape.guide.GuideStep;
 import com.ironscape.items.ItemTracker;
 import com.ironscape.guide.SubStep;
 import com.ironscape.guide.TextRun;
+import net.runelite.api.coords.WorldPoint;
 import com.ironscape.places.PlaceManager;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -125,6 +126,9 @@ class StepRow extends JPanel
 	/** Warning chips — the same red the missing-item counts use (MISSING_HEX). */
 	private static final Color WARN_FG = new Color(0xe5, 0x73, 0x73);
 	private static final Color NOTE_LABEL_FG = new Color(0x87, 0x7e, 0x6f);
+	/** An adoptable note: a quiet green edge, brighter once it is the route. */
+	private static final Color ALT_OFF = new Color(0x3d, 0x5c, 0x3d);
+	private static final Color ALT_ON = new Color(0x5f, 0xa8, 0x5f);
 	private static final Color ITEM_NAME_FG = new Color(0xc9, 0xc4, 0xbc);
 
 	private final GuideStep step;
@@ -305,6 +309,17 @@ class StepRow extends JPanel
 	 * italic, not #808080. A leading "Note:" in the prose is dropped
 	 * because the caption already says it.
 	 */
+	/** A paragraph's words, for asking PlaceManager what it names. */
+	private static String plainTextOf(List<TextRun> runs)
+	{
+		StringBuilder sb = new StringBuilder();
+		for (TextRun run : runs)
+		{
+			sb.append(run.getText());
+		}
+		return sb.toString();
+	}
+
 	private JPanel noteBlock(List<TextRun> paragraph)
 	{
 		List<TextRun> runs = paragraph;
@@ -345,10 +360,60 @@ class StepRow extends JPanel
 		JPanel box = new JPanel();
 		box.setLayout(new BoxLayout(box, BoxLayout.Y_AXIS));
 		box.setBackground(BOX_BG);
-		box.setBorder(BorderFactory.createEmptyBorder(3, 6, 4, 4));
 		box.setAlignmentX(LEFT_ALIGNMENT);
 		box.add(caption);
 		box.add(text);
+
+		// A NOTE THAT NAMES A PLACE IS AN OFFER. Taking the alternative used to
+		// mean fighting the panel for the rest of the step -- standing in
+		// Civitas illa Fortis with the route still pulling back to Pollnivneach,
+		// because the step's pin is the one the guide prescribes. Clicking the
+		// box adopts its destination for this step; clicking again gives it back.
+		//
+		// The LAST place named wins: a note narrows as it goes ("thieve in
+		// Varlamore ... Wealthy citizens in Civitas illa Fortis"), so the last
+		// one is the specific spot and the first is the region it sits in.
+		WorldPoint offered = ctx.getPlaces() == null ? null
+			: ctx.getPlaces().lastPlaceIn(plainTextOf(runs));
+		WorldPoint chosen = ctx.getChosenAlternative() == null ? null
+			: ctx.getChosenAlternative().apply(step.getId());
+		boolean active = offered != null && offered.equals(chosen);
+		if (offered != null && ctx.getAlternativeHandler() != null)
+		{
+			box.setBorder(BorderFactory.createCompoundBorder(
+				BorderFactory.createLineBorder(active ? ALT_ON : ALT_OFF, 1),
+				BorderFactory.createEmptyBorder(2, 5, 3, 3)));
+			box.setCursor(java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.HAND_CURSOR));
+			box.setToolTipText(active
+				? "<html>Routing here for this step.<br>Click to go back to the"
+					+ " route the guide prescribes.</html>"
+				: "<html>Use this instead — routes here for this step until it is"
+					+ " done.<br>Click again to undo.</html>");
+			caption.setText(active ? "NOTE — ROUTING HERE" : "NOTE");
+			caption.setForeground(active ? ALT_ON : NOTE_LABEL_FG);
+			final WorldPoint pick = offered;
+			final boolean wasActive = active;
+			java.awt.event.MouseAdapter adopt = new java.awt.event.MouseAdapter()
+			{
+				@Override
+				public void mouseClicked(java.awt.event.MouseEvent e)
+				{
+					if (javax.swing.SwingUtilities.isLeftMouseButton(e))
+					{
+						ctx.getAlternativeHandler().accept(step.getId(), wasActive ? null : pick);
+					}
+				}
+			};
+			box.addMouseListener(adopt);
+			caption.addMouseListener(adopt);
+			// The text pane swallows clicks (it carries the place links), so the
+			// caption and the box margin are the handle. A link still wins where
+			// there is one, which is the right precedence: a link goes there ONCE.
+		}
+		else
+		{
+			box.setBorder(BorderFactory.createEmptyBorder(3, 6, 4, 4));
+		}
 
 		// Transparent wrapper carries the sub-text indent; capping max
 		// height stops BoxLayout stretching the box over trailing space.

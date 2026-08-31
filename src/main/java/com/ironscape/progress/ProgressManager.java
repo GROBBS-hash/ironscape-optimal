@@ -364,6 +364,7 @@ public class ProgressManager
 		manualCache.clear();
 		emoteCache.clear();
 		positionCache.clear();
+		alternativeCache.clear();
 	}
 
 	private Set<String> completedIds(GuideVariant variant)
@@ -541,6 +542,93 @@ public class ProgressManager
 	private static String manualKey(GuideVariant variant)
 	{
 		return "manual_" + variant.name();
+	}
+
+	/**
+	 * Step id -> "x,y,plane": the destination the player adopted from one of
+	 * that step's notes, in place of the route the guide prescribes.
+	 *
+	 * Persisted because it is a decision about how to play, not a click: he
+	 * chose to thieve in Varlamore rather than Pollnivneach, and a grind that
+	 * long outlives several restarts. Cleared when the step completes, so the
+	 * choice cannot leak into the next run of the guide.
+	 */
+	private final Map<GuideVariant, Map<String, String>> alternativeCache = new EnumMap<>(GuideVariant.class);
+
+	public synchronized String alternative(GuideVariant variant, String stepId)
+	{
+		return alternativesFor(variant).get(stepId);
+	}
+
+	public synchronized void setAlternative(GuideVariant variant, String stepId, String point)
+	{
+		Map<String, String> all = alternativesFor(variant);
+		if (point == null)
+		{
+			all.remove(stepId);
+		}
+		else
+		{
+			all.put(stepId, point);
+		}
+		String encoded = encodeStrings(all);
+		if (encoded.isEmpty())
+		{
+			configManager.unsetConfiguration(CONFIG_GROUP, alternativeKey(variant));
+		}
+		else
+		{
+			configManager.setConfiguration(CONFIG_GROUP, alternativeKey(variant), encoded);
+		}
+	}
+
+	private Map<String, String> alternativesFor(GuideVariant variant)
+	{
+		return alternativeCache.computeIfAbsent(variant,
+			v -> decodeStrings(configManager.getConfiguration(CONFIG_GROUP, alternativeKey(v))));
+	}
+
+	private static String alternativeKey(GuideVariant variant)
+	{
+		return "alternative_" + variant.name();
+	}
+
+	/** "id=value|id=value". Values here are coordinates, so neither char occurs. */
+	static String encodeStrings(Map<String, String> values)
+	{
+		StringBuilder sb = new StringBuilder();
+		for (Map.Entry<String, String> entry : values.entrySet())
+		{
+			if (entry.getKey().indexOf('=') >= 0 || entry.getKey().indexOf('|') >= 0
+				|| entry.getValue().indexOf('=') >= 0 || entry.getValue().indexOf('|') >= 0)
+			{
+				continue;   // unencodable: drop it rather than corrupt the whole line
+			}
+			if (sb.length() > 0)
+			{
+				sb.append('|');
+			}
+			sb.append(entry.getKey()).append('=').append(entry.getValue());
+		}
+		return sb.toString();
+	}
+
+	static Map<String, String> decodeStrings(String encoded)
+	{
+		Map<String, String> values = new LinkedHashMap<>();
+		if (encoded == null || encoded.isEmpty())
+		{
+			return values;
+		}
+			for (String pair : encoded.split("[|]"))
+		{
+			int eq = pair.indexOf('=');
+			if (eq > 0 && eq < pair.length() - 1)
+			{
+				values.put(pair.substring(0, eq), pair.substring(eq + 1));
+			}
+		}
+		return values;
 	}
 
 	private Map<String, Integer> baselineFor(GuideVariant variant)

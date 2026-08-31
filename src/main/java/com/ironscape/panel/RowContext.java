@@ -128,4 +128,23 @@ class RowContext
 	 * splits across non-adjacent steps, not just the one that exposed it.
 	 */
 	java.util.function.Function<String, com.ironscape.guide.GuideStep> earlierQuestLeg;
+
+	/**
+	 * Step id -> the destination the player CHOSE from one of that step's
+	 * notes, or null. Null if unwired.
+	 *
+	 * A note is very often where the alternative route lives ("ALTERNATIVE:
+	 * thieve in Varlamore instead"), and taking it used to mean fighting the
+	 * panel for the rest of the step: he was standing in Civitas illa Fortis
+	 * and the route kept pulling him back to Pollnivneach, because the step's
+	 * own pin is the one the guide prescribes (owner, in play 2026-08-31).
+	 */
+	java.util.function.Function<String, net.runelite.api.coords.WorldPoint> chosenAlternative;
+
+	/**
+	 * Adopt (or, with a null point, drop) a note's destination as this step's
+	 * route. Persisted per profile: a choice about how to play a two-hour
+	 * grind must not be forgotten by a restart.
+	 */
+	java.util.function.BiConsumer<String, net.runelite.api.coords.WorldPoint> alternativeHandler;
 }
