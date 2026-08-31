@@ -757,6 +757,140 @@ refresh when "Failed to login" appears.
   capture; hub pin at b8c994d, now ~70 commits behind — bump after a
   calm session.
 
+- SESSION WAVE 32 (2026-08-27..31, long live play-test 301 -> 305; main at
+  **`b094b21`**, **16** commits since wave 31, PUSHED; **hub pin BUMPED to
+  `b094b21`, `build` check PASSING** — gap 0):
+  **THE THEME IS THAT SIX SEPARATE REPORTS WERE ONE SHAPE: the plugin knew the
+  answer and had no way to be told, or told nobody.** Every fix below is a
+  channel that was missing rather than a rule that was wrong.
+  **THE SESSION OPENED IN THE WRONG FOLDER AGAIN** — a Next.js repo on the
+  Desktop, exactly as wave 31 recorded. Whatever shortcut launches these still
+  points at it. Moved before anything else.
+  **TEMPOROSS: THE AUDIT HAD BEEN RIGHT FOR WEEKS.** He reported the route
+  simply not working, and teleporting away not fixing it. GPS walked to the
+  Ruins of Unkah, climbed the rope ladder onto the docked ship, and then had a
+  hundred tiles of open water left: the cove is an ISLAND and both
+  `places.json` keys sat on it. `audit-pin-reachability` had been listing both
+  under WRONG SPOT, with a suggested re-anchor, the entire time. Re-anchored on
+  the rope ladder itself (**3135,2840**, object 41305) plus a ⌖ on the step.
+  **Wave 31 learned this same lesson and it did not stick: read the audits
+  against the step about to be PLAYED.**
+  **`::ironreload` HAD BEEN LYING SINCE DX-1 SHIPPED IN WAVE 23.** Five rogue
+  outfit rows drew no sprites after a reload that reported success, because
+  `item_ids.json` was read straight off the classpath. THREE MORE were in the
+  same state and **two of them are re-read BY the reload itself** — the guide
+  data, `minigame_landings.json`, `gear_sets.json`. Every edit to any of them
+  has quietly needed a rebuild for nine waves. All four go through `DataFiles`
+  now. **A SECOND SILENT MISS underneath:** the override folder is searched by
+  FILE NAME while callers pass whatever `getResourceAsStream` wants, so an
+  absolute resource path matched nothing and fell back to the jar — the
+  landings fix would have compiled and done nothing. And the item caches
+  outlived a reload; the icon memo is the one that matters, because it caches
+  the ANSWER, so a name that once resolved to no sprite stays that way.
+  `DataFilesRoutingTest`, both halves VERIFIED TO FAIL with the fixes backed
+  out. **Any data file added from here must go through DataFiles; the test
+  fails the build if it does not.**
+  **"2.4M GP" WAS READ AS "4M GP"** and the badge said 4,000,000. The digit
+  group could not cross a decimal point, so the match restarted AFTER it and
+  the FRACTION became the whole number — worse than dropping it, because "4m"
+  is a well-formed quantity nothing downstream had reason to doubt. MEASURED
+  BEFORE FIXING: **all EIGHT decimal quantities in the guide were wrong the
+  same way**, four on real steps, and not all money ("1.2k buckets of sand"
+  asked for 2,000; "6.2k maples" for 2,000). A bare fraction with no suffix is
+  rejected rather than rounded.
+  **A PIN IS OFTEN THE WAY IN, AND REACHING IT IS THE ANSWER TO IT.** The
+  Rogues' Den pin is the surface trapdoor — correct for getting there — so
+  while he was in the maze the route redrew to it every ten ticks. Wave 30's
+  20-tile suppression cannot help: underground sits at y + 6400, so he was 20
+  tiles away in the sense that matters and 1,500 in the sense the arithmetic
+  uses. Reaching a target now latches it. **THE FIRST VERSION FORGOT AT
+  EXACTLY THE MOMENT IT WAS NEEDED** — it armed only when we WATCHED him
+  arrive, and it lived in memory, while a login INSIDE the place is precisely
+  the case with no arrival left to witness. Stored now, the way minigame
+  presence already is; released when he is far from it ON THE SAME BAND, which
+  is what separates "gone" from "inside". **The rule was right and its lifetime
+  was wrong — ask how long a piece of state has to live, not only what it
+  says.**
+  **THE ROGUE OUTFIT, AND WHAT A FINISH LINE IS.** "Do the rogue's den
+  minigame" read "tick by hand" and the owner asked the obvious question: the
+  five pieces have ids, so watch for them. Nothing stopped it. Names came off
+  RuneLite's own id -> name cache, NOT the gameval constants, which here are
+  internal codenames (5554 is ROGUESDEN_HELM and displays as "Rogue mask") —
+  `audit-goals` flagged three on exactly that mismatch, and the independent
+  name-level section is what actually proves counting works. Then he asked for
+  lockpicks 0/50, which could not simply be added: on a `completeOnItems` step
+  the list IS the completion condition, so 50 lockpicks would have held the
+  step shut. New **`ItemNeed.excludeFromCompletion`** — shown, counted, badged,
+  not part of the finish line — guarded against the all-excluded hole, which is
+  the same shape wave 31 found in the level branch.
+  **"NOTHING HERE TO DETECT" WAS TWO COMPLETION PATHS OUT OF DATE.** Its own
+  comment claims it makes the SAME tests as the completion loop. It had never
+  heard of `completeOnItems`, and it read skill requirements from the sub key
+  while **47 of the 48 are keyed by STEP** — so steps called themselves
+  hand-ticks while the loop was ticking them.
+  **A ROUTE IS NOT PERMISSION TO USE THE TELEPORT IT PICKS.** Clicking
+  Varlamore from the Rogues' Den lit up Mage Training Arena — an entry whose
+  own subtitle reads "Speak to the Entrance Guardian first". NOT our matcher:
+  the log shows GPS planned MTA -> Primio -> Civitas illa Fortis and we relayed
+  its first leg, while our OWN ranking declined that leg on the same tick. Same
+  shape as wave 27's 33-tile Falador teleport. We now point only at a minigame
+  we have MODELLED (it has a landing in `minigame_landings.json`) and re-apply
+  `minigameLandingAvailable`. CONFIRMED IN PLAY on Giants' Foundry within the
+  hour.
+  **THE ALTERNATIVE LIVES IN THE NOTE, AND NOTES HAD NO ROUTES.** He took the
+  Varlamore route, arrived in Civitas illa Fortis, and then fought the panel
+  for the rest of the step. Notes now get the same place links the step text
+  has (the note block was passing null where every other caller passes the
+  linkifier), and **a note box that names a place is clickable: it adopts that
+  destination for the step**, persisted per profile, dropped when the step
+  completes. The LAST place named wins, because a note narrows as it goes. Two
+  follow-ups, both his: the green edge was too quiet, so the caption now states
+  the action and names the destination; and **a captured ⌖ beats an adopted
+  note**, a precedence I got wrong the same morning — a note names a TOWN and
+  the town pin is its centre, 50 tiles from the wealthy citizens.
+  **A CAPTURED PIN MARKS A SPOT, NOT WHOEVER WALKED PAST IT.** His capture
+  outlined a citizen in the street. That outline is a fallback for SEEDED pins
+  whose step names nobody; aimed at your own tile it crowns a passer-by, which
+  is why wave 29 had to settle 41 bundled pins by hand. Captures write
+  `npc:false` now, with a ⌖ menu toggle for the shopkeeper case. His existing
+  capture was patched in place so a reload fixed it without waiting for a
+  build.
+  **19 CARRY KITS NO BANK STOP COULD ACT ON, NOW 2**, and the corpus answered
+  most of it about itself: of 36 distinct names, 25 are numbered on some other
+  step and 18 say 1 every time. Money, food and runes left alone — the class
+  the skip exists for. **ONE STEP SKIPPED WHOLE, and it is the trap in this
+  job: a number is what ARMS the purchase gate**, so numbering the spade on
+  "Buy 2 ropes ... from ardy general store" would have wedged that step shut
+  waiting to see a spade acquired.
+  **THE SOUNDS WERE NOT OURS**, and his own config settled it rather than an
+  argument: Idle Notifier with animation-idle on at volume 100, in an activity
+  that is nothing but short animations. Watchdog disabled, loot-filter
+  notifications off, and our notifier only fires on a Quest Helper handoff,
+  none of which happened. **I over-claimed and corrected within the hour** —
+  that setting carries `sendWhenFocused:false`, so it only fits if he was
+  tabbed away. He confirmed it was the fix.
+  **PROCESS, and one of these cost real time:** hand-escaping through the shell
+  failed FIVE times — a JS regex, a Java string, and a `sed` where `\|` is
+  ALTERNATION and silently corrupted six unrelated lines of ProgressManager
+  (restored from git and redone). Both rules that work were already written
+  down: write the script to a FILE, and use escape-free patterns (`[|]`, never
+  an escaped pipe). A `while` loop scanning for a tab-brace line hung for two
+  minutes because the file had turned CRLF under a stash round-trip — detect
+  the file's own newline every time. And **gradle's exit code through a pipe is
+  the pipe's**, which reported EXIT=0 over a failed build; read
+  `build/test-results/*.xml` (**140** now, up from 132).
+  **CONFIRMED IN PLAY:** the Tempoross ladder route; step 304 auto-ticking on
+  the full outfit; lockpicks 15/50; GP reading 2,400,000; the note links; the
+  adopted alternative; the ⌖ beating it; the relay gate declining Giants'
+  Foundry; the idle-notifier diagnosis.
+  **OPEN:** the note caption and the capture `npc:false` default are UNPLAYED;
+  the "Civitas illa Fortis" note text is NOT in the guide payload (grep finds
+  no "civitas"), so it must arrive from an annotation note — worth knowing
+  before anyone seeds against it; bundling the Varlamore spot is DELIBERATELY
+  NOT DONE, because a ⌖ on that step would switch every user off the guide's
+  prescribed Pollnivneach route; 10 wrong-spot pins and 39 no-route steps
+  still stand.
+
 - SESSION WAVE 31 (2026-08-26, short live session at position 301 -> he played
   Tempoross; main at **`3afe7fe`**, **3** commits, PUSHED; hub pin still
   `bc23c9b`, gap **4**): **THE THEME IS THAT AN AUDIT HAD BEEN REPORTING THE

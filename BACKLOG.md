@@ -12,7 +12,59 @@ Screenshots `SS-01` … `SS-20` in `docs/screenshots/`.
 
 ---
 
-## START HERE — next session (written 2026-08-26, end of wave 31)
+## START HERE — next session (written 2026-08-31, end of wave 32)
+
+Main at **`b094b21`**, PUSHED, tree clean. **16 commits this session.** Hub pin
+**BUMPED to `b094b21`** and its `build` check PASSES — **gap 0**, verified from
+a FRESH CLONE at that sha rather than the working tree.
+
+Before ANY gradle command: `node tools/check-client.mjs`.
+Before handing over a build: `node tools/check-all.mjs --tests`, reading the
+COUNT from `build/test-results/*.xml` (**140** at the end of this session).
+For data-only fixes: edit the repo file, have him type `::ironreload` — and it
+now actually works for the guide data, item ids, gear sets and minigame
+landings, none of which honoured the data folder before this session.
+**Build in a throwaway `git worktree` when the client is live.**
+
+**HE IS AT POSITION 305**, blackjacking / Varlamore thieving to 2.4m GP. That
+is a long grind, so the next play session may not move far — good time for desk
+work.
+
+**UNPLAYED, and both fail QUIETLY:**
+
+1. **The note caption** — "CLICK TO ROUTE HERE — <PLACE>", and "ROUTING HERE —
+   CLICK TO UNDO" once taken.
+2. **Captures now write `npc:false`** — a new ⌖ should outline nobody, and the
+   right-click menu offers the outline back for a shopkeeper pin.
+
+**THE LESSON THIS SESSION KEEPS RE-TEACHING:** an audit that has been reporting
+a fault for weeks is worth nothing until someone reads it against the step
+about to be played. Tempoross was listed under WRONG SPOT the whole time. Wave
+31 wrote this down; it still happened.
+
+**AND THE ONE THAT COST REAL TIME:** hand-escaping through the shell failed
+five times, including a `sed` where `\|` is ALTERNATION and silently corrupted
+six unrelated lines. Write the script to a FILE; use escape-free patterns
+(`[|]`). Detect the file's own newline — a stash round-trip turns things CRLF.
+And never read gradle's exit code through a pipe.
+
+**BUILD NEXT, when there is desk time:**
+
+- **The 10 wrong-spot pins** `audit-pin-reachability` still reports. They fail
+  silently — you end up slightly off and never learn why.
+- **Throne of Miscellania's three emotes** still need a way to say WHICH step
+  owns which; the annotation holds one name.
+- **Where does the "Civitas illa Fortis" note text come from?** It is NOT in
+  the guide payload — grep finds no "civitas" — so it must arrive from an
+  annotation note. Worth knowing before anyone seeds against those notes.
+
+**DELIBERATELY NOT DONE:** bundling the Varlamore thieving pin. A ⌖ on step 305
+would switch EVERY user off the guide's prescribed Pollnivneach route. The
+adopted-note mechanism is the right home for an alternative; a step pin is not.
+
+---
+
+## Previous START HERE (written 2026-08-26, end of wave 31)
 
 Main at **`3afe7fe`**, PUSHED, tree clean. **3 commits this session.** Hub pin
 still `bc23c9b` — gap **4**.
