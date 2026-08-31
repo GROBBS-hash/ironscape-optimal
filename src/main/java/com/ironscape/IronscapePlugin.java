@@ -8682,7 +8682,37 @@ public class IronscapePlugin extends Plugin
 		String minigameSuffix = " Minigame Teleport";
 		if (display.endsWith(minigameSuffix))
 		{
-			activeMinigameTarget = display.substring(0, display.length() - minigameSuffix.length());
+			String minigame = display.substring(0, display.length() - minigameSuffix.length());
+			// A ROUTE IS NOT PERMISSION. The router costs a minigame teleport as
+			// nearly free and does not know which ones this account has unlocked:
+			// from the Rogues' Den it planned Mage Training Arena -> Primio ->
+			// Civitas illa Fortis for a Varlamore click, and we lit up an entry
+			// whose own subtitle read "Speak to the Entrance Guardian first"
+			// (owner, in play 2026-08-31).
+			//
+			// Two tests, and the first is the one that generalises: we only point
+			// at a minigame we have MODELLED, meaning it has a landing in
+			// minigame_landings.json. That file is the curated, owner-confirmed
+			// list, so an unlisted minigame is one we know nothing about -- and
+			// pointing at a teleport the game will refuse is worse than pointing
+			// at nothing. The second reuses the entry gates our own ranking
+			// already applies, so a relayed leg and a proposed one are held to the
+			// same standard (the wave 27 rule for the distance floor, one field
+			// over).
+			if (!minigameLandings.containsKey(minigame))
+			{
+				logRouterChoice("first leg is the " + minigame
+					+ " minigame teleport, which we have no landing for — not pointing"
+					+ " at a teleport we cannot vouch for");
+				return false;
+			}
+			if (!minigameLandingAvailable(minigame))
+			{
+				logRouterChoice("first leg is the " + minigame
+					+ " minigame teleport, which this account has not unlocked");
+				return false;
+			}
+			activeMinigameTarget = minigame;
 			activeSpellTeleport = -1;
 			routeHomeTeleportHint = false;
 			activeTeleportItem = null;
