@@ -143,19 +143,4 @@ public interface IronscapeConfig extends Config
 		return true;
 	}
 
-	/**
-	 * Developer escape hatch, empty for everyone else. See DataFiles: with
-	 * a folder set, the guide data, annotations and places are read from
-	 * there instead of the jar, so a data correction needs no rebuild and
-	 * no restart — type ::ironreload in game and it is live.
-	 */
-	@ConfigItem(
-		keyName = "dataFolder",
-		name = "Data folder (developer)",
-		description = "Read annotations and places from this folder instead of the bundled copies. Leave empty unless you are editing the plugin's data. Type ::ironreload in game to re-read them"
-	)
-	default String dataFolder()
-	{
-		return "";
-	}
 }

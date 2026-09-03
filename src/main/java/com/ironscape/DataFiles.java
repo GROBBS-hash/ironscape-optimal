@@ -1,132 +1,39 @@
 package com.ironscape;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.stream.Stream;
-import lombok.extern.slf4j.Slf4j;
 
 /**
- * Where the plugin's DATA files come from — the bundled copy inside the
- * jar normally, or a folder on disk when one is configured.
+ * Where the plugin's DATA files come from: the copy bundled in the jar.
  *
- * <p>Why this exists: most corrections to this plugin are data, not code.
- * A wrong item in a quest kit, a map pin in the wrong place, a note, an
- * item the quest actually hands you — all of it lives in JSON that is
- * compiled into the jar. So changing one character used to mean a full
- * rebuild and a client restart, mid play-test, which on 2026-08-10 cost
- * three restarts in one evening.
+ * <p>This class used to support a configurable "data folder" that overrode
+ * the bundled files, so a data-only correction could be made in a checkout
+ * and picked up with {@code ::ironreload} instead of a rebuild. Plugin Hub
+ * review rejected it on 2026-09-02 — reading from a directory the user
+ * names is outside the plugin's own subdirectory of {@code .runelite}, and
+ * the rule there is that all file I/O stays within it. The feature is gone
+ * rather than narrowed, which is what the reviewer asked for.
  *
- * <p>Point {@code dataFolder} at a checkout's resources directory and the
- * files there win over the bundled ones, so an edit plus {@code ::ironreload}
- * is visible immediately with the repository still the single source of
- * truth. Empty by default, so a normal install reads the jar and nothing
- * about this class is reachable.
- *
- * <p>Lookup is by FILE NAME, searched recursively, because the resources
- * live in per-topic subfolders (annotations/, places/, items/) and asking
- * the caller to know its own subfolder would just be a second thing to
- * keep in step. Names are unique across those folders. Results are cached
- * so a reload does not re-walk the tree per file; {@link #setFolder}
- * clears the cache.
+ * <p>The class is kept as the single door every bundled data read goes
+ * through, so if that rule ever changes there is one place to change, and
+ * so a reader can see at a glance that data comes from the jar and nowhere
+ * else. Files the plugin WRITES (captured pins, local places, the guide
+ * manifest, bank snapshots, problem reports) live in
+ * {@code ~/.runelite/ironscape/} and are unaffected.
  */
-@Slf4j
 public final class DataFiles
 {
 	private DataFiles()
 	{
 	}
 
-	private static volatile File folder;
-	private static final Map<String, File> RESOLVED = new HashMap<>();
-
-	/** Empty or missing path = bundled files only (the normal case). */
-	public static synchronized void setFolder(String path)
-	{
-		RESOLVED.clear();
-		if (path == null || path.trim().isEmpty())
-		{
-			folder = null;
-			return;
-		}
-		File candidate = new File(path.trim());
-		if (!candidate.isDirectory())
-		{
-			log.warn("Data folder '{}' is not a directory — using bundled files", path);
-			folder = null;
-			return;
-		}
-		folder = candidate;
-		log.info("Data folder set: {} — files there override the bundled copies", candidate);
-	}
-
-	/** Is an override folder in force? Used only to describe the state in chat. */
-	public static boolean overriding()
-	{
-		return folder != null;
-	}
-
 	/**
-	 * The named data file: the override folder's copy if it has one, else
-	 * the resource bundled beside {@code anchor}. Null when neither
-	 * exists, which callers already treat as "this corpus is absent".
-	 *
-	 * <p>An unreadable override falls back to the bundled copy rather than
-	 * failing: a half-written file saved mid-edit must not blank the
-	 * plugin's data.
+	 * The named data file from the jar, resolved against {@code anchor}'s
+	 * package the way {@link Class#getResourceAsStream} does. Null when
+	 * there is no such resource, which callers already treat as "this
+	 * corpus is absent".
 	 */
 	public static InputStream open(Class<?> anchor, String name)
 	{
-		File override = resolve(name);
-		if (override != null)
-		{
-			try
-			{
-				return new FileInputStream(override);
-			}
-			catch (IOException e)
-			{
-				log.warn("Could not read override {} — falling back to the bundled copy", override, e);
-			}
-		}
 		return anchor.getResourceAsStream(name);
-	}
-
-	private static synchronized File resolve(String name)
-	{
-		File root = folder;
-		if (root == null)
-		{
-			return null;
-		}
-		if (RESOLVED.containsKey(name))
-		{
-			return RESOLVED.get(name);
-		}
-		// Match on the FILE NAME alone. Callers pass whatever getResourceAsStream
-		// wants, which is sometimes package-relative ("item_ids.json") and
-		// sometimes absolute ("/com/ironscape/places/minigame_landings.json").
-		// Comparing the absolute form against a file name never matches, and the
-		// miss is SILENT — it just falls back to the jar, so the override looks
-		// configured and does nothing.
-		String leaf = name.substring(name.lastIndexOf('/') + 1);
-		File found = null;
-		try (Stream<Path> tree = Files.walk(root.toPath(), 6))
-		{
-			found = tree.filter(Files::isRegularFile)
-				.filter(p -> p.getFileName().toString().equals(leaf))
-				.findFirst().map(Path::toFile).orElse(null);
-		}
-		catch (IOException e)
-		{
-			log.warn("Could not search data folder {}", root, e);
-		}
-		RESOLVED.put(name, found);
-		return found;
 	}
 }

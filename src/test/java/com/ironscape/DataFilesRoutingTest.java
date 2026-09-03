@@ -10,48 +10,97 @@ import java.util.List;
 import java.util.stream.Stream;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Every hand-editable data file must be read through {@link DataFiles}.
+ * Bundled data is read from the jar, through one door, and from nowhere
+ * else on disk.
  *
- * <p>That is what makes {@code ::ironreload} work: DataFiles looks in the
- * configured folder first, so an edit in the repo checkout wins over the
- * copy baked into the jar. A file read straight off the classpath instead
- * quietly ignores the folder — the reload prints its success line, the
- * plugin re-reads the jar, and nothing changes.
+ * <p>Plugin Hub review, 2026-09-02: "all file i/o must occur within a
+ * plugin-specific subdir within .runelite", and specifically that the
+ * configurable data folder this class used to support "is not going to be
+ * allowed". That folder let a data-only fix be picked up with
+ * {@code ::ironreload} instead of a rebuild, and it is gone. These tests
+ * exist so it cannot come back by accident, since the cost of finding out
+ * is a rejected submission days later.
  *
- * <p>Four files were in that state until 2026-08-27: the guide data,
- * minigame_landings.json, item_ids.json and gear_sets.json. The owner
- * found it the ordinary way — five item rows with no sprites after a
- * reload that said it had worked.
+ * <p>Files the plugin WRITES are a different question and are fine: they
+ * live in {@code ~/.runelite/ironscape/}, which is exactly what the rule
+ * asks for.
  */
 public class DataFilesRoutingTest
 {
 	/**
-	 * The one legitimate exception is travel_distances.bin.gz: a compiled
-	 * lookup table produced by tools/build-travel-distances.mjs, never
-	 * hand-edited, so there is nothing to hot-reload.
+	 * travel_distances.bin.gz is a compiled lookup table built by
+	 * tools/build-travel-distances.mjs, never hand-edited, and it reads
+	 * itself off the classpath.
 	 */
 	private static final String BUILD_ARTIFACT = "TravelDistances.java";
 
 	@Test
-	public void dataFilesAreReadThroughTheOverride() throws IOException
+	public void bundledDataIsReadThroughOneDoor() throws IOException
 	{
+		List<String> offenders = scan("getResourceAsStream(",
+			f -> f.equals("DataFiles.java") || f.equals(BUILD_ARTIFACT));
+		assertTrue("Read bundled data with DataFiles.open(...), so there is one"
+			+ " place that decides where data comes from. Found in:\n  "
+			+ String.join("\n  ", offenders), offenders.isEmpty());
+	}
+
+	/**
+	 * DataFiles must not touch the filesystem at all. It is the class the
+	 * reviewer pointed at, so the rule is worth asserting on the class
+	 * itself rather than on a behaviour that could be reintroduced
+	 * somewhere adjacent.
+	 */
+	@Test
+	public void dataFilesDoesNotTouchTheFilesystem() throws IOException
+	{
+		Path file = Paths.get("src/main/java/com/ironscape/DataFiles.java");
+		if (!Files.isRegularFile(file))
+		{
+			throw new IOException("cannot find DataFiles.java from "
+				+ Paths.get("").toAbsolutePath());
+		}
 		List<String> offenders = new ArrayList<>();
+		String[] lines = new String(Files.readAllBytes(file), StandardCharsets.UTF_8)
+			.split("\r?\n");
+		for (int i = 0; i < lines.length; i++)
+		{
+			String trimmed = lines[i].trim();
+			if (trimmed.startsWith("//") || trimmed.startsWith("*") || trimmed.startsWith("/*"))
+			{
+				continue;   // the comment explaining the ban names the classes
+			}
+			for (String banned : new String[]{"java.io.File", "java.nio.file",
+				"new File(", "Files.", "Paths.", "FileInputStream"})
+			{
+				if (lines[i].contains(banned))
+				{
+					offenders.add((i + 1) + ": " + trimmed);
+				}
+			}
+		}
+		assertTrue("DataFiles must resolve bundled data from the classpath only —"
+			+ " reading a folder the user names is what the Plugin Hub rejected."
+			+ " Found in:\n  " + String.join("\n  ", offenders), offenders.isEmpty());
+	}
+
+	private static List<String> scan(String needle,
+		java.util.function.Predicate<String> exempt) throws IOException
+	{
 		Path root = Paths.get("src/main/java");
 		if (!Files.isDirectory(root))
 		{
-			throw new IOException("cannot find src/main/java from " + Paths.get("").toAbsolutePath());
+			throw new IOException("cannot find src/main/java from "
+				+ Paths.get("").toAbsolutePath());
 		}
+		List<String> offenders = new ArrayList<>();
 		try (Stream<Path> tree = Files.walk(root))
 		{
 			for (Path file : (Iterable<Path>) tree.filter(p -> p.toString().endsWith(".java"))::iterator)
 			{
-				String name = file.getFileName().toString();
-				if (name.equals("DataFiles.java") || name.equals(BUILD_ARTIFACT))
+				if (exempt.test(file.getFileName().toString()))
 				{
 					continue;
 				}
@@ -64,52 +113,13 @@ public class DataFilesRoutingTest
 					{
 						continue;
 					}
-					if (lines[i].contains("getResourceAsStream("))
+					if (lines[i].contains(needle))
 					{
 						offenders.add(file + ":" + (i + 1) + "  " + trimmed);
 					}
 				}
 			}
 		}
-		assertTrue("Read data files with DataFiles.open(...), not getResourceAsStream:"
-			+ " a classpath read ignores the data folder, so ::ironreload silently"
-			+ " does nothing for that file. Found in:\n  "
-			+ String.join("\n  ", offenders), offenders.isEmpty());
-	}
-
-	/**
-	 * Callers pass resource names in both shapes — package-relative
-	 * ("item_ids.json") and absolute ("/com/ironscape/places/x.json") — and
-	 * the override folder is searched by FILE NAME. Comparing the absolute
-	 * form against a file name matches nothing, and the miss is silent: it
-	 * falls back to the jar, so the override looks configured and does
-	 * nothing. Reads a real file out of a real folder rather than asserting
-	 * on a string, so it fails if resolve() stops stripping the path.
-	 */
-	@Test
-	public void anAbsoluteResourceNameFindsTheOverride() throws IOException
-	{
-		Path folder = Files.createTempDirectory("ironscape-data");
-		try
-		{
-			Path nested = folder.resolve("places");
-			Files.createDirectories(nested);
-			Files.write(nested.resolve("minigame_landings.json"),
-				"OVERRIDE".getBytes(StandardCharsets.UTF_8));
-			DataFiles.setFolder(folder.toString());
-
-			try (java.io.InputStream in = DataFiles.open(DataFilesRoutingTest.class,
-				"/com/ironscape/places/minigame_landings.json"))
-			{
-				assertNotNull("the override folder was not searched at all", in);
-				byte[] read = new byte[8];
-				assertEquals(8, in.read(read));
-				assertEquals("OVERRIDE", new String(read, StandardCharsets.UTF_8));
-			}
-		}
-		finally
-		{
-			DataFiles.setFolder("");
-		}
+		return offenders;
 	}
 }

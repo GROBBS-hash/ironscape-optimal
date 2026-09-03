@@ -1978,13 +1978,8 @@ public class IronscapePlugin extends Plugin
 	@Override
 	protected void startUp() throws Exception
 	{
-		// Legacy data must be in place BEFORE anything loads it below.
-		migrateLegacyFiles();
 		migrateLegacyConfig();
 		activeVariant = GuideVariant.OZIRIS;
-		// Before ANY load below: decides whether those loads read the jar
-		// or a folder on disk.
-		DataFiles.setFolder(config.dataFolder());
 		annotationManager.load();
 		placeManager.load();
 		loadMinigameLandings();
@@ -2002,48 +1997,6 @@ public class IronscapePlugin extends Plugin
 		reachedTarget = parsePoint(
 			configManager.getConfiguration(CONFIG_GROUP, "reachedTarget"));
 		registerUi();
-	}
-
-	/**
-	 * One-time copy of ~/.runelite/bruhsailer/* (local annotations, guide
-	 * manifest, bank snapshots) into ~/.runelite/ironscape/. Files are
-	 * COPIED, not moved — a rollback to an older build keeps working — and
-	 * anything already present in the new directory is never overwritten.
-	 * Idempotent and cheap, so it simply runs every startUp.
-	 */
-	private void migrateLegacyFiles()
-	{
-		java.io.File oldDir = new java.io.File(net.runelite.client.RuneLite.RUNELITE_DIR, LEGACY_CONFIG_GROUP);
-		java.io.File newDir = new java.io.File(net.runelite.client.RuneLite.RUNELITE_DIR, CONFIG_GROUP);
-		java.io.File[] files = oldDir.listFiles(java.io.File::isFile);
-		if (files == null)
-		{
-			return; // no legacy directory — fresh install
-		}
-		int copied = 0;
-		for (java.io.File file : files)
-		{
-			java.io.File dest = new java.io.File(newDir, file.getName());
-			if (dest.exists())
-			{
-				continue;
-			}
-			try
-			{
-				newDir.mkdirs();
-				java.nio.file.Files.copy(file.toPath(), dest.toPath());
-				copied++;
-			}
-			catch (IOException e)
-			{
-				log.warn("Could not migrate legacy data file {}", file.getName(), e);
-			}
-		}
-		if (copied > 0)
-		{
-			log.info("Migrated {} data file(s) from ~/.runelite/{} to ~/.runelite/{}",
-				copied, LEGACY_CONFIG_GROUP, CONFIG_GROUP);
-		}
 	}
 
 	/**
@@ -2561,7 +2514,6 @@ public class IronscapePlugin extends Plugin
 		{
 			return;
 		}
-		DataFiles.setFolder(config.dataFolder());
 		annotationManager.load();
 		placeManager.load();
 		loadMinigameLandings();
@@ -2579,11 +2531,11 @@ public class IronscapePlugin extends Plugin
 				panel.refresh();
 			}
 		});
-		String where = DataFiles.overriding()
-			? "data folder" : "the bundled files (no data folder set)";
-		log.info("::ironreload — reloaded from {}", where);
+		log.info("::ironreload — re-read the bundled data and the local files"
+			+ " in ~/.runelite/ironscape");
 		client.addChatMessage(ChatMessageType.CONSOLE, "",
-			"IRONSCAPE: reloaded guide data from " + where + ".", null);
+			"IRONSCAPE: reloaded. Bundled data comes from the jar; your captures"
+				+ " and local places were re-read.", null);
 	}
 
 	/**
