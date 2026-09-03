@@ -12,19 +12,35 @@ Screenshots `SS-01` … `SS-20` in `docs/screenshots/`.
 
 ---
 
-## START HERE — next session (written 2026-08-31, end of wave 32)
+## START HERE — next session (written 2026-09-03, end of wave 32)
 
-Main at **`b094b21`**, PUSHED, tree clean. **16 commits this session.** Hub pin
-**BUMPED to `b094b21`** and its `build` check PASSES — **gap 0**, verified from
+Main at **`1ea9094`**, PUSHED, tree clean. **17 commits this session.** Hub pin
+**BUMPED to `1ea9094`** and its `build` check PASSES — **gap 0**, verified from
 a FRESH CLONE at that sha rather than the working tree.
 
 Before ANY gradle command: `node tools/check-client.mjs`.
 Before handing over a build: `node tools/check-all.mjs --tests`, reading the
 COUNT from `build/test-results/*.xml` (**140** at the end of this session).
-For data-only fixes: edit the repo file, have him type `::ironreload` — and it
-now actually works for the guide data, item ids, gear sets and minigame
-landings, none of which honoured the data folder before this session.
 **Build in a throwaway `git worktree` when the client is live.**
+
+**THE DATA FOLDER IS GONE, so `::ironreload` no longer picks up a repo edit.**
+Plugin Hub review rejected it (see below). Every data fix now needs a rebuild
+and a relaunch, the way it did before wave 23. **The owner has said he is happy
+to relaunch every time**, so do not tiptoe around it or batch changes to avoid
+restarts — make the fix, build, tell him to relaunch. `::ironreload` still
+re-reads the LOCAL files under `~/.runelite/ironscape` (captured pins, local
+places) and rebuilds the derived caches, so it is still the right answer after
+patching one of those.
+
+**THE HUB IS ACTIVE AGAIN AFTER MONTHS OF SILENCE.** Two comments, both about
+file access: riktenx (24 Aug) "all file i/o must occur within a plugin-specific
+subdir within .runelite", and Alexsuperfly (2 Sep) pointing at `DataFiles`
+directly. Both addressed, the pin moved, and a reply posted
+(issuecomment-5519985781). **If more feedback comes, expect it to be about the
+same class of thing — check anything new against "does this read or write
+outside `~/.runelite/ironscape`" BEFORE building it.**
+`DataFilesRoutingTest.dataFilesDoesNotTouchTheFilesystem` fails the build if
+the folder reading ever returns.
 
 **HE IS AT POSITION 305**, blackjacking / Varlamore thieving to 2.4m GP. That
 is a long grind, so the next play session may not move far — good time for desk

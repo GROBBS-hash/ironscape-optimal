@@ -890,6 +890,25 @@ refresh when "Failed to login" appears.
   NOT DONE, because a ⌖ on that step would switch every user off the guide's
   prescribed Pollnivneach route; 10 wrong-spot pins and 39 no-route steps
   still stand.
+  **LATE WAVE 32 — THE HUB WOKE UP, AND THE DATA FOLDER IS GONE.** Two review
+  comments, both about file access: riktenx (24 Aug) "all file i/o must occur
+  within a plugin-specific subdir within .runelite", and Alexsuperfly (2 Sep)
+  pointing straight at `DataFiles.resolve` — "not going to be allowed, i
+  suggest you drop the whole dev directory thing". Dropped rather than
+  narrowed, which is what was asked: `DataFiles` is now a one-line classpath
+  read. **The cost is real and the owner accepted it explicitly: every data fix
+  needs a rebuild and a relaunch again, and he said he is happy to relaunch
+  every time** — so do NOT batch changes to avoid restarts. Also removed the
+  one-time copy out of `~/.runelite/bruhsailer`, which reads another directory
+  under `.runelite` (the CONFIG-key migration is ConfigManager, not file I/O,
+  and stays). `::ironreload` still re-reads the LOCAL files and rebuilds the
+  derived caches, and its chat line now says where data comes from.
+  `DataFilesRoutingTest.dataFilesDoesNotTouchTheFilesystem` VERIFIED to fail
+  when a File read is put back. Pin bumped to **`1ea9094`**, `build` check
+  PASSING, reply posted (issuecomment-5519985781). **The irony worth keeping:
+  the feature that made this session fast is the one that could not ship, and
+  it had been silently broken for nine waves before being fixed the same
+  morning it was removed.**
 
 - SESSION WAVE 31 (2026-08-26, short live session at position 301 -> he played
   Tempoross; main at **`3afe7fe`**, **3** commits, PUSHED; hub pin still
