@@ -1,78 +1,133 @@
-# IRONSCAPE Optimal — RuneLite plugin
+# IRONSCAPE Optimal
 
-This plugin is based on the [Ironman Efficiency Guide](https://ironman.guide/) as a step-by-step
-side panel inside RuneLite: tick-off steps with automatic completion
-detection (skill levels, quest progress, mid-quest checkpoints, item
-counts), an on-screen step overlay with live item/level counts, item
-sprites and have/need badges against your bank, location and quest chips
-per step, click-to-navigate place links (via the Shortest Path plugin),
-click-to-hop world links, and a bank filter for upcoming items. Contrary to other plugins, 
-This one also has a built in auto update feature, meaning it will be upto date with the latest findings
-from the team at Ironman.guide.
+The [Ironman Efficiency Guide](https://ironman.guide/) as a step-by-step panel
+inside RuneLite. Steps tick themselves off your skills, quests and items,
+place names are clickable routes, and the bank shows you what the next few
+steps need.
 
-If this sees use, I'm happy to continue improving, adding and fixing bugs.
-
-**New here? Read the [illustrated user guide](docs/GUIDE.md)** — every
-feature explained with screenshots, from the clickable step links to
-the bank filter.
-
-## What it looks like
+Install it from the RuneLite **Plugin Hub** (wrench icon → Plugin Hub → search
+"IRONSCAPE").
 
 ![The guide panel, step overlay and auto-navigation in action](docs/panel-navigation.png)
 
- The **side panel** tracks the guide with
-tickable steps, live requirement badges/goals (`fletching 20/15 ·
-construction 21/20`, `cash 20549/200000`) and per-step location/note
-chips; the **step overlay** (top-left) shows the current action and its
-counts in-game; **auto-navigation** has already handed the route to the
-boat to Shortest Path and/or GPS plugin (cyan trail); and the step will **tick itself**
-when the travel completes. Steps auto-complete off skill levels, quest
-state, item counts, teleports, arrivals and mid-quest checkpoints — the
-checkbox is always there when detection can't know.
+The **side panel** follows the guide with tickable steps, live requirement
+badges (`fletching 20/15`, `cash 20549/200000`) and per-step location and note
+chips. The **step overlay** (top left) shows the current action and its counts
+without looking away from the game. **Navigation** has already handed this
+route to Shortest Path / GPS (the cyan trail), and the step will tick itself
+when you arrive.
+
+---
+
+## What it does
+
+**It follows along, so you don't have to find your place.**
+Steps complete on their own from skill levels, quest state, mid-quest
+checkpoints, item counts, xp drops, teleports and arrivals. When nothing can
+detect a step, it says so plainly and gives you a checkbox — the guide is fully
+usable with zero automation.
+
+**It knows where things are.**
+Place names, quest names and item names in the step text are links. Click one
+and it routes there through [Shortest Path](https://github.com/Skretzo/shortest-path)
+or [GPS](https://github.com/PauloAguiar/runelite-gps-plugin) — whichever you have. Steps carry
+map pins, so "Go to the Rogues' Den" points at the trapdoor rather than the
+middle of Burthorpe.
+
+**It shows you what to bring.**
+Every step lists its items with sprites and have/need counts against your
+inventory, worn gear and bank. Red means you don't have it, orange with a 🏦
+means it's in the bank, green means you're carrying it. When something's
+banked, the route offers a bank stop first.
+
+**The bank knows about the guide.**
+A button in the bank (or typing `bruh` in bank search) turns the bank into a
+shopping list: each upcoming step becomes its own section with what it needs,
+and the items you already own are the real, withdrawable bank widgets.
+
+**It points at the thing.**
+NPCs, ground items, ore rocks, market stalls and shopkeepers named by the
+current step get outlined, with the item you're after floating over the
+vendor's head. Teleport click-paths light up — the Grouping tab, the right
+minigame in the list, the spell in your book, or the item in your worn gear.
+
+**It stands aside for Quest Helper.**
+On a quest step, Quest Helper owns the click-by-click guidance and our
+navigation stands down rather than fighting it for the route. You get a note
+telling you which quest to select, and a nudge when the step is finished and
+guidance comes back to us.
+
+**Alternatives are one click.**
+Where the guide offers another way ("thieve in Varlamore instead"), the note is
+clickable and adopts that destination for the step.
 
 ![The bank filter: every upcoming step as a shopping-list section](docs/bank-filter.png)
 
-The Quest Helper-style **bank view**: every upcoming step becomes its
-own section with green/red have/need counts — and owned items are the
-real, withdrawable bank widgets. Also in the plugin: **shopkeeper
-outlines** with the item you're buying floating overhead, teleport
-click-path highlights, and a quest handoff that stands our navigation
-down while Quest Helper guides an in-progress quest.
+---
+
+## Works with
+
+| Plugin | What it adds |
+| --- | --- |
+| [Shortest Path](https://github.com/Skretzo/shortest-path) **or** [GPS](https://github.com/PauloAguiar/runelite-gps-plugin) | Draws the routes. Install one — **not both**, or you'll get two lines. |
+| [Quest Helper](https://github.com/Zoinkwiz/quest-helper) | Click-by-click quest steps. We hand over automatically. |
+
+Neither is required. Without a pathing plugin you lose the routes and keep
+everything else.
+
+---
+
+## Guide data
+
+The guide is **bundled with the plugin** — it is not downloaded, and the plugin
+makes no network requests at all. Guide updates arrive when the plugin updates.
+
+---
+
+## Feedback and bugs
+
+Please open an [issue](https://github.com/GROBBS-hash/ironscape-optimal/issues).
+Screenshots help enormously, and if something misbehaves in game, type
+`::ironwrong` at that moment — it writes a small report (which step, where the
+route pointed, where you were standing) to
+`~/.runelite/ironscape/reports/` that you can paste in.
+
+This is actively developed and I'm happy to keep fixing and adding to it.
+
+---
 
 ## Credits
 
 - **Guide content by [Oziris](https://twitter.com/ozirislol) and the
-  [ironman.guide](https://ironman.guide/) community** (the v4 "Enhanced
-  2026" edition) — used with their permission. Thanks to them for maintaining the guide!
+  [ironman.guide](https://ironman.guide/) community** — the v4 "Enhanced 2026"
+  edition, used with their permission. Thank you for maintaining it.
 - Navigation integrates with [Shortest Path](https://github.com/Skretzo/shortest-path)
-  by Skretzo (separate plugin, install it from the Plugin Hub).
+  by Skretzo.
 - Mid-quest checkpoint values were cross-checked against
-  [Quest Helper](https://github.com/Zoinkwiz/quest-helper)'s open-source
-  quest data.
+  [Quest Helper](https://github.com/Zoinkwiz/quest-helper)'s open-source quest
+  data.
+
+---
 
 ## Development
 
-Requirements: JDK 11 or newer (17 works). Gradle is not needed — the
-wrapper downloads it.
+Requirements: JDK 11 or newer (17 works). Gradle is not needed — the wrapper
+downloads it.
 
 ```
 gradlew run
 ```
 
-launches a RuneLite client with the plugin loaded. Log in on any account
-and enable **IRONSCAPE Optimal** in the plugin list (wrench icon) if it
-isn't already on.
-
-Tip: the button in the bank UI (or typing `bruh` in bank search) filters
-the bank to items your upcoming guide steps still need.
+launches a RuneLite client with the plugin loaded. Log in on any account and
+enable **IRONSCAPE Optimal** in the plugin list.
 
 ```
 gradlew build
 ```
 
-compiles and runs tests.
+compiles and runs the tests.
 
-## Project layout
+### Project layout
 
 | Path | What |
 | --- | --- |
@@ -80,33 +135,30 @@ compiles and runs tests.
 | `src/test/java/.../IronscapePluginTest.java` | Dev launcher (boots a real client) |
 | `src/main/resources/.../guide/guide_data_oziris.json` | Bundled guide data (scraped, see tools) |
 | `src/main/resources/.../annotations/annotations_oziris.json` | Bundled step annotations |
-| `tools/` | Node scripts: guide scraper, place seeding |
+| `tools/` | Node scripts: guide scraper, seeding and audits |
 | `runelite-plugin.properties` | Plugin Hub metadata |
 
-## Tools
+### Tools
 
 - `node tools/scrape-oziris.mjs` — refreshes the bundled guide from
   ironman.guide (their pages embed author-structured step data: text,
-  locations, quests, skill goals, item lists, notes). Hand-authored
-  annotation keys (quest checkpoints, captured targets) survive the
-  refresh.
-- `node tools/seed-places.mjs [--quests|--locations|--links|--pois]` —
-  seeds `places.json` (the clickable place-name links) from the OSRS
-  Wiki.
-- `node tools/seed-item-ids.mjs` — seeds `item_ids.json` (item sprites
-  for untradeables) from the OSRS Wiki. Regenerate the input list
-  first: compile tests, then run `PrintItemNamesProbe` redirecting its
-  output to `tools/item-names.txt`.
+  locations, quests, skill goals, item lists, notes). Hand-authored annotation
+  keys (quest checkpoints, captured targets) survive the refresh.
+- `node tools/check-all.mjs --tests` — runs every audit and the test suite.
+- `node tools/preflight.mjs` — reads your saved position and reports what the
+  next steps can and cannot do.
+- `node tools/seed-places.mjs [--quests|--locations|--links|--pois]` — seeds
+  `places.json` (the clickable place-name links) from the OSRS Wiki.
 
-## Annotating steps
+### Annotating steps
 
 Annotations make the plugin smarter but are always optional.
 
-- **Locations:** click the ⌖ button on any step while standing at the
-  right spot in game. Saved to `~/.runelite/ironscape/annotations.json`.
+- **Locations:** click the ⌖ button on any step while standing at the right
+  spot in game. Saved to `~/.runelite/ironscape/annotations.json`.
 - **Mid-quest checkpoints:** requirements like `{"varbit": 5619, "value": 5}`
-  tick a step when a quest reaches a certain point ("do the quest until
-  the orb"). See `PrintSubIdProbe` for finding step ids.
+  tick a step when a quest reaches a certain point ("do the quest until the
+  orb"). See `PrintSubIdProbe` for finding step ids.
 
 ## License
 
