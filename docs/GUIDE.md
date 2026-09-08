@@ -5,7 +5,7 @@ line: **open the side panel, press Resume, and do what the top step
 says** — the plugin ticks most steps off by itself and routes you to
 the next one.
 
-![Panel, overlay and navigation together](panel-navigation.png)
+![Panel, overlay and navigation together](panel-and-route.png)
 
 ---
 

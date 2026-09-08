@@ -8,14 +8,13 @@ steps need.
 Install it from the RuneLite **Plugin Hub** (wrench icon → Plugin Hub → search
 "IRONSCAPE").
 
-![The guide panel, step overlay and auto-navigation in action](docs/panel-navigation.png)
+![The guide panel, live item counts and a route drawn to the next step](docs/panel-and-route.png)
 
-The **side panel** follows the guide with tickable steps, live requirement
-badges (`fletching 20/15`, `cash 20549/200000`) and per-step location and note
-chips. The **step overlay** (top left) shows the current action and its counts
-without looking away from the game. **Navigation** has already handed this
-route to Shortest Path / GPS (the cyan trail), and the step will tick itself
-when you arrive.
+Step **305 of 575** with the gp it is waiting on (`813,001/2,400,000`) and the
+Thieving level it expects, the route already drawn to where the step happens,
+and the next step below it listing what to bring — the 🏦 means it is in the
+bank rather than on you. The two green captions are alternatives the guide
+offers: click one and the step routes there instead.
 
 ---
 
@@ -34,11 +33,22 @@ or [GPS](https://github.com/PauloAguiar/runelite-gps-plugin) — whichever you h
 map pins, so "Go to the Rogues' Den" points at the trapdoor rather than the
 middle of Burthorpe.
 
+![A route with the teleport it starts with highlighted in the world](docs/route-hint.png)
+
+It works out the first leg for you as well: here it has decided a Lumbridge
+home teleport beats walking, and highlighted it.
+
 **It shows you what to bring.**
 Every step lists its items with sprites and have/need counts against your
 inventory, worn gear and bank. Red means you don't have it, orange with a 🏦
 means it's in the bank, green means you're carrying it. When something's
 banked, the route offers a bank stop first.
+
+<img src="docs/step-items.png" alt="A step with its items, showing what is carried, what is banked and what is missing" width="340">
+
+Steps carry notes where the guide has something to say — this one warns that
+the disguise is two items you combine, which is the sort of thing you only
+find out at the shop.
 
 **The bank knows about the guide.**
 A button in the bank (or typing `bruh` in bank search) turns the bank into a
