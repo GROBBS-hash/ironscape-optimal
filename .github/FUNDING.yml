@@ -1,0 +1,12 @@
+# Renders a quiet "Sponsor" button on the repository page. Deliberately the
+# only place the plugin ever mentions money: nothing in the client asks, no
+# feature is gated, and the guide itself is Oziris and the ironman.guide
+# community's work rather than mine.
+#
+# github: needs GitHub Sponsors enabled on the account first
+#   (github.com/sponsors -> Join the waitlist / Set up), otherwise the button
+#   simply does not appear.
+# ko_fi: uncomment and put your Ko-fi handle in, if you would rather have a
+#   one-off tip jar than anything subscription-shaped.
+github: GROBBS-hash
+# ko_fi: yourhandle

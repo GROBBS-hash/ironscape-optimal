@@ -96,6 +96,16 @@ This is actively developed and I'm happy to keep fixing and adding to it.
 
 ---
 
+## Supporting it
+
+It is free and always will be, nothing is gated, and the client never asks you
+for anything. If you have got use out of it and want to throw something at it,
+there is a Sponsor button at the top of this repo — but please consider
+[ironman.guide](https://ironman.guide/) first. The route is their work; I only
+wrapped it.
+
+---
+
 ## Credits
 
 - **Guide content by [Oziris](https://twitter.com/ozirislol) and the
