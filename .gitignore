@@ -15,3 +15,6 @@ tools/.wiki-cache/
 
 # Shortest Path transport data, re-downloadable (audit-pin-reachability)
 tools/.sp-cache/
+
+# announcement copy, not part of the plugin
+promo/
