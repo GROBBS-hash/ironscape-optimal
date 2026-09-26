@@ -117,6 +117,25 @@ public interface IronscapeConfig extends Config
 	}
 
 	/**
+	 * Auto-navigation only runs while the guide panel is open.
+	 *
+	 * <p>The Quest Helper stand-down only knows about quests THIS GUIDE is
+	 * on. Go and do a quest of your own while the guide sits on a grind step
+	 * and nothing stands down, so the route is re-posted over Quest Helper
+	 * every few seconds (owner, in play). Having the panel open is the
+	 * honest signal that you are following the guide right now.
+	 */
+	@ConfigItem(
+		keyName = "navigateOnlyWhenPanelOpen",
+		name = "Only navigate while the panel is open",
+		description = "Stop drawing routes while the guide panel is closed, so following something else (like Quest Helper) is not interrupted. A route already drawn is left alone; death routing still always works"
+	)
+	default boolean navigateOnlyWhenPanelOpen()
+	{
+		return true;
+	}
+
+	/**
 	 * GREEN on purpose. Quest Helper outlines in cyan, and so did every one
 	 * of these overlays, so on a quest step there was no way to tell "the
 	 * guide needs this" from "Quest Helper says click this now" — the two

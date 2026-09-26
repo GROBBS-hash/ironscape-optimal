@@ -7069,6 +7069,29 @@ public class IronscapePlugin extends Plugin
 				postPath(deathPoint, true);
 				return;
 			}
+			// NOT LOOKING AT THE GUIDE MEANS NOT FOLLOWING IT. The Quest Helper
+			// stand-down below only knows about quests THIS GUIDE is on, so going
+			// off to do a quest of your own while the guide sits on a grind step
+			// stands nothing down, and the route is re-posted over Quest Helper
+			// every few seconds (owner, in play 2026-09-26).
+			//
+			// Whether the panel is open is the one signal that answers "is he
+			// following the guide RIGHT NOW" without us having to guess what he
+			// is doing instead.
+			//
+			// Hold rather than clear: a clear wipes whatever is displayed no
+			// matter who put it there, which is exactly how we killed Quest
+			// Helper's route in wave 26. Anything of ours still drawn simply
+			// stays until something else replaces it.
+			//
+			// Deliberately BELOW the gravestone: dying with the panel closed is
+			// the worst possible moment to stop pointing at your items.
+			if (config.navigateOnlyWhenPanelOpen() && panel != null && !panel.isPanelShowing())
+			{
+				logNavDecision("holding: the guide panel is closed, so you are not"
+					+ " following the guide right now");
+				return;
+			}
 			// A manual ⌖ capture pinned the route to where the player is
 			// working — leave it alone until the frontier step changes.
 			if (navHoldStepId != null)

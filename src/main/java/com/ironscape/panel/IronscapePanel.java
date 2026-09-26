@@ -151,6 +151,22 @@ public class IronscapePanel extends PluginPanel
 	/** sub-id -> "nothing can auto-tick this"; see RowContext.manualOnly. */
 	private java.util.function.Predicate<String> manualOnlySupplier;
 
+	/**
+	 * Is the guide panel actually on screen? Written on the EDT by the
+	 * hierarchy listener, read from the client thread, hence volatile.
+	 *
+	 * <p>RuneLite never calls onActivate for a plain PluginPanel, so Swing
+	 * visibility is the only honest answer to "is the player looking at
+	 * this". Starts false: the sidebar opens closed.
+	 */
+	private volatile boolean panelShowing;
+
+	/** @see #panelShowing */
+	public boolean isPanelShowing()
+	{
+		return panelShowing;
+	}
+
 	/** step id -> the destination adopted from one of its notes; see RowContext. */
 	private java.util.function.Function<String, net.runelite.api.coords.WorldPoint>
 		chosenAlternativeSupplier;
@@ -321,8 +337,15 @@ public class IronscapePanel extends PluginPanel
 		// PluginPanel like this one — so watch our own Swing visibility:
 		// this fires every time the panel becomes showing.
 		addHierarchyListener(e -> {
-			if ((e.getChangeFlags() & java.awt.event.HierarchyEvent.SHOWING_CHANGED) != 0
-				&& isShowing())
+			if ((e.getChangeFlags() & java.awt.event.HierarchyEvent.SHOWING_CHANGED) == 0)
+			{
+				return;
+			}
+			// Read once here, on the EDT, for the client thread to see: auto
+			// navigation asks whether the guide is even on screen before it
+			// posts a route over whatever else the player is following.
+			panelShowing = isShowing();
+			if (panelShowing)
 			{
 				// invokeLater: never mutate the tree mid-hierarchy-event.
 				// Scroll only; the Resume button is what redraws the route.
